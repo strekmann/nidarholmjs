@@ -7,47 +7,6 @@ module.exports.index = function(req, res) {
     });
 };
 
-module.exports.account = function(req, res){
-    res.render('account', {
-        user: req.user
-    });
-};
-
-module.exports.save_account = function(req, res){
-    return User.findById(req.user._id, function(err, user){
-        if (err) {
-            return res.json('200', {
-                error: 'Could not find user'
-            });
-        }
-
-        req.assert('username', 'username is required').notEmpty();
-        req.assert('name', 'name is required').notEmpty();
-        req.assert('email', 'valid email required').isEmail();
-
-        var errors = req.validationErrors();
-        if (errors) {
-            return res.json('200', {
-                errors: errors
-            });
-        }
-
-        user.username = req.body.username;
-        user.name = req.body.name;
-        user.email = req.body.email;
-        return user.save(function(err){
-            if (err) {
-                return res.json('200', {
-                    error: err.message
-                });
-            }
-            return res.json('200', {
-                message: 'Changes saved'
-            });
-        });
-    });
-};
-
 module.exports.login = function(req, res){
     res.render('login', {
         user: req.user
