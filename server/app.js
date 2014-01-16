@@ -1,5 +1,6 @@
 var express     = require('express'),
     path        = require('path'),
+    swig        = require('swig'),
     hbs         = require('express-hbs'),
     flash       = require('connect-flash'),
     settings    = require('./settings'),
@@ -32,13 +33,12 @@ app.configure(function(){
     app.use(app.router);
     app.use(express.static(path.join(__dirname, 'public')));
 
-    app.engine('hbs', hbs.express3({
-        partialsDir: path.join(__dirname, 'views', 'partials'),
-        layoutsDir: path.join(__dirname, 'views', 'layouts'),
-        contentHelperName: 'content'
-    }));
-    app.set('view engine', 'hbs');
+    app.engine('html', swig.renderFile);
+
+    app.set('view engine', 'html');
     app.set('views', path.join(__dirname, 'views'));
+    app.set('view cache', false);
+    swig.setDefaults({ cache: false });
 
     require('./lib/helpers').register(app, hbs);
 
