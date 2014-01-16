@@ -6,4 +6,5 @@ tmp
 server/public/css
 server/public/js
 server/public/fonts
+server/public/doc
 bower_modules
