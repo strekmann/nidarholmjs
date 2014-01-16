@@ -34,7 +34,9 @@
     "redis": "",
     "hiredis": "",
     "jsdom": "",
-    "contextify": ""
+    "contextify": "",
+    "passport-local": "~0.1.6",
+    "connect-flash": "~0.1.1"
   },
   "devDependencies": {
     "uglify-js": "",

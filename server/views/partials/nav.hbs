@@ -11,7 +11,12 @@
         <section class="top-bar-section">
             <ul class="right">
                 <li><a href="#">Example</a></li>
+                {{#if user}}
+                <li><a href="">{{user.username}}</a></li>
+                <li><a href="/logout">Logg ut</a></li>
+                {{else}}
                 <li><a href="/login">Log in</a></li>
+                {{/if}}
             </ul>
         </section>
     </nav>

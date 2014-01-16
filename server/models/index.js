@@ -6,6 +6,8 @@ var UserSchema = new mongoose.Schema({
     name: {type: String, required: true},
     email: {type: String},
     password: {type: String},
+    algorithm: {type: String},
+    salt: {type: String},
     is_active: {type: Boolean, 'default': true},
     is_admin: {type: Boolean, 'default': false},
     created: {type: Date, required: true, 'default': Date.now},

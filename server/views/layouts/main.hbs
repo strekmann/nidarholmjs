@@ -3,6 +3,13 @@
 
     {{> nav}}
 
+    <div class="row">
+        <div class="large-12 columns">
+            {{#each messages.error}}
+            <div class="flash">{{this}}</div>
+            {{/each}}
+        </div>
+    </div>
     {{{body}}}
 
     <script src="/js/vendor.js"></script>

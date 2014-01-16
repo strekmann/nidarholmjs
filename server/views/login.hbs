@@ -1,8 +1,69 @@
 {{!< main}}
 <section id="login">
     <div class="row">
-        <div class="large-12 columns">
-            <a href="/auth/google">Login with Google</a>
+        <div class="medium-6 columns">
+            <form method="post">
+                <div class="row">
+                    <div class="small-12 columns">
+                        <h1>Returning user: Log in<h1>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="small-12 columns">
+                        <label for="username">Username</label>
+                        <input type="text" placeholder="Username" id="username" name="username" required/>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="small-12 columns">
+                        <label for="password">Password</label>
+                        <input type="password" placeholder="Password" id="password" name="password" required />
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="small-12 columns">
+                        <button>Log in</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+        <div class="medium-6 columns">
+            <form method="post" action="/register">
+                <div class="row">
+                    <div class="small-12 columns">
+                        <h1>New user: Register<h1>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="small-12 columns">
+                        <label for="name">Name</label>
+                        <input type="text" placeholder="Full name" id="name" name="name" required/>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="small-12 columns">
+                        <label for="desired_username">Desired username</label>
+                        <input type="text" placeholder="Username" id="desired_username" name="desired_username" required/>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="small-12 columns">
+                        <label for="password1">Password</label>
+                        <input type="password" placeholder="Password" id="password1" name="password1" required />
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="small-12 columns">
+                        <label for="password2">Password confirmation</label>
+                        <input type="password" placeholder="Same as above" id="password2" name="password2" required data-equalto="password1" />
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="small-12 columns">
+                        <button>Register</button>
+                    </div>
+                </div>
+            </form>
         </div>
     </div>
 </section>
