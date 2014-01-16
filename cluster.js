@@ -2,7 +2,7 @@
 var app = require('./server/app'),
     http = require('http'),
     cluster = require('cluster'),
-    numCPU = require('os').cpus().length,
+    numCPU = 1;//require('os').cpus().length,
     i = 0;
 
 if (cluster.isMaster){
