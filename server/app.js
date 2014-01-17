@@ -1,7 +1,5 @@
 var express     = require('express'),
     path        = require('path'),
-    swig        = require('swig'),
-    hbs         = require('express-hbs'),
     flash       = require('connect-flash'),
     settings    = require('./settings'),
     app         = require('libby')(express, settings);
@@ -33,14 +31,8 @@ app.configure(function(){
     app.use(app.router);
     app.use(express.static(path.join(__dirname, 'public')));
 
-    app.engine('html', swig.renderFile);
-
-    app.set('view engine', 'html');
     app.set('views', path.join(__dirname, 'views'));
-    app.set('view cache', false);
-    swig.setDefaults({ cache: false });
-
-    require('./lib/helpers').register(app, hbs);
+    app.set('view engine', 'jade');
 
     // 500 status
     app.use(function(err, req, res, next) {

@@ -1,0 +1,58 @@
+doctype html
+html(lang="en")
+    head
+        meta(charset="utf-8")
+        title= title
+        meta(name="viewport" content="width=device-width, initial-scale=1.0")
+        meta(name="author" content="Strekmann")
+        link(href="/css/site.css" rel="stylesheet")
+
+        //if lt IE 9
+            script(src='http://html5shim.googlecode.com/svn/trunk/html5.js')
+
+        script(src="/js/custom.modernizr.js")
+        link(rel="shortcut icon" href="/img/favicon.png")
+
+    body
+        a(id="logobtn" href="/")
+        .contain-to-grid
+            nav.top-bar
+                ul.title-area
+                    li.name
+                        h1
+                            a(href="/") nidarholm
+                    li.toggle-topbar.menu-icon
+                        a(href="")
+                            span
+
+                section.top-bar-section
+                    ul.right
+                        li
+                            a(href="#") example
+                        if user
+                            li
+                                a(href="")= user.username
+                            li
+                                a(href="/logout") log out
+                        else
+                            li
+                                a(href="/login") log in
+
+        .row
+            .large-12.columns
+                if messages.error
+                    each message in messages.error
+                        .flash= message
+                if messages.info
+                    each message in messages.info
+                        .flash= message
+
+        block content
+
+        script(src="/js/vendor.js")
+        script(src="/js/site.js")
+
+        script.
+            _.templateSettings.variable = "rc";
+            $(document).foundation();
+

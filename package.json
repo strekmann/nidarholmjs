@@ -24,7 +24,6 @@
     "uslug": "",
     "moment": "",
     "underscore": "",
-    "express-hbs": "",
     "passport": "",
     "passport-google-oauth": "",
     "express-validator": "",
@@ -37,7 +36,7 @@
     "contextify": "",
     "passport-local": "~0.1.6",
     "connect-flash": "~0.1.1",
-    "swig": "~1.2.2"
+    "jade": "~1.1.4"
   },
   "devDependencies": {
     "uglify-js": "",
