@@ -1,0 +1,46 @@
+extends layouts/main
+
+block content
+    section#login
+        .row
+            .medium-6.columns
+                form(method="post")
+                    .row
+                        .small-12.columns
+                            h1 Returning user: Log in
+                    .row
+                        .small-12.columns
+                            label(for="username") Username
+                            input(type="text" placeholder="Username" id="username" name="username" required)
+                    .row
+                        .small-12.columns
+                            label(for="password") Password
+                            input(type="password" placeholder="Password" id="password" name="password" required)
+                    .row
+                        .small-12.columns
+                            button Log in
+
+            .medium-6.columns
+                form(method="post" action="/register")
+                    .row
+                        .small-12.columns
+                            h1 New user: Register
+                    .row
+                        .small-12.columns
+                            label(for="name") Name
+                            input(type="text" placeholder="Full name" id="name" name="name" required)
+                    .row
+                        .small-12.columns
+                            label(for="desired_username") Username
+                            input(type="text" placeholder="Username" id="desired_username" name="desired_username" required)
+                    .row
+                        .small-12.columns
+                            label(for="password1") Password
+                            input(type="password" placeholder="Password" id="password1" name="password1" required)
+                    .row
+                        .small-12.columns
+                            label(for="password2") Password again
+                            input(type="password" placeholder="Password" id="password2" name="password2" required)
+                    .row
+                        .small-12.columns
+                            button Register
