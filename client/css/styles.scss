@@ -13,6 +13,23 @@
 // font-awesome
 @import "font-awesome";
 
+
+/* foundation ++ */
+@media #{$medium-up} {
+    .medium-right {
+        float: right;
+    }
+    .medium-left {
+        float: left;
+    }
+}
+
+@media #{$small-only} {
+    label.inline {
+        margin: 0;
+    }
+}
+
 // our styles
 html {
     min-height: 100%;

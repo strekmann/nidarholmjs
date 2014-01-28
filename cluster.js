@@ -2,8 +2,10 @@
 var app = require('./server/app'),
     http = require('http'),
     cluster = require('cluster'),
-    numCPU = 1;//require('os').cpus().length,
+    numCPU = Math.floor(require('os').cpus().length / 3),
     i = 0;
+
+if (app.settings.env === 'development') { numCPU = 2; }
 
 if (cluster.isMaster){
     for (i; i<numCPU; i++){
