@@ -43,7 +43,7 @@ module.exports = function(grunt) {
             css: {
                 src: [
                     'bower_modules/select2/select2.css',
-                    'client/vendor/css/**/*.css', 
+                    'client/vendor/css/**/*.css',
                     'tmp/css/styles.css'
                 ],
                 dest: 'server/public/css/site.css'

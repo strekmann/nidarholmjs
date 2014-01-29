@@ -1,6 +1,7 @@
 var express     = require('express'),
     path        = require('path'),
     flash       = require('connect-flash'),
+    i18n        = require('i18n-abide'),
     settings    = require('./settings'),
     app         = require('libby')(express, settings);
 
@@ -19,6 +20,13 @@ app.configure(function(){
 
     app.use(app.passport.initialize());
     app.use(app.passport.session());
+
+    app.use(i18n.abide({
+        supported_languages: ['en', 'nb', 'nn'],
+        default_lang: 'nb',
+        //debug_lang: 'it-CH',
+        translation_directory: 'server/public/i18n'
+    }));
 
     // has to go after passport.session()
     app.use(function (req, res, next) {
