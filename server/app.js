@@ -10,21 +10,31 @@ app.ensureAuthenticated = require('./lib/middleware').ensureAuthenticated;
 
 app.configure(function(){
 
-    // Put (flash) messages in res.locals to know about failed authentication
-    // etc.
+    // set jade as template engine
+    app.set('views', path.join(__dirname, 'views'));
+    app.set('view engine', 'jade');
+
+    // Put (flash) messages from connect-flash in res.locals to know about failed authentication
+    // etc. Should come before passport initialize.
     app.use(flash());
     app.use(function (req, res, next) {
         res.locals.messages = req.flash();
         next();
     });
 
+    // initialize passport
     app.use(app.passport.initialize());
     app.use(app.passport.session());
 
+    // initialize i18n
     app.use(i18n.abide({
-        supported_languages: ['en', 'nb', 'nn'],
+        supported_languages: ['en', 'nb', 'nn', 'he'],
         default_lang: 'nb',
-        //debug_lang: 'it-CH',
+        // to get rotated sentences, set a language in supported and debug that
+        // does not have a language folder. he will give right-to-left, but
+        // foundation css does not follow automatically, it needs a setting,
+        // which makes creating bi-directional layouts impossible.
+        debug_lang: 'he',
         translation_directory: 'server/public/i18n'
     }));
 
@@ -36,11 +46,9 @@ app.configure(function(){
         next();
     });
 
+    // middleware changing req or res should come before this
     app.use(app.router);
     app.use(express.static(path.join(__dirname, 'public')));
-
-    app.set('views', path.join(__dirname, 'views'));
-    app.set('view engine', 'jade');
 
     // 500 status
     app.use(function(err, req, res, next) {
