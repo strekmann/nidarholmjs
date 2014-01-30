@@ -7,7 +7,7 @@ module.exports = function(grunt) {
                 eqeqeq: true,
                 eqnull: true,
                 browser: true,
-                ignores: ['server/public/**/*.js'],
+                ignores: ['public/**/*.js'],
                 globals: {
                     jQuery: true
                 }
@@ -15,11 +15,10 @@ module.exports = function(grunt) {
         },
         browserify: {
             build: {
-                dest: 'server/public/js/site.js',
+                dest: 'public/js/site.js',
                 src: ['client/js/index.js'],
                 options: {
-                    alias: ['client/js/index.js:s7n'],
-                    transform: ['./client/lib/underscorify']
+                    alias: ['client/js/index.js:s7n']
                 }
             }
         },
@@ -42,11 +41,10 @@ module.exports = function(grunt) {
         concat: {
             css: {
                 src: [
-                    'bower_modules/select2/select2.css',
-                    'client/vendor/css/**/*.css', 
+                    'client/vendor/css/**/*.css',
                     'tmp/css/styles.css'
                 ],
-                dest: 'server/public/css/site.css'
+                dest: 'public/css/site.css'
             },
             vendor: {
                 src: [
@@ -54,10 +52,11 @@ module.exports = function(grunt) {
                     'bower_modules/jquery/jquery.js',
                     'bower_modules/foundation/js/foundation.js',
                     'bower_modules/moment/moment.js',
-                    'bower_modules/select2/select2.js',
+                    'bower_modules/ractive/Ractive.js',
+                    'bower_modules/ractive-events-tap/Ractive-events-tap.js',
                     'client/vendor/js/*.js'
                 ],
-                dest: 'server/public/js/vendor.js'
+                dest: 'public/js/vendor.js'
             }
         },
         copy: {
@@ -66,14 +65,20 @@ module.exports = function(grunt) {
                 flatten: true,
                 filter: 'isFile',
                 src: ['bower_modules/foundation/js/vendor/custom.modernizr.js'],
-                dest: 'server/public/js/'
+                dest: 'public/js/'
             },
             font: {
                 expand: true,
                 flatten: true,
                 filter: 'isFile',
                 src: ['bower_modules/font-awesome/fonts/*'],
-                dest: 'server/public/fonts/'
+                dest: 'public/fonts/'
+            },
+            img: {
+                expand: true,
+                cwd: 'client/img',
+                src: ['**'],
+                dest: 'public/img/'
             }
         },
         uglify: {
@@ -83,12 +88,12 @@ module.exports = function(grunt) {
             },
             vendor: {
                 files: {
-                    'server/public/js/vendor.js': ['server/public/js/vendor.js']
+                    'public/js/vendor.js': ['public/js/vendor.js']
                 }
             },
             client: {
                 files: {
-                    'server/public/js/site.js': ['server/public/js/site.js']
+                    'public/js/site.js': ['public/js/site.js']
                 }
             }
         },
@@ -100,14 +105,6 @@ module.exports = function(grunt) {
             scss: {
                 files: ['client/css/**/*.scss'],
                 tasks: ['sass', 'concat:css']
-            }
-        },
-        i18n: {
-            js: {
-                src: ['server/**/*.js']
-            },
-            hbs: {
-                src: ['server/**/*.hbs']
             }
         },
         nodemon: {
@@ -128,7 +125,7 @@ module.exports = function(grunt) {
         }
     });
 
-    grunt.loadTasks('tasks');
+    //grunt.loadTasks('tasks');
 
     grunt.loadNpmTasks('grunt-sass');
     grunt.loadNpmTasks('grunt-contrib-jshint');
@@ -143,5 +140,5 @@ module.exports = function(grunt) {
     grunt.registerTask('default', ['jshint', 'sass', 'concat', 'copy', 'browserify']);
     grunt.registerTask('prod', ['default', 'uglify']);
     grunt.registerTask('hint', ['jshint']);
-    grunt.registerTask('locales', ['i18n']);
+    //grunt.registerTask('locales', ['i18n']);
 }
