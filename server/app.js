@@ -34,7 +34,7 @@ app.configure(function(){
         // does not have a language folder. he will give right-to-left, but
         // foundation css does not follow automatically, it needs a setting,
         // which makes creating bi-directional layouts impossible.
-        debug_lang: 'he',
+        //debug_lang: 'he',
         translation_directory: 'server/public/i18n'
     }));
 
