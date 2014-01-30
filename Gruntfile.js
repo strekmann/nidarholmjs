@@ -64,7 +64,7 @@ module.exports = function(grunt) {
                 expand: true,
                 flatten: true,
                 filter: 'isFile',
-                src: ['bower_modules/foundation/js/vendor/custom.modernizr.js'],
+                src: ['bower_modules/foundation/js/vendor/modernizr.js'],
                 dest: 'public/js/'
             },
             font: {
