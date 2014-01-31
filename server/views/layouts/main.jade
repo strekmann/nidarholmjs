@@ -10,7 +10,7 @@ html(lang=lang dir=lang_dir)
         //if lt IE 9
             script(src='http://html5shim.googlecode.com/svn/trunk/html5.js')
 
-        script(src="/js/custom.modernizr.js")
+        script(src="/js/modernizr.js")
         link(rel="shortcut icon" href="/img/favicon.png")
 
     body
@@ -38,7 +38,7 @@ html(lang=lang dir=lang_dir)
                             li
                                 a(href="/login") log in
 
-        .row
+        .row#flash
             .large-12.columns
                 if messages.error
                     each message in messages.error

@@ -48,7 +48,7 @@ app.configure(function(){
 
     // middleware changing req or res should come before this
     app.use(app.router);
-    app.use(express.static(path.join(__dirname, 'public')));
+    app.use(express.static(path.join(__dirname, '..' ,'public')));
 
     // 500 status
     app.use(function(err, req, res, next) {
