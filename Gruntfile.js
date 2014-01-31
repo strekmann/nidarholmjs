@@ -125,6 +125,43 @@ module.exports = function(grunt) {
                     logConcurrentOutput: true
                 }
             }
+        },
+        abideExtract: {
+            js: {
+                src: 'server/**/*.js',
+                dest: 'locale/templates/LC_MESSAGES/messages.pot'
+            },
+            jade: {
+                src: 'server/views/**/*.jade',
+                dest: 'locale/templates/LC_MESSAGES/messages.pot',
+                options: {
+                    language: 'jade'
+                }
+            }
+        },
+        abideMerge: {
+            messages: {
+                options: {
+                    template: 'locale/templates/LC_MESSAGES/messages.pot',
+                    localeDir: 'locale',
+                }
+            }
+        },
+        abideCreate: {
+            messages: {
+                options: {
+                    locales: ['nb', 'nn', 'en'],
+                    localeDir: 'locale'
+                }
+            }
+        },
+        abideCompile: {
+            json: {
+                dest: 'public/locale/',
+                options: {
+                    type: 'json'
+                }
+            }
         }
     });
 
@@ -139,9 +176,16 @@ module.exports = function(grunt) {
     grunt.loadNpmTasks('grunt-browserify');
     grunt.loadNpmTasks('grunt-nodemon');
     grunt.loadNpmTasks('grunt-concurrent');
+    grunt.loadNpmTasks('grunt-i18n-abide');
 
     grunt.registerTask('default', ['jshint', 'sass', 'concat', 'copy', 'browserify']);
     grunt.registerTask('prod', ['default', 'uglify']);
     grunt.registerTask('hint', ['jshint']);
-    grunt.registerTask('locales', ['i18n']);
+
+    // extract (with merge) and compile json files from translations
+    grunt.registerTask('locale-extract', ['abideExtract', 'abideMerge'])
+    grunt.registerTask('locale-compile', ['abideCompile']);
+    // create should only be run once, to create language folders. when adding
+    // new languages, add folders and po files manually.
+    //grunt.registerTask('locale-create', ['abideCreate']);
 }

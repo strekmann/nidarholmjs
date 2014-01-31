@@ -53,6 +53,7 @@
     "grunt-contrib-copy": "",
     "grunt-nodemon": "",
     "grunt-concurrent": "",
-    "groc": "strekmann/groc"
+    "groc": "strekmann/groc",
+    "grunt-i18n-abide": "0.0.4"
   }
 }

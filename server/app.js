@@ -28,14 +28,14 @@ app.configure(function(){
 
     // initialize i18n
     app.use(i18n.abide({
-        supported_languages: ['en', 'nb', 'nn', 'he'],
+        supported_languages: ['en', 'nb', 'nn'],
         default_lang: 'nb',
         // to get rotated sentences, set a language in supported and debug that
         // does not have a language folder. he will give right-to-left, but
         // foundation css does not follow automatically, it needs a setting,
         // which makes creating bi-directional layouts impossible.
-        //debug_lang: 'he',
-        translation_directory: 'server/public/i18n'
+        //debug_lang: '',
+        translation_directory: 'public/locale'
     }));
 
     // has to go after passport.session()
