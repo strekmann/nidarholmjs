@@ -175,7 +175,7 @@ module.exports = function(grunt) {
     grunt.loadNpmTasks('grunt-concurrent');
     grunt.loadNpmTasks('grunt-i18n-abide');
 
-    grunt.registerTask('default', ['jshint', 'sass', 'concat', 'copy', 'browserify']);
+    grunt.registerTask('default', ['jshint', 'sass', 'concat', 'copy', 'browserify', 'abideCompile']);
     grunt.registerTask('prod', ['default', 'uglify']);
     grunt.registerTask('hint', ['jshint']);
 

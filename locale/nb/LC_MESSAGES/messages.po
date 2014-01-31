@@ -1,16 +1,21 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"Language-Team: Norwegian Bokmal\n"
-"PO-Revision-Date: 2014-01-29 02:26+0100\n"
+"POT-Creation-Date: 2014-01-31 10:11+0000\n"
+"PO-Revision-Date: 2014-01-31 09:59+0000\n"
+"Last-Translator: Automatically generated\n"
+"Language-Team: none\n"
 "Language: nb\n"
 "MIME-Version: 1.0\n"
-"Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2014-01-29 01:22+0000\n"
 "Content-Type: text/plain; charset=ASCII\n"
-"Last-Translator: Sigurd Gartmann <sigurdga-strekmann-i18n@sigurdga.no>\n"
+"Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
 #: /home/sigurdga/Prosjekter/nidarholmjs/server/views/login.jade:10
+#: server/views/login.jade:10
 msgid "Returning user: Log in"
-msgstr "Allerede bruker: Logg inn"
+msgstr "Logg inn om du har brukernavn fra før"
+
+#: server/routes/index.js:36
+msgid "Username already taken"
+msgstr "Brukernavnet er allerede i bruk"
