@@ -144,14 +144,6 @@ module.exports = function(grunt) {
                 }
             }
         },
-        abideCreate: {
-            messages: {
-                options: {
-                    locales: ['nb', 'nn', 'en'],
-                    localeDir: 'locale'
-                }
-            }
-        },
         abideCompile: {
             json: {
                 dest: 'public/locale/',
@@ -178,11 +170,5 @@ module.exports = function(grunt) {
     grunt.registerTask('default', ['jshint', 'sass', 'concat', 'copy', 'browserify', 'abideCompile']);
     grunt.registerTask('prod', ['default', 'uglify']);
     grunt.registerTask('hint', ['jshint']);
-
-    // extract (with merge) and compile json files from translations
-    grunt.registerTask('locale-extract', ['abideExtract', 'abideMerge'])
-    grunt.registerTask('locale-compile', ['abideCompile']);
-    // create should only be run once, to create language folders. when adding
-    // new languages, add folders and po files manually.
-    //grunt.registerTask('locale-create', ['abideCreate']);
+    grunt.registerTask('translate', ['abideExtract', 'abideMerge'])
 }
