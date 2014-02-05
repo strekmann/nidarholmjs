@@ -25,8 +25,8 @@ module.exports = function(grunt) {
         sass: {
             options: {
                 includePaths: [
-                    'bower_modules/foundation/scss',
-                    'bower_modules/font-awesome/scss'
+                    'bower_components/foundation/scss',
+                    'bower_components/font-awesome/scss'
                 ]
             },
             dest: {
@@ -48,12 +48,12 @@ module.exports = function(grunt) {
             },
             vendor: {
                 src: [
-                    'bower_modules/underscore/underscore.js',
-                    'bower_modules/jquery/jquery.js',
-                    'bower_modules/foundation/js/foundation.js',
-                    'bower_modules/moment/moment.js',
-                    'bower_modules/ractive/Ractive.js',
-                    'bower_modules/ractive-events-tap/Ractive-events-tap.js',
+                    'bower_components/underscore/underscore.js',
+                    'bower_components/jquery/jquery.js',
+                    'bower_components/foundation/js/foundation.js',
+                    'bower_components/moment/moment.js',
+                    'bower_components/ractive/Ractive.js',
+                    'bower_components/ractive-events-tap/Ractive-events-tap.js',
                     'client/vendor/js/*.js'
                 ],
                 dest: 'public/js/vendor.js'
@@ -64,14 +64,14 @@ module.exports = function(grunt) {
                 expand: true,
                 flatten: true,
                 filter: 'isFile',
-                src: ['bower_modules/foundation/js/vendor/modernizr.js'],
+                src: ['bower_components/foundation/js/vendor/modernizr.js'],
                 dest: 'public/js/'
             },
             font: {
                 expand: true,
                 flatten: true,
                 filter: 'isFile',
-                src: ['bower_modules/font-awesome/fonts/*'],
+                src: ['bower_components/font-awesome/fonts/*'],
                 dest: 'public/fonts/'
             },
             img: {

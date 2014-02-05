@@ -16,13 +16,13 @@ html(lang="en")
     body
         a(id="logobtn" href="/")
         .contain-to-grid
-            nav.top-bar
+            nav.top-bar(data-topbar)
                 ul.title-area
                     li.name
                         h1
                             a(href="/") nidarholm
                     li.toggle-topbar.menu-icon
-                        a(href="")
+                        a(href="#")
                             span
 
                 section.top-bar-section
@@ -31,7 +31,7 @@ html(lang="en")
                             a(href="#") example
                         if user
                             li
-                                a(href="")= user.username
+                                a(href="#")= user.username
                             li
                                 a(href="/logout") log out
                         else
@@ -53,7 +53,6 @@ html(lang="en")
         script(src="/js/site.js")
 
         script.
-            _.templateSettings.variable = "rc";
             $(document).foundation();
 
         block javascript
