@@ -132,7 +132,8 @@ module.exports = function(grunt) {
                 src: 'server/views/**/*.jade',
                 dest: 'locale/templates/LC_MESSAGES/messages.pot',
                 options: {
-                    language: 'jade'
+                    language: 'jade',
+                    keyword: '__'
                 }
             }
         },

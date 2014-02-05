@@ -43,6 +43,7 @@ app.configure(function(){
         if (req.user) {
             res.locals.user = req.user;
         }
+        res.locals.__ = res.locals.gettext;
         next();
     });
 
