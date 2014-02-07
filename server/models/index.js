@@ -14,8 +14,28 @@ var UserSchema = new mongoose.Schema({
     google_id: {type: String}
 });
 
-var User = mongoose.model('User', UserSchema);
+var GroupSchema = new mongoose.Schema({
+    _id: {type: String, lowercase: true, trim: true, required: true, unique: true},  // name
+    name: {type: String, trim: true, required: true},
+    members: [{user: {type: String, ref: 'User'}, role: {type: String, trim: true}}],
+    group_email: {type: String, lowercase: true, trim: true},
+    group_leader_email: {type: String, lowercase: true, trim: true}
+});
+
+var OrganizationSchema = new mongoose.Schema({
+    _id: {type: String, lowercase: true, trim: true, required: true, unique: true},
+    instrument_groups: [GroupSchema],
+    administration_groups: [GroupSchema],
+    member_group: {type: String, ref: 'Group'},
+    members: [UserSchema]
+});
 
 module.exports = {
-    User: User
+    schema: {
+        user: UserSchema,
+        group: GroupSchema
+    },
+    User: mongoose.model('User', UserSchema),
+    Group: mongoose.model('Group', GroupSchema),
+    Organization: mongoose.model('Organization', OrganizationSchema)
 };

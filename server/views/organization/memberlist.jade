@@ -1,0 +1,19 @@
+extends ../layouts/main
+
+block content
+  section#memberlist
+    div.row
+      div.small-12.columns
+        h1= org._id
+
+        p= org.member_group
+
+        for group in org.instrument_groups
+          h2= group.name
+          for member in group.members
+            div
+              b= member.user.username
+            div= member.user.name
+            div
+              if member.role
+                = member.role

@@ -74,4 +74,8 @@ app.get('/auth/google/callback', app.passport.authenticate('google', { failureRe
 app.get('/logout', core_routes.logout);
 app.post('/register', core_routes.register);
 
+var organization_routes = require('./routes/organization');
+app.get('/organization/memberlist', organization_routes.memberlist);
+app.get('/organization/fill_dummy', organization_routes.fill_dummy);
+
 module.exports = app;
