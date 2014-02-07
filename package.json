@@ -32,7 +32,8 @@
     "redis": "",
     "passport-local": "~0.1.6",
     "connect-flash": "~0.1.1",
-    "jade": "~1.1.4"
+    "jade": "~1.1.4",
+    "q": "~1.0.0"
   },
   "devDependencies": {
     "uglify-js": "",

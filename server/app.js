@@ -82,4 +82,8 @@ app.post('/forum/', forum_routes.create_post);
 app.post('/forum/:id/replies', forum_routes.create_reply);
 app.post('/forum/:id/replies/:rid/comments', forum_routes.create_comment);
 
+var organization_routes = require('./routes/organization');
+app.get('/organization/memberlist', organization_routes.memberlist);
+app.get('/organization/fill_dummy', organization_routes.fill_dummy);
+
 module.exports = app;
