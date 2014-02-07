@@ -74,4 +74,12 @@ app.get('/auth/google/callback', app.passport.authenticate('google', { failureRe
 app.get('/logout', core_routes.logout);
 app.post('/register', core_routes.register);
 
+var forum_routes = require('./routes/forum');
+app.get('/forum/', forum_routes.all);
+app.get('/forum/:id', forum_routes.get_post);
+app.get('/forum/:id/replies', forum_routes.get_replies);
+app.post('/forum/', forum_routes.create_post);
+app.post('/forum/:id/replies', forum_routes.create_reply);
+app.post('/forum/:id/replies/:rid/comments', forum_routes.create_comment);
+
 module.exports = app;
