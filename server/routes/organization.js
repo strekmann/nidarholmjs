@@ -5,20 +5,15 @@ var Q = require("q"),
 
 module.exports.memberlist = function (req, res) {
     Organization.findById('nidarholm').populate('instrument_groups.members.user').exec(function (err, org) {
-        console.log(JSON.stringify(org, null, "  "));
-        var map = {};
-        org.members.forEach(function(member) {
-            map[member._id] = member;
-        });
-        console.log(map);
-        res.render('organization/memberlist', {org: org, members: map});
+        if (err) {
+            throw err;
+        }
+        res.render('organization/memberlist', {org: org});
     });
-}
+};
 
 module.exports.fill_dummy = function (req, res) {
-    var u1,
-        u2,
-        user1 = Q.defer(),
+    var user1 = Q.defer(),
         user2 = Q.defer(),
         group1 = Q.defer(),
         org1 = Q.defer();
@@ -48,21 +43,21 @@ module.exports.fill_dummy = function (req, res) {
         user.username = 'user2';
         user.name = 'User Number2';
         user.save(function (err) {
-            u2 = user;
-            user2.resolve(user);
+            var users = [user1, user];
+            user2.resolve(users);
         });
     });
     return user2.promise;
     })
 
-    .then(function (user2) {
+    .then(function (users) {
     Group.findById('group1', function (err, group) {
         if (!group) {
             group = new Group();
-            group._id = 'group1'
+            group._id = 'group1';
         }
         group.name = 'Group 1';
-        group.members = [{user: u1, role: 'chief'}, {user: user2}];
+        group.members = [{user: users[0], role: 'chief'}, {user: users[1]}];
         group.save(function (err) {
             group1.resolve(group);
         });
@@ -71,28 +66,23 @@ module.exports.fill_dummy = function (req, res) {
     })
 
     .then(function (group1) {
-    Organization.find().exec(function(err, o) {
-        console.log(err, o);
-    });
     Organization.findById('nidarholm', function (err, org) {
-        console.log("ost");
-        console.log(org);
         if (!org) {
             org = new Organization();
             org._id = 'nidarholm';
         }
         org.instrument_groups = [group1];
         org.member_group = group1;
-        org.members = [u1, u2];
         org.save(function (err) {
             if (err) {
-                console.log(err);
-                //org1.reject(err);
+                org1.reject(err);
             }
             org1.resolve(org);
         });
     });
     return org1.promise;
     })
-    .done(res.redirect('/organization/memberlist'));
-}
+    .done(function () {
+        res.redirect('/organization/memberlist');
+    });
+};

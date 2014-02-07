@@ -27,7 +27,6 @@ var OrganizationSchema = new mongoose.Schema({
     instrument_groups: [GroupSchema],
     administration_groups: [GroupSchema],
     member_group: {type: String, ref: 'Group'},
-    members: [UserSchema]
 });
 
 module.exports = {
