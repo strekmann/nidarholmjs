@@ -4,4 +4,4 @@ setup/mongo
 .sass-cache
 tmp
 public
-bower_modules
+bower_components
