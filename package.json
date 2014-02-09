@@ -28,12 +28,12 @@
     "passport-google-oauth": "",
     "express-validator": "",
     "connect-redis": "",
-    "i18n": "",
     "redis": "",
     "passport-local": "~0.1.6",
     "connect-flash": "~0.1.1",
     "jade": "~1.1.4",
-    "q": "~1.0.0"
+    "q": "~1.0.0",
+    "i18n-abide": "0.0.16"
   },
   "devDependencies": {
     "uglify-js": "",
@@ -53,6 +53,7 @@
     "grunt-contrib-copy": "",
     "grunt-nodemon": "",
     "grunt-concurrent": "",
-    "groc": "strekmann/groc"
+    "groc": "strekmann/groc",
+    "grunt-i18n-abide": "0.0.4"
   }
 }
