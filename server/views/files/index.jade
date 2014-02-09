@@ -1,0 +1,14 @@
+extends ../layouts/main
+
+block content
+  section#upload
+    div.row
+      div.small-12.columns
+        h1 Upload file
+
+        form.dropzone(action="/files/upload")
+          .fallback
+            input(type="file" name="file" multiple)
+            //input(type="hidden" name="hiddenfield" value="hiddenvalue")
+            //input(type="text" name="visiblefield" value="visiblevalue")
+

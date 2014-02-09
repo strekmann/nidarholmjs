@@ -28,6 +28,7 @@ app.configure(function(){
         next();
     });
 
+    app.use(express.multipart());
     app.use(app.router);
     app.use(express.static(path.join(__dirname, '..' ,'public')));
 
@@ -85,5 +86,10 @@ app.post('/forum/:id/replies/:rid/comments', forum_routes.create_comment);
 var organization_routes = require('./routes/organization');
 app.get('/organization/memberlist', organization_routes.memberlist);
 app.get('/organization/fill_dummy', organization_routes.fill_dummy);
+
+var file_routes = require('./routes/files');
+app.get('/files/', file_routes.all);
+app.get('/files/new', file_routes.index);
+app.post('/files/upload', file_routes.upload);
 
 module.exports = app;

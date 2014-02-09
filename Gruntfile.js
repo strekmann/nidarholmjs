@@ -42,6 +42,7 @@ module.exports = function(grunt) {
             css: {
                 src: [
                     'client/vendor/css/**/*.css',
+                    'bower_components/dropzone/downloads/css/dropzone.css',
                     'tmp/css/styles.css'
                 ],
                 dest: 'public/css/site.css'
@@ -52,6 +53,7 @@ module.exports = function(grunt) {
                     'bower_components/jquery/jquery.js',
                     'bower_components/foundation/js/foundation.js',
                     'bower_components/moment/moment.js',
+                    'bower_components/dropzone/downloads/dropzone.js',
                     'bower_components/ractive/Ractive.js',
                     'bower_components/ractive-events-tap/Ractive-events-tap.js',
                     'client/vendor/js/*.js'
@@ -78,6 +80,13 @@ module.exports = function(grunt) {
                 expand: true,
                 cwd: 'client/img',
                 src: ['**'],
+                dest: 'public/img/'
+            },
+            dropzone: {
+                expand: true,
+                flatten: true,
+                cwd: 'bower_components',
+                src: ['dropzone/**/*.png'],
                 dest: 'public/img/'
             }
         },
@@ -141,4 +150,4 @@ module.exports = function(grunt) {
     grunt.registerTask('prod', ['default', 'uglify']);
     grunt.registerTask('hint', ['jshint']);
     //grunt.registerTask('locales', ['i18n']);
-}
+};
