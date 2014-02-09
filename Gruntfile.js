@@ -34,7 +34,7 @@ module.exports = function(grunt) {
                     outputStyle: 'compressed'
                 },
                 files: {
-                    'tmp/css/styles.css': 'client/css/styles.scss'
+                    'tmp/css/styles.css': 'client/scss/styles.scss'
                 }
             }
         },
@@ -103,7 +103,7 @@ module.exports = function(grunt) {
                 tasks: ['jshint', 'browserify']
             },
             scss: {
-                files: ['client/css/**/*.scss'],
+                files: ['client/scss/**/*.scss'],
                 tasks: ['sass', 'concat:css']
             }
         },
