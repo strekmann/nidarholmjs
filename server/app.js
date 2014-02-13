@@ -52,30 +52,54 @@ app.configure(function(){
     app.use(express.static(path.join(__dirname, '..' ,'public')));
 
     // 500 status
-    app.use(function(err, req, res, next) {
-        console.error(err.stack);
+    app.use(function(err, req, res, next){
+        console.error(err, err.stack);
         res.status(500);
-        res.render('500', {
-            status: err.status || 500,
-            error: err.message
+        res.format({
+            html: function(){
+                res.render('500', {
+                    error: err.message,
+                    status: err.status || 500
+                });
+            },
+
+            json: function(){
+                res.json(500, {
+                    error: err.message,
+                    status: err.status || 500
+                });
+            }
         });
     });
 
     // 404 status
-    app.use(function(req, res, next) {
+    app.use(function(req, res, next){
         res.status(404);
-        res.render('404', {
-            status: 404,
-            error: 'file not found',
-            url: req.url
+        res.format({
+            html: function(){
+                res.render('404', {
+                    status: 404,
+                    error: 'file not found',
+                    url: req.url
+                });
+            },
+
+            json: function(){
+                res.json(404, {
+                    status: '404',
+                    error: 'file not found',
+                    url: req.url
+                });
+            }
         });
     });
 });
 
-
 // routes
 var core_routes = require('./routes/index');
+
 app.get('/', core_routes.index);
+
 app.get('/login', core_routes.login);
 app.post('/login',
          app.passport.authenticate('local', {
@@ -83,12 +107,16 @@ app.post('/login',
              failureRedirect: '/login',
              failureFlash: true
          }));
+
 app.get('/auth/google', app.passport.authenticate('google', { scope: [
-            'https://www.googleapis.com/auth/userinfo.profile',
-            'https://www.googleapis.com/auth/userinfo.email'
-        ]}), function(req, res){});
+    'https://www.googleapis.com/auth/userinfo.profile',
+    'https://www.googleapis.com/auth/userinfo.email'
+]}), function(req, res){});
+
 app.get('/auth/google/callback', app.passport.authenticate('google', { failureRedirect: '/login' }), core_routes.google_callback);
+
 app.get('/logout', core_routes.logout);
+
 app.post('/register', core_routes.register);
 
 var forum_routes = require('./routes/forum');
