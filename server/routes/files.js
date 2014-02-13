@@ -17,55 +17,41 @@ module.exports.index = function (req, res) {
 };
 
 module.exports.upload = function (req, res) {
-    console.log(req.body);
+    //console.log(req.body);
+    //console.log(req.files);
+    // TODO: config param
     var prefix = 'uploaded_files';
     fs.readFile(req.files.file.path, function (err, data) {
-        var shasum = crypto.createHash('sha1');
+        var shasum, hex, new_dir, new_symlink, new_file;
+
+        shasum = crypto.createHash('sha1');
         shasum.update('blob ' + data.length +'%s\0');
         shasum.update(data);
-        var hex = shasum.digest('hex');
+        hex = shasum.digest('hex');
 
-        var newDir = prefix + '/' + hex.substr(0,2) + '/' + hex.substr(2,2) + '/' + hex;
-        if (prefix !== '/') {
+        new_dir = path.join(prefix, hex.substr(0,2), hex.substr(2,2), hex);
+        if (prefix[0] !== '/') {
             // TODO: Check upon installation / debug that this is writable
-            newDir = __dirname + '/../../../' + newDir;
+            new_dir = path.join(__dirname, '..', '..', new_dir);
         }
-        // filePath is the original
-        // newPath is symlink
-        var filePath = newDir + '/' + hex;
-        var newPath = newDir + '/' + req.files.file.name;
+        new_file = path.join(new_dir, hex);
+        new_symlink = path.join(new_dir, req.files.file.originalname);
         mkdirp(newDir, function (err) {
-            if (err) {
-                if (err) {
-                    res.json(500, {
-                        error: err
-                    });
-                }
-            } else {
-                fs.writeFile(filePath, data, function (err) {
-                    if (err) {
-                        res.json(500, {
-                            error: err
-                        });
+            if (err) { throw err; }
+            fs.writeFile(new_file, data, function (err) {
+                if (err) { throw err; }
+                fs.unlink(req.files.file.path);
+                fs.symlink(new_file, new_symlink, function (err) {
+
+                    // 47: Already exists
+                    if (err && err.errno !== 47) {
+                        res.json(500, { error: err });
                     }
-                    fs.symlink(filePath, newPath, function (err) {
-                        console.log(req.files.file.name);
-                        console.log(filePath);
-                        console.log(newPath);
-                        console.log(hex);
-                        console.log(req.files.file.headers['content-type']);
-                        console.log(req.files.file.size);
-                        if (err && err.errno !== 47) {
-                            res.json(500, {
-                                error: err
-                            });
-                        }
-                        res.json(200, {
-                            status: "success"
-                        });
+                    res.json(200, {
+                        status: "success"
                     });
                 });
-            }
+            });
         });
     });
 };

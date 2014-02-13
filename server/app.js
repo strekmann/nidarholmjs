@@ -1,6 +1,7 @@
 var express     = require('express'),
     path        = require('path'),
     flash       = require('connect-flash'),
+    multer      = require('multer'),
     i18n        = require('i18n-abide'),
     settings    = require('./settings'),
     app         = require('libby')(express, settings);
@@ -47,7 +48,7 @@ app.configure(function(){
         next();
     });
 
-    app.use(express.multipart());
+    app.use(multer());
     // middleware changing req or res should come before this
     app.use(app.router);
     app.use(express.static(path.join(__dirname, '..' ,'public')));
