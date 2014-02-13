@@ -34,7 +34,7 @@ module.exports = function(grunt) {
                     outputStyle: 'compressed'
                 },
                 files: {
-                    'tmp/css/styles.css': 'client/css/styles.scss'
+                    'tmp/css/styles.css': 'client/scss/styles.scss'
                 }
             }
         },
@@ -112,7 +112,7 @@ module.exports = function(grunt) {
                 tasks: ['jshint', 'browserify']
             },
             scss: {
-                files: ['client/css/**/*.scss'],
+                files: ['client/scss/**/*.scss'],
                 tasks: ['sass', 'concat:css']
             }
         },
@@ -131,6 +131,36 @@ module.exports = function(grunt) {
                     logConcurrentOutput: true
                 }
             }
+        },
+        abideExtract: {
+            js: {
+                src: 'server/**/*.js',
+                dest: 'locale/templates/LC_MESSAGES/messages.pot'
+            },
+            jade: {
+                src: 'server/views/**/*.jade',
+                dest: 'locale/templates/LC_MESSAGES/messages.pot',
+                options: {
+                    language: 'jade',
+                    keyword: '__'
+                }
+            }
+        },
+        abideMerge: {
+            messages: {
+                options: {
+                    template: 'locale/templates/LC_MESSAGES/messages.pot',
+                    localeDir: 'locale',
+                }
+            }
+        },
+        abideCompile: {
+            json: {
+                dest: 'public/locale/',
+                options: {
+                    type: 'json'
+                }
+            }
         }
     });
 
@@ -145,9 +175,10 @@ module.exports = function(grunt) {
     grunt.loadNpmTasks('grunt-browserify');
     grunt.loadNpmTasks('grunt-nodemon');
     grunt.loadNpmTasks('grunt-concurrent');
+    grunt.loadNpmTasks('grunt-i18n-abide');
 
-    grunt.registerTask('default', ['jshint', 'sass', 'concat', 'copy', 'browserify']);
+    grunt.registerTask('default', ['jshint', 'sass', 'concat', 'copy', 'browserify', 'abideCompile']);
     grunt.registerTask('prod', ['default', 'uglify']);
     grunt.registerTask('hint', ['jshint']);
-    //grunt.registerTask('locales', ['i18n']);
+    grunt.registerTask('translate', ['abideExtract', 'abideMerge']);
 };

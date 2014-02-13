@@ -33,7 +33,7 @@ module.exports.register = function(req, res) {
             // Check if user already exists
             User.findOne({'username': username}).exec(function (err, otheruser) {
                 if (otheruser) {
-                    req.flash('error', 'Username already taken');
+                    req.flash('error', req.gettext('Username already taken'));
                     res.redirect('/login');
                 } else {
                     // Check if passwords are equal
