@@ -48,8 +48,15 @@ module.exports.upload = function (req, res) {
                     if (err && err.errno !== 47) {
                         res.json(500, { error: err });
                     }
-                    res.json(200, {
-                        status: "success"
+                    var file = new File();
+                    file.filename = req.files.file.originalname;
+                    file.path = new_symlink;
+                    file.creator = req.user;
+                    file.save(function (err) {
+                        if (err) { throw err; }
+                        res.json(200, {
+                            status: "success"
+                        });
                     });
                 });
             });
