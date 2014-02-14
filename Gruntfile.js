@@ -103,6 +103,12 @@ module.exports = function(grunt) {
                 cwd: 'bower_components',
                 src: ['dropzone/**/*.png'],
                 dest: 'public/img/'
+            },
+            chosen: {
+                expand: true,
+                flatten: true,
+                src: ['bower_components/chosen/public/*.png'],
+                dest: 'public/img/'
             }
         },
         uglify: {
