@@ -1,4 +1,5 @@
 var fs = require('fs'),
+    path = require('path'),
     mkdirp = require('mkdirp'),
     crypto = require('crypto'),
     File = require('../models/files').File;
@@ -36,7 +37,7 @@ module.exports.upload = function (req, res) {
         }
         new_file = path.join(new_dir, hex);
         new_symlink = path.join(new_dir, req.files.file.originalname);
-        mkdirp(newDir, function (err) {
+        mkdirp(new_dir, function (err) {
             if (err) { throw err; }
             fs.writeFile(new_file, data, function (err) {
                 if (err) { throw err; }
