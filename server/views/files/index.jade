@@ -13,7 +13,14 @@ block content
             //input(type="text" name="visiblefield" value="visiblevalue")
 
         table#files(style="width:100%")
-          tr.file
+          each file in files
+            tr.file
+              td
+                strong= file.filename
+              td
+                = moment(file.created).format("ll")
+              td
+          tr
             td
               strong Filnavn1
             td.text-right

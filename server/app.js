@@ -1,6 +1,7 @@
 var express     = require('express'),
     path        = require('path'),
     flash       = require('connect-flash'),
+    moment      = require('moment'),
     multer      = require('multer'),
     i18n        = require('i18n-abide'),
     settings    = require('./settings'),
@@ -45,6 +46,7 @@ app.configure(function(){
             res.locals.user = req.user;
         }
         res.locals.__ = res.locals.gettext;
+        res.locals.moment = moment;
         next();
     });
 

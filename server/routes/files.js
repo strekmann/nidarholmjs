@@ -9,7 +9,14 @@ module.exports.all = function (req, res) {
         if (err) {
             throw err;
         }
-        res.json(200, files);
+        res.format({
+            html: function () {
+                res.render('files/index', {files: files});
+            },
+            json: function () {
+                res.json(200, files);
+            }
+        });
     });
 };
 
