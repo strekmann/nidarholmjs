@@ -38,6 +38,20 @@ module.exports = function(grunt) {
                 }
             }
         },
+        coffee: {
+            compile: {
+                options: {
+                    bare: true
+                },
+                files: {
+                    'tmp/js/chosen.js': [
+                        'bower_components/chosen/coffee/lib/abstract-chosen.coffee',
+                        'bower_components/chosen/coffee/lib/select-parser.coffee',
+                        'bower_components/chosen/coffee/chosen.jquery.coffee'
+                    ]
+                }
+            }
+        },
         concat: {
             css: {
                 src: [
@@ -56,6 +70,7 @@ module.exports = function(grunt) {
                     'bower_components/dropzone/downloads/dropzone.js',
                     'bower_components/ractive/Ractive.js',
                     'bower_components/ractive-events-tap/Ractive-events-tap.js',
+                    'tmp/js/chosen.js',
                     'client/vendor/js/*.js'
                 ],
                 dest: 'public/js/vendor.js'
@@ -176,8 +191,9 @@ module.exports = function(grunt) {
     grunt.loadNpmTasks('grunt-nodemon');
     grunt.loadNpmTasks('grunt-concurrent');
     grunt.loadNpmTasks('grunt-i18n-abide');
+    grunt.loadNpmTasks('grunt-contrib-coffee');
 
-    grunt.registerTask('default', ['jshint', 'sass', 'concat', 'copy', 'browserify', 'abideCompile']);
+    grunt.registerTask('default', ['jshint', 'sass', 'coffee', 'concat', 'copy', 'browserify', 'abideCompile']);
     grunt.registerTask('prod', ['default', 'uglify']);
     grunt.registerTask('hint', ['jshint']);
     grunt.registerTask('translate', ['abideExtract', 'abideMerge']);
