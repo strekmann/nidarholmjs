@@ -35,22 +35,35 @@ block content
             td(colspan="3")
               form
                 .row
-                  .medium-3.columns.show-for-medium-up
-                    label.inline(for="filename") Filnavn
-                  .medium-9.small-12.columns
+                  .columns
+                    label(for="filename") Filnavn
                     input#filename(type="text" name="filename" placeholder="Filnavn" value="Filnavn 3")
                 .row
-                  .medium-3.columns.show-for-medium-up
-                    label.inline(for="filename") Grupper
-                  .medium-9.small-12.columns
-                    select#groups(name="filename")
+                  .columns
+                    label(for="permissions") Vises for
+                    select#permissions.chosen-permissions(name="permissions" data-placeholder="Velg rettigheter" multiple)
+                      optgroup(label="Alle")
+                          option(value="p") Verden
+                      optgroup(label="Grupper")
+                          option(value="g-11") Medlemmer
+                          option(value="g-12") Styret
+                          option(value="g-13") Info
+                          option(value="g-14") Valgkomite
+                          option(value="g-15") Treblås
+                          option(value="g-16") Fagott
+                      optgroup(label="Personer")
+                          option(value="u-21") Sigurd
+                          option(value="u-22") Jørgen
                 .row
-                  .medium-3.columns.show-for-medium-up
-                    label.inline(for="filename") Brukere
-                  .medium-9.small-12.columns
-                    select#users(name="filename")
+                  .columns
+                    label(for="tags") Merkelapper
+                    input#tags(type="text" name="tags" placeholder="musikk,korps")
+
                 .row
                   .columns.text-right
                     button.secondary(type="clear") Avbryt
                     button Lagre
 
+block javascript
+  script.
+    $('.chosen-permissions').chosen();
