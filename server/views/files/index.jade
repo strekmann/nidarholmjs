@@ -12,3 +12,45 @@ block content
             //input(type="hidden" name="hiddenfield" value="hiddenvalue")
             //input(type="text" name="visiblefield" value="visiblevalue")
 
+        table#files(style="width:100%")
+          tr.file
+            td
+              strong Filnavn1
+            td.text-right
+              i.fa.fa-globe
+              i.fa.fa-users
+              i.fa.fa-user
+            td.text-right
+              i.fa.fa-edit
+              i.fa.fa-trash-o
+          tr.file
+            td
+              strong Filnavn2
+            td.text-right
+              i.fa.fa-user
+            td.text-right
+              i.fa.fa-edit
+              i.fa.fa-trash-o
+          tr.file
+            td(colspan="3")
+              form
+                .row
+                  .medium-3.columns.show-for-medium-up
+                    label.inline(for="filename") Filnavn
+                  .medium-9.small-12.columns
+                    input#filename(type="text" name="filename" placeholder="Filnavn" value="Filnavn 3")
+                .row
+                  .medium-3.columns.show-for-medium-up
+                    label.inline(for="filename") Grupper
+                  .medium-9.small-12.columns
+                    select#groups(name="filename")
+                .row
+                  .medium-3.columns.show-for-medium-up
+                    label.inline(for="filename") Brukere
+                  .medium-9.small-12.columns
+                    select#users(name="filename")
+                .row
+                  .columns.text-right
+                    button.secondary(type="clear") Avbryt
+                    button Lagre
+

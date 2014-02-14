@@ -106,7 +106,7 @@ app.get('/organization/memberlist', organization_routes.memberlist);
 app.get('/organization/fill_dummy', organization_routes.fill_dummy);
 
 var file_routes = require('./routes/files');
-app.get('/files/', file_routes.all);
+app.get('/files', file_routes.all);
 app.get('/files/new', file_routes.index);
 app.post('/files/upload', file_routes.upload);
 
