@@ -12,65 +12,89 @@ block content
             //input(type="hidden" name="hiddenfield" value="hiddenvalue")
             //input(type="text" name="visiblefield" value="visiblevalue")
 
-        table#files(style="width:100%")
+        #files
           each file in files
-            tr.file
-              td
+            div.outer(data-id=file.id)
+              div.meta
                 strong= file.filename
-              td
                 = moment(file.created).format("ll")
-              td
-          tr
-            td
-              strong Filnavn1
-            td.text-right
-              i.fa.fa-globe
-              i.fa.fa-users
-              i.fa.fa-user
-            td.text-right
-              i.fa.fa-edit
-              i.fa.fa-trash-o
-          tr.file
-            td
-              strong Filnavn2
-            td.text-right
-              i.fa.fa-user
-            td.text-right
-              i.fa.fa-edit
-              i.fa.fa-trash-o
-          tr.file
-            td(colspan="3")
-              form
-                .row
-                  .columns
-                    label(for="filename") Filnavn
-                    input#filename(type="text" name="filename" placeholder="Filnavn" value="Filnavn 3")
-                .row
-                  .columns
-                    label(for="permissions") Vises for
-                    select#permissions.chosen-permissions(name="permissions" data-placeholder="Velg rettigheter" multiple)
-                      optgroup(label="Alle")
-                          option(value="p") Verden
-                      optgroup(label="Grupper")
-                          option(value="g-11") Medlemmer
-                          option(value="g-12") Styret
-                          option(value="g-13") Info
-                          option(value="g-14") Valgkomite
-                          option(value="g-15") Treblås
-                          option(value="g-16") Fagott
-                      optgroup(label="Personer")
-                          option(value="u-21") Sigurd
-                          option(value="u-22") Jørgen
-                .row
-                  .columns
-                    label(for="tags") Merkelapper
-                    input#tags(type="text" name="tags" placeholder="musikk,korps")
+                if file.permissions.public
+                  i.fa.fa-globe
+                else if 'medlemmer' in file.permissions.groups
+                  i.fa.fa-users
+                else if !file.permissions.public && file.permissions.groups.length === 0 && file.permissions.users.length === 0
+                  i.fa.fa-user
+                a.edit(href='#')
+                  i.fa.fa-edit
+                i.fa.fa-trash-o
 
-                .row
-                  .columns.text-right
-                    button.secondary(type="clear") Avbryt
-                    button Lagre
+              div.update(colspan="4")
+                form.update_meta(method='post')
+                  .row
+                    .columns
+                      label(for="filename") Filnavn
+                      input#filename.filename(type="text" name="filename" placeholder="Filnavn" value="Filnavn 3")
+                  .row
+                    .columns
+                      label(for="permissions") Vises for
+                      select#permissions.chosen-permissions(name="permissions" data-placeholder="Velg rettigheter" multiple)
+                        optgroup(label="Alle")
+                            option(value="p") Verden
+                        optgroup(label="Grupper")
+                            option(value="g-11") Medlemmer
+                            option(value="g-12") Styret
+                            option(value="g-13") Info
+                            option(value="g-14") Valgkomite
+                            option(value="g-15") Treblås
+                            option(value="g-16") Fagott
+                        optgroup(label="Personer")
+                            option(value="u-21") Sigurd
+                            option(value="u-22") Jørgen
+                  .row
+                    .columns
+                      label(for="tags") Merkelapper
+                      input#tags.tags(type="text" name="tags" placeholder="musikk,korps")
+
+                  .row
+                    .columns.text-right
+                      button.secondary.reset(type="reset") Avbryt
+                      button Lagre
 
 block javascript
   script.
-    $('.chosen-permissions').chosen();
+    $('.chosen-permissions').chosen({width: '100%'});
+    $('.update').hide();
+
+    var files = $('#files');
+    files.on('submit', '.update_meta', function (event) {
+      event.preventDefault();
+      var id = $(this).parents('.outer').attr('data-id');
+      var filename = $(this).find('.filename').val();
+      var permissions = $(this).find('.chosen-permissions').val();
+      var tags = $(this).find('.tags').val();
+      var form = $.ajax(id, {
+        type: 'put',
+        data: {
+          filename: filename,
+          permissions: permissions,
+          tags: tags
+        }
+      });
+      form.done(function (data) {
+        console.log("OST");
+        console.log(data);
+      });
+      console.log("SUBMIT");
+    });
+    files.on('click', '.edit', function (event) {
+      event.preventDefault();
+      var parent = $(this).parent();
+      parent.hide();
+      parent.siblings().show();
+    });
+    files.on('click', '.reset', function (event) {
+      console.log('reset');
+      var parent = $(this).parents('.update');
+      parent.hide();
+      parent.siblings().show();
+    })

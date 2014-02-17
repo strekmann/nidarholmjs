@@ -1,4 +1,5 @@
-var fs = require('fs'),
+var _ = require('underscore'),
+    fs = require('fs'),
     path = require('path'),
     mkdirp = require('mkdirp'),
     crypto = require('crypto'),
@@ -68,5 +69,29 @@ module.exports.upload = function (req, res) {
                 });
             });
         });
+    });
+};
+
+module.exports.update = function (req, res) {
+    var id = req.params.id,
+        tags = req.body.tags,
+        users = [],
+        groups = [],
+        broadcast = false;
+
+    _.each(req.body.permissions, function (permission) {
+        console.log(permission);
+    });
+    File.findOneAndUpdate({_id: id}, {
+        permissions: {
+            users: users,
+            groups: groups,
+            broadcast: broadcast
+        },
+        tags: tags
+    }, function(err, file) {
+        if (err) { throw err; }
+        console.log(file);
+        res.json(200, file);
     });
 };

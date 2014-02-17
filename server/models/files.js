@@ -12,7 +12,8 @@ var FileSchema = new mongoose.Schema({
         users: [schema.UserSchema],
         groups: [schema.GroupSchema],
         broadcast: {type: Boolean, default: false}
-    }
+    },
+    tags: [{type: String}]
 });
 
 module.exports = {
