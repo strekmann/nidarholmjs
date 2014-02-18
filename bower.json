@@ -4,7 +4,7 @@
     "foundation": "",
     "underscore": "",
     "moment": "",
-    "font-awesome": "~4.0.3",
+    "font-awesome": "",
     "ractive": "",
     "ractive-events-tap": "",
     "html.sortable": "~0.1.1"
