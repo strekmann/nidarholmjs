@@ -1,4 +1,5 @@
 var Q = require("q"),
+    _ = require('underscore'),
     User = require('../models').User,
     Group = require('../models').Group,
     Organization = require('../models').Organization;
@@ -84,5 +85,86 @@ module.exports.fill_dummy = function (req, res) {
     })
     .done(function () {
         res.redirect('/organization/memberlist');
+    });
+};
+
+module.exports.add_user = function (req, res) {
+    res.render('organization/add_user');
+};
+
+module.exports.add_group = function (req, res) {
+    var name = req.body.name,
+        organization = req.body.organization;
+
+    Organization.findById(organization, function (err, org) {
+        if (err) { throw err; }
+        Group.findOneAndUpdate({name: name, organization: org}, {}, {upsert: true}, function (err, group) {
+            if (err) { throw err; }
+            var has_group = _.find(org.instrument_groups, function (g) {
+                if (g._id === group._id) {
+                    return group;
+                }
+            });
+            if (has_group) {
+                res.json(200, group);
+            } else {
+                org.instrument_groups.push(group);
+                org.save(function (err) {
+                    res.json(200, group);
+                });
+            }
+        });
+    });
+};
+
+module.exports.remove_group = function (req, res) {
+    var id = req.body.id,
+        organization = req.body.organization;
+
+    Organization.findById(organization, function (err, org) {
+        if (err) { throw err; }
+        org.instrument_groups.pull(id);
+        org.save(function (err) {
+            if (err) { throw err; }
+            res.json(200);
+        });
+    });
+};
+
+module.exports.users = function (req, res) {
+    User.find(function (err, users) {
+        res.render('organization/users', {users: users});
+    });
+};
+
+module.exports.user = function (req, res) {
+    User.findOne({username: req.params.id}, function (err, user) {
+        if (err) { throw err; }
+        Group.find({organization: 'nidarholm'}, function (err, groups) {
+            if (err) { throw err; }
+            res.render('organization/user', {user: user, groups: groups});
+        });
+    });
+};
+
+module.exports.user_add_group = function (req, res) {
+    var username = req.params.id,
+        groupid = req.body.group;
+
+    console.log(groupid);
+    User.findById({username: username}, function (err, user) {
+        if (err) { throw err; }
+        Group.findById(groupid, function (err, group) {
+            if (err) { throw err; }
+            console.log("g:", group);
+            user.groups.push(group);
+            user.save(function (err) {
+                if (err) { throw err; }
+                group.members.push({user: user});
+                group.save(function (err) {
+                    res.json(200, group);
+                });
+            });
+        });
     });
 };

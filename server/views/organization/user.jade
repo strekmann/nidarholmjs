@@ -1,0 +1,68 @@
+extends ../layouts/main
+
+block content
+  .row
+    .columns
+      h1= user.name
+
+      p= user.username
+
+      h2 Grupper
+        //if user.groups.length === 0
+          //p Ingen grupper. Legg personen til i grupper ved å trykke knappen under.
+      ul#groups
+        //for group in user.groups
+          //if group
+            //li.group(data-id=group._id)
+            //li= group.name
+
+
+      #addgroup
+        button.new_group.small
+          i.fa.fa-plus
+        form
+          .row
+            .columns
+              h3 Gi tilgang til grupper
+          .row
+            .columns
+              label(for='group') Finn gruppe
+              select#group
+                for group in groups
+                  option(value=group._id)= group.name
+          .row
+            .columns.text-right
+              button.reset.secondary(type='reset') Avbryt
+              button Gi tilgang
+
+block javascript
+  script.
+    $('#addgroup form').hide();
+    $('#addgroup').on('click', '.new_group', function (event) {
+      $(this).hide();
+      $(this).siblings().show();
+    });
+    $('#addgroup').on('click', '.reset', function (event) {
+      var form = $(this).parents('form');
+      form.hide();
+      form.siblings().show();
+    });
+    $('#addgroup form').on('submit', function (event) {
+      event.preventDefault();
+      var self = this;
+      var group = $('#group').val();
+      var req = $.ajax({
+        type: 'post',
+        data: {
+          group: group
+        }
+      });
+      req.done(function (group) {
+        console.log(group);
+        $(self).hide();
+        $(self).siblings().show();
+        var templ = '<li>' + group.name + '<a href="#" class="removegroup"><i class="fa fa-minus"></a></li>';
+
+        $('#groups').append(templ);
+      });
+    });

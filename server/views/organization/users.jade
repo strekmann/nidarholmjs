@@ -1,0 +1,13 @@
+extends ../layouts/main
+
+block content
+  .row
+    .columns
+      h1 Alle brukere
+
+      ul
+        for user in users
+          li
+            a(href="/users/" + user.username)= user.name
+            &nbsp;
+            =user.username

@@ -1,19 +1,102 @@
 extends ../layouts/main
 
 block content
-  section#memberlist
+  section
     div.row
-      div.small-12.columns
+      div.small-12.columns#memberlist
         h1= org._id
 
         p= org.member_group
 
         for group in org.instrument_groups
-          h2= group.name
-          for member in group.members
-            div
-              b= member.user.username
-            div= member.user.name
-            div
-              if member.role
-                = member.role
+          .group(data-id=group.id)
+            h2
+              = group.name
+              a.removegroup(href="#")
+                i.fa.fa-minus
+            for member in group.members
+              div
+                b= member.user.username
+              div= member.user.name
+              div
+                if member.role
+                  = member.role
+
+    div.row
+      div.small-12.columns
+        #addgroup
+          button.new_group.small
+            i.fa.fa-plus
+          form
+            .row
+              .columns
+                h2 Legg til ny instrumentgruppe
+            .row
+              .columns
+                label(for='name') navn på gruppe
+                input#name(type='text')
+            .row
+              .columns.text-right
+                button.reset.secondary(type='reset') avbryt
+                button lagre
+
+block javascript
+  script.
+    $('#addgroup form').hide();
+    $('#addgroup').on('click', '.new_group', function (event) {
+      $(this).hide();
+      $(this).siblings().show();
+    });
+    $('#addgroup').on('click', '.reset', function (event) {
+      var form = $(this).parents('form');
+      form.hide();
+      form.siblings().show();
+    });
+    $('#addgroup form').on('submit', function (event) {
+      event.preventDefault();
+      var self = this;
+      var name = $('#name').val();
+      var req = $.ajax({
+        type: 'post',
+        data: {
+          name: name,
+          organization: 'nidarholm'
+        }
+      });
+      req.done(function (group) {
+        $(self).hide();
+        $(self).siblings().show();
+        var templ = '<h2>' + group.name + '<a href="#" class="removegroup"><i class="fa fa-minus"></a></h2>';
+        _.each(group.members, function (member) {
+          templ += '<div><b>' + member.user.username + '</b></div>';
+          templ += '<div>' + member.user.name + '</div>';
+          templ += '<div>' + member.role + '</div>';
+        });
+
+        $('#memberlist').append(templ);
+      });
+    });
+
+    $('#memberlist').on('click', '.removegroup', function (event) {
+      event.preventDefault();
+      var group = $(this).parents('.group');
+      var id = group.attr('data-id');
+      var req = $.ajax({
+        type: 'delete',
+        data: {
+          id: id,
+          organization: 'nidarholm'
+        }
+      });
+      req.done(function () {
+        group.remove();
+      });
+    });
+
+    $('#memberlist').sortable().on('sortupdate', function (e, ui) {
+      console.log(e);
+      console.log(ui);
+      _.each($('#memberlist .group'), function (group) {
+        console.log(group);
+      });
+    });

@@ -6,6 +6,7 @@
     "moment": "",
     "font-awesome": "~4.0.3",
     "ractive": "",
-    "ractive-events-tap": ""
+    "ractive-events-tap": "",
+    "html.sortable": "~0.1.1"
   }
 }
