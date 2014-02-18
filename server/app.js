@@ -1,7 +1,5 @@
 var express     = require('express'),
     path        = require('path'),
-    flash       = require('connect-flash'),
-    i18n        = require('i18n-abide'),
     settings    = require('./settings'),
     app         = require('libby')(express, settings);
 
@@ -23,7 +21,6 @@ app.configure(function(){
         if (req.user) {
             res.locals.user = req.user;
         }
-        res.locals.__ = res.locals.gettext;
         next();
     });
 
