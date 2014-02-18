@@ -7,6 +7,9 @@ production:
 	@./node_modules/.bin/grunt prod
 
 watch:
+	@./node_modules/.bin/grunt watch
+
+concurrent:
 	@./node_modules/.bin/grunt concurrent
 
 hint:
@@ -34,4 +37,4 @@ install:
 doc:
 	./node_modules/.bin/groc
 
-.PHONY: build production watch test test-w hint locales install
+.PHONY: build production watch concurrent test test-w hint locales install
