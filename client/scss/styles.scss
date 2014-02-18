@@ -141,3 +141,16 @@ nav.top-bar {
         text-align: center;
     }
 }
+
+#forum {
+    span {
+        padding-right: 1em; /* want some air since jade strips spaces */
+    }
+}
+@media #{$small-only} {
+    #forum {
+        span.created {
+            display: none;
+        }
+    }
+}

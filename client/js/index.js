@@ -1,3 +1,4 @@
 module.exports = {
-	base: require('./base')
+	base: require('./base'),
+    forum: require('./forum')
 };

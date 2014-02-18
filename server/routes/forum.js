@@ -32,7 +32,18 @@ module.exports.get_post = function (req, res) {
         if (err) {
             throw err;
         }
-        res.json(200, post);
+
+        res.format({
+            json: function(){
+                res.json(200, post);
+            },
+
+            html: function(){
+                res.render('forum/thread', {
+                    post: post
+                });
+            }
+        });
     });
 };
 

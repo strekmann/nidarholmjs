@@ -1,50 +1,12 @@
-var Forum = Ractive.extend({
-    restAPI: '/api/forum',
+module.exports.threadView = function(){
+    var Forum = require('./ractive/forum');
 
-    // Will be called as soon as the instance has finished rendering.
-    init: function(){
+    var forum = new Forum({
+        el: '#forum',
+        template: '#template',
+        restAPI: '/api/forum'
+    });
 
-    },
-
-    addReply: function(reply){
-        this.data.replies.unshift(reply);
-    },
-
-    deleteReply: function(reply){
-        var index = _.indexOf(_.pluck(this.data.post.replies, '_id'), reply._id);
-        if (index !== -1){
-            this.data.post.replies.splice(index, 1);
-        }
-    },
-
-    addComment: function(replyid, comment){
-        var replyIndex = _.indexOf(_.pluck(this.data.post.replies, '_id'), replyid);
-        this.data.post.replies[replyIndex].push(comment);
-    },
-
-    deleteComment: function(replyid, comment){
-        var replyIndex = _.indexOf(_.pluck(this.data.post.replies, '_id'), replyid);
-        var commentIndex = _.indexOf(_.pluck(this.data.post.replies[replyIndex], '_id'), replyid);
-        if (commentIndex !== -1){
-            this.data.post.replies[replyIndex].comments.splice(commentIndex, 1);
-        }
-    },
-
-    data: {
-        post: {
-            title: 'Test tråd',
-            creator: 'bergquis',
-            created: new Date(Date.now() - 3600000),
-            modified: new Date(),
-            tags: ['test', 'ractive'],
-            mdtext:'# Test\n\nIkke bare bare',
-            permissions: {
-                groups: [],
-                users: []
-            },
-            replies: []
-        }
-    }
-});
-
-module.exports = Forum;
+    console.log('forum', forum);
+    console.log('post', forum.get('post'));
+};

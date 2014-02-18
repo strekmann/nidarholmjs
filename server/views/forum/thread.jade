@@ -1,0 +1,34 @@
+extends ../layouts/main
+
+block content
+  .row
+    .columns
+      #forum
+
+  script#template(type="text/ractive")
+    | {{#post}}
+    h1 {{title}}
+    .row.meta
+      .columns.small-9
+        span.creator Av {{creator}} 
+        span.created {{created}}
+      .columns.small-3.text-right.creator ii ii ii
+    .row.content
+      .columns {{mdtext}}
+
+    .replies
+      | {{#replies}}
+      .row.reply
+        .columns.small-offset-1
+          .content {{mdtext}}
+          .row
+            .columns.small-offset-1.comments
+              | {{#comments}}
+              .comment {{mdtext}}
+              | {{/comments}}
+      | {{/replies}}
+    | {{/post}}
+
+block javascript
+  script.
+    require('s7n').forum.threadView();
