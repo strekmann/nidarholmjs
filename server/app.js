@@ -14,29 +14,9 @@ app.configure(function(){
     app.set('views', path.join(__dirname, 'views'));
     app.set('view engine', 'jade');
 
-    // Put (flash) messages from connect-flash in res.locals to know about failed authentication
-    // etc. Should come before passport initialize.
-    app.use(flash());
-    app.use(function (req, res, next) {
-        res.locals.messages = req.flash();
-        next();
-    });
-
     // initialize passport
     app.use(app.passport.initialize());
     app.use(app.passport.session());
-
-    // initialize i18n
-    app.use(i18n.abide({
-        supported_languages: ['en', 'nb', 'nn'],
-        default_lang: 'nb',
-        // to get rotated sentences, set a language in supported and debug that
-        // does not have a language folder. he will give right-to-left, but
-        // foundation css does not follow automatically, it needs a setting,
-        // which makes creating bi-directional layouts impossible.
-        //debug_lang: '',
-        translation_directory: 'public/locale'
-    }));
 
     // has to go after passport.session()
     app.use(function (req, res, next) {
