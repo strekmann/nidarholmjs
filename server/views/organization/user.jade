@@ -1,0 +1,44 @@
+extends ../layouts/main
+
+block content
+  .row
+    .columns
+      h1= user.name
+
+      p#username(data-username=user.username)= user.username
+
+      h2 Grupper
+        if user.groups.length === 0
+          p Ingen grupper. Legg personen til i grupper ved å trykke knappen under.
+      ul#groups
+        for group in user.groups
+          if group
+            li.group(data-id=group.id)
+              = group.name
+              a.removegroup(href="#")
+                i.fa.fa-minus
+          else
+            = group
+
+
+      #addgroup
+        button.new_group.small
+          i.fa.fa-plus
+        form
+          .row
+            .columns
+              h3 Gi tilgang til grupper
+          .row
+            .columns
+              label(for='group') Finn gruppe
+              select#group
+                for group in groups
+                  option(value=group.id)= group.name
+          .row
+            .columns.text-right
+              button.reset.secondary(type='reset') Avbryt
+              button Gi tilgang
+
+block javascript
+  script.
+    require('s7n').organization.userView();

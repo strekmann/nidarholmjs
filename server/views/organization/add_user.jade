@@ -1,0 +1,46 @@
+extends ../layouts/main.jade
+
+block content
+  .row
+    .columns
+      h1 Legg til nytt korpsmedlem
+
+  form
+    .row
+      .columns
+        label(for='name') Navn
+        input#name(type='text')
+    .row
+      .columns
+        label(for='email') Epost
+        input#email(type='text')
+    .row
+      .columns
+        label(for='instrument') Instrument
+        input#instrument(type='text')
+    .row
+      .columns
+        input#orgperm(type='checkbox' checked)
+        label(for='orgperm') Gi personen medlemsrettigheter
+    .row#grouprow
+      .columns
+        label(for='group') Gi rettigheter til instrumentgruppe
+        select#group
+          option (Ingen)
+          option Fløyte
+          option Klarinett
+          option Saksofon
+    .row
+      .columns
+        button Lagre
+
+block javascript
+  script.
+    $('#orgperm').on('click', function (event) {
+      var selected = $(this).is(':checked');
+      if (selected) {
+        $('#grouprow').show();
+      } else {
+        $('#grouprow').hide();
+      }
+    });

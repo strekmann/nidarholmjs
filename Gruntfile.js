@@ -54,6 +54,7 @@ module.exports = function(grunt) {
                     'bower_components/moment/moment.js',
                     'bower_components/ractive/Ractive.js',
                     'bower_components/ractive-events-tap/Ractive-events-tap.js',
+                    'bower_components/html.sortable/dist/html.sortable.0.1.1.js',
                     'client/vendor/js/*.js'
                 ],
                 dest: 'public/js/vendor.js'

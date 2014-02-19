@@ -1,19 +1,45 @@
 extends ../layouts/main
 
 block content
-  section#memberlist
+  section
     div.row
-      div.small-12.columns
+      div.small-12.columns#memberlist
         h1= org._id
 
         p= org.member_group
 
         for group in org.instrument_groups
-          h2= group.name
-          for member in group.members
-            div
-              b= member.user.username
-            div= member.user.name
-            div
-              if member.role
-                = member.role
+          .group(data-id=group.id)
+            h2
+              = group.name
+              a.removegroup(href="#")
+                i.fa.fa-minus
+            for member in group.members
+              div
+                b= member.user.username
+              div= member.user.name
+              div
+                if member.role
+                  = member.role
+
+    div.row
+      div.small-12.columns
+        #addgroup
+          button.new_group.small
+            i.fa.fa-plus
+          form
+            .row
+              .columns
+                h2 Legg til ny instrumentgruppe
+            .row
+              .columns
+                label(for='name') navn på gruppe
+                input#name(type='text')
+            .row
+              .columns.text-right
+                button.reset.secondary(type='reset') avbryt
+                button lagre
+
+block javascript
+  script.
+    require('s7n').organization.memberlistView();
