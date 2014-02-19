@@ -6,11 +6,12 @@ block content
       #forum
 
   script#template(type="text/ractive")
+    a.button(on-click="addReply") Add reply
     | {{#post}}
     h1 {{title}}
     .row.meta
       .columns.small-9
-        span.creator Av {{creator}} 
+        span.creator Av {{creator}}
         span.created {{created}}
       .columns.small-3.text-right.creator ii ii ii
     .row.content
