@@ -30,7 +30,6 @@ app.configure(function(){
 
     // 500 status
     app.use(function(err, req, res, next){
-        console.error(err, err.stack);
         res.status(500);
         res.format({
             html: function(){
@@ -108,12 +107,12 @@ var organization_routes = require('./routes/organization');
 app.get('/organization/memberlist', organization_routes.memberlist);
 app.get('/organization/fill_dummy', organization_routes.fill_dummy);
 app.get('/organization/add_user', organization_routes.add_user);
-//app.get('/organization/add_group', organization_routes.add_group);
 app.post('/organization/memberlist', organization_routes.add_group);
-app.delete('/organization/memberlist', organization_routes.remove_group);
+app.delete('/organization/memberlist/:groupid', organization_routes.remove_group);
 
 app.get('/users', organization_routes.users);
 app.get('/users/:id', organization_routes.user);
-app.post('/users/:id', organization_routes.user_add_group);
+app.post('/users/:username/groups', organization_routes.user_add_group);
+app.delete('/users/:username/groups/:groupid', organization_routes.user_remove_group);
 
 module.exports = app;

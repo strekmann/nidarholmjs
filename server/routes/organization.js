@@ -117,15 +117,15 @@ module.exports.add_group = function (req, res) {
     });
 };
 
-module.exports.remove_group = function (req, res) {
-    var id = req.body.id,
+module.exports.remove_group = function (req, res, next) {
+    var groupid = req.params.groupid,
         organization = req.body.organization;
 
     Organization.findById(organization, function (err, org) {
-        if (err) { throw err; }
-        org.instrument_groups.pull(id);
+        if (err) { next(new Error(err)); }
+        org.instrument_groups.pull(groupid);
         org.save(function (err) {
-            if (err) { throw err; }
+            if (err) { next(new Error(err)); }
             res.json(200);
         });
     });
@@ -147,20 +147,19 @@ module.exports.user = function (req, res) {
     });
 };
 
-module.exports.user_add_group = function (req, res) {
-    var username = req.params.id,
-        groupid = req.body.group;
+module.exports.user_add_group = function (req, res, next) {
+    var username = req.params.username,
+        groupid = req.body.groupid;
 
-    console.log(groupid);
-    User.findById({username: username}, function (err, user) {
+    User.findOne({username: username}, function (err, user) {
         if (err) { throw err; }
         Group.findById(groupid, function (err, group) {
-            if (err) { throw err; }
-            console.log("g:", group);
+            if (err) { return next(new Error(err)); }
+            if (!group) { return next(new Error("Unrecognized group")); }
             user.groups.push(group);
             user.save(function (err) {
                 if (err) { throw err; }
-                group.members.push({user: user});
+                group.members.push({_id: username, user: user});
                 group.save(function (err) {
                     res.json(200, group);
                 });
@@ -168,3 +167,25 @@ module.exports.user_add_group = function (req, res) {
         });
     });
 };
+
+module.exports.user_remove_group = function (req, res, next) {
+    var username = req.params.username,
+        groupid = req.params.groupid;
+
+    User.findOne({username: username}, function (err, user) {
+        if (err) { next(new Error(err)); }
+        user.groups.pull(groupid);
+        user.save(function (err) {
+            if (err) { next(new Error(err)); }
+            Group.findById(groupid, function (err, group) {
+                if (err) { next(new Error(err)); }
+                var gs = group.members.pull(username);
+                group.save(function(err) {
+                    if (err) { next(new Error(err)); }
+                    res.json(200);
+                });
+            });
+        });
+    });
+};
+
