@@ -1,5 +1,6 @@
 var express     = require('express'),
     path        = require('path'),
+    multer      = require('multer'),
     settings    = require('./settings'),
     app         = require('libby')(express, settings);
 
@@ -24,6 +25,7 @@ app.configure(function(){
         next();
     });
 
+    app.use(multer());
     // middleware changing req or res should come before this
     app.use(app.router);
     app.use(express.static(path.join(__dirname, '..' ,'public')));
@@ -114,5 +116,11 @@ app.get('/users', organization_routes.users);
 app.get('/users/:id', organization_routes.user);
 app.post('/users/:username/groups', organization_routes.user_add_group);
 app.delete('/users/:username/groups/:groupid', organization_routes.user_remove_group);
+
+var file_routes = require('./routes/files');
+app.get('/files/', file_routes.all);
+app.get('/files/new', file_routes.index);
+app.post('/files/upload', file_routes.upload);
+app.put('/files/:id', file_routes.update);
 
 module.exports = app;

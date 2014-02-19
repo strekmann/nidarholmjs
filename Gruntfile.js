@@ -38,10 +38,25 @@ module.exports = function(grunt) {
                 }
             }
         },
+        coffee: {
+            compile: {
+                options: {
+                    bare: true
+                },
+                files: {
+                    'tmp/js/chosen.js': [
+                        'bower_components/chosen/coffee/lib/abstract-chosen.coffee',
+                        'bower_components/chosen/coffee/lib/select-parser.coffee',
+                        'bower_components/chosen/coffee/chosen.jquery.coffee'
+                    ]
+                }
+            }
+        },
         concat: {
             css: {
                 src: [
                     'client/vendor/css/**/*.css',
+                    'bower_components/dropzone/downloads/css/dropzone.css',
                     'tmp/css/styles.css'
                 ],
                 dest: 'public/css/site.css'
@@ -52,9 +67,11 @@ module.exports = function(grunt) {
                     'bower_components/jquery/jquery.js',
                     'bower_components/foundation/js/foundation.js',
                     'bower_components/moment/moment.js',
+                    'bower_components/dropzone/downloads/dropzone.js',
                     'bower_components/ractive/Ractive.js',
                     'bower_components/ractive-events-tap/Ractive-events-tap.js',
                     'bower_components/html.sortable/dist/html.sortable.0.1.1.js',
+                    'tmp/js/chosen.js',
                     'client/vendor/js/*.js'
                 ],
                 dest: 'public/js/vendor.js'
@@ -79,6 +96,19 @@ module.exports = function(grunt) {
                 expand: true,
                 cwd: 'client/img',
                 src: ['**'],
+                dest: 'public/img/'
+            },
+            dropzone: {
+                expand: true,
+                flatten: true,
+                cwd: 'bower_components',
+                src: ['dropzone/**/*.png'],
+                dest: 'public/img/'
+            },
+            chosen: {
+                expand: true,
+                flatten: true,
+                src: ['bower_components/chosen/public/*.png'],
                 dest: 'public/img/'
             }
         },
@@ -168,9 +198,10 @@ module.exports = function(grunt) {
     grunt.loadNpmTasks('grunt-nodemon');
     grunt.loadNpmTasks('grunt-concurrent');
     grunt.loadNpmTasks('grunt-i18n-abide');
+    grunt.loadNpmTasks('grunt-contrib-coffee');
 
-    grunt.registerTask('default', ['jshint', 'sass', 'concat', 'copy', 'browserify', 'abideCompile']);
+    grunt.registerTask('default', ['jshint', 'sass', 'coffee', 'concat', 'copy', 'browserify', 'abideCompile']);
     grunt.registerTask('prod', ['default', 'uglify']);
     grunt.registerTask('hint', ['jshint']);
-    grunt.registerTask('translate', ['abideExtract', 'abideMerge'])
-}
+    grunt.registerTask('translate', ['abideExtract', 'abideMerge']);
+};

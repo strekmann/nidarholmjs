@@ -35,6 +35,25 @@ block content
           p.
             Velkommen til konsert på Rosenborg skole, <strong>lørdag 9. november kl 17</strong>!</p>
 
+        #chosen
+            h1 Testing chosen
+
+            form
+                select.chosen-permissions(name="permissions" data-placeholder="Velg rettigheter" multiple)
+                    optgroup(label="Alle")
+                        option(value="p") Verden
+                    optgroup(label="Grupper")
+                        option(value="g-11") Medlemmer
+                        option(value="g-12") Styret
+                        option(value="g-13") Info
+                        option(value="g-14") Valgkomite
+                        option(value="g-15") Treblås
+                        option(value="g-16") Fagott
+                    optgroup(label="Personer")
+                        option(value="u-21") Sigurd
+                        option(value="u-22") Jørgen
+                button Send
+
         #ractive
 
   script#tmpl-test(type="text/ractive")
@@ -45,3 +64,5 @@ block content
 block javascript
   script.
     require('s7n').base.indexView();
+
+    $('.chosen-permissions').chosen();
