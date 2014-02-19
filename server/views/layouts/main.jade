@@ -31,7 +31,7 @@ html(lang=lang dir=lang_dir)
                             a(href="#") example
                         if user
                             li
-                                a(href="#")= user.username
+                                a#topbar-username(href="#")= user.username
                             li
                                 a(href="/logout") log out
                         else

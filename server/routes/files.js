@@ -3,10 +3,23 @@ var _ = require('underscore'),
     path = require('path'),
     mkdirp = require('mkdirp'),
     crypto = require('crypto'),
+    mongoose = require('mongoose'),
+    ObjectId = mongoose.Types.ObjectId,
     File = require('../models/files').File;
 
 module.exports.all = function (req, res) {
-    File.find({}).exec(function (err, files) {
+    File.find().or([
+        {creator: req.user},
+        {'permissions.broadcast': true},
+        {'permissions.users': req.user._id},
+        {'permissions.groups': {
+            $in: _.map(req.user.groups, function (g) {
+                if (g) {
+                    return new ObjectId(g._id.toString());
+                }
+            })
+        }}
+    ]).exec(function (err, files) {
         if (err) {
             throw err;
         }

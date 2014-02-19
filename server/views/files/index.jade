@@ -14,10 +14,10 @@ block content
 
         #files
           each file in files
-            div.outer(data-id=file.id)
+            div.outer.file(data-id=file.id)
               div.meta
                 strong= file.filename
-                = moment(file.created).format("ll")
+                = file.created
                 if file.permissions.public
                   i.fa.fa-globe
                 else if 'medlemmer' in file.permissions.groups
