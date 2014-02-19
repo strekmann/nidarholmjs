@@ -49,7 +49,8 @@ module.exports = function(grunt) {
             vendor: {
                 src: [
                     'bower_components/underscore/underscore.js',
-                    'bower_components/jquery/jquery.js',
+                    'bower_components/foundation/js/vendor/jquery.js',
+                    'bower_components/foundation/js/vendor/fastclick.js',
                     'bower_components/foundation/js/foundation.js',
                     'bower_components/moment/moment.js',
                     'bower_components/ractive/Ractive.js',
@@ -142,7 +143,7 @@ module.exports = function(grunt) {
             messages: {
                 options: {
                     template: 'locale/templates/LC_MESSAGES/messages.pot',
-                    localeDir: 'locale',
+                    localeDir: 'locale'
                 }
             }
         },
@@ -172,5 +173,5 @@ module.exports = function(grunt) {
     grunt.registerTask('default', ['jshint', 'sass', 'concat', 'copy', 'browserify', 'abideCompile']);
     grunt.registerTask('prod', ['default', 'uglify']);
     grunt.registerTask('hint', ['jshint']);
-    grunt.registerTask('translate', ['abideExtract', 'abideMerge'])
-}
+    grunt.registerTask('translate', ['abideExtract', 'abideMerge']);
+};
