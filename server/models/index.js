@@ -3,7 +3,7 @@ var mongoose = require('mongoose');
 var GroupSchema = new mongoose.Schema({
     name: {type: String, trim: true, required: true},
     organization: {type: String, ref: 'Organization'},
-    members: [{_id: {type: String, ref: 'User'}, role: {type: String, trim: true}}],
+    members: [{user: {type: String, ref: 'User'}, role: {type: String, trim: true}}],
     group_email: {type: String, lowercase: true, trim: true},
     group_leader_email: {type: String, lowercase: true, trim: true}
 });

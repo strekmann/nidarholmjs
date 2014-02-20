@@ -185,5 +185,42 @@ describe("Organization", function () {
                     done(err);
                 });
         });
+
+        it("should have one friend in user list", function (done) {
+            var user2 = new User({
+                _id: 'friend1',
+                username: 'testuserfriend',
+                name: 'Friend Friendson',
+                groups: [group],
+                is_active: true,
+                is_admin: false
+            });
+            user2.save(function (err) {
+                if (err) { return done(err); }
+                user.friends.push(user2);
+                user.save(function (err) {
+                    if (err) { return done(err); }
+                    request(app)
+                        .get('/test/files')
+                        .set('Accept', 'text/html')
+                        .expect(200)
+                        .end(function (err, res) {
+                            $ = cheerio.load(res.text);
+                            var files = $('#files .file');
+                            files.length.should.equal(1);
+                            var first = files.first();
+                            var select = first.find('.chosen-permissions');
+
+                            // Very specific about how it is built
+                            var people = select.children().eq(2).children();
+                            people.length.should.equal(1);
+                            people.first().attr('value').should.equal('u-'+user2.id);
+                            done(err);
+                        });
+
+                });
+
+            });
+        });
     });
 });
