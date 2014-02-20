@@ -1,8 +1,11 @@
-var express     = require('express'),
+var _           = require('underscore'),
+    express     = require('express'),
     path        = require('path'),
     multer      = require('multer'),
     settings    = require('./settings'),
     app         = require('libby')(express, settings);
+
+var User = require('./models/index').User;
 
 app.passport = require('./lib/passport')(app);
 app.ensureAuthenticated = require('./lib/middleware').ensureAuthenticated;
@@ -21,8 +24,26 @@ app.configure(function(){
     app.use(function (req, res, next) {
         if (req.user) {
             res.locals.user = req.user;
+            // TODO: User redis for caching
+            User.find({}).select('username name').exec(function (err, all_users) {
+                if (err) { next(err); }
+                var indexed_users = _.indexBy(all_users, '_id');
+                var groups_of_users = _.reduce(req.user.groups, function (memo, group) {
+                    if (group) {
+                        return _.union(memo, _.map(group.members, function (member) {
+                            return member._id;
+                        }));
+                    } else {
+                        return memo;
+                    }
+                }, []);
+                // now an array of arrays: use union for now
+                res.locals.friends = _.map(_.compact(groups_of_users), function (user_id) {
+                    return indexed_users[user_id];
+                });
+                next();
+            });
         }
-        next();
     });
 
     app.use(multer());

@@ -42,10 +42,11 @@ block content
                           option(value="p") Verden
                         optgroup(label="Grupper")
                           for group in user.groups
-                            option(value="g-"+group.id)= group.name
+                            if group
+                              option(value="g-"+group.id)= group.name
                         optgroup(label="Personer")
-                            option(value="u-21") Sigurd
-                            option(value="u-22") Jørgen
+                          for friend in friends
+                            option(value="u-"+friend.id)= friend.name
                   .row
                     .columns
                       label(for="tags") Merkelapper
