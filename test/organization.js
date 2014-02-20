@@ -150,13 +150,8 @@ describe("Organization", function () {
         });
         it("should see file published for a group", function (done) {
             file.permissions.users.pull('testid');
-            console.log(group._id);
-            console.dir(group._id);
-            console.log(typeof group._id.toString());
             file.permissions.groups.push(new ObjectId(group._id.toString()));
             file.save(function (err) {
-                console.log(user);
-                console.log(file);
                 if (err) { return done(err); }
                 request(app)
                     .get('/test/files')
@@ -169,6 +164,27 @@ describe("Organization", function () {
                         done(err);
                     });
             });
+        });
+    });
+    describe("Check group membership in permission select", function () {
+        it("should see one testgroup in permission select", function (done) {
+            request(app)
+                .get('/test/files')
+                .set('Accept', 'text/html')
+                .expect(200)
+                .end(function (err, res) {
+                    $ = cheerio.load(res.text);
+                    var files = $('#files .file');
+                    files.length.should.equal(1);
+                    var first = files.first();
+                    var select = first.find('.chosen-permissions');
+
+                    // Very specific about how it is built
+                    var groups = select.children().eq(1).children();
+                    groups.length.should.equal(1);
+                    groups.first().attr('value').should.equal('g-'+group.id);
+                    done(err);
+                });
         });
     });
 });

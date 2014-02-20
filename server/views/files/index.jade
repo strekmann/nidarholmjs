@@ -39,14 +39,10 @@ block content
                       label(for="permissions") Vises for
                       select#permissions.chosen-permissions(name="permissions" data-placeholder="Velg rettigheter" multiple)
                         optgroup(label="Alle")
-                            option(value="p") Verden
+                          option(value="p") Verden
                         optgroup(label="Grupper")
-                            option(value="g-11") Medlemmer
-                            option(value="g-12") Styret
-                            option(value="g-13") Info
-                            option(value="g-14") Valgkomite
-                            option(value="g-15") Treblås
-                            option(value="g-16") Fagott
+                          for group in user.groups
+                            option(value="g-"+group.id)= group.name
                         optgroup(label="Personer")
                             option(value="u-21") Sigurd
                             option(value="u-22") Jørgen
