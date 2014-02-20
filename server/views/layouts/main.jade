@@ -1,4 +1,16 @@
 doctype html
+
+mixin permission_options(groups, users)
+  optgroup(label="Alle")
+    option(value="p") Verden
+  optgroup(label="Grupper")
+    for group in groups
+      if group
+        option(value="g-"+group.id)= group.name
+  optgroup(label="Personer")
+    for friend in users
+      option(value="u-"+friend.id)= friend.name
+
 html(lang=lang dir=lang_dir)
     head
         meta(charset="utf-8")
