@@ -25,7 +25,7 @@ app.configure(function(){
         if (req.user) {
             res.locals.user = req.user;
             // TODO: User redis for caching
-            User.find({}).select('username name').exec(function (err, all_users) {
+            User.find().select('username name').exec(function (err, all_users) {
                 if (err) { next(err); }
                 var indexed_users = _.indexBy(all_users, '_id');
                 var groups_of_users = _.reduce(req.user.groups, function (memo, group) {
@@ -43,6 +43,8 @@ app.configure(function(){
                 });
                 next();
             });
+        } else {
+            next();
         }
     });
 
