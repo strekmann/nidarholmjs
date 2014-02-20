@@ -128,11 +128,11 @@ app.post('/forum/:id/replies', forum_routes.create_reply);
 app.post('/forum/:id/replies/:rid/comments', forum_routes.create_comment);
 
 var organization_routes = require('./routes/organization');
-app.get('/organization/memberlist', organization_routes.memberlist);
+app.get('/members', organization_routes.memberlist);
 app.get('/organization/fill_dummy', organization_routes.fill_dummy);
-app.get('/organization/add_user', organization_routes.add_user);
-app.post('/organization/memberlist', organization_routes.add_group);
-app.delete('/organization/memberlist/:groupid', organization_routes.remove_group);
+app.get('/members/new', organization_routes.add_user);
+app.post('/members', organization_routes.add_group);
+app.delete('/members/:groupid', organization_routes.remove_group);
 
 app.get('/users', organization_routes.users);
 app.get('/users/:id', organization_routes.user);

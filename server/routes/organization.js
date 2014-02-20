@@ -84,7 +84,7 @@ module.exports.fill_dummy = function (req, res) {
     return org1.promise;
     })
     .done(function () {
-        res.redirect('/organization/memberlist');
+        res.redirect('/members');
     });
 };
 

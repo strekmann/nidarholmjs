@@ -14,7 +14,7 @@ module.exports.memberlistView = function () {
       var self = this;
       var name = $('#name').val();
       $.ajax({
-        url: '/organization/memberlist',
+        url: '/members',
         type: 'post',
         data: {
           name: name,
@@ -41,7 +41,7 @@ module.exports.memberlistView = function () {
           groupid = group.attr('data-id');
 
       $.ajax({
-        url: '/organization/memberlist/' + groupid,
+        url: '/members/' + groupid,
         type: 'delete',
         data: {
           organization: 'nidarholm'
