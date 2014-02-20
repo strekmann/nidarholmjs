@@ -64,7 +64,8 @@ module.exports = function(grunt) {
             vendor: {
                 src: [
                     'bower_components/underscore/underscore.js',
-                    'bower_components/jquery/jquery.js',
+                    'bower_components/foundation/js/vendor/jquery.js',
+                    'bower_components/foundation/js/vendor/fastclick.js',
                     'bower_components/foundation/js/foundation.js',
                     'bower_components/moment/moment.js',
                     'bower_components/dropzone/downloads/dropzone.js',
@@ -172,7 +173,7 @@ module.exports = function(grunt) {
             messages: {
                 options: {
                     template: 'locale/templates/LC_MESSAGES/messages.pot',
-                    localeDir: 'locale',
+                    localeDir: 'locale'
                 }
             }
         },
