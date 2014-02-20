@@ -17,6 +17,7 @@ var UserSchema = new mongoose.Schema({
     algorithm: {type: String},
     salt: {type: String},
     groups: [GroupSchema],
+    friends: [UserSchema],
     is_active: {type: Boolean, 'default': true},
     is_admin: {type: Boolean, 'default': false},
     created: {type: Date, required: true, 'default': Date.now},

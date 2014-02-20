@@ -38,7 +38,7 @@ app.configure(function(){
                     }
                 }, []);
                 // now an array of arrays: use union for now
-                res.locals.friends = _.map(_.compact(groups_of_users), function (user_id) {
+                req.user.friends = _.map(_.compact(groups_of_users), function (user_id) {
                     return indexed_users[user_id];
                 });
                 next();

@@ -38,7 +38,7 @@ block content
                     .columns
                       label(for="permissions") Vises for
                       select#permissions.chosen-permissions(name="permissions" data-placeholder="Velg rettigheter" multiple)
-                        +permission_options(user.groups, friends)
+                        +permission_options(user.groups, user.friends)
                   .row
                     .columns
                       label(for="tags") Merkelapper

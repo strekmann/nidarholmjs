@@ -17,8 +17,7 @@ describe("Organization", function () {
     before(function (done) {
         app.db.connection.db.dropDatabase(function () {
             app.get('/test/files', function (req, res) {
-                req.user = user;
-                res.locals.user = user;
+                req.user = res.locals.user = user;
                 return file_routes.all(req, res);
             });
 
@@ -85,7 +84,7 @@ describe("Organization", function () {
         });
     });
 
-    describe("Check file permissions", function () {
+    describe("Check file permissions", function () {
         it("should not see any files, none for this user", function (done) {
             request(app)
                 .get('/test/files')
