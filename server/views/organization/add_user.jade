@@ -5,31 +5,30 @@ block content
     .columns
       h1 Legg til nytt korpsmedlem
 
-  form
+  form(method='post')
     .row
       .columns
         label(for='name') Navn
-        input#name(type='text')
+        input#name(type='text' name='name')
     .row
       .columns
         label(for='email') Epost
-        input#email(type='text')
+        input#email(type='text' name='email')
     .row
       .columns
         label(for='instrument') Instrument
-        input#instrument(type='text')
+        input#instrument(type='text' name='instrument')
     .row
       .columns
-        input#orgperm(type='checkbox' checked)
+        input#orgperm(type='checkbox' checked name='orgperm')
         label(for='orgperm') Gi personen medlemsrettigheter
     .row#grouprow
       .columns
         label(for='group') Gi rettigheter til instrumentgruppe
-        select#group
+        select#group(name='group')
           option (Ingen)
-          option Fløyte
-          option Klarinett
-          option Saksofon
+          for group in instrument_groups
+            option(value=group.id)= group.name
     .row
       .columns
         button Lagre

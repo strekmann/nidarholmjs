@@ -4,7 +4,6 @@ describe("User", function () {
 
     var cheerio = require('cheerio'),
         mongoose = require('mongoose'),
-        ObjectId = mongoose.Types.ObjectId,
         User = require('../server/models/index').User,
         Group = require('../server/models/index').Group,
         Organization = require('../server/models/index').Organization,
@@ -73,10 +72,6 @@ describe("User", function () {
         app.db.connection.db.dropDatabase(function () {
             done();
         });
-    });
-
-    describe("Add user", function () {
-        it("should be able to add a new user from another user");
     });
 
     describe("Add existing user to group", function () {

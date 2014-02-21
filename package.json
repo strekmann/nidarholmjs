@@ -34,7 +34,8 @@
     "q": "~1.0.0",
     "mkdirp": "~0.3.5",
     "i18n-abide": "0.0.16",
-    "multer": "0.0.5"
+    "multer": "0.0.5",
+    "slug": "~0.4.2"
   },
   "devDependencies": {
     "uglify-js": "",

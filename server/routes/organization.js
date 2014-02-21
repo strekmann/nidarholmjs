@@ -1,5 +1,7 @@
 var Q = require("q"),
     _ = require('underscore'),
+    slug = require('slug'),
+    mongoose = require('mongoose'),
     User = require('../models').User,
     Group = require('../models').Group,
     Organization = require('../models').Organization;
@@ -89,12 +91,64 @@ module.exports.fill_dummy = function (req, res) {
 };
 
 module.exports.add_user = function (req, res) {
-    res.render('organization/add_user');
+    Organization.findById('nidarholm').exec(function (err, organization) {
+        res.render('organization/add_user', {instrument_groups: organization.instrument_groups});
+    });
+};
+
+module.exports.create_user = function (req, res, next) {
+    Organization.findById('nidarholm').populate('member_group').exec(function (err, organization) {
+        if (err) { next(err); }
+        if (!organization) {
+            next(new Error('Something is very wrong, nidarholm does not exist'));
+        }
+        User.count().exec(function (err, user_count) {
+            var name = req.body.name,
+                email = req.body.email,
+                instrument = req.body.instrument,
+                orgperm = req.body.orgperm,
+                groupid = req.body.group;
+
+            var userid = organization.id + '.' + slug(name).toLowerCase() + '.' + user_count;
+            var user = new User();
+            user._id = userid;
+            user.username = userid;
+            user.name = name;
+            user.email = email;
+            user.instrument = instrument;
+            var member_group = organization.member_group;
+            if (orgperm) {
+                if (organization.member_group) {
+                    user.groups.push(organization.member_group);
+                    member_group.members.push({user: user, role: instrument});
+                    member_group.save(function (err) {
+                        if (err) { next(err); }
+                    });
+                }
+            }
+            if (groupid) {
+                Group.findById(groupid, function (err, group) {
+                    if (err) { next(err); }
+                    if (group) {
+                        user.groups.push(group);
+                        group.members.push({user: user});
+                        group.save(function (err) {
+                            if (err) { next(err); }
+                        });
+                    }
+                });
+            }
+            user.save(function (err) {
+                if (err) { next(err); }
+                res.redirect('/members');
+            });
+        });
+    });
 };
 
 module.exports.add_group = function (req, res) {
     var name = req.body.name,
-        organization = req.body.organization;
+        organization = 'nidarholm';//req.body.organization;
 
     Organization.findById(organization, function (err, org) {
         if (err) { throw err; }

@@ -133,6 +133,7 @@ var organization_routes = require('./routes/organization');
 app.get('/members', organization_routes.memberlist);
 app.get('/organization/fill_dummy', organization_routes.fill_dummy);
 app.get('/members/new', organization_routes.add_user);
+app.post('/members/new', organization_routes.create_user);
 app.post('/members', organization_routes.add_group);
 app.delete('/members/:groupid', organization_routes.remove_group);
 
