@@ -137,7 +137,7 @@ app.post('/members', organization_routes.add_group);
 app.delete('/members/:groupid', organization_routes.remove_group);
 
 app.get('/users', organization_routes.users);
-app.get('/users/:id', organization_routes.user);
+app.get('/users/:username', organization_routes.user);
 app.post('/users/:username/groups', organization_routes.user_add_group);
 app.delete('/users/:username/groups/:groupid', organization_routes.user_remove_group);
 

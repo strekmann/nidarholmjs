@@ -15,12 +15,14 @@ block content
               a.removegroup(href="#")
                 i.fa.fa-minus
             for member in group.members
-              div
-                b= member.user.username
-              div= member.user.name
-              div
-                if member.role
-                  = member.role
+              if member
+                if member.user
+                  div
+                    b= member.user.username
+                  div= member.user.name
+                div
+                  if member.role
+                    = member.role
 
     div.row
       div.small-12.columns

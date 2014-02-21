@@ -138,7 +138,7 @@ module.exports.users = function (req, res) {
 };
 
 module.exports.user = function (req, res) {
-    User.findOne({username: req.params.id}, function (err, user) {
+    User.findOne({username: req.params.username}, function (err, user) {
         if (err) { throw err; }
         Group.find({organization: 'nidarholm'}, function (err, groups) {
             if (err) { throw err; }
@@ -154,12 +154,12 @@ module.exports.user_add_group = function (req, res, next) {
     User.findOne({username: username}, function (err, user) {
         if (err) { throw err; }
         Group.findById(groupid, function (err, group) {
-            if (err) { return next(new Error(err)); }
+            if (err) { return next(err); }
             if (!group) { return next(new Error("Unrecognized group")); }
             user.groups.push(group);
             user.save(function (err) {
                 if (err) { throw err; }
-                group.members.push({_id: username, user: user});
+                group.members.push({user: user._id});
                 group.save(function (err) {
                     res.json(200, group);
                 });
@@ -173,15 +173,15 @@ module.exports.user_remove_group = function (req, res, next) {
         groupid = req.params.groupid;
 
     User.findOne({username: username}, function (err, user) {
-        if (err) { next(new Error(err)); }
+        if (err) { next(err); }
         user.groups.pull(groupid);
         user.save(function (err) {
-            if (err) { next(new Error(err)); }
+            if (err) { next(err); }
             Group.findById(groupid, function (err, group) {
-                if (err) { next(new Error(err)); }
+                if (err) { next(err); }
                 var gs = group.members.pull(username);
                 group.save(function(err) {
-                    if (err) { next(new Error(err)); }
+                    if (err) { next(err); }
                     res.json(200);
                 });
             });

@@ -5,9 +5,9 @@ block content
     .columns
       h1 Alle brukere
 
-      ul
+      ul#users
         for user in users
-          li
+          li.user
             a(href="/users/" + user.username)= user.name
             &nbsp;
             =user.username
