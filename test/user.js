@@ -25,6 +25,10 @@ describe("User", function () {
                 req.user = res.locals.user = user1;
                 return organization_routes.user_add_group(req, res);
             });
+            app.get('/test/user/groups/:id', function (req, res) {
+                req.user = res.locals.user = user1;
+                return organization_routes.group(req, res);
+            });
 
             //mock
             group = new Group({
@@ -43,7 +47,7 @@ describe("User", function () {
                 _id: 'friend1',
                 username: 'testuserfriend',
                 name: 'Friend Friendson',
-                groups: [group],
+                groups: [],
                 is_active: true,
                 is_admin: false
             });
@@ -76,9 +80,47 @@ describe("User", function () {
     });
 
     describe("Add existing user to group", function () {
-        var groupid;
-
+        it("should have empty group", function (done) {
+            request(app)
+                .get('/test/user/groups/'+group.id)
+                    .set('Accept', 'text/html')
+                    .expect(200)
+                    .end(function (err, res) {
+                        $ = cheerio.load(res.text);
+                        var members = $('#members .member');
+                        members.length.should.equal(0);
+                        done(err);
+                    });
+        });
         it("should see user page with list of groups", function (done) {
+            request(app)
+                .get('/test/user/testuserfriend')
+                    .set('Accept', 'text/html')
+                    .expect(200)
+                    .end(function (err, res) {
+                        $ = cheerio.load(res.text);
+                        var groups = $('#groups .group');
+                        groups.length.should.equal(0);
+                        var possible_groups = $('#group option');
+                        possible_groups.length.should.equal(1);
+                        done(err);
+                    });
+        });
+        it("should add one group", function (done) {
+            request(app)
+                .post('/test/user/testuserfriend/groups')
+                .send({groupid: group.id})
+                .set('Accept', 'application/json')
+                .expect(200)
+                .end(function (err, res) {
+                    if (err) { return done(err); }
+                    var result = res.body;
+                    result.name.should.equal('testgroup');
+                    result.members[0].user.should.equal('friend1');
+                    done();
+                });
+        });
+        it("should see added group", function (done) {
             request(app)
                 .get('/test/user/testuserfriend')
                     .set('Accept', 'text/html')
@@ -88,22 +130,25 @@ describe("User", function () {
                         var groups = $('#groups .group');
                         groups.length.should.equal(1);
                         groups.first().text().should.equal("testgroup");
+                        // TODO: should maybe remove the possibility to add the group again
                         var possible_groups = $('#group option');
                         possible_groups.length.should.equal(1);
                         groupid = possible_groups.first().attr('value');
                         done(err);
                     });
         });
-        it("should add one group", function (done) {
+        it("should see added user in group member page", function (done) {
             request(app)
-                .post('/test/user/testuserfriend/groups')
-                .send({groupid: groupid})
-                .expect(200)
-                .end(function (err, res) {
-                    if (err) { return done(err); }
-                    done();
-                });
+                .get('/test/user/groups/'+group.id)
+                    .set('Accept', 'text/html')
+                    .expect(200)
+                    .end(function (err, res) {
+                        $ = cheerio.load(res.text);
+                        var members = $('#members .member');
+                        members.length.should.equal(1);
+                        members.first().find('a').text().should.equal(user2.name);
+                        done(err);
+                    });
         });
-        it("should see added group");
     });
 });

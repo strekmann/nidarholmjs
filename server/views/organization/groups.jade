@@ -1,0 +1,11 @@
+extends ../layouts/main
+
+block content
+  .row
+    .columns
+      h1 Alle grupper
+
+      ul#groups
+        for group in groups
+          li.group
+            a(href="/groups/" + group.id)= group.name

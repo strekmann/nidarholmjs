@@ -106,7 +106,6 @@ describe("Select permission", function () {
         });
 
         it("should have one friend in user list", function (done) {
-            //user1.friends.push(user2);
             user1.save(function (err) {
                 if (err) { return done(err); }
                 request(app)

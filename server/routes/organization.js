@@ -189,3 +189,21 @@ module.exports.user_remove_group = function (req, res, next) {
     });
 };
 
+module.exports.groups = function (req, res, next) {
+    Group.find(function (err, groups) {
+        if (err) { next(err); }
+        res.render('organization/groups', {groups: groups});
+    });
+};
+
+module.exports.group = function (req, res, next){
+    var groupid = req.params.id;
+
+    Group.findById(groupid)
+        .populate('members.user')
+        //.select('-members.user.password -members.user.salt') // does not work
+        .exec(function (err, group) {
+            if (err) { next(err); }
+            res.render('organization/group', {group: group});
+    });
+};

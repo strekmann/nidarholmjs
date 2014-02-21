@@ -1,0 +1,17 @@
+extends ../layouts/main
+
+block content
+  .row
+    .columns
+      h1 Gruppe
+        = group.name
+      p= group.organization
+
+      h2 Gruppemedlemmer
+
+      ul#members
+        if group.members
+          for member in group.members
+            if member
+              li.member
+                a(href="/users/"+member.user.username)= member.user.name

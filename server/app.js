@@ -141,6 +141,9 @@ app.get('/users/:username', organization_routes.user);
 app.post('/users/:username/groups', organization_routes.user_add_group);
 app.delete('/users/:username/groups/:groupid', organization_routes.user_remove_group);
 
+app.get('/groups', organization_routes.groups);
+app.get('/groups/:id', organization_routes.group);
+
 var file_routes = require('./routes/files');
 app.get('/files', file_routes.all);
 app.get('/files/new', file_routes.index);
