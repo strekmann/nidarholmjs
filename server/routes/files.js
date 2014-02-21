@@ -15,9 +15,14 @@ module.exports.all = function (req, res) {
         {'permissions.groups': {
             $in: _.map(req.user.groups, function (g) {
                 if (g) {
-                    return new ObjectId(g._id.toString());
+                    return g._id;
                 }
             })
+            //$in: _.map(req.user.groups, function (g) {
+                //if (g) {
+                    //return new ObjectId(g._id.toString());
+                //}
+            //})
         }}
     ]).exec(function (err, files) {
         if (err) {

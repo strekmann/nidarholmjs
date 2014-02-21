@@ -7,8 +7,10 @@ describe("Organization", function () {
         ObjectId = mongoose.Types.ObjectId,
         User = require('../server/models/index').User,
         Group = require('../server/models/index').Group,
+        Organization = require('../server/models/index').Organization,
         File = require('../server/models/files').File,
-        file_routes = require('../server/routes/files');
+        file_routes = require('../server/routes/files'),
+        organization_routes = require('../server/routes/organization');
 
     var user,
         group,
@@ -24,7 +26,7 @@ describe("Organization", function () {
             //mock
             group = new Group({
                 name: 'testgroup',
-                organization: 'testorg'
+                organization: 'nidarholm'
             });
             user = new User({
                 _id: 'testid',
@@ -33,6 +35,10 @@ describe("Organization", function () {
                 groups: [group],
                 is_active: true,
                 is_admin: false
+            });
+            organization = new Organization({
+                _id: 'nidarholm',
+                instrument_groups: [group]
             });
             file = new File({
                 filename: 'filename',
@@ -53,7 +59,13 @@ describe("Organization", function () {
                             done(err);
                         } else {
                             file.save(function (err) {
-                                done(err);
+                                if (err) {
+                                    done(err);
+                                } else {
+                                    organization.save(function (err) {
+                                        done(err);
+                                    });
+                                }
                             });
                         }
                     });
@@ -149,7 +161,7 @@ describe("Organization", function () {
         });
         it("should see file published for a group", function (done) {
             file.permissions.users.pull('testid');
-            file.permissions.groups.push(new ObjectId(group._id.toString()));
+            file.permissions.groups.push(group._id);
             file.save(function (err) {
                 if (err) { return done(err); }
                 request(app)
@@ -162,64 +174,6 @@ describe("Organization", function () {
                         files.length.should.equal(1);
                         done(err);
                     });
-            });
-        });
-    });
-    describe("Check group membership in permission select", function () {
-        it("should see one testgroup in permission select", function (done) {
-            request(app)
-                .get('/test/files')
-                .set('Accept', 'text/html')
-                .expect(200)
-                .end(function (err, res) {
-                    $ = cheerio.load(res.text);
-                    var files = $('#files .file');
-                    files.length.should.equal(1);
-                    var first = files.first();
-                    var select = first.find('.chosen-permissions');
-
-                    // Very specific about how it is built
-                    var groups = select.children().eq(1).children();
-                    groups.length.should.equal(1);
-                    groups.first().attr('value').should.equal('g-'+group.id);
-                    done(err);
-                });
-        });
-
-        it("should have one friend in user list", function (done) {
-            var user2 = new User({
-                _id: 'friend1',
-                username: 'testuserfriend',
-                name: 'Friend Friendson',
-                groups: [group],
-                is_active: true,
-                is_admin: false
-            });
-            user2.save(function (err) {
-                if (err) { return done(err); }
-                user.friends.push(user2);
-                user.save(function (err) {
-                    if (err) { return done(err); }
-                    request(app)
-                        .get('/test/files')
-                        .set('Accept', 'text/html')
-                        .expect(200)
-                        .end(function (err, res) {
-                            $ = cheerio.load(res.text);
-                            var files = $('#files .file');
-                            files.length.should.equal(1);
-                            var first = files.first();
-                            var select = first.find('.chosen-permissions');
-
-                            // Very specific about how it is built
-                            var people = select.children().eq(2).children();
-                            people.length.should.equal(1);
-                            people.first().attr('value').should.equal('u-'+user2.id);
-                            done(err);
-                        });
-
-                });
-
             });
         });
     });
