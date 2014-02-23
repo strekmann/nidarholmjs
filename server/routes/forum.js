@@ -94,7 +94,7 @@ module.exports.delete_reply = function (req, res, next) {
             if (err) {
                 return next(err);
             }
-            res.json(200, 'OK');
+            res.json(200);
         });
     });
 };
