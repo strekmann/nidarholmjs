@@ -134,14 +134,24 @@ module.exports.create_user = function (req, res, next) {
                         group.members.push({user: user});
                         group.save(function (err) {
                             if (err) { next(err); }
+                            user.save(function (err) {
+                                if (err) { next(err); }
+                                res.redirect('/members');
+                            });
+                        });
+                    } else {
+                        user.save(function (err) {
+                            if (err) { next(err); }
+                            res.redirect('/members');
                         });
                     }
                 });
+            } else {
+                user.save(function (err) {
+                    if (err) { next(err); }
+                    res.redirect('/members');
+                });
             }
-            user.save(function (err) {
-                if (err) { next(err); }
-                res.redirect('/members');
-            });
         });
     });
 };
