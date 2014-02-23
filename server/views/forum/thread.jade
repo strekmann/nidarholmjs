@@ -6,7 +6,9 @@ block content
       #forum
 
   script#template(type="text/ractive")
-    a.button(on-click="addReply") Add reply
+    a.button(on-click="removeReply") delete reply
+    a.button(on-click="addComment") Add comment
+    a.button(on-click="removeComment") remove comment
     | {{#post}}
     h1 {{title}}
     .row.meta
@@ -17,6 +19,7 @@ block content
     .row.content
       .columns {{mdtext}}
 
+    a.button(on-click="addReply") Add reply
     .replies
       | {{#replies}}
       .row.reply
@@ -27,9 +30,13 @@ block content
               | {{#comments}}
               .comment {{mdtext}}
               | {{/comments}}
+            a.button(on-click="addComment") Add comment
       | {{/replies}}
     | {{/post}}
 
 block javascript
-  script.
-    require('s7n').forum.threadView();
+  script
+    | var forum = require('s7n').forum.threadView();
+    | forum.set('post', 
+    != JSON.stringify(post)
+    | );
