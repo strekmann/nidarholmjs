@@ -78,6 +78,24 @@ module.exports.create_reply = function (req, res, next) {
     });
 };
 
+module.exports.delete_reply = function (req, res, next) {
+    var postid = req.params.postid,
+        replyid = req.params.replyid;
+
+    ForumPost.findById(postid, function (err, post) {
+        if (err) {
+            return next(err);
+        }
+        post.replies.pull(replyid);
+        post.save(function (err) {
+            if (err) {
+                return next(err);
+            }
+            res.json(200);
+        });
+    });
+};
+
 module.exports.get_replies = function (req, res, next) {
     ForumPost.findById(req.params.id, function (err, post) {
         if (err) {
@@ -107,6 +125,37 @@ module.exports.create_comment = function (req, res, next) {
                     });
                 }
             });
+            return next(new Error('Reply not found, could not add comment'));
+        } else {
+            return next(new Error('Post not found, could not add comment'));
+        }
+    });
+};
+
+module.exports.delete_comment = function (req, res, next) {
+    var postid = req.params.postid,
+        replyid = req.params.replyid,
+        commentid = req.params.commentid;
+
+    ForumPost.findById(postid, function (err, post) {
+        if (err) {
+            return next(err);
+        }
+        if (post) {
+            _.find(post.replies, function (reply){
+                if (reply._id.toString() === replyid) {
+                    reply.comments.pull(commentid);
+                    post.save(function (err) {
+                        if (err) {
+                            return next(err);
+                        }
+                        res.json(200);
+                    });
+                }
+            });
+            return next(new Error('Reply not found, could not delete comment'));
+        } else {
+            return next(new Error('Post not found, could not delete comment'));
         }
     });
 };
