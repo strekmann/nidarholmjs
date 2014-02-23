@@ -15,7 +15,6 @@ module.exports.threadView = function(){
     });
 
     forum.on('deleteReply', function(event){
-        console.log('delete reply', event.context._id);
         forum.deleteReply({_id: event.context._id});
     });
 
@@ -24,14 +23,11 @@ module.exports.threadView = function(){
             mdtext: 'super kommentar #'+ new Date().getTime()
         };
 
-        console.log('comment event', event);
         forum.addComment(event.context._id, comment);
     });
 
     forum.on('deleteComment', function(event){
-        console.log(event);
         var replyid = this.data.post.replies[event.keypath.split('.')[2]]._id;
-        console.log('reply: %s, comment: %s', replyid, event.context._id);
         forum.deleteComment(replyid, {_id: event.context._id});
     });
 
