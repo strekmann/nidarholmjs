@@ -43,6 +43,8 @@ module.exports.get_post = function (req, res, next) {
             return next(err);
         }
 
+        post.replies.reverse();
+
         res.format({
             json: function(){
                 res.json(200, post);
