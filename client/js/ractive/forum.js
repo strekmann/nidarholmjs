@@ -7,7 +7,17 @@ var Forum = Ractive.extend({
     },
 
     addReply: function(reply){
-        this.data.replies.unshift(reply);
+        var self = this,
+            promise = $.ajax('/forum/' + this.data.post._id + '/replies', {
+            type: 'POST',
+            data: reply
+        });
+
+        promise.then(function(data){
+            self.data.post.replies.unshift(data);
+        }, function(err){
+            console.error(err);
+        });
     },
 
     deleteReply: function(reply){
@@ -18,13 +28,27 @@ var Forum = Ractive.extend({
     },
 
     addComment: function(replyid, comment){
-        var replyIndex = _.indexOf(_.pluck(this.data.post.replies, '_id'), replyid);
-        this.data.post.replies[replyIndex].push(comment);
+        var self = this,
+            url = ['/forum/', this.data.post._id, '/replies/', replyid, '/comments'],
+            promise = $.ajax(url.join(''), {
+                type: 'POST',
+                data: comment
+            });
+
+        promise.then(function(data){
+            var replyIndex = _.indexOf(_.pluck(self.data.post.replies, '_id'), replyid);
+            self.data.post.replies[replyIndex].comments.push(comment);
+        }, function(err){
+            console.error(err);
+        });
     },
 
     deleteComment: function(replyid, comment){
         var replyIndex = _.indexOf(_.pluck(this.data.post.replies, '_id'), replyid);
-        var commentIndex = _.indexOf(_.pluck(this.data.post.replies[replyIndex], '_id'), replyid);
+        if (replyIndex === -1 || !this.data.post.replies[replyIndex].comments) {
+            return;
+        }
+        var commentIndex = _.indexOf(_.pluck(this.data.post.replies[replyIndex].comments, '_id'), comment._id);
         if (commentIndex !== -1){
             this.data.post.replies[replyIndex].comments.splice(commentIndex, 1);
         }
