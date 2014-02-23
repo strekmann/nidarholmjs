@@ -22,7 +22,7 @@ module.exports.all = function (req, res, next) {
 module.exports.create_post = function (req, res, next) {
     var post = new ForumPost();
     post.title = req.body.title;
-    post.creator = 'user1';//req.user;
+    post.creator = req.user;
     post.mdtext = req.body.mdtext;
     post.save(function (err) {
         if (err) {
@@ -66,7 +66,7 @@ module.exports.create_reply = function (req, res, next) {
         }
         var reply = new ForumReply();
         reply.mdtext = req.body.mdtext;
-        reply.creator = 'user2'; //FIXME
+        reply.creator = req.user;
 
         post.replies.push(reply);
         post.save(function (err) {
@@ -95,7 +95,7 @@ module.exports.create_comment = function (req, res, next) {
         if (post) {
             var comment = new ForumComment();
             comment.mdtext = req.body.mdtext;
-            comment.creator = 'user1'; //FIXME
+            comment.creator = req.user;
             _.find(post.replies, function (reply){
                 if (reply._id.toString() === req.params.rid) {
                     reply.comments.push(comment);
