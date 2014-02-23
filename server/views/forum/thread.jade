@@ -6,9 +6,6 @@ block content
       #forum
 
   script#template(type="text/ractive")
-    a.button(on-click="removeReply") delete reply
-    a.button(on-click="addComment") Add comment
-    a.button(on-click="removeComment") remove comment
     | {{#post}}
     h1 {{title}}
     .row.meta
@@ -29,7 +26,9 @@ block content
             .columns.small-offset-1.comments
               | {{#comments}}
               .comment {{mdtext}}
+              a.button(on-click="deleteComment") Delete comment
               | {{/comments}}
+            a.button(on-click="deleteReply") Delete reply
             a.button(on-click="addComment") Add comment
       | {{/replies}}
     | {{/post}}

@@ -1,36 +1,48 @@
 var Forum = Ractive.extend({
-    restAPI: '/api/forum',
-
     // Will be called as soon as the instance has finished rendering.
-    init: function(){
-
+    init: function(options){
+        this.restAPI = options.restAPI || '/api/forum';
     },
 
     addReply: function(reply){
         var self = this,
-            promise = $.ajax('/forum/' + this.data.post._id + '/replies', {
-            type: 'POST',
-            data: reply
+            url = [this.restAPI, this.data.post._id, 'replies'],
+            promise = $.ajax({
+                url: url.join('/'),
+                type: 'POST',
+                data: reply
         });
 
         promise.then(function(data){
             self.data.post.replies.unshift(data);
-        }, function(err){
+        }, function(xhr, status, err){
             console.error(err);
         });
     },
 
     deleteReply: function(reply){
-        var index = _.indexOf(_.pluck(this.data.post.replies, '_id'), reply._id);
-        if (index !== -1){
-            this.data.post.replies.splice(index, 1);
-        }
+        var self = this,
+            url = [this.restAPI, this.data.post._id, 'replies', reply._id],
+            promise = $.ajax({
+                url: url.join('/'),
+                type: 'DELETE'
+            });
+
+        promise.then(function(data){
+            var index = _.indexOf(_.pluck(self.data.post.replies, '_id'), reply._id);
+            if (index !== -1){
+                this.data.post.replies.splice(index, 1);
+            }
+        }, function(xhr, status, err){
+            console.error(err);
+        });
     },
 
     addComment: function(replyid, comment){
         var self = this,
-            url = ['/forum/', this.data.post._id, '/replies/', replyid, '/comments'],
-            promise = $.ajax(url.join(''), {
+            url = ['/forum', this.data.post._id, 'replies', replyid, 'comments'],
+            promise = $.ajax({
+                url: url.join('/'),
                 type: 'POST',
                 data: comment
             });
@@ -38,20 +50,31 @@ var Forum = Ractive.extend({
         promise.then(function(data){
             var replyIndex = _.indexOf(_.pluck(self.data.post.replies, '_id'), replyid);
             self.data.post.replies[replyIndex].comments.push(comment);
-        }, function(err){
+        }, function(xhr, status, err){
             console.error(err);
         });
     },
 
     deleteComment: function(replyid, comment){
-        var replyIndex = _.indexOf(_.pluck(this.data.post.replies, '_id'), replyid);
-        if (replyIndex === -1 || !this.data.post.replies[replyIndex].comments) {
-            return;
-        }
-        var commentIndex = _.indexOf(_.pluck(this.data.post.replies[replyIndex].comments, '_id'), comment._id);
-        if (commentIndex !== -1){
-            this.data.post.replies[replyIndex].comments.splice(commentIndex, 1);
-        }
+        var self = this,
+            url = [this.restAPI, this.data.post._id, 'replies', replyid, 'comments', comment._id],
+            promise = $.ajax({
+                url: url.join('/'),
+                type: 'DELETE'
+            });
+
+        promise.then(function(data){
+            var replyIndex = _.indexOf(_.pluck(self.data.post.replies, '_id'), replyid);
+            if (replyIndex === -1 || !self.data.post.replies[replyIndex].comments) {
+                return;
+            }
+            var commentIndex = _.indexOf(_.pluck(self.data.post.replies[replyIndex].comments, '_id'), comment._id);
+            if (commentIndex !== -1){
+                self.data.post.replies[replyIndex].comments.splice(commentIndex, 1);
+            }
+        }, function(xhr, status, err){
+            console.error(err);
+        });
     },
 
     data: {
