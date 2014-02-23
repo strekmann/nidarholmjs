@@ -119,19 +119,19 @@ module.exports.create_comment = function (req, res, next) {
             var comment = new ForumComment();
             comment.mdtext = req.body.mdtext;
             comment.creator = req.user;
-            _.find(post.replies, function (reply){
-                console.log(reply._id, replyid);
-                if (reply._id.toString() === replyid) {
-                    reply.comments.push(comment);
-                    post.save(function (err) {
-                        if (err) {
-                            return next(err);
-                        }
-                        res.json(200, comment);
-                    });
-                }
+            var reply = _.find(post.replies, function (reply){
+                return reply._id.toString() === replyid;
             });
-            //return next(new Error('Reply not found, could not add comment'));
+            if (reply === undefined) {
+                return next(new Error('Reply not found, could not add comment'));
+            }
+            reply.comments.push(comment);
+            post.save(function (err) {
+                if (err) {
+                    return next(err);
+                }
+                res.json(200, comment);
+            });
         } else {
             return next(new Error('Post not found, could not add comment'));
         }
@@ -148,18 +148,19 @@ module.exports.delete_comment = function (req, res, next) {
             return next(err);
         }
         if (post) {
-            _.find(post.replies, function (reply){
-                if (reply._id.toString() === replyid) {
-                    reply.comments.pull(commentid);
-                    post.save(function (err) {
-                        if (err) {
-                            return next(err);
-                        }
-                        res.json(200);
-                    });
-                }
+            var reply = _.find(post.replies, function (reply){
+                return reply._id.toString() === replyid;
             });
-            return next(new Error('Reply not found, could not delete comment'));
+            if (reply === undefined) {
+                return next(new Error('Reply not found, could not add comment'));
+            }
+            reply.comments.pull(commentid);
+            post.save(function (err) {
+                if (err) {
+                    return next(err);
+                }
+                res.json(200, comment);
+            });
         } else {
             return next(new Error('Post not found, could not delete comment'));
         }
