@@ -9,7 +9,7 @@ module.exports.threadView = function(){
 
     forum.on('addReply', function(event){
         var reply = {
-            mdtext: 'ny reply #' + new Date().getTime()
+            mdtext: $('#reply').val()
         };
         forum.addReply(reply);
     });
@@ -19,8 +19,9 @@ module.exports.threadView = function(){
     });
 
     forum.on('addComment', function(event){
+        var text = $(event.node).siblings('textarea').val();
         var comment = {
-            mdtext: 'super kommentar #'+ new Date().getTime()
+            mdtext: text
         };
 
         forum.addComment(event.context._id, comment);

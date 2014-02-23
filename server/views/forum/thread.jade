@@ -16,7 +16,10 @@ block content
     .row.content
       .columns {{mdtext}}
 
-    a.button(on-click="addReply") Add reply
+    form
+      textarea(name="reply" id="reply")
+      a.button(on-click="addReply") Add reply
+
     .replies
       | {{#replies}}
       .row.reply
@@ -28,8 +31,10 @@ block content
               .comment {{mdtext}}
               a.button(on-click="deleteComment") Delete comment
               | {{/comments}}
+              form
+                textarea(name="comment")
+                a.button(on-click="addComment") Add comment
             a.button(on-click="deleteReply") Delete reply
-            a.button(on-click="addComment") Add comment
       | {{/replies}}
     | {{/post}}
 
