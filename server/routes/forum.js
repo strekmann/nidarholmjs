@@ -60,7 +60,9 @@ module.exports.get_post = function (req, res, next) {
 };
 
 module.exports.create_reply = function (req, res, next) {
-    ForumPost.findById(req.params.id, function (err, post) {
+    var forumid = req.params.forumid;
+
+    ForumPost.findById(forumid, function (err, post) {
         if (err) {
             return next(err);
         }
@@ -106,7 +108,9 @@ module.exports.get_replies = function (req, res, next) {
 };
 
 module.exports.create_comment = function (req, res, next) {
-    ForumPost.findOne({'replies._id': req.params.rid}, function (err, post) {
+    var replyid = req.params.replyid;
+
+    ForumPost.findOne({'replies._id': replyid}, function (err, post) {
         if (err) {
             return next(err);
         }
