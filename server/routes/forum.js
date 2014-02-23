@@ -159,7 +159,7 @@ module.exports.delete_comment = function (req, res, next) {
                 if (err) {
                     return next(err);
                 }
-                res.json(200, comment);
+                res.json(200);
             });
         } else {
             return next(new Error('Post not found, could not delete comment'));
