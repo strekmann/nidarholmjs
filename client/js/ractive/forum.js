@@ -31,7 +31,7 @@ var Forum = Ractive.extend({
         promise.then(function(data){
             var index = _.indexOf(_.pluck(self.data.post.replies, '_id'), reply._id);
             if (index !== -1){
-                this.data.post.replies.splice(index, 1);
+                self.data.post.replies.splice(index, 1);
             }
         }, function(xhr, status, err){
             console.error(err);

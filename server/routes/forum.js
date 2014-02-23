@@ -60,9 +60,9 @@ module.exports.get_post = function (req, res, next) {
 };
 
 module.exports.create_reply = function (req, res, next) {
-    var forumid = req.params.forumid;
+    var postid = req.params.postid;
 
-    ForumPost.findById(forumid, function (err, post) {
+    ForumPost.findById(postid, function (err, post) {
         if (err) {
             return next(err);
         }
@@ -88,12 +88,13 @@ module.exports.delete_reply = function (req, res, next) {
         if (err) {
             return next(err);
         }
+        console.log(post);
         post.replies.pull(replyid);
         post.save(function (err) {
             if (err) {
                 return next(err);
             }
-            res.json(200);
+            res.json(200, 'OK');
         });
     });
 };
@@ -119,7 +120,8 @@ module.exports.create_comment = function (req, res, next) {
             comment.mdtext = req.body.mdtext;
             comment.creator = req.user;
             _.find(post.replies, function (reply){
-                if (reply._id.toString() === req.params.rid) {
+                console.log(reply._id, replyid);
+                if (reply._id.toString() === replyid) {
                     reply.comments.push(comment);
                     post.save(function (err) {
                         if (err) {
@@ -129,7 +131,7 @@ module.exports.create_comment = function (req, res, next) {
                     });
                 }
             });
-            return next(new Error('Reply not found, could not add comment'));
+            //return next(new Error('Reply not found, could not add comment'));
         } else {
             return next(new Error('Post not found, could not add comment'));
         }
