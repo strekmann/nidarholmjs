@@ -57,6 +57,12 @@ a:focus {
     text-decoration: underline;
 }
 
+.pagination a,
+.pagination a:hover,
+.pagination a:active {
+    text-decoration: none;
+}
+
 #flash {
     margin: 1em 0;
 }
