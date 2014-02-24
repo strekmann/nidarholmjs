@@ -88,7 +88,6 @@ module.exports.delete_reply = function (req, res, next) {
         if (err) {
             return next(err);
         }
-        console.log(post);
         post.replies.pull(replyid);
         post.save(function (err) {
             if (err) {
