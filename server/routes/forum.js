@@ -118,9 +118,7 @@ module.exports.create_comment = function (req, res, next) {
             var comment = new ForumComment();
             comment.mdtext = req.body.mdtext;
             comment.creator = req.user;
-            var reply = _.find(post.replies, function (reply){
-                return reply._id.toString() === replyid;
-            });
+            var reply = post.replies.id(replyid);
             if (reply === undefined) {
                 return next(new Error('Reply not found, could not add comment'));
             }
@@ -147,9 +145,7 @@ module.exports.delete_comment = function (req, res, next) {
             return next(err);
         }
         if (post) {
-            var reply = _.find(post.replies, function (reply){
-                return reply._id.toString() === replyid;
-            });
+            var reply = post.replies.id(replyid);
             if (reply === undefined) {
                 return next(new Error('Reply not found, could not add comment'));
             }
