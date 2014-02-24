@@ -38,7 +38,7 @@ html {
 
 body {
     -webkit-font-smoothing: antialiased;
-    border-top: 5px solid #a30302;
+    border-top: 5px solid $alert-color;
 }
 
 .button {
@@ -90,7 +90,7 @@ nav.top-bar {
 
         &:hover,
         &:focus {
-            background-color: #41a3c2;
+            background-color: $primary-color;
             color: #fff;
             text-decoration: none;
         }
@@ -112,7 +112,7 @@ nav.top-bar {
         display: block;
         width: 70px;
         height: 70px;
-        background-color: #a30302;
+        background-color: $alert-color;
         background-image: url(../img/btn.png);
         background-repeat: no-repeat;
         background-position: 50% 50%;

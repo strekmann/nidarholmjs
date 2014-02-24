@@ -1,0 +1,86 @@
+extends layouts/main
+
+block content
+  section#foundation.row
+    h1 Foundation test page
+    h3.subheader This page includes foundation elements so that we can make sure things work together.
+
+    h4#alert-boxes Alert boxes
+    .alert-box(data-alert) Standard alert
+    .alert-box.success(data-alert) Success alert
+    .alert-box.alert(data-alert) Alert alert
+    .alert-box.secondary(data-alert) Secondary alert
+
+    hr
+
+    h4#block-grid Block grid
+    ul.small-block-grid-2.large-block-grid-4
+      li
+        img.th(src="http://foundation.zurb.com/docs/assets/img/examples/comet-th.jpg")
+      li
+        img.th(src="http://foundation.zurb.com/docs/assets/img/examples/launch-th.jpg")
+      li
+        img.th(src="http://foundation.zurb.com/docs/assets/img/examples/space-th.jpg")
+      li
+        img.th(src="http://foundation.zurb.com/docs/assets/img/examples/spacewalk-th.jpg")
+
+    hr
+
+    h4#breadcrumbs Breadcrumbs
+    ul.breadcrumbs
+      li
+        a(href="#") Home
+      li.unavailable
+        a(href="#") Gene splicing
+      li.current
+        a(href="#") Cloning
+
+    hr
+
+    h4#buttons Buttons
+    .row
+      .columns.small-6
+        a.tiny.button(href="#") .tiny.button
+        br
+        a.small.button(href="#") .small.button
+        br
+        a.button(href="#") .button
+        br
+        a.button.expand(href="#") .button.expand
+      .columns.small-6
+        a.tiny.button.secondary(href="#") .tiny.button.secondary
+        br
+        a.small.button.success(href="#") .small.button.success
+        br
+        a.button.alert(href="#") .button.alert
+        br
+        a.button.disabled(href="#") .button.disabled
+
+    hr
+
+    h4#forms Forms
+    form
+      fieldset
+        legend Fieldset
+        .row
+          .columns
+            label Input label
+            input(type="text" placeholder="Field #1")
+        .row
+          .columns.large-4
+            label Input label
+            input(type="text" placeholder="Field #2")
+          .columns.large-4
+            label Input label
+            input(type="text" placeholder="Field #3")
+          .columns.large-4
+            .row.collapse
+              label Input label
+              .columns.small-9
+                input(type="text" placeholder="Field #5")
+              .columns.small-3
+                span.postfix .com
+        .row
+          .columns
+            label Input label
+            input(type="text" placeholder="Field #4")

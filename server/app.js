@@ -153,4 +153,8 @@ app.get('/files/new', file_routes.index);
 app.post('/files/upload', file_routes.upload);
 app.put('/files/:id', file_routes.update);
 
+app.get('/foundation', function(req, res){
+    res.render('foundation');
+});
+
 module.exports = app;
