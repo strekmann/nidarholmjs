@@ -78,28 +78,28 @@ describe("User", function () {
         it("should have empty group", function (done) {
             request(app)
                 .get('/test/user/groups/'+group.id)
-                    .set('Accept', 'text/html')
-                    .expect(200)
-                    .end(function (err, res) {
-                        $ = cheerio.load(res.text);
-                        var members = $('#members .member');
-                        members.length.should.equal(0);
-                        done(err);
-                    });
+                .set('Accept', 'text/html')
+                .expect(200)
+                .end(function (err, res) {
+                    $ = cheerio.load(res.text);
+                    var members = $('#members .member');
+                    members.length.should.equal(0);
+                    done(err);
+                });
         });
         it("should see user page with list of groups", function (done) {
             request(app)
                 .get('/test/user/testuserfriend')
-                    .set('Accept', 'text/html')
-                    .expect(200)
-                    .end(function (err, res) {
-                        $ = cheerio.load(res.text);
-                        var groups = $('#groups .group');
-                        groups.length.should.equal(0);
-                        var possible_groups = $('#group option');
-                        possible_groups.length.should.equal(1);
-                        done(err);
-                    });
+                .set('Accept', 'text/html')
+                .expect(200)
+                .end(function (err, res) {
+                    $ = cheerio.load(res.text);
+                    var groups = $('#groups .group');
+                    groups.length.should.equal(0);
+                    var possible_groups = $('#group option');
+                    possible_groups.length.should.equal(1);
+                    done(err);
+                });
         });
         it("should add one group", function (done) {
             request(app)
@@ -118,32 +118,32 @@ describe("User", function () {
         it("should see added group", function (done) {
             request(app)
                 .get('/test/user/testuserfriend')
-                    .set('Accept', 'text/html')
-                    .expect(200)
-                    .end(function (err, res) {
-                        $ = cheerio.load(res.text);
-                        var groups = $('#groups .group');
-                        groups.length.should.equal(1);
-                        groups.first().text().should.equal("testgroup");
-                        // TODO: should maybe remove the possibility to add the group again
-                        var possible_groups = $('#group option');
-                        possible_groups.length.should.equal(1);
-                        groupid = possible_groups.first().attr('value');
-                        done(err);
-                    });
+                .set('Accept', 'text/html')
+                .expect(200)
+                .end(function (err, res) {
+                    $ = cheerio.load(res.text);
+                    var groups = $('#groups .group');
+                    groups.length.should.equal(1);
+                    groups.first().text().should.equal("testgroup");
+                    // TODO: should maybe remove the possibility to add the group again
+                    var possible_groups = $('#group option');
+                    possible_groups.length.should.equal(1);
+                    groupid = possible_groups.first().attr('value');
+                    done(err);
+                });
         });
         it("should see added user in group member page", function (done) {
             request(app)
                 .get('/test/user/groups/'+group.id)
-                    .set('Accept', 'text/html')
-                    .expect(200)
-                    .end(function (err, res) {
-                        $ = cheerio.load(res.text);
-                        var members = $('#members .member');
-                        members.length.should.equal(1);
-                        members.first().find('a').text().should.equal(user2.name);
-                        done(err);
-                    });
+                .set('Accept', 'text/html')
+                .expect(200)
+                .end(function (err, res) {
+                    $ = cheerio.load(res.text);
+                    var members = $('#members .member');
+                    members.length.should.equal(1);
+                    members.first().find('a').text().should.equal(user2.name);
+                    done(err);
+                });
         });
     });
 });
