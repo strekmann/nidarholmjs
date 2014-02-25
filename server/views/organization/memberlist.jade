@@ -12,17 +12,19 @@ block content
           .group(data-id=group.id)
             h2
               = group.name
+              = group.members
               a.removegroup(href="#")
                 i.fa.fa-minus
             for member in group.members
               if member
-                if member.user
-                  div
+                div.member
+                  if member.user
                     b= member.user.username
-                  div= member.user.name
-                div
+                    div= member.user.name
                   if member.role
-                    = member.role
+                    div
+                      if member.role
+                        = member.role
 
     div.row
       div.small-12.columns

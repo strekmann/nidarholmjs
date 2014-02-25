@@ -190,5 +190,19 @@ describe("Member", function () {
                 done(err);
             });
         });
+        it("should find the new user in memberlist page", function (done) {
+            request(app)
+            .get('/test/members/groups')
+            .set('Accept', 'text/html')
+            .expect(200)
+            .end(function (err, res) {
+                $ = cheerio.load(res.text);
+                var users = $('#memberlist .group .member');
+                //console.log(groups.text());
+                users.length.should.equal(2);
+                users.last().find('div').text().should.equal(testuser_name);
+                done(err);
+            });
+        });
     });
 });

@@ -1,5 +1,6 @@
 var Q = require("q"),
     _ = require('underscore'),
+    async = require('async'),
     slug = require('slug'),
     mongoose = require('mongoose'),
     User = require('../models').User,
@@ -7,11 +8,24 @@ var Q = require("q"),
     Organization = require('../models').Organization;
 
 module.exports.memberlist = function (req, res) {
-    Organization.findById('nidarholm').populate('instrument_groups.members.user').exec(function (err, org) {
-        if (err) {
-            throw err;
-        }
-        res.render('organization/memberlist', {org: org});
+    Organization.findById('nidarholm').exec(function (err, org) {
+        if (err) { throw err; }
+        // FIXME: If possible, use populate. I have tried my share. I have
+        // found no way to populate members, as that should be filled already
+        // by mongoose, as these are contained within the document.
+        async.map(
+            org.instrument_groups,
+            function (group, callback) {
+                Group.findById(group._id).populate('members.user').exec(function (err, g) {
+                    if (err) { throw err; }
+                    callback(null, g);
+                });
+            },
+            function (err, results) {
+                if (err) { throw err; }
+                org.instrument_groups = results;
+                res.render('organization/memberlist', {org: org});
+            });
     });
 };
 
