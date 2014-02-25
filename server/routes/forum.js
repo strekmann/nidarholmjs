@@ -1,4 +1,5 @@
 var _ = require('underscore'),
+    util = require('../lib/util'),
     ForumPost = require('../models/forum').ForumPost,
     ForumReply = require('../models/forum').ForumReply,
     ForumComment = require('../models/forum').ForumComment;
@@ -33,6 +34,8 @@ module.exports.create_post = function (req, res, next) {
 };
 
 module.exports.get_post = function (req, res, next) {
+    req.params.id = util.b642h(req.params.id);
+
     // if given id is not a valid ObjectID, return 404.
     if (!isObjectId(req.params.id)){
         return next();
