@@ -46,7 +46,7 @@ module.exports.delete_post = function (req, res, next) {
     var id = req.params.id;
 
     ForumPost.findByIdAndRemove(id, function (err, post) {
-        if (err) { next(err); }
+        if (err) { return next(err); }
         res.json(200, post);
     });
 };

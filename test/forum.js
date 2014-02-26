@@ -151,6 +151,32 @@ describe("Forum", function () {
         });
     });
 
+    describe("have two posts", function () {
+        it("should create two posts", function (done) {
+            request(app)
+                .post('/test/forum/forum')
+                .send({
+                    title: 'Post 1',
+                    mdtext: 'Content 1'
+                })
+                .set('Accept', 'application/json')
+                .end(function (err, res) {
+                    if (err) { return done(err); }
+                    request(app)
+                        .post('/test/forum/forum')
+                        .send({
+                            title: 'Post 2',
+                            mdtext: 'Content 2'
+                        })
+                        .set('Accept', 'application/json')
+                        .end(function (err, res) {
+                            if (err) { return done(err); }
+                            done();
+                        });
+                });
+        });
+    });
+
     describe("add reply", function () {
         it("should have 0 replies", function (done) {
             ForumPost.findById(post1.id, function (err, post) {
