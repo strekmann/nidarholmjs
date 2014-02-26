@@ -38,8 +38,8 @@ module.exports.threadView = function(){
 module.exports.forumView = function () {
     $('#newpostform').hide();
     $('#newpostform').on('submit', function (event) {
-        var title = $('#newpostform input#title').val(),
-            mdtext = $('#newpostform input#mdtext').val();
+        var title = $('#newpostform #title').val(),
+            mdtext = $('#newpostform #mdtext').val();
 
         event.preventDefault();
         $.ajax({

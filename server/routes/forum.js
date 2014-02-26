@@ -45,7 +45,6 @@ module.exports.delete_post = function (req, res, next) {
 
     ForumPost.findByIdAndRemove(id, function (err, post) {
         if (err) { next(err); }
-        console.log(post);
         res.json(200, post);
     });
 };
