@@ -52,6 +52,7 @@ module.exports.forumView = function () {
             success: function (data) {
                 $('#newpostform').slideUp();
                 $('#newpost').show();
+                $('#forum').append('<div class="post" data-id="' + data._id + '"><h1><a href="/forum/' + data._id + '">' + data.title + '</a></h1><div class="meta">Av ' + data.creator.name + ' ' + data.created + '</div>' + data.mdtext + '<form><button class="deletepost" type="button">Slett innlegg</button></div>');
             }
         });
     });
@@ -70,7 +71,7 @@ module.exports.forumView = function () {
             url: '/forum/' + id,
             type: 'delete',
             success: function (data) {
-                $('#flash').append('<div data-alert class="alert-box success">' + data.title + ' er slettet</div>');
+                $('#flash').append('<div data-alert class="columns alert-box success">' + data.title + ' er slettet</div>');
                 post.remove();
             }
         });
