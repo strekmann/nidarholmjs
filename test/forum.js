@@ -105,7 +105,7 @@ describe("Forum", function () {
                 .set('Accept', 'application/json')
                 .end(function (err, res) {
                     if (err) { return done(err); }
-                    res.body.creator.should.equal(user1.id);
+                    res.body.creator.name.should.equal(user1.name);
                     post2 = res.body;
                     done();
                 });

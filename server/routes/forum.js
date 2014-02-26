@@ -36,7 +36,9 @@ module.exports.create_post = function (req, res, next) {
         if (err) {
             return next(err);
         }
-        res.json(200, post);
+        post.populate('creator', function (err, post) {
+            res.json(200, post);
+        });
     });
 };
 
