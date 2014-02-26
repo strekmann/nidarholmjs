@@ -2,7 +2,9 @@ var _           = require('underscore'),
     express     = require('express'),
     path        = require('path'),
     multer      = require('multer'),
+    moment      = require('moment'),
     settings    = require('./settings'),
+    util        = require('./lib/util'),
     app         = require('libby')(express, settings);
 
 var User = require('./models/index').User;
@@ -19,6 +21,25 @@ app.configure(function(){
     // initialize passport
     app.use(app.passport.initialize());
     app.use(app.passport.session());
+
+    // utils
+    app.use(function (req, res, next) {
+        res.locals.hoid = util.h2b64;
+        res.locals.moment = moment;
+        res.locals.isodate = function (str) {
+            return moment(str).format();
+        };
+        res.locals.shortdate = function (str) {
+            return moment(str).format('l');
+        };
+        res.locals.longdate = function (str) {
+            return moment(str).format('LLL');
+        };
+        res.locals.ago = function (str) {
+            return moment(str).fromNow();
+        };
+        next();
+    });
 
     // has to go after passport.session()
     app.use(function (req, res, next) {
