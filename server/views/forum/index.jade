@@ -4,8 +4,23 @@ block content
   .row
     .columns
       #forum
+        #newpostform
+          form
+            h1 Nytt innlegg
+            label(for="title") Tittel
+            input#title(name="title" type="text")
+            label(for="mdtext") Innhold
+            textarea#mdtext(name="mdtext")
+            label(for="permissions") Rettigheter
+            select#permissions(name="permissions")
+              +permission_options(user.groups, user.friends)
+            button#cancelpost.secondary(type="reset") Avbryt
+            button Lagre
+        a#newpost.button
+          | Nytt innlegg
+
         for post in posts
-          .post
+          .post(data-id=post.id)
             h1
               a(href="/forum/" + hoid(post.id))= post.title
             .meta
@@ -14,3 +29,9 @@ block content
               | 
               = shortdate(post.created)
             = post.mdtext
+            form
+              button.deletepost(type="button") Slett innlegg
+
+block javascript
+  script.
+    require('s7n').forum.forumView();

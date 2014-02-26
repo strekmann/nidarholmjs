@@ -23,7 +23,7 @@ var ForumPostSchema = new mongoose.Schema({
     modified: {type: Date},
     tags: [{type: String, lowercase: true, trim: true}],
     mdtext: {type: String, trim: true},
-    permissions: {groups: [GroupSchema], users: [UserSchema]},
+    permissions: {groups: [GroupSchema], users: [UserSchema], broadcast: {type: Boolean, default: false}},
     replies: [ForumReplySchema]
 });
 

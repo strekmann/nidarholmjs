@@ -10,11 +10,24 @@ describe("Forum", function () {
 
     var user1,
         post1,
+        post2,
         reply1,
         comment1;
 
     before(function (done) {
         app.db.connection.db.dropDatabase(function () {
+            app.get('/test/forum/forum', function (req, res) {
+                req.user = res.locals.user = user1;
+                return forum_routes.all(req, res);
+            });
+            app.post('/test/forum/forum', function (req, res) {
+                req.user = res.locals.user = user1;
+                return forum_routes.create_post(req, res);
+            });
+            app.delete('/test/forum/:id', function (req, res, next) {
+                req.user = res.locals.user = user1;
+                return forum_routes.delete_post(req, res, next);
+            });
             app.get('/test/forum/:id', function (req, res) {
                 req.user = res.locals.user = user1;
                 return forum_routes.get_post(req, res);
@@ -65,6 +78,76 @@ describe("Forum", function () {
     after(function (done) {
         app.db.connection.db.dropDatabase(function () {
             done();
+        });
+    });
+
+    describe("add post", function () {
+        it("should have 1 post", function (done) {
+            request(app)
+                .get('/test/forum/forum')
+                .set('Accept', 'text/html')
+                .expect(200)
+                .end(function (err, res) {
+                    if (err) { return done(err); }
+                    $ = cheerio.load(res.text);
+                    var posts = $('#forum .post');
+                    posts.length.should.equal(1);
+                    done();
+                });
+        });
+        it("should add new post", function (done) {
+            request(app)
+                .post('/test/forum/forum')
+                .send({
+                    title: 'New post',
+                    mdtext: 'New content'
+                })
+                .set('Accept', 'application/json')
+                .end(function (err, res) {
+                    if (err) { return done(err); }
+                    res.body.creator.should.equal(user1.id);
+                    post2 = res.body;
+                    done();
+                });
+        });
+        it("should have 2 posts", function (done) {
+            request(app)
+                .get('/test/forum/forum')
+                .set('Accept', 'text/html')
+                .expect(200)
+                .end(function (err, res) {
+                    if (err) { return done(err); }
+                    $ = cheerio.load(res.text);
+                    var posts = $('#forum .post');
+                    posts.length.should.equal(2);
+                    done();
+                });
+        });
+    });
+
+    describe("delete post", function () {
+        it("should delete one post", function (done) {
+            request(app)
+                .del('/test/forum/' + post2._id)
+                .expect(200)
+                .end(function (err, res) {
+                    if (err) { return done(err); }
+                    res.body._id.should.equal(post2._id);
+                    done();
+                });
+        });
+        it("should have 1 post left", function (done) {
+            request(app)
+                .get('/test/forum/forum')
+                .set('Accept', 'text/html')
+                .expect(200)
+                .end(function (err, res) {
+                    if (err) { return done(err); }
+                    $ = cheerio.load(res.text);
+                    var posts = $('#forum .post');
+                    posts.length.should.equal(1);
+                    done();
+                });
         });
     });
 

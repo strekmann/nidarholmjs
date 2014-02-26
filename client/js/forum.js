@@ -34,3 +34,45 @@ module.exports.threadView = function(){
 
     return forum;
 };
+
+module.exports.forumView = function () {
+    $('#newpostform').hide();
+    $('#newpostform').on('submit', function (event) {
+        var title = $('#newpostform input#title').val(),
+            mdtext = $('#newpostform input#mdtext').val();
+
+        event.preventDefault();
+        $.ajax({
+            url: '/forum',
+            type: 'post',
+            data: {
+                title: title,
+                mdtext: mdtext
+            },
+            success: function (data) {
+                $('#newpostform').slideUp();
+                $('#newpost').show();
+            }
+        });
+    });
+    $('#newpost').on('click', function (event) {
+        $('#newpostform').slideDown();
+        $('#newpost').hide();
+    });
+    $('#cancelpost').on('click', function (event) {
+        $('#newpostform').slideUp();
+        $('#newpost').show();
+    });
+    $('#forum').on('click', '.deletepost', function (event) {
+        var post = $(this).parents('.post');
+        var id = post.attr('data-id');
+        $.ajax({
+            url: '/forum/' + id,
+            type: 'delete',
+            success: function (data) {
+                $('#flash').append('<div data-alert class="alert-box success">' + data.title + ' er slettet</div>');
+                post.remove();
+            }
+        });
+    });
+};

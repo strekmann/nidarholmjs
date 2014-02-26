@@ -40,6 +40,16 @@ module.exports.create_post = function (req, res, next) {
     });
 };
 
+module.exports.delete_post = function (req, res, next) {
+    var id = req.params.id;
+
+    ForumPost.findByIdAndRemove(id, function (err, post) {
+        if (err) { next(err); }
+        console.log(post);
+        res.json(200, post);
+    });
+};
+
 module.exports.get_post = function (req, res, next) {
     req.params.id = util.b642h(req.params.id);
 
