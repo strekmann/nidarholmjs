@@ -1,0 +1,16 @@
+extends ../layouts/main
+
+block content
+  .row
+    .columns
+      #forum
+        for post in posts
+          .post
+            h1
+              a(href="/forum/" + hoid(post.id))= post.title
+            .meta
+              | Av 
+              = post.creator.name
+              | 
+              = shortdate(post.created)
+            = post.mdtext

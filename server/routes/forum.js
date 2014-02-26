@@ -10,12 +10,19 @@ var isObjectId = function(string){
 };
 
 module.exports.all = function (req, res, next) {
-    ForumPost.find({}).exec(function (err, posts) {
+    ForumPost.find({}).populate('creator').exec(function (err, posts) {
         if (err) {
             return next(err);
         }
-        res.json(200, {
-            posts: posts
+        res.format({
+            json: function () {
+                res.json(200, posts);
+            },
+            html: function () {
+                res.render('forum/index', {
+                    posts: posts
+                });
+            }
         });
     });
 };
