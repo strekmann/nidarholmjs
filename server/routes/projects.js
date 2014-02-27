@@ -110,3 +110,12 @@ module.exports.project_create_event = function (req, res, next) {
         });
     });
 };
+
+// TODO: Only hide. Or remove project tag. Or ask.
+module.exports.project_delete_event = function (req, res, next) {
+    var event_id = req.params.event_id;
+    Event.findByIdAndRemove(event_id, function (err, event) {
+        if (err) { return next(err); }
+        res.json(200, event);
+    });
+};

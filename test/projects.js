@@ -34,6 +34,10 @@ describe("Projects", function () {
                 req.user = res.locals.user = user1;
                 return project_routes.project_create_event(req, res, next);
             });
+            app.delete('/test/projects/projects/:project_id/events/:event_id', function (req, res, next) {
+                req.user = res.locals.user = user1;
+                return project_routes.project_delete_event(req, res, next);
+            });
             user1 = new User({
                 _id: 'testid',
                 username: 'testuser',
@@ -144,6 +148,7 @@ describe("Projects", function () {
     });
 
     describe("add event to minimal project", function () {
+        var event;
         it("should load project page using short url", function (done) {
             var id = util.h2b64(project1._id);
             request(app)
@@ -178,6 +183,7 @@ describe("Projects", function () {
                     if (err) { return done(err); }
                     res.body.title.should.equal(title);
                     res.body.tags[0].should.equal(project1.tag);
+                    event = res.body;
                     done();
                 });
         });
@@ -192,6 +198,32 @@ describe("Projects", function () {
                     $ = cheerio.load(res.text);
                     var events = $('#project #events .event');
                     events.length.should.equal(1);
+                    done();
+                });
+        });
+        it("should delete new event", function (done) {
+            var project_id = project1._id;
+            var event_id = event._id;
+            request(app)
+                .del('/test/projects/projects/' + project_id + '/events/' + event_id)
+                .expect(200)
+                .end(function (err, res) {
+                    if (err) { return done(err); }
+                    res.body.title.should.equal(event.title);
+                    done();
+                });
+        });
+        it("should see that event is deleted", function (done) {
+            var id = util.h2b64(project1._id);
+            request(app)
+                .get('/test/projects/projects/' + id)
+                .set('Accept', 'text/html')
+                .expect(200)
+                .end(function (err, res) {
+                    if (err) { return done(err); }
+                    $ = cheerio.load(res.text);
+                    var events = $('#project #events .event');
+                    events.length.should.equal(0);
                     done();
                 });
         });
