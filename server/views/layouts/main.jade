@@ -55,20 +55,24 @@ html(lang=lang dir=lang_dir)
                             li
                                 a(href="/login") log in
 
-        .row#flash
-            .large-12.columns
+        .row
+            .large-12.columns#flash
                 if messages.error
                     each message in messages.error
-                        .alert-box.alert= message
+                        .alert-box.alert(data-alert)= message
+                          a.close &times;
                 if messages.warning
                     each message in messages.warning
-                        .alert-box.warning= message
+                        .alert-box.warning(data-alert)= message
+                          a.close &times;
                 if messages.success
                     each message in messages.success
-                        .alert-box.success= message
+                        .alert-box.success(data-alert)= message
+                          a.close &times;
                 if messages.info
                     each message in messages.info
-                        .alert-box.info= message
+                        .alert-box.info(data-alert)= message
+                          a.close &times;
 
         block content
 

@@ -6,36 +6,47 @@ block content
       #forum
 
   script#template(type="text/ractive")
+    article
+      header
     | {{#post}}
-    h1 {{title}}
-    .row.meta
-      .columns.small-9
-        span.creator Av {{creator}}
-        span.created {{created}}
-      .columns.small-3.text-right.creator ii ii ii
-    .row.content
-      .columns {{mdtext}}
-
-    form
-      textarea(name="reply" id="reply")
-      a.button(on-click="addReply") Add reply
-
-    .replies
-      | {{#replies}}
-      .row.reply
-        .columns.small-offset-1
-          .content {{mdtext}}
+    article#post
+      header
+        h1 {{title}}
+        .meta
           .row
-            .columns.small-offset-1.comments
-              | {{#comments}}
-              .comment {{mdtext}}
-              a.button(on-click="deleteComment") Delete comment
-              | {{/comments}}
-              form
-                textarea(name="comment")
-                a.button(on-click="addComment") Add comment
-            a.button(on-click="deleteReply") Delete reply
-      | {{/replies}}
+            .columns.small-9
+              span.byline Av 
+                a(href="/users/{{creator.username}}") {{creator.name}}
+              time.created(datetime="{{isodate(created)}}") {{shortdate(created)}}
+            .columns.small-3.text-right.creator
+              i.fa.fa-globe(title="Tilgjengelig for alle")
+              i.fa.fa-users(title="Tilgjengelig for alle medlemmer")
+              i.fa.fa-user(title="Tilgjengelig bare for deg")
+
+      .content
+        .row
+          .columns {{{marked(mdtext)}}}
+
+      form
+        textarea(name="reply" id="reply")
+        a.button(on-click="addReply") Add reply
+
+      .replies
+        | {{#replies}}
+        .row.reply
+          .columns.small-offset-1
+            .content {{mdtext}}
+            .row
+              .columns.small-offset-1.comments
+                | {{#comments}}
+                .comment {{mdtext}}
+                a.button(on-click="deleteComment") Delete comment
+                | {{/comments}}
+                form
+                  textarea(name="comment")
+                  a.button(on-click="addComment") Add comment
+              a.button(on-click="deleteReply") Delete reply
+        | {{/replies}}
     | {{/post}}
 
 block javascript

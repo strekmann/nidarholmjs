@@ -59,7 +59,7 @@ module.exports.get_post = function (req, res, next) {
         return next();
     }
 
-    ForumPost.findById(req.params.id, function (err, post) {
+    ForumPost.findById(req.params.id).populate('creator').exec(function (err, post) {
         if (err) {
             return next(err);
         }

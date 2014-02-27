@@ -14,6 +14,7 @@
 @import "font-awesome";
 
 $dark-orange: #f2784b;
+$serif-font: georgia, 'times new roman', times, serif;
 
 /* foundation ++ */
 @media #{$medium-up} {
@@ -42,6 +43,13 @@ body {
     border-top: 5px solid $primary-color;
 }
 
+h1 {
+    font-family: georgia, 'times new roman', times, serif;
+    font-style: italic;
+    margin: rem-calc(0 0 10px 0);
+    line-height: 1.2;
+}
+
 .button {
     -webkit-box-shadow: none;
        -moz-box-shadow: none;
@@ -65,7 +73,7 @@ a:focus {
 }
 
 #flash {
-    margin: 1em 0;
+    margin: 2em 0 0 0;
 }
 
 #logobtn {
@@ -150,8 +158,44 @@ nav.top-bar {
 }
 
 #forum {
+    header {
+        margin-bottom: 1em;
+    }
+
+    .meta {
+        border-top: 1px solid $hr-border-color;
+        padding-top: rem-calc(2px);
+        font-size: rem-calc(12px);
+        font-family: $serif-font;
+
+        a {
+            color: $body-font-color;
+            text-transform: uppercase;
+        }
+
+        time.created {
+            text-transform: uppercase;
+            font-weight: 300;
+        }
+
+        i.fa {
+            margin-left: 0.5em;
+            color: $hr-border-color;
+
+            &:hover {
+                color: $body-font-color;
+                transition: color 200ms;
+            }
+        }
+    }
+
+    .content {
+        font-family: $serif-font;
+        line-height: 1.4;
+    }
+
     span {
-        padding-right: 1em; /* want some air since jade strips spaces */
+        margin-right: 1em; /* want some air since jade strips spaces */
     }
 }
 @media #{$small-only} {
