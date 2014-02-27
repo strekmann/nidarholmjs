@@ -14,6 +14,13 @@ block content
           for event in project.events
             .event
               h3= event.title
+              .meta
+                | Av 
+                = event.creator
+                = shortdate(event.start)
+                = shortdate(event.end)
+                a.deleteevent(href="/projects/" + project.id + "/events/" + event.id)
+                  i.fa.fa-trash-o
 
         form(action="/projects/" + project.id + "/events" method="post")
           h2 Legg til aktivitet
@@ -29,4 +36,4 @@ block content
 
 block javascript
   script.
-    //require('s7n').projects.projectView();
+    require('s7n').projects.projectView();
