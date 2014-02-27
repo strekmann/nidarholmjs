@@ -27,25 +27,42 @@ block content
         .row
           .columns {{{marked(mdtext)}}}
 
-      form
-        textarea(name="reply" id="reply")
-        a.button(on-click="addReply") Add reply
+      section#replies
+        .row
+          .columns.small-offset-1.small-11
+            form
+              label(for="reply") Legg inn en kommentar:
+              textarea(name="reply" id="reply" on-focus-blur="checkAreaSize")
+              a.tiny.button.right(on-click="addReply") Send
 
-      .replies
         | {{#replies}}
-        .row.reply
-          .columns.small-offset-1
-            .content {{mdtext}}
+        .row
+          .columns.small-offset-1.small-11
+            .highlight
+              .meta
+                span.byline Av 
+                  a(href="/users/{{creator.username}}") {{creator.name}}
+                a.right(on-click="deleteReply")
+                  i.fa.fa-trash-o
+              .content {{{marked(mdtext)}}}
+
+            | {{#comments}}
             .row
-              .columns.small-offset-1.comments
-                | {{#comments}}
-                .comment {{mdtext}}
-                a.button(on-click="deleteComment") Delete comment
-                | {{/comments}}
+              .columns.small-offset-1.small-11
+                .highlight
+                  .meta
+                    span.byline Av 
+                      a(href="/users/{{creator.username}}") {{creator.name}}
+                      a.right(on-click="deleteComment")
+                        i.fa.fa-trash-o
+                  .content {{{marked(mdtext)}}}
+            | {{/comments}}
+            .row
+              .columns.small-offset-1.small-11
                 form
-                  textarea(name="comment")
-                  a.button(on-click="addComment") Add comment
-              a.button(on-click="deleteReply") Delete reply
+                  label Svar:
+                  textarea(name="comment" on-focus-blur="checkAreaSize")
+                  a.tiny.button.right(on-click="addComment") Send
         | {{/replies}}
     | {{/post}}
 
