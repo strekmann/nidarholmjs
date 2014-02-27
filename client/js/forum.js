@@ -71,7 +71,7 @@ module.exports.forumView = function () {
             url: '/forum/' + id,
             type: 'delete',
             success: function (data) {
-                $('#flash').append('<div data-alert class="columns alert-box success">' + data.title + ' er slettet</div>');
+                $('#flash').append('<div data-alert class="alert-box success">' + data.title + ' er slettet</div>');
                 post.remove();
             }
         });
