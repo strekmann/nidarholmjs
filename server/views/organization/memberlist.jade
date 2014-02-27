@@ -12,7 +12,6 @@ block content
           .group(data-id=group.id)
             h2
               = group.name
-              = group.members
               a.removegroup(href="#")
                 i.fa.fa-minus
             for member in group.members

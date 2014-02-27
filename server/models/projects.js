@@ -29,7 +29,7 @@ var EventSchema = new mongoose.Schema({
         name: {type: String},
         role: {type: String}
     }],
-    comment: {type: String}
+    mdtext: {type: String}
 });
 
 var ProjectSchema = new mongoose.Schema({
