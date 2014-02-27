@@ -64,7 +64,7 @@ module.exports.project = function (req, res, next) {
 
     Project.findById(id, function (err, project) {
         if (err) { return next(err); }
-        Event.find({tags: project.tag}, function (err, events) {
+        Event.find({tags: project.tag}).populate('creator').exec(function (err, events) {
             project.events = events;
             res.format({
                 json: function () {
@@ -85,7 +85,8 @@ module.exports.project_create_event = function (req, res, next) {
         title = req.body.title,
         location = req.body.location,
         start = req.body.start,
-        end = req.body.end;
+        end = req.body.end,
+        mdtext = req.body.mdtext;
 
     Project.findById(id, function (err, project) {
         if (err) { return next(err); }
@@ -96,7 +97,9 @@ module.exports.project_create_event = function (req, res, next) {
         event.location = location;
         event.start = start;
         event.end = end;
+        event.mdtext = mdtext;
         event.creator = req.user;
+
 
         event.save(function (err) {
             if (err) { return next(err); }

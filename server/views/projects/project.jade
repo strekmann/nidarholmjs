@@ -16,7 +16,7 @@ block content
               h3= event.title
               .meta
                 | Av 
-                = event.creator
+                = event.creator.name
                 = shortdate(event.start)
                 = shortdate(event.end)
                 a.deleteevent(href="/projects/" + project.id + "/events/" + event.id)
@@ -32,6 +32,8 @@ block content
           input.start(name="start" type="text")
           label Slutt
           input.end(name="end" type="text")
+          label Beskrivelse
+          textarea.mdtext(name="mktext")
           button Legg til aktivitet
 
 block javascript

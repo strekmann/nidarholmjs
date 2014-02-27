@@ -13,7 +13,7 @@ var EventSchema = new mongoose.Schema({
         broadcast: {type: Boolean, default: false}
     },
     tags: [{type: String}],
-    creator: {type: String, ref: 'User'},
+    creator: {type: String, ref: 'User', required: true},
     created: {type: Date, default: Date.now},
     music: [{
         title: {type: String, required: true},
@@ -39,6 +39,8 @@ var ProjectSchema = new mongoose.Schema({
     private_mdtext: {type: String},
     start: {type: Date},
     end: {type: Date, required: true},
+    creator: {type: String, ref: 'user', required: true},
+    created: {type: Date, default: Date.now},
     permissions: {
         users: [schema.UserSchema],
         groups: [schema.GroupSchema],
