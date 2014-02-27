@@ -175,6 +175,11 @@ app.get('/files/new', file_routes.index);
 app.post('/files/upload', file_routes.upload);
 app.put('/files/:id', file_routes.update);
 
+var project_routes = require('./routes/projects');
+app.get('/projects', project_routes.index);
+app.post('/projects', project_routes.create_project);
+app.delete('/projects/:id', project_routes.delete_project);
+
 app.get('/foundation', function(req, res){
     res.render('foundation');
 });

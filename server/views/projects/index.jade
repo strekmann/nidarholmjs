@@ -1,0 +1,34 @@
+extends ../layouts/main.jade
+
+block content
+  .row
+    .columns
+      #projects
+        form#newprojectform
+          h1 Nytt prosjekt
+          label(for="title") Tittel
+          input#title(name="title" type="text")
+          label(for="tag") Merkelapp
+          input#tag(name="tag" type="text")
+          label(for="private_mdtext") Intern beskrivelse
+          textarea#private_mdtext(name="private_mdtext")
+          label(for="public_mdtext") Publisert beskrivelse (om denne er tom, blir ikke prosjektet vist eksternt)
+          textarea#public_mdtext(name="public_mdtext")
+          label(for="start") Prosjektstart
+          input#start(name="start" type="text")
+          label(for="end") Prosjektslutt
+          input#end(name="end" type="text")
+          p Rettigheter og bidragsytere kommer etterhvert
+          button Lagre
+
+        for project in projects
+          .project(data-id=project.id)
+            h1
+              a(href="/projects/" + hoid(project.id))= project.title
+            p= project.end
+            form
+              button.deleteproject Slett prosjekt
+
+block javascript
+  script.
+    require('s7n').projects.projectListView();

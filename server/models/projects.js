@@ -25,7 +25,7 @@ var EventSchema = new mongoose.Schema({
             role: {type: String}
         }]
     }],
-    constributors: [{
+    contributors: [{
         name: {type: String},
         role: {type: String}
     }],
@@ -44,7 +44,7 @@ var ProjectSchema = new mongoose.Schema({
         groups: [schema.GroupSchema],
         broadcast: {type: Boolean, default: false}
     },
-    constributors: [{
+    contributors: [{
         user: {type: String, ref: 'User'},
         role: {type: String}
     }]
