@@ -30,13 +30,19 @@ app.configure(function(){
             return moment(str).format();
         };
         res.locals.shortdate = function (str) {
-            return moment(str).format('l');
+            if (str) {
+                return moment(str).format('ll');
+            }
         };
         res.locals.longdate = function (str) {
-            return moment(str).format('LLL');
+            if (str) {
+                return moment(str).format('LLL');
+            }
         };
         res.locals.ago = function (str) {
-            return moment(str).fromNow();
+            if (str) {
+                return moment(str).fromNow();
+            }
         };
         next();
     });
