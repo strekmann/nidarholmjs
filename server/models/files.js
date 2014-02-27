@@ -1,5 +1,4 @@
 var mongoose = require('mongoose'),
-    User = require('../models').User,
     schema = require('../models').schema;
 
 var FileSchema = new mongoose.Schema({
