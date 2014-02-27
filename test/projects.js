@@ -4,6 +4,7 @@ describe("Projects", function () {
 
     var cheerio = require('cheerio'),
         mongoose = require('mongoose'),
+        util = require('../server/lib/util'),
         User = require('../server/models/index').User,
         Project = require('../server/models/projects').Project,
         project_routes = require('../server/routes/projects');
@@ -24,6 +25,14 @@ describe("Projects", function () {
             app.delete('/test/projects/projects/:id', function (req, res, next) {
                 req.user = res.locals.user = user1;
                 return project_routes.delete_project(req, res, next);
+            });
+            app.get('/test/projects/projects/:id', function (req, res, next) {
+                req.user = res.locals.user = user1;
+                return project_routes.project(req, res, next);
+            });
+            app.post('/test/projects/projects/:id/events', function (req, res, next) {
+                req.user = res.locals.user = user1;
+                return project_routes.project_create_event(req, res, next);
             });
             user1 = new User({
                 _id: 'testid',
@@ -107,6 +116,82 @@ describe("Projects", function () {
                 .end(function (err, res) {
                     if (err) { return done(err); }
                     res.body.title.should.equal(project1.title);
+                    done();
+                });
+        });
+    });
+
+    describe("create minimal project", function () {
+        it("should create a minimal project inteded for reuse by other tests", function (done) {
+            var title = 'Project 1',
+                tag = 'project1',
+                end = '2014-03-27';
+
+            request(app)
+                .post('/test/projects/projects')
+                .send({
+                    title: title,
+                    tag: tag,
+                    end: end
+                })
+                .end(function (err, res) {
+                    if (err) { return done(err); }
+                    res.body.title.should.equal(title);
+                    project1 = res.body;
+                    done();
+                });
+        });
+    });
+
+    describe("add event to minimal project", function () {
+        it("should load project page using short url", function (done) {
+            var id = util.h2b64(project1._id);
+            request(app)
+                .get('/test/projects/projects/' + id)
+                .set('Accept', 'text/html')
+                .expect(200)
+                .end(function (err, res) {
+                    if (err) { return done(err); }
+                    $ = cheerio.load(res.text);
+                    var events = $('#project #events .event');
+                    events.length.should.equal(0);
+                    done();
+                });
+        });
+        it("should add event", function (done) {
+            var project_id = util.h2b64(project1._id),
+                title = "Øving",
+                location = "Rosenborg skole",
+                start = "2014-02-24 18:30",
+                end = "2014-02-24 21:30";
+
+            request(app)
+                .post('/test/projects/projects/' + project_id + '/events')
+                .send({
+                    title: title,
+                    location: location,
+                    start: start,
+                    end: end
+                })
+                .expect(200)
+                .end(function (err, res) {
+                    if (err) { return done(err); }
+                    res.body.title.should.equal(title);
+                    res.body.tags[0].should.equal(project1.tag);
+                    done();
+                });
+        });
+        it("should find new event on project page", function (done) {
+            var id = util.h2b64(project1._id);
+            request(app)
+                .get('/test/projects/projects/' + id)
+                .set('Accept', 'text/html')
+                .expect(200)
+                .end(function (err, res) {
+                    if (err) { return done(err); }
+                    $ = cheerio.load(res.text);
+                    var events = $('#project #events .event');
+                    events.length.should.equal(1);
                     done();
                 });
         });

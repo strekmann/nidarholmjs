@@ -1,0 +1,32 @@
+extends ../layouts/main.jade
+
+block content
+  .row
+    .columns
+      #project
+        h1= project.title
+        = project.start
+        = project.end
+        p.
+        = project.private_mdtext
+
+        #events
+          for event in project.events
+            .event
+              h3= event.title
+
+        form.add_event
+          h2 Legg til aktivitet
+          label Tittel
+          input.title(name="title" type="text")
+          label Sted
+          input.location(name="location" type="text")
+          label Start
+          input.start(name="start" type="text")
+          label Slutt
+          input.end(name="end" type="text")
+          button#add_event(type="button") Legg til aktivitet
+
+block javascript
+  script.
+    require('s7n').projects.projectView();

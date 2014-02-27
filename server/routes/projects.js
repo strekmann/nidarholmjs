@@ -1,4 +1,5 @@
-var Project = require('../models/projects').Project,
+var util = require('../lib/util'),
+    Project = require('../models/projects').Project,
     Event = require('../models/projects').Event;
 
 module.exports.index = function (req, res, next) {
@@ -47,5 +48,50 @@ module.exports.delete_project = function (req, res, next) {
     Project.findByIdAndRemove(id, function (err, project) {
         if (err) { return next(err); }
         res.json(200, project);
+    });
+};
+
+module.exports.project = function (req, res, next) {
+    var id = util.b642h(req.params.id);
+
+    Project.findById(id, function (err, project) {
+        if (err) { return next(err); }
+        Event.find({tags: project.tag}, function (err, events) {
+            project.events = events;
+            res.format({
+                json: function () {
+                    res.json(200, project);
+                },
+                html: function () {
+                    res.render('projects/project', {
+                        project: project
+                    });
+                }
+            });
+        });
+    });
+};
+
+module.exports.project_create_event = function (req, res, next) {
+    var id = util.b642h(req.params.id),
+        title = req.body.title,
+        location = req.body.location,
+        start = req.body.start,
+        end = req.body.end;
+
+    Project.findById(id, function (err, project) {
+        if (err) { return next(err); }
+
+        var event = new Event();
+        event.tags = [project.tag];
+        event.title = title;
+        event.location = location;
+        event.start = start;
+        event.end = end;
+
+        event.save(function (err) {
+            if (err) { return next(err); }
+            res.json(200, event);
+        });
     });
 };

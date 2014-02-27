@@ -179,6 +179,8 @@ var project_routes = require('./routes/projects');
 app.get('/projects', project_routes.index);
 app.post('/projects', project_routes.create_project);
 app.delete('/projects/:id', project_routes.delete_project);
+app.get('/projects/:id', project_routes.project);
+app.post('/projects/:id/events', project_routes.project_create_event);
 
 app.get('/foundation', function(req, res){
     res.render('foundation');
