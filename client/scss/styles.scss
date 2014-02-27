@@ -199,13 +199,11 @@ nav.top-bar {
         h1 {
             font-family: $body-font-family;
             font-style: normal;
-            font-size: $h1-font-size - rem-calc(8px);
+            font-size: $h1-font-size - rem-calc(16px);
         }
-        h2 { font-size: $h2-font-size - rem-calc(7px); }
-        h3 { font-size: $h3-font-size - rem-calc(6px); }
-        h4 { font-size: $h4-font-size - rem-calc(5px); }
-        h5 { font-size: $h5-font-size - rem-calc(4px); }
-        h6 { font-size: $h6-font-size - rem-calc(3px); }
+        h2 { font-size: $h2-font-size - rem-calc(12px); }
+        h3 { font-size: $h3-font-size - rem-calc(5px); }
+        h4 { font-size: $h4-font-size - rem-calc(3px); }
     }
 
     span {
