@@ -38,7 +38,14 @@ module.exports.create_project = function (req, res, next) {
 
     project.save(function (err) {
         if (err) { return next(err); }
-        res.json(200, project);
+        res.format({
+            json: function () {
+                res.json(200, project);
+            },
+            html: function () {
+                res.redirect('/projects/' + util.h2b64(project.id));
+            }
+        });
     });
 };
 

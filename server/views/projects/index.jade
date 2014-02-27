@@ -4,7 +4,7 @@ block content
   .row
     .columns
       #projects
-        form#newprojectform
+        form(action="/projects" method="post")
           h1 Nytt prosjekt
           label(for="title") Tittel
           input#title(name="title" type="text")
