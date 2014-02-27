@@ -158,8 +158,9 @@ nav.top-bar {
 }
 
 #forum {
-    header {
-        margin-bottom: 1em;
+    textarea {
+        height: 2rem;
+        min-height: 2rem;
     }
 
     .meta {
@@ -167,6 +168,7 @@ nav.top-bar {
         padding-top: rem-calc(2px);
         font-size: rem-calc(12px);
         font-family: $serif-font;
+        margin-bottom: 1em;
 
         a {
             color: $body-font-color;
@@ -181,10 +183,11 @@ nav.top-bar {
         i.fa {
             margin-left: 0.5em;
             color: $hr-border-color;
+            transition: color 300ms;
 
             &:hover {
                 color: $body-font-color;
-                transition: color 200ms;
+                transition: color 300ms;
             }
         }
     }
@@ -192,10 +195,40 @@ nav.top-bar {
     .content {
         font-family: $serif-font;
         line-height: 1.4;
+
+        h1 {
+            font-family: $body-font-family;
+            font-style: normal;
+            font-size: $h1-font-size - rem-calc(8px);
+        }
+        h2 { font-size: $h2-font-size - rem-calc(7px); }
+        h3 { font-size: $h3-font-size - rem-calc(6px); }
+        h4 { font-size: $h4-font-size - rem-calc(5px); }
+        h5 { font-size: $h5-font-size - rem-calc(4px); }
+        h6 { font-size: $h6-font-size - rem-calc(3px); }
     }
 
     span {
         margin-right: 1em; /* want some air since jade strips spaces */
+    }
+
+    #replies {
+        &:before {
+            content: "";
+            display: block;
+            box-sizing: content-box;
+            border-top: 2px solid $hr-border-color;
+            border-bottom: 1px solid $hr-border-color;
+            margin: rem-calc(15px 0);
+            background-color: #fff;
+            height: 1px;
+        }
+
+        .highlight:hover {
+            .meta i.fa {
+                color: $primary-color;
+            }
+        }
     }
 }
 @media #{$small-only} {

@@ -12,6 +12,7 @@ module.exports.threadView = function(){
             mdtext: $('#reply').val()
         };
         forum.addReply(reply);
+        $('#reply').val('');
     });
 
     forum.on('deleteReply', function(event){
@@ -25,11 +26,23 @@ module.exports.threadView = function(){
         };
 
         forum.addComment(event.context._id, comment);
+        $(event.node).siblings('textarea').val('');
     });
 
     forum.on('deleteComment', function(event){
         var replyid = this.data.post.replies[event.keypath.split('.')[2]]._id;
         forum.deleteComment(replyid, {_id: event.context._id});
+    });
+
+    forum.on('checkAreaSize', function(event){
+        var type = event.original.type,
+            elem = $(event.node);
+
+        if (type === 'focus' && elem.val().trim().length === 0){
+            elem.css('height', '6rem');
+        } else if (elem.val().trim().length === 0){
+            elem.css('height', '');
+        }
     });
 
     return forum;
