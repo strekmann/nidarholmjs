@@ -60,6 +60,12 @@ html(lang=lang dir=lang_dir)
                 if messages.error
                     each message in messages.error
                         .alert-box.alert= message
+                if messages.warning
+                    each message in messages.warning
+                        .alert-box.warning= message
+                if messages.success
+                    each message in messages.success
+                        .alert-box.success= message
                 if messages.info
                     each message in messages.info
                         .alert-box.info= message

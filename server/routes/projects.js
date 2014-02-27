@@ -80,7 +80,7 @@ module.exports.project = function (req, res, next) {
 };
 
 module.exports.project_create_event = function (req, res, next) {
-    var id = util.b642h(req.params.id),
+    var id = req.params.id,
         title = req.body.title,
         location = req.body.location,
         start = req.body.start,
@@ -98,7 +98,15 @@ module.exports.project_create_event = function (req, res, next) {
 
         event.save(function (err) {
             if (err) { return next(err); }
-            res.json(200, event);
+            res.format({
+                json: function () {
+                    res.json(200, project);
+                },
+                html: function () {
+                    req.flash('success', 'Aktiviteten ble lagret');
+                    res.redirect('/projects/' + util.h2b64(project.id));
+                }
+            });
         });
     });
 };
