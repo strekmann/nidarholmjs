@@ -108,6 +108,15 @@ var Forum = Ractive.extend({
                     ]
                 }
             ]
+        },
+        marked: function(text){
+            return marked(text);
+        },
+        shortdate: function(date){
+            return moment(date).format('ll');
+        },
+        isodate: function(date){
+            return moment(date).format();
         }
     }
 });
