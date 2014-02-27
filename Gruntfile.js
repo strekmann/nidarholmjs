@@ -68,6 +68,7 @@ module.exports = function(grunt) {
                     'bower_components/foundation/js/vendor/fastclick.js',
                     'bower_components/foundation/js/foundation.js',
                     'bower_components/moment/moment.js',
+                    'bower_components/marked/lib/marked.js',
                     'bower_components/dropzone/downloads/dropzone.js',
                     'bower_components/ractive/Ractive.js',
                     'bower_components/ractive-events-tap/Ractive-events-tap.js',

@@ -8,6 +8,7 @@
     "ractive": "",
     "ractive-events-tap": "",
     "html.sortable": "",
-    "chosen": ""
+    "chosen": "",
+    "marked": "~0.3.1"
   }
 }
