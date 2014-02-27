@@ -100,7 +100,7 @@ module.exports.project_create_event = function (req, res, next) {
             if (err) { return next(err); }
             res.format({
                 json: function () {
-                    res.json(200, project);
+                    res.json(200, event);
                 },
                 html: function () {
                     req.flash('success', 'Aktiviteten ble lagret');

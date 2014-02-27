@@ -159,7 +159,7 @@ describe("Projects", function () {
                 });
         });
         it("should add event", function (done) {
-            var project_id = util.h2b64(project1._id),
+            var project_id = project1._id,
                 title = "Øving",
                 location = "Rosenborg skole",
                 start = "2014-02-24 18:30",
