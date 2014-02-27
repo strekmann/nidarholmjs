@@ -35,6 +35,7 @@ module.exports.create_project = function (req, res, next) {
     project.public_mdtext = public_mdtext;
     project.start = req.body.start;
     project.end = req.body.end;
+    project.creator = req.user;
 
     project.save(function (err) {
         if (err) { return next(err); }
@@ -95,6 +96,7 @@ module.exports.project_create_event = function (req, res, next) {
         event.location = location;
         event.start = start;
         event.end = end;
+        event.creator = req.user;
 
         event.save(function (err) {
             if (err) { return next(err); }
