@@ -42,9 +42,9 @@ block content
         for group in user.groups
           if group
             li.group(data-id=group.id)
-              = group.name
+              a(href="/groups/" + hoid(group.id))= group.name
               a.removegroup(href="#")
-                i.fa.fa-minus
+                i.fa.fa-times
           else
             = group
 

@@ -7,5 +7,6 @@ block content
 
       ul#groups
         for group in groups
-          li.group
-            a(href="/groups/" + group.id)= group.name
+          if group.id
+            li.group
+              a(href="/groups/" + hoid(group.id))= group.name

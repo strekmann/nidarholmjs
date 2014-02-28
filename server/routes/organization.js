@@ -3,6 +3,7 @@ var Q = require("q"),
     async = require('async'),
     slug = require('slug'),
     mongoose = require('mongoose'),
+    util = require('../lib/util'),
     User = require('../models').User,
     Group = require('../models').Group,
     Organization = require('../models').Organization;
@@ -275,7 +276,7 @@ module.exports.groups = function (req, res, next) {
 };
 
 module.exports.group = function (req, res, next){
-    var groupid = req.params.id;
+    var groupid = util.b642h(req.params.id);
 
     Group.findById(groupid)
         .populate('members.user')

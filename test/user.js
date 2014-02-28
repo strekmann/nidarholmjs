@@ -4,6 +4,7 @@ describe("User", function () {
 
     var cheerio = require('cheerio'),
         mongoose = require('mongoose'),
+        util = require('../server/lib/util'),
         User = require('../server/models/index').User,
         Group = require('../server/models/index').Group,
         Organization = require('../server/models/index').Organization,
@@ -77,7 +78,7 @@ describe("User", function () {
     describe("Add existing user to group", function () {
         it("should have empty group", function (done) {
             request(app)
-                .get('/test/user/groups/'+group.id)
+                .get('/test/user/groups/' + util.h2b64(group.id))
                 .set('Accept', 'text/html')
                 .expect(200)
                 .end(function (err, res) {
@@ -134,7 +135,7 @@ describe("User", function () {
         });
         it("should see added user in group member page", function (done) {
             request(app)
-                .get('/test/user/groups/'+group.id)
+                .get('/test/user/groups/' + util.h2b64(group.id))
                 .set('Accept', 'text/html')
                 .expect(200)
                 .end(function (err, res) {
