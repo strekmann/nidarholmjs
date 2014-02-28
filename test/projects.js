@@ -15,27 +15,27 @@ describe("Projects", function () {
     before(function (done) {
         app.db.connection.db.dropDatabase(function () {
             app.get('/test/projects/projects', function (req, res, next) {
-                req.user = res.locals.user = user1;
+                req.user = res.locals.active_user = user1;
                 return project_routes.index(req, res, next);
             });
             app.post('/test/projects/projects', function (req, res, next) {
-                req.user = res.locals.user = user1;
+                req.user = res.locals.active_user = user1;
                 return project_routes.create_project(req, res, next);
             });
             app.delete('/test/projects/projects/:id', function (req, res, next) {
-                req.user = res.locals.user = user1;
+                req.user = res.locals.active_user = user1;
                 return project_routes.delete_project(req, res, next);
             });
             app.get('/test/projects/projects/:id', function (req, res, next) {
-                req.user = res.locals.user = user1;
+                req.user = res.locals.active_user = user1;
                 return project_routes.project(req, res, next);
             });
             app.post('/test/projects/projects/:id/events', function (req, res, next) {
-                req.user = res.locals.user = user1;
+                req.user = res.locals.active_user = user1;
                 return project_routes.project_create_event(req, res, next);
             });
             app.delete('/test/projects/projects/:project_id/events/:event_id', function (req, res, next) {
-                req.user = res.locals.user = user1;
+                req.user = res.locals.active_user = user1;
                 return project_routes.project_delete_event(req, res, next);
             });
             user1 = new User({

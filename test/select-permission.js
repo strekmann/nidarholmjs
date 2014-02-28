@@ -17,7 +17,7 @@ describe("Select permission", function () {
     before(function (done) {
         app.db.connection.db.dropDatabase(function () {
             app.get('/test/select-permissions/files', function (req, res) {
-                req.user = res.locals.user = user1;
+                req.user = res.locals.active_user = user1;
                 return file_routes.all(req, res);
             });
 

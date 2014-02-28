@@ -17,15 +17,15 @@ describe("User", function () {
     before(function (done) {
         app.db.connection.db.dropDatabase(function () {
             app.get('/test/user/:username', function (req, res) {
-                req.user = res.locals.user = user1;
+                req.user = res.locals.active_user = user1;
                 return organization_routes.user(req, res);
             });
             app.post('/test/user/:username/groups', function (req, res) {
-                req.user = res.locals.user = user1;
+                req.user = res.locals.active_user = user1;
                 return organization_routes.user_add_group(req, res);
             });
             app.get('/test/user/groups/:id', function (req, res) {
-                req.user = res.locals.user = user1;
+                req.user = res.locals.active_user = user1;
                 return organization_routes.group(req, res);
             });
 

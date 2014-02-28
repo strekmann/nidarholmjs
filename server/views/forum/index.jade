@@ -13,7 +13,7 @@ block content
             textarea#mdtext(name="mdtext")
             label(for="permissions") Rettigheter
             select#permissions(name="permissions")
-              +permission_options(user.groups, user.friends)
+              +permission_options(active_user.groups, active_user.friends)
             button#cancelpost.secondary(type="reset") Avbryt
             button Lagre
         a#newpost.button

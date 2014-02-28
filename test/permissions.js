@@ -1,6 +1,6 @@
 /*jshint expr: true*/
 
-describe("Organization", function () {
+describe("Permissions", function () {
 
     var cheerio = require('cheerio'),
         mongoose = require('mongoose'),
@@ -19,7 +19,7 @@ describe("Organization", function () {
     before(function (done) {
         app.db.connection.db.dropDatabase(function () {
             app.get('/test/files', function (req, res) {
-                req.user = res.locals.user = user;
+                req.user = res.locals.active_user = user;
                 return file_routes.all(req, res);
             });
 

@@ -14,11 +14,11 @@ describe("Files", function () {
     before(function (done) {
         app.db.connection.db.dropDatabase(function () {
             app.get('/test/files/files', function (req, res) {
-                req.user = res.locals.user = user1;
+                req.user = res.locals.active_user = user1;
                 return file_routes.all(req, res);
             });
             app.post('/test/files/upload', function (req, res) {
-                req.user = res.locals.user = user1;
+                req.user = res.locals.active_user = user1;
                 return file_routes.upload(req, res);
             });
 

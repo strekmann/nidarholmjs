@@ -46,9 +46,10 @@ html(lang=lang dir=lang_dir)
                             a(href="/members") Medlemmer
                         li
                             a(href="#") Om nidarholm
-                        if user
+                        if active_user
                             li
-                                a#topbar-username(href="/users/"+user.username)= user.username
+                                a#topbar-username(href="/users/"+active_user.username)
+                                    = active_user.username
                         else
                             li
                                 a(href="/login") Logg inn

@@ -50,7 +50,7 @@ app.configure(function(){
     // has to go after passport.session()
     app.use(function (req, res, next) {
         if (req.user) {
-            res.locals.user = req.user;
+            res.locals.active_user = req.user;
             // TODO: User redis for caching
             User.find().select('username name').exec(function (err, all_users) {
                 if (err) { next(err); }

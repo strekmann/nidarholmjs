@@ -17,35 +17,35 @@ describe("Forum", function () {
     before(function (done) {
         app.db.connection.db.dropDatabase(function () {
             app.get('/test/forum/forum', function (req, res) {
-                req.user = res.locals.user = user1;
+                req.user = res.locals.active_user = user1;
                 return forum_routes.all(req, res);
             });
             app.post('/test/forum/forum', function (req, res) {
-                req.user = res.locals.user = user1;
+                req.user = res.locals.active_user = user1;
                 return forum_routes.create_post(req, res);
             });
             app.delete('/test/forum/:id', function (req, res, next) {
-                req.user = res.locals.user = user1;
+                req.user = res.locals.active_user = user1;
                 return forum_routes.delete_post(req, res, next);
             });
             app.get('/test/forum/:id', function (req, res) {
-                req.user = res.locals.user = user1;
+                req.user = res.locals.active_user = user1;
                 return forum_routes.get_post(req, res);
             });
             app.post('/test/forum/:postid/replies', function (req, res) {
-                req.user = res.locals.user = user1;
+                req.user = res.locals.active_user = user1;
                 return forum_routes.create_reply(req, res);
             });
             app.post('/test/forum/:postid/replies/:replyid/comments', function (req, res) {
-                req.user = res.locals.user = user1;
+                req.user = res.locals.active_user = user1;
                 return forum_routes.create_comment(req, res);
             });
             app.delete('/test/forum/:postid/replies/:replyid/comments/:commentid', function (req, res) {
-                req.user = res.locals.user = user1;
+                req.user = res.locals.active_user = user1;
                 return forum_routes.delete_comment(req, res);
             });
             app.delete('/test/forum/:postid/replies/:replyid', function (req, res) {
-                req.user = res.locals.user = user1;
+                req.user = res.locals.active_user = user1;
                 return forum_routes.delete_reply(req, res);
             });
 

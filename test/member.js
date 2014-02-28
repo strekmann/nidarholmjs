@@ -16,27 +16,27 @@ describe("Member", function () {
     before(function (done) {
         app.db.connection.db.dropDatabase(function () {
             app.post('/test/members/groups/add', function (req, res, next) {
-                req.user = res.locals.user = user1;
+                req.user = res.locals.active_user = user1;
                 return organization_routes.add_group(req, res, next);
             });
             app.get('/test/members/groups', function (req, res, next) {
-                req.user = res.locals.user = user1;
+                req.user = res.locals.active_user = user1;
                 return organization_routes.memberlist(req, res);
             });
             app.get('/test/members/new', function (req, res, next) {
-                req.user = res.locals.user = user1;
+                req.user = res.locals.active_user = user1;
                 return organization_routes.add_user(req, res);
             });
             app.post('/test/members/new', function (req, res, next) {
-                req.user = res.locals.user = user1;
+                req.user = res.locals.active_user = user1;
                 return organization_routes.create_user(req, res, next);
             });
             app.get('/test/members/users', function (req, res, next) {
-                req.user = res.locals.user = user1;
+                req.user = res.locals.active_user = user1;
                 return organization_routes.users(req, res);
             });
             app.get('/test/members/user/:username', function (req, res, next) {
-                req.user = res.locals.user = user1;
+                req.user = res.locals.active_user = user1;
                 return organization_routes.user(req, res);
             });
 
