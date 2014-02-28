@@ -13,108 +13,108 @@ mixin permission_options(groups, users)
         option(value="u-"+friend.id)= friend.name
 
 html(lang=lang dir=lang_dir)
-    head
-        meta(charset="utf-8")
-        title= title
-        meta(name="viewport" content="width=device-width, initial-scale=1.0")
-        meta(name="author" content="Strekmann")
-        link(href="/css/site.css" rel="stylesheet")
+  head
+    meta(charset="utf-8")
+    title= title
+    meta(name="viewport" content="width=device-width, initial-scale=1.0")
+    meta(name="author" content="Strekmann")
+    link(href="/css/site.css" rel="stylesheet")
 
-        //if lt IE 9
-            script(src='http://html5shim.googlecode.com/svn/trunk/html5.js')
+    //if lt IE 9
+      script(src='http://html5shim.googlecode.com/svn/trunk/html5.js')
 
-        script(src="/js/modernizr.js")
-        link(rel="shortcut icon" href="/img/favicon.png")
+    script(src="/js/modernizr.js")
+    link(rel="shortcut icon" href="/img/favicon.png")
 
-    body
-        a(id="logobtn" href="/")
-        .contain-to-grid
-            nav.top-bar(data-topbar)
-                ul.title-area
-                    li.name
-                        h1
-                            a(href="/") nidarholm
-                    li.toggle-topbar.menu-icon
-                        a(href="#")
-                            span
+  body
+    a(id="logobtn" href="/")
+    .contain-to-grid
+      nav.top-bar(data-topbar)
+        ul.title-area
+          li.name
+            h1
+              a(href="/") nidarholm
+          li.toggle-topbar.menu-icon
+            a(href="#")
+              span
 
-                section.top-bar-section
-                    ul.right
-                        li
-                            a(href="/projects") Prosjekter
-                        li
-                            a(href="/members") Medlemmer
-                        li
-                            a(href="#") Om nidarholm
-                        if active_user
-                            li
-                                a#topbar-username(href="/users/"+active_user.username)
-                                    = active_user.username
-                        else
-                            li
-                                a(href="/login") Logg inn
+        section.top-bar-section
+          ul.right
+            li
+              a(href="/projects") Prosjekter
+            li
+              a(href="/members") Medlemmer
+            li
+              a(href="#") Om nidarholm
+            if active_user
+              li
+                a#topbar-username(href="/users/"+active_user.username)
+                  = active_user.username
+            else
+              li
+                a(href="/login") Logg inn
 
-        .row
-            .large-12.columns#flash
-                if messages.error
-                    each message in messages.error
-                        .alert-box.alert(data-alert)= message
-                          a.close &times;
-                if messages.warning
-                    each message in messages.warning
-                        .alert-box.warning(data-alert)= message
-                          a.close &times;
-                if messages.success
-                    each message in messages.success
-                        .alert-box.success(data-alert)= message
-                          a.close &times;
-                if messages.info
-                    each message in messages.info
-                        .alert-box.info(data-alert)= message
-                          a.close &times;
+    .row
+      .large-12.columns#flash
+        if messages.error
+          each message in messages.error
+            .alert-box.alert(data-alert)= message
+              a.close &times;
+        if messages.warning
+          each message in messages.warning
+            .alert-box.warning(data-alert)= message
+              a.close &times;
+        if messages.success
+          each message in messages.success
+            .alert-box.success(data-alert)= message
+              a.close &times;
+        if messages.info
+          each message in messages.info
+            .alert-box.info(data-alert)= message
+              a.close &times;
 
-        block content
+    block content
 
-        block footer
-            .row
-                .columns
-                    hr
-                    a(href="/projects") Prosjekter
-                    | &nbsp;
-                    a(href="/events") Aktiviteter
-                    | &nbsp;
-                    a(href="/forum") Forum
-                    | &nbsp;
-                    a(href="/files") Filer
-                    | &nbsp;
-                    hr
-            .row
-                .medium-4.columns
-                    | Musikkforeningen Nidarholm
-                    br
-                    | Postboks 1881 Lade
-                    br
-                    | 7440 Trondheim
-                .medium-4.columns
-                    | Bank: 4240 07 10036
-                    br
-                    | Org: 971 558 105
-                .medium-4.columns
-                    | post@nidarholm.no
-                    br
-                    | facebook.com/nidarholm
-                    br
-                    | twitter.com/nidarholm
-            .row
-                .columns
-                    hr
-                    | <a href="#">Nidarholm.js</a> av Strekmann AS
+    block footer
+      .row
+        .columns
+          hr
+          a(href="/projects") Prosjekter
+          | &nbsp;
+          a(href="/events") Aktiviteter
+          | &nbsp;
+          a(href="/forum") Forum
+          | &nbsp;
+          a(href="/files") Filer
+          | &nbsp;
+          hr
+      .row
+        .medium-4.columns
+          | Musikkforeningen Nidarholm
+          br
+          | Postboks 1881 Lade
+          br
+          | 7440 Trondheim
+        .medium-4.columns
+          | Bank: 4240 07 10036
+          br
+          | Org: 971 558 105
+        .medium-4.columns
+          | post@nidarholm.no
+          br
+          | facebook.com/nidarholm
+          br
+          | twitter.com/nidarholm
+      .row
+        .columns
+          hr
+          | <a href="#">Nidarholm.js</a> av Strekmann AS
 
 
-        script(src="/js/vendor.js")
-        script(src="/js/site.js")
+    script(src="/js/vendor.js")
+    script(src="/js/site.js")
 
-        script.
-            $(document).foundation();
+    script.
+      $(document).foundation();
 
-        block javascript
+    block javascript
