@@ -72,6 +72,35 @@ a:focus {
     text-decoration: none;
 }
 
+.dtborder:before {
+    content: "";
+    display: block;
+    box-sizing: content-box;
+    border-top: 2px solid $hr-border-color;
+    border-bottom: 1px solid $hr-border-color;
+    margin: rem-calc(15px 0);
+    background-color: #fff;
+    height: 1px;
+}
+
+footer {
+    font-size: rem-calc(12px);
+    font-weight: 300;
+    margin-top: 2rem;
+    line-height: 1.4;
+
+    i.fa {
+        min-width: 1rem;
+    }
+
+    .bystrekmann {
+        border-top: 1px solid $hr-border-color;
+        margin-top: rem-calc(15px);
+        padding-top: rem-calc(7px);
+        text-align: center;
+    }
+}
+
 #flash {
     margin: 2em 0 0 0;
 }
@@ -211,17 +240,7 @@ nav.top-bar {
     }
 
     #replies {
-        &:before {
-            content: "";
-            display: block;
-            box-sizing: content-box;
-            border-top: 2px solid $hr-border-color;
-            border-bottom: 1px solid $hr-border-color;
-            margin: rem-calc(15px 0);
-            background-color: #fff;
-            height: 1px;
-        }
-
+        
         .highlight:hover {
             .meta i.fa {
                 color: $primary-color;
