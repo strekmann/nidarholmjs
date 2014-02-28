@@ -83,6 +83,23 @@ a:focus {
     height: 1px;
 }
 
+footer {
+    font-size: rem-calc(12px);
+    font-weight: 300;
+    margin-top: 2rem;
+    line-height: 1.4;
+
+    i.fa {
+        min-width: 1rem;
+    }
+
+    .bystrekmann {
+        border-top: 1px solid $hr-border-color;
+        margin-top: rem-calc(15px);
+        padding-top: rem-calc(7px);
+        text-align: center;
+    }
+}
 
 #flash {
     margin: 2em 0 0 0;
