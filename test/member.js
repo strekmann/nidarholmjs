@@ -200,7 +200,7 @@ describe("Member", function () {
                 var users = $('#memberlist .group .member');
                 //console.log(groups.text());
                 users.length.should.equal(2);
-                users.last().find('div').text().should.equal(testuser_name);
+                users.last().find('a').text().should.equal(testuser_name);
                 done(err);
             });
         });
