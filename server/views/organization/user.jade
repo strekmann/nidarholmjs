@@ -2,13 +2,38 @@ extends ../layouts/main
 
 block content
   .row
-    .columns
-      if user==user
-        a.button(href="/logout") log out
-
+    .medium-3.columns.text-center
+      .fa.fa-user.fa-5x.panel
+    .medium-6.columns
       h1= user.name
 
       p#username(data-username=user.username)= user.username
+
+      p= user.instrument
+      p= user.email
+      p= user.nmf_id
+      p= user.phone
+      p= user.address
+      p= user.postcode
+      p= user.city
+      p= user.country
+
+      if active_user.is_admin
+        // TODO: Set better permission checks
+        p= user.born
+        p= user.joined
+        p= user.reskontro
+        = user.membership_history
+
+
+    .medium-3.columns
+      if user==active_user
+        a.button(href="/logout") log out
+
+      if user.is_active
+        | Aktiv bruker
+      if user.is_admin
+        | Admin
 
       h2 Grupper
         if user.groups.length === 0

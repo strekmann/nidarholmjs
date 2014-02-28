@@ -21,7 +21,19 @@ var UserSchema = new mongoose.Schema({
     is_active: {type: Boolean, 'default': true},
     is_admin: {type: Boolean, 'default': false},
     created: {type: Date, required: true, 'default': Date.now},
-    google_id: {type: String}
+    google_id: {type: String},
+    nmf_id: {type: String},
+    phone: {type: String},
+    address: {type: String},
+    postcode: {type: String},
+    city: {type: String},
+    country: {type: String},
+    born: {type: Date},
+    joined: {type: Date},
+    instrument: {type: String},
+    instrument_insurance: {type: Boolean},
+    reskontro: {type: String},
+    membership_history: {type: String}
 });
 
 var OrganizationSchema = new mongoose.Schema({
