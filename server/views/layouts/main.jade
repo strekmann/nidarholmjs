@@ -48,12 +48,10 @@ html(lang=lang dir=lang_dir)
                             a(href="#") Om nidarholm
                         if user
                             li
-                                a#topbar-username(href="#")= user.username
-                            li
-                                a(href="/logout") log out
+                                a#topbar-username(href="/users/"+user.username)= user.username
                         else
                             li
-                                a(href="/login") log in
+                                a(href="/login") Logg inn
 
         .row
             .large-12.columns#flash
@@ -75,6 +73,42 @@ html(lang=lang dir=lang_dir)
                           a.close &times;
 
         block content
+
+        block footer
+            .row
+                .columns
+                    hr
+                    a(href="/projects") Prosjekter
+                    | &nbsp;
+                    a(href="/events") Aktiviteter
+                    | &nbsp;
+                    a(href="/forum") Forum
+                    | &nbsp;
+                    a(href="/files") Filer
+                    | &nbsp;
+                    hr
+            .row
+                .medium-4.columns
+                    | Musikkforeningen Nidarholm
+                    br
+                    | Postboks 1881 Lade
+                    br
+                    | 7440 Trondheim
+                .medium-4.columns
+                    | Bank: 4240 07 10036
+                    br
+                    | Org: 971 558 105
+                .medium-4.columns
+                    | post@nidarholm.no
+                    br
+                    | facebook.com/nidarholm
+                    br
+                    | twitter.com/nidarholm
+            .row
+                .columns
+                    hr
+                    | <a href="#">Nidarholm.js</a> av Strekmann AS
+
 
         script(src="/js/vendor.js")
         script(src="/js/site.js")

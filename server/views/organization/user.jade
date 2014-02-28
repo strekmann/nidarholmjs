@@ -3,6 +3,9 @@ extends ../layouts/main
 block content
   .row
     .columns
+      if user==user
+        a.button(href="/logout") log out
+
       h1= user.name
 
       p#username(data-username=user.username)= user.username

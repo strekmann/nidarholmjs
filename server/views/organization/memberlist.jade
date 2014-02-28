@@ -3,6 +3,13 @@ extends ../layouts/main
 block content
   section
     div.row
+      div.columns
+        ul.right
+          li
+            a(href="/users") Alle registrerte
+          li
+            a(href="/groups") Alle grupper
+    div.row
       div.small-12.columns#memberlist
         h1= org._id
 
@@ -18,8 +25,8 @@ block content
               if member
                 div.member
                   if member.user
-                    b= member.user.username
-                    div= member.user.name
+                    a(href="/users/" + member.user.username)
+                      = member.user.name
                   if member.role
                     div
                       if member.role
