@@ -82,7 +82,7 @@ app.configure(function(){
 
     // 500 status
     app.use(function(err, req, res, next){
-        console.error(err.message, err.stack);
+        console.error("ERR:", err.message, err.stack);
         res.status(500);
         res.format({
             html: function(){
