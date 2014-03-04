@@ -14,26 +14,32 @@ block content
 
     div.row
       div.small-12.columns#memberlist
-        h1= org._id
-
-        p= org.member_group
+        h1 Instrumentgrupper
 
         for group in org.instrument_groups
           .group(data-id=group.id)
-            h2
-              = group.name
-              a.removegroup(href="#")
-                i.fa.fa-minus
+            .row
+              .small-11.columns
+                h2
+                  = group.name
+              .small-1.columns
+                a.removegroup(href="#")
+                  i.fa.fa-minus
             for member in group.members
-              if member
-                div.member
-                  if member.user
-                    a(href="/users/" + member.user.username)
-                      = member.user.name
-                  if member.role
-                    div
-                      if member.role
-                        = member.role
+              if member && member.user
+                .member.row
+                  a(href="/users/" + member.user.username).medium-4.columns
+                    = member.user.name
+                  .medium-2.columns
+                    if member.role
+                      = member.role
+                    else
+                      | &nbsp;
+                  .medium-2.columns
+                    = member.user.phone
+                  .medium-4.columns
+                    a(href="mailto:" + member.user.email)
+                      = member.user.email
 
     div.row
       div.small-12.columns

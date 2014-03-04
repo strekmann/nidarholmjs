@@ -17,12 +17,12 @@ block content
 
       p= user.instrument
       p= user.email
-      p= user.nmf_id
       p= user.phone
       p= user.address
       p= user.postcode
       p= user.city
       p= user.country
+      p= user.nmf_id
 
       if active_user.is_admin
         // TODO: Set better permission checks
@@ -35,7 +35,7 @@ block content
     .medium-3.columns
       if user.id==active_user.id
         a.button(href="/users/" + user.username + "/edit") Rediger brukerdata
-        a.button(href="/logout") log out
+        a.button(href="/logout") Logg ut
 
       h2 Grupper
         if user.groups.length === 0

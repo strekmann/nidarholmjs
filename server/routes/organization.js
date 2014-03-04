@@ -186,6 +186,7 @@ module.exports.update_user = function (req, res, next) {
 
     changes.username = req.body.username;
     changes.name = req.body.name;
+    changes.phone = req.body.phone;
     changes.email = req.body.email;
     changes.instrument = req.body.instrument;
     changes.born = req.body.born;
