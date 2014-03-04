@@ -11,6 +11,7 @@ var isObjectId = function(string){
 
 module.exports.all = function (req, res, next) {
     ForumPost.find({})
+    .sort('-created')
     .populate('creator', 'username name')
     .select('_id title created mdtext tags permissions creator')
     .exec(function (err, posts) {
