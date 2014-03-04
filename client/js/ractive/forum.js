@@ -4,6 +4,22 @@ var Forum = Ractive.extend({
         this.restAPI = options.restAPI || '/api/forum';
     },
 
+    addPost: function(post) {
+        var self = this,
+            url = this.restAPI,
+            promise = $.ajax({
+                url: url,
+                type: 'post',
+                data: post,
+                });
+
+        promise.then(function (data) {
+            self.data.posts.unshift(data);
+        }, function(xhr, status, err){
+            console.error(err);
+        });
+    },
+
     addReply: function(reply){
         var self = this,
             url = [this.restAPI, this.data.post._id, 'replies'],

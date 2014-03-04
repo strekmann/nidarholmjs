@@ -55,6 +55,18 @@ module.exports.forumView = function () {
         restAPI: '/forum'
     });
 
+    forum.on('addPost', function (event) {
+        event.original.preventDefault();
+
+        var node = $(event.node),
+            post = {
+                title: node.find('#title').val(),
+                mdtext: node.find('#mdtext').val()
+            };
+
+        forum.addPost(post);
+    });
+
     $('#newpostform').hide();
     $('#newpostform').on('submit', function (event) {
         var title = $('#newpostform #title').val(),

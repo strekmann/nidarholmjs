@@ -6,7 +6,7 @@ block content
       #forum
 
   script#template(type="text/ractive")
-    form.newpost(method="POST")
+    form.newpost(method="POST" on-submit="addPost")
       h1 Nytt innlegg
       label(for="title") Tittel
       input#title(name="title" type="text")
