@@ -50,7 +50,7 @@ describe("Select permission", function () {
                 permissions: {
                     users: [],
                     groups: [],
-                    broadcast: true // must see file in list to check permission select
+                    public: true // must see file in list to check permission select
                 }
             });
             group.save(function (err) {

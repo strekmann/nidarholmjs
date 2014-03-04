@@ -47,7 +47,7 @@ describe("Permissions", function () {
                 permissions: {
                     users: [],
                     groups: [],
-                    broadcast: false
+                    public: false
                 }
             });
             user.save(function (err) {
@@ -110,7 +110,7 @@ describe("Permissions", function () {
                 });
         });
         it("should see one public file", function (done) {
-            file.permissions.broadcast = true;
+            file.permissions.public = true;
             file.save(function (err) {
                 if (err) { return done(err); }
                 request(app)

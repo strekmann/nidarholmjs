@@ -10,7 +10,7 @@ var _ = require('underscore'),
 module.exports.all = function (req, res) {
     File.find().or([
         {creator: req.user},
-        {'permissions.broadcast': true},
+        {'permissions.public': true},
         {'permissions.users': req.user._id},
         {'permissions.groups': {
             $in: _.map(req.user.groups, function (g) {
