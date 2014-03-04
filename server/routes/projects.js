@@ -124,3 +124,15 @@ module.exports.project_delete_event = function (req, res, next) {
         res.json(200, event);
     });
 };
+
+// TODO: Temporary page? Add ical format? How to find URL to it?
+module.exports.events = function (req, res, next) {
+    Event.find({}, function (err, events) {
+        if (err) { return next(err); }
+        res.format({
+            html: function () {
+                res.render('projects/events', {events: events});
+            }
+        });
+    });
+};

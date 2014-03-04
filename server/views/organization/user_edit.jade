@@ -1,0 +1,40 @@
+extends ../layouts/main
+
+block content
+  .row
+    .columns
+      form#user(method="post" action="/users/" + user._id + '/edit')
+        h1= user.name
+
+        label(for="name") Navn
+        input#name(name="name" type="text" value=user.name)
+        label(for="username") Brukernavn
+        input#username(name="username" type="text" value=user.username)
+        label(for="email") Epost
+        input#email(name="email" type="text" value=user.email)
+        label(for="instrument") Instrument
+        input#instrument(name="instrument" type="text" value=user.instrument)
+        label(for="born") Født
+        input#born(name="born" type="text" value=user.born)
+        label(for="phone") Telefon
+        input#phone(name="phone" type="text" value=user.phone)
+        label(for="address") Adresse
+        input#address(name="address" type="text" value=user.address)
+        label(for="postcode") Postnummer
+        input#postcode(name="postcode" type="text" value=user.postcode)
+        label(for="city") Poststed
+        input#city(name="city" type="text" value=user.city)
+        label(for="country") Land
+        input#country(name="country" type="text" value=user.country)
+
+        if active_user.is_admin
+          label(for="joined") Ble medlem første gang
+          input#joined(name="joined" type="date" value=user.joined)
+          label(for="nmf_id") Medlemsnummer i NMF
+          input#nmf_id(name="nmf_id" type="text" value=user.nmf_id)
+          label(for="reskontro") Reskontro
+          input#reskontro(name="reskontro" type="text" value=user.reskontro)
+          label(for="membership_history") Medlemskapshistorikk
+          textarea#membership_history(name="membership_history")
+
+        button Lagre

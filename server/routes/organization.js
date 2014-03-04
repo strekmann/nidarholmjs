@@ -164,10 +164,52 @@ module.exports.create_user = function (req, res, next) {
             } else {
                 user.save(function (err) {
                     if (err) { next(err); }
-                    res.redirect('/members');
+                    res.redirect('/users/' + user.username + '/edit');
                 });
             }
         });
+    });
+};
+
+module.exports.edit_user = function (req, res, next) {
+    var username = req.params.username;
+
+    User.findOne({username: username}, function (err, user) {
+        if (err) { next(err); }
+        res.render('organization/user_edit.jade', {user: user});
+    });
+};
+
+module.exports.update_user = function (req, res, next) {
+    var id = req.params.id, // this is needed as we can change username
+        changes = {};
+
+    changes.username = req.body.username;
+    changes.name = req.body.name;
+    changes.email = req.body.email;
+    changes.instrument = req.body.instrument;
+    changes.born = req.body.born;
+    changes.address = req.body.address;
+    changes.postcode = req.body.postcode;
+    changes.city = req.body.city;
+    changes.country = req.body.country;
+
+    if (req.body.joined) {
+        changes.joined = req.body.joined;
+    }
+    if (req.body.nmf_id) {
+        changes.nmf_id = req.body.nmf_id;
+    }
+    if (req.body.reskontro) {
+        changes.reskontro = req.body.reskontro;
+    }
+    if (req.body.membership_history) {
+        changes.membership_history = req.body.membership_history;
+    }
+
+    User.findByIdAndUpdate(id, changes, function (err, user) {
+        if (err) { next(err); }
+        res.redirect('/users/' + user.username);
     });
 };
 

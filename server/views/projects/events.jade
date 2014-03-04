@@ -1,0 +1,13 @@
+extends ../layouts/main.jade
+
+block content
+  .row
+    .columns
+      #events
+        for event in events
+          .event(data-id=event.id)
+            h1= event.title
+            p= event.start
+            p= event.location
+            p= event.tags
+            p= event.mdtext

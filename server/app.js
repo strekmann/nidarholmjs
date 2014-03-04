@@ -169,6 +169,8 @@ app.delete('/members/:groupid', organization_routes.remove_group);
 
 app.get('/users', organization_routes.users);
 app.get('/users/:username', organization_routes.user);
+app.get('/users/:username/edit', organization_routes.edit_user);
+app.post('/users/:id/edit', organization_routes.update_user);
 app.post('/users/:username/groups', organization_routes.user_add_group);
 app.delete('/users/:username/groups/:groupid', organization_routes.user_remove_group);
 
@@ -188,6 +190,7 @@ app.delete('/projects/:id', project_routes.delete_project);
 app.get('/projects/:id', project_routes.project);
 app.post('/projects/:id/events', project_routes.project_create_event);
 app.delete('/projects/:project_id/events/:event_id', project_routes.project_delete_event);
+app.get('/events', project_routes.events);
 
 app.get('/foundation', function(req, res){
     res.render('foundation');

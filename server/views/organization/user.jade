@@ -2,8 +2,14 @@ extends ../layouts/main
 
 block content
   .row
-    .medium-3.columns.text-center
-      .fa.fa-user.fa-5x.panel
+    .medium-2.columns
+      img(src="/img/user.png")
+
+      if user.is_active
+        | Aktiv bruker
+      if user.is_admin
+        | Admin
+
     .medium-6.columns
       h1= user.name
 
@@ -27,13 +33,9 @@ block content
 
 
     .medium-3.columns
-      if user==active_user
+      if user.id==active_user.id
+        a.button(href="/users/" + user.username + "/edit") Rediger brukerdata
         a.button(href="/logout") log out
-
-      if user.is_active
-        | Aktiv bruker
-      if user.is_admin
-        | Admin
 
       h2 Grupper
         if user.groups.length === 0
