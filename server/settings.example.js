@@ -13,6 +13,10 @@ module.exports = {
         host: '127.0.0.1',
         port: 6379
     },
+    mongo: {
+        servers: ['mongodb://localhost/nidarholm'],
+        replset: null
+    },
     i18n: {
         locales: ['en'],
         defaultLocale: 'en'
