@@ -29,7 +29,8 @@ block content
 
       section#replies.dtborder
         .row
-          .columns.small-offset-1.small-11
+          img(src="/img/user.png").columns.small-2
+          .columns.small-10
             form
               label(for="reply") Legg inn en kommentar:
               textarea(name="reply" id="reply" on-focus-blur="checkAreaSize")
@@ -37,7 +38,8 @@ block content
 
         | {{#replies}}
         .row
-          .columns.small-offset-1.small-11
+          img(src="/img/user.png").columns.small-2
+          .columns.small-10
             .highlight
               .meta
                 span.byline Av 
@@ -48,7 +50,8 @@ block content
 
             | {{#comments}}
             .row
-              .columns.small-offset-1.small-11
+              img(src="/img/user.png").columns.small-2
+              .columns.small-10
                 .highlight
                   .meta
                     span.byline Av 
@@ -58,7 +61,8 @@ block content
                   .content {{{marked(mdtext)}}}
             | {{/comments}}
             .row
-              .columns.small-offset-1.small-11
+              img(src="/img/user.png").columns.small-2
+              .columns.small-10
                 form
                   label Svar:
                   textarea(name="comment" on-focus-blur="checkAreaSize")
