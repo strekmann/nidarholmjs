@@ -10,10 +10,21 @@ var isObjectId = function(string){
 };
 
 module.exports.all = function (req, res, next) {
-    ForumPost.find({}).populate('creator').exec(function (err, posts) {
+    ForumPost.find({})
+    .populate('creator', 'username name')
+    .select('_id title created mdtext tags permissions creator')
+    .exec(function (err, posts) {
         if (err) {
             return next(err);
         }
+
+        // TODO: have nicer ids on posts?
+        posts = _.map(posts, function(post){
+            var p = post.toJSON();
+            p.oid = util.h2b64(post.id);
+            return p;
+        });
+
         res.format({
             json: function () {
                 res.json(200, posts);

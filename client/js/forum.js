@@ -1,6 +1,6 @@
-module.exports.threadView = function(){
-    var Forum = require('./ractive/forum');
+var Forum = require('./ractive/forum');
 
+module.exports.threadView = function(){
     var forum = new Forum({
         el: '#forum',
         template: '#template',
@@ -49,6 +49,12 @@ module.exports.threadView = function(){
 };
 
 module.exports.forumView = function () {
+    var forum = new Forum({
+        el: '#forum',
+        template: '#template',
+        restAPI: '/forum'
+    });
+
     $('#newpostform').hide();
     $('#newpostform').on('submit', function (event) {
         var title = $('#newpostform #title').val(),
@@ -89,4 +95,6 @@ module.exports.forumView = function () {
             }
         });
     });
+
+    return forum;
 };

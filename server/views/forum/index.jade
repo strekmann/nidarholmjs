@@ -2,36 +2,54 @@ extends ../layouts/main
 
 block content
   .row
-    .columns
+    .columns.large-8.medium-10.large-centered.medium-centered
       #forum
-        #newpostform
-          form
-            h1 Nytt innlegg
-            label(for="title") Tittel
-            input#title(name="title" type="text")
-            label(for="mdtext") Innhold
-            textarea#mdtext(name="mdtext")
-            label(for="permissions") Rettigheter
-            select#permissions(name="permissions")
-              +permission_options(active_user.groups, active_user.friends)
-            button#cancelpost.secondary(type="reset") Avbryt
-            button Lagre
-        a#newpost.button
-          | Nytt innlegg
 
-        for post in posts
-          .post(data-id=post.id)
-            h1
-              a(href="/forum/" + hoid(post.id))= post.title
-            .meta
-              | Av 
-              = post.creator.name
-              | 
-              = shortdate(post.created)
-            = post.mdtext
-            form
-              button.deletepost(type="button") Slett innlegg
+  script#template(type="text/ractive")
+    form.newpost
+      h1 Nytt innlegg
+      label(for="title") Tittel
+      input#title(name="title" type="text")
+      label(for="mdtext") Innhold
+      textarea#mdtext(name="mdtext")
+      label(for="permissions") Rettigheter
+      select#permissions(name="permissions")
+        +permission_options(active_user.groups, active_user.friends)
+      button.small Lagre
+      button.small.secondary(type="reset") Avbryt
+
+    a#newpost.small.button Nytt innlegg
+
+    | {{#posts}}
+    |   {{>post}}
+    | {{/posts}}
+
+    // {{>post}}
+    article
+      header
+        h1
+          a(href="/forum/{{oid}}") {{title}}
+        .meta
+          .row
+            .columns.small-9
+              span.byline
+                a(href="/users/{{creator._id}}") {{creator.name}}
+              time.created(datetime="{{isodate(created)}}") {{shortdate(created)}}
+            .columns.small-3.text-right.creator
+              i.fa.fa-globe(title="Tilgjengelig for alle")
+              i.fa.fa-users(title="Tilgjengelig for alle medlemmer")
+              i.fa.fa-user(title="Tilgjengelig bare for deg")
+              a.deletepost(title="Slett innlegget")
+                i.fa.fa-trash-o
+
+        .content
+          .row
+            .columns {{{marked(mdtext)}}}
+    // {{/post}}
 
 block javascript
-  script.
-    require('s7n').forum.forumView();
+  script
+    | var forum = require('s7n').forum.forumView();
+    | forum.set('posts', 
+    != JSON.stringify(posts)
+    | );

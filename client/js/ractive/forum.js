@@ -78,37 +78,9 @@ var Forum = Ractive.extend({
     },
 
     data: {
-        post: {
-            title: 'Test tråd',
-            creator: 'bergquis',
-            created: new Date(Date.now() - 3600000),
-            modified: new Date(),
-            tags: ['test', 'ractive'],
-            mdtext:'# Test\n\nIkke bare bare',
-            permissions: {
-                groups: [],
-                users: []
-            },
-            replies: [
-                {
-                    creator: 'sigurdga',
-                    created: new Date(Date.now() - 3000000),
-                    mdtext: 'Kjempebra! Stå på.',
-                    comments: [
-                        {
-                            creator: 'bergquis',
-                            created: new Date(Date.now() - 2700000),
-                            mdtext: 'Ja, ikke sant :D'
-                        },
-                        {
-                            creator: 'persverr',
-                            created: new Date(Date.now() - 2700000),
-                            mdtext: 'nah, AngularJS ftw!'
-                        }
-                    ]
-                }
-            ]
-        },
+        post: {},
+        posts: [],
+
         marked: function(text){
             return marked(text);
         },
