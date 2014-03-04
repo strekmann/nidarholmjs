@@ -8,8 +8,8 @@ var FileSchema = new mongoose.Schema({
     created: {type: Date, default: Date.now},
     creator: {type: String, ref: 'User'},
     permissions: {
-        groups: {type: [GroupSchema], sparse: true},
-        users: {type: [UserSchema], sparse: true},
+        groups: {type: [schema.GroupSchema], sparse: true},
+        users: {type: [schema.UserSchema], sparse: true},
         broadcast: {type: Boolean, default: false}
     },
     tags: [{type: String}]
