@@ -8,8 +8,8 @@ var EventSchema = new mongoose.Schema({
     // whole_day needed? from nidarholm
     location: {type: String},
     permissions: {
-        groups: [schema.GroupSchema],
-        users: [schema.UserSchema],
+        groups: {type: [GroupSchema], sparse: true},
+        users: {type: [UserSchema], sparse: true},
         broadcast: {type: Boolean, default: false}
     },
     tags: [{type: String}],
@@ -42,8 +42,8 @@ var ProjectSchema = new mongoose.Schema({
     creator: {type: String, ref: 'user', required: true},
     created: {type: Date, default: Date.now},
     permissions: {
-        users: [schema.UserSchema],
-        groups: [schema.GroupSchema],
+        groups: {type: [GroupSchema], sparse: true},
+        users: {type: [UserSchema], sparse: true},
         broadcast: {type: Boolean, default: false}
     },
     contributors: [{
