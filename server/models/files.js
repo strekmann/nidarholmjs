@@ -1,4 +1,5 @@
 var mongoose = require('mongoose'),
+    ObjectId = mongoose.Schema.Types.ObjectId,
     schema = require('../models').schema;
 
 var FileSchema = new mongoose.Schema({
@@ -8,9 +9,9 @@ var FileSchema = new mongoose.Schema({
     created: {type: Date, default: Date.now},
     creator: {type: String, ref: 'User'},
     permissions: {
-        groups: {type: [schema.GroupSchema], sparse: true},
-        users: {type: [schema.UserSchema], sparse: true},
-        broadcast: {type: Boolean, default: false}
+        groups: [{type: ObjectId, ref: 'Group'}],
+        users: [{type: String, ref: 'User'}],
+        public: {type: Boolean, default: false}
     },
     tags: [{type: String}]
 });

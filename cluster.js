@@ -23,7 +23,6 @@ if (cluster.isMaster){
 } else {
     // -- database
     var mongoose = require('mongoose');
-    console.log(app.conf.mongo);
     app.db = mongoose.connect(
         app.conf.mongo.servers.join(','),
         {replSet: {rs_name: app.conf.mongo.replset}}

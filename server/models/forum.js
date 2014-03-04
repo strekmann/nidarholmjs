@@ -1,4 +1,5 @@
 var mongoose = require('mongoose'),
+    ObjectId = mongoose.Schema.Types.ObjectId,
     User = require('../models').User,
     UserSchema = require('../models').schema.user,
     GroupSchema = require('../models').schema.group;
@@ -24,9 +25,9 @@ var ForumPostSchema = new mongoose.Schema({
     tags: [{type: String, lowercase: true, trim: true}],
     mdtext: {type: String, trim: true},
     permissions: {
-        groups: {type: [GroupSchema], sparse: true},
-        users: {type: [UserSchema], sparse: true},
-        broadcast: {type: Boolean, default: false}
+        groups: [{type: ObjectId, ref: 'Group'}],
+        users: [{type: String, ref: 'User'}],
+        public: [{type: Boolean, default: false}]
     },
     replies: [ForumReplySchema]
 });

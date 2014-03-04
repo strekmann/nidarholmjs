@@ -1,4 +1,5 @@
 var mongoose = require('mongoose'),
+    ObjectId = mongoose.Schema.Types.ObjectId,
     schema = require('../models').schema;
 
 var EventSchema = new mongoose.Schema({
@@ -8,9 +9,9 @@ var EventSchema = new mongoose.Schema({
     // whole_day needed? from nidarholm
     location: {type: String},
     permissions: {
-        groups: {type: [schema.GroupSchema], sparse: true},
-        users: {type: [schema.UserSchema], sparse: true},
-        broadcast: {type: Boolean, default: false}
+        groups: [{type: ObjectId, ref: 'Group'}],
+        users: [{type: String, ref: 'User'}],
+        public: {type: Boolean, default: false}
     },
     tags: [{type: String}],
     creator: {type: String, ref: 'User', required: true},
@@ -42,9 +43,9 @@ var ProjectSchema = new mongoose.Schema({
     creator: {type: String, ref: 'user', required: true},
     created: {type: Date, default: Date.now},
     permissions: {
-        groups: {type: [schema.GroupSchema], sparse: true},
-        users: {type: [schema.UserSchema], sparse: true},
-        broadcast: {type: Boolean, default: false}
+        groups: [{type: ObjectId, ref: 'Group'}],
+        users: [{type: String, ref: 'User'}],
+        public: {type: Boolean, default: false}
     },
     contributors: [{
         user: {type: String, ref: 'User'},
