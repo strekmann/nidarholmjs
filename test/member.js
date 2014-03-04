@@ -10,35 +10,12 @@ describe("Member", function () {
         File = require('../server/models/files').File,
         organization_routes = require('../server/routes/organization');
 
-    var user1,
-        group;
+    var agent = request.agent(app),
+        user1,
+        groups;
 
     before(function (done) {
         app.db.connection.db.dropDatabase(function () {
-            app.post('/test/members/groups/add', function (req, res, next) {
-                req.user = res.locals.active_user = user1;
-                return organization_routes.add_group(req, res, next);
-            });
-            app.get('/test/members/groups', function (req, res, next) {
-                req.user = res.locals.active_user = user1;
-                return organization_routes.memberlist(req, res);
-            });
-            app.get('/test/members/new', function (req, res, next) {
-                req.user = res.locals.active_user = user1;
-                return organization_routes.add_user(req, res);
-            });
-            app.post('/test/members/new', function (req, res, next) {
-                req.user = res.locals.active_user = user1;
-                return organization_routes.create_user(req, res, next);
-            });
-            app.get('/test/members/users', function (req, res, next) {
-                req.user = res.locals.active_user = user1;
-                return organization_routes.users(req, res);
-            });
-            app.get('/test/members/user/:username', function (req, res, next) {
-                req.user = res.locals.active_user = user1;
-                return organization_routes.user(req, res);
-            });
 
             group = new Group({
                 name: 'testgroup',
@@ -50,7 +27,10 @@ describe("Member", function () {
                 name: 'Test Testson',
                 groups: [group],
                 is_active: true,
-                is_admin: false
+                is_admin: false,
+                algorithm: 'md5',
+                salt: 'oAJl6jsEVadxZ+5DwSlYjoMv7boVjqvyhU5ugd6KFlEFTSZfWpedJkQN6m5ovOq4FXLroFEzVpYugWwuIgEjTnpKQXPhC1feEI79tSlqUaJg8g2EWeazY5X0bby9csezVbJV62ohQ26a69QMgptzRmj8nfIC2R2Du+8gjs4q+Kw=',
+                password: '13b42ad6d1c87bd25db9ad8cc0bf6c30'
             });
             organization = new Organization({
                 _id: 'nidarholm',
@@ -66,7 +46,14 @@ describe("Member", function () {
                             done(err);
                         } else {
                             organization.save(function (err) {
-                                done(err);
+                                agent
+                                    .post('/login')
+                                    .send({username: user1.username, password: 'pass'})
+                                    .expect(302)
+                                    .end(function(err, res) {
+                                        res.header.location.should.equal('/');
+                                        done(err);
+                                    });
                             });
                         }
                     });
@@ -82,8 +69,8 @@ describe("Member", function () {
 
     describe("Add new instrument group to organization", function () {
         it("should add new instrument group to organization", function (done) {
-            request(app)
-            .post('/test/members/groups/add')
+            agent
+            .post('/members')
             .send({name: 'New group'})
             .expect(200)
             .end(function (err, res) {
@@ -93,8 +80,8 @@ describe("Member", function () {
             });
         });
         it("should find new instrument group in members combined list", function (done) {
-            request(app)
-                .get('/test/members/groups')
+            agent
+                .get('/members')
                 .set('Accept', 'text/html')
                 .expect(200)
                 .end(function (err, res) {
@@ -111,8 +98,8 @@ describe("Member", function () {
     describe("Add members using another user", function () {
         var testuser_name = 'Random Testuser';
         it("should create user with organization membership, not instrument group membership", function (done) {
-            request(app)
-            .post('/test/members/new')
+            agent
+            .post('/members/new')
             .send({name: testuser_name})
             .expect(302)
             .end(function (err, res) {
@@ -121,8 +108,8 @@ describe("Member", function () {
             });
         });
         it("should find the newly added member", function (done) {
-            request(app)
-            .get('/test/members/users')
+            agent
+            .get('/users')
             .set('Accept', 'text/html')
             .expect(200)
             .end(function (err, res) {
@@ -136,8 +123,8 @@ describe("Member", function () {
         });
         var groupid;
         it("should find group id for instrument group in form", function (done) {
-            request(app)
-            .get('/test/members/new')
+            agent
+            .get('/members/new')
             .set('Accept', 'text/html')
             .expect(200)
             .end(function (err, res) {
@@ -151,8 +138,8 @@ describe("Member", function () {
 
         });
         it("should create user with member permission and instrument group", function (done) {
-            request(app)
-            .post('/test/members/new')
+            agent
+            .post('/members/new')
             .send({name: testuser_name, orgperm: true, group: groupid})
             .expect(302)
             .end(function (err, res) {
@@ -164,8 +151,8 @@ describe("Member", function () {
             });
         });
         it("should find the newly added member that has groups", function (done) {
-            request(app)
-            .get('/test/members/users')
+            agent
+            .get('/users')
             .set('Accept', 'text/html')
             .expect(200)
             .end(function (err, res) {
@@ -178,8 +165,8 @@ describe("Member", function () {
             });
         });
         it("should find the groups of the newly added member", function (done) {
-            request(app)
-            .get('/test/members/user/nidarholm.random-testuser.2')
+            agent
+            .get('/users/nidarholm.random-testuser.2')
             .set('Accept', 'text/html')
             .expect(200)
             .end(function (err, res) {
@@ -191,8 +178,8 @@ describe("Member", function () {
             });
         });
         it("should find the new user in memberlist page", function (done) {
-            request(app)
-            .get('/test/members/groups')
+            agent
+            .get('/members')
             .set('Accept', 'text/html')
             .expect(200)
             .end(function (err, res) {

@@ -8,9 +8,6 @@ describe("Register user", function () {
 
     before(function (done) {
         app.db.connection.db.dropDatabase(function () {
-            app.post('/test/register', function (req, res) {
-                return index_routes.register(req, res);
-            });
             done();
         });
     });
