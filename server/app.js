@@ -7,7 +7,9 @@ var _           = require('underscore'),
     util        = require('./lib/util'),
     app         = require('libby')(express, settings);
 
-var User = require('./models/index').User;
+var User = require('./models/index').User,
+    Group = require('./models/index').Group,
+    Organization = require('./models/index').Organization;
 
 app.passport = require('./lib/passport')(app);
 app.ensureAuthenticated = require('./lib/middleware').ensureAuthenticated;
@@ -73,6 +75,35 @@ app.configure(function(){
         } else {
             next();
         }
+    });
+    app.use(function (req, res, next) {
+        Organization.findById('nidarholm', function (err, organization) {
+            if (err) { next(err); }
+            if (organization) {
+                res.locals.organization = organization;
+                next();
+            } else {
+                var group = new Group();
+                group.name = 'Medlemmer';
+                group.save(function (err) {
+                    if (err) { next(err); }
+
+                    organization = new Organization();
+                    organization._id = 'nidarholm';
+                    organization.instrument_groups = [];
+                    organization.administration_groups = [];
+                    organization.member_group = group;
+
+                    organization.save(function (err) {
+                        group.organization = organization;
+                        group.save(function (err) {
+                            res.locals.organization = organization;
+                            next();
+                        });
+                    });
+                });
+            }
+        });
     });
 
     app.use(multer());
