@@ -210,6 +210,7 @@ app.post('/groups', organization_routes.add_group);
 app.get('/groups/:id', organization_routes.group);
 app.post('/organization', organization_routes.add_instrument_group);
 app.delete('/organization/:id', organization_routes.remove_instrument_group);
+app.post('/organization/order', organization_routes.order_instrument_groups);
 
 var file_routes = require('./routes/files');
 app.get('/files', file_routes.all);

@@ -54,6 +54,23 @@ var Group = Ractive.extend({
         });
     },
 
+    orderInstrumentGroups: function () {
+        var url = '/organization/order',
+            promise = $.ajax({
+                url: url,
+                type: 'POST',
+                data: {
+                    group_order: _.pluck(this.data.igroups, '_id')
+                }
+            });
+
+        promise.then(function (data) {
+            //console.log("DONE");
+        }, function(xhr, status, err){
+            console.error(err);
+        });
+    },
+
     data: {
         groups: [],
         igroups: []

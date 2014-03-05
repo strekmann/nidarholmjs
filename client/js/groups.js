@@ -29,5 +29,9 @@ module.exports.groupListView = function () {
         grouplist.removeInstrumentGroup(group);
     });
 
+    grouplist.on('moveInstrumentGroup', function (event) {
+        grouplist.orderInstrumentGroups();
+    });
+
     return grouplist;
 };

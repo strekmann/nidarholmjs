@@ -73,7 +73,7 @@ module.exports = function(grunt) {
                     'bower_components/dropzone/downloads/dropzone.js',
                     'bower_components/ractive/Ractive.js',
                     'bower_components/ractive-events-tap/Ractive-events-tap.js',
-                    'bower_components/html.sortable/dist/html.sortable.0.1.1.js',
+                    'bower_components/ractive-decorators-sortable/Ractive-decorators-sortable.js',
                     'tmp/js/chosen.js',
                     'client/vendor/js/*.js'
                 ],

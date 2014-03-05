@@ -1,4 +1,5 @@
-var mongoose = require('mongoose');
+var mongoose = require('mongoose'),
+    ObjectId = mongoose.Schema.Types.ObjectId;
 
 var GroupSchema = new mongoose.Schema({
     name: {type: String, trim: true, required: true},
@@ -38,9 +39,9 @@ var UserSchema = new mongoose.Schema({
 
 var OrganizationSchema = new mongoose.Schema({
     _id: {type: String, lowercase: true, trim: true, required: true, unique: true},
-    instrument_groups: [GroupSchema],
-    administration_groups: [GroupSchema],
-    member_group: {type: String, ref: 'Group'},
+    instrument_groups: [{type: ObjectId, ref: 'Group'}],
+    administration_groups: [{type: ObjectId, ref: 'Group'}],
+    member_group: {type: ObjectId, ref: 'Group'},
 });
 
 module.exports = {

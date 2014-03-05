@@ -330,7 +330,7 @@ module.exports.groups = function (req, res, next) {
     var name = req.body.name,
         organization_id = 'nidarholm';//req.body.organization;
 
-    Organization.findById(organization_id, function (err, organization) {
+    Organization.findById(organization_id).populate('instrument_groups').exec(function (err, organization) {
         if (err) { throw err; }
         Group.find(function (err, groups) {
             if (err) { next(err); }
@@ -364,24 +364,34 @@ module.exports.add_instrument_group = function (req, res, next) {
 
     Organization.findById('nidarholm', function (err, organization) {
         if (err) { next(err); }
-        Group.findById(groupid, function (err, group) {
+        organization.instrument_groups.push(groupid);
+        organization.save(function (err) {
             if (err) { next(err); }
-            organization.instrument_groups.push(group);
-            organization.save(function (err) {
-                if (err) { next(err); }
-                res.json(200);
-            });
+            res.json(200);
         });
     });
 };
 
 module.exports.remove_instrument_group = function (req, res, next) {
     var groupid = req.params.id;
-    console.log("her");
 
     Organization.findById('nidarholm', function (err, organization) {
         if (err) { next(err); }
         organization.instrument_groups.pull(groupid);
+        organization.save(function (err) {
+            if (err) { next(err); }
+            res.json(200);
+        });
+    });
+};
+
+module.exports.order_instrument_groups = function (req, res, next) {
+    var group_order = req.body.group_order;
+
+    Organization.findById('nidarholm', function (err, organization) {
+        if (err) { next(err); }
+
+        organization.instrument_groups = group_order;
         organization.save(function (err) {
             if (err) { next(err); }
             res.json(200);

@@ -10,7 +10,7 @@ block content
 
         p Klikk i boksene for å gjøre gruppene til instrumentgrupper
 
-        ul
+        ul#all_groups
           | {{#groups}}
           |   {{>group}}
           | {{/groups}}
@@ -45,9 +45,9 @@ block content
       // {{/group}}
 
       // {{>igroup}}
-      li.group(style="list-style:none;")
+      li.group(style="list-style:none;" decorator="sortable" on-drop="moveInstrumentGroup")
         input(type="checkbox" on-click="removeInstrumentGroup")
-        a(href="/groups/{{oid}}") {{name}}
+        {{name}}
       // {{/igroup}}
 
 
