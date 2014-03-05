@@ -5,8 +5,39 @@ block content
     .columns
       h1 Alle grupper
 
-      ul#groups
-        for group in groups
-          if group.id
-            li.group
-              a(href="/groups/" + hoid(group.id))= group.name
+      p Klikk i boksene for å gjøre gruppene til instrumentgrupper
+
+      #groups
+
+  script#template(type="text/ractive")
+    ul
+      | {{#groups}}
+      |   {{>group}}
+      | {{/groups}}
+
+    form
+      .row
+        .columns
+          h2 Legg til ny gruppe
+      .row
+        .columns
+          label(for='name') Navn på gruppe
+          input#name(type='text')
+      .row
+        .columns.text-right
+          button.reset.secondary(type='reset') avbryt
+          button lagre
+
+      // {{>group}}
+      li.group(style="list-style:none;")
+        input(type="checkbox")
+        a(href="/groups/{{oid}}") {{name}}
+      // {{/group}}
+
+
+block javascript
+  script
+    | var groups = require('s7n').groups.groupListView();
+    | groups.set('groups', 
+    != JSON.stringify(groups)
+    | );

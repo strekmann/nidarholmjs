@@ -314,6 +314,11 @@ module.exports.user_remove_group = function (req, res, next) {
 module.exports.groups = function (req, res, next) {
     Group.find(function (err, groups) {
         if (err) { next(err); }
+        groups = _.map(groups, function (group) {
+            var g = group.toJSON();
+            g.oid = util.h2b64(group.id);
+            return g;
+        });
         res.render('organization/groups', {groups: groups});
     });
 };
