@@ -215,6 +215,8 @@ module.exports.update_user = function (req, res, next) {
 };
 
 module.exports.add_group = function (req, res) {
+    // dumb add group
+
     var name = req.body.name,
         organization = 'nidarholm';//req.body.organization;
 
@@ -222,22 +224,35 @@ module.exports.add_group = function (req, res) {
         if (err) { throw err; }
         Group.findOneAndUpdate({name: name, organization: org}, {}, {upsert: true}, function (err, group) {
             if (err) { throw err; }
-            var has_group = _.find(org.instrument_groups, function (g) {
-                if (g._id === group._id) {
-                    return group;
-                }
-            });
-            if (has_group) {
-                res.json(200, group);
-            } else {
-                org.instrument_groups.push(group);
-                org.save(function (err) {
-                    res.json(200, group);
-                });
-            }
+            res.json(200, group);
         });
     });
 };
+
+//module.exports.add_group = function (req, res) {
+    //var name = req.body.name,
+        //organization = 'nidarholm';//req.body.organization;
+
+    //Organization.findById(organization, function (err, org) {
+        //if (err) { throw err; }
+        //Group.findOneAndUpdate({name: name, organization: org}, {}, {upsert: true}, function (err, group) {
+            //if (err) { throw err; }
+            //var has_group = _.find(org.instrument_groups, function (g) {
+                //if (g._id === group._id) {
+                    //return group;
+                //}
+            //});
+            //if (has_group) {
+                //res.json(200, group);
+            //} else {
+                //org.instrument_groups.push(group);
+                //org.save(function (err) {
+                    //res.json(200, group);
+                //});
+            //}
+        //});
+    //});
+//};
 
 module.exports.remove_group = function (req, res, next) {
     var groupid = req.params.groupid,

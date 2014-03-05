@@ -7,5 +7,17 @@ module.exports.groupListView = function () {
         restAPI: '/groups'
     });
 
+    grouplist.on('addGroup', function (event) {
+        event.original.preventDefault();
+
+        var form = $(event.node),
+            group = {
+                name: form.find('#name').val()
+            };
+
+        grouplist.addGroup(group);
+        form[0].reset();
+    });
+
     return grouplist;
 };

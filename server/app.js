@@ -195,7 +195,7 @@ app.get('/members', organization_routes.memberlist);
 app.get('/organization/fill_dummy', organization_routes.fill_dummy);
 app.get('/members/new', organization_routes.add_user);
 app.post('/members/new', organization_routes.create_user);
-app.post('/members', organization_routes.add_group);
+//app.post('/members', organization_routes.add_group);
 app.delete('/members/:groupid', organization_routes.remove_group);
 
 app.get('/users', organization_routes.users);
@@ -206,6 +206,7 @@ app.post('/users/:username/groups', organization_routes.user_add_group);
 app.delete('/users/:username/groups/:groupid', organization_routes.user_remove_group);
 
 app.get('/groups', organization_routes.groups);
+app.post('/groups', organization_routes.add_group);
 app.get('/groups/:id', organization_routes.group);
 
 var file_routes = require('./routes/files');
