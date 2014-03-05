@@ -327,14 +327,23 @@ module.exports.user_remove_group = function (req, res, next) {
 };
 
 module.exports.groups = function (req, res, next) {
-    Group.find(function (err, groups) {
-        if (err) { next(err); }
-        groups = _.map(groups, function (group) {
-            var g = group.toJSON();
-            g.oid = util.h2b64(group.id);
-            return g;
+    var name = req.body.name,
+        organization_id = 'nidarholm';//req.body.organization;
+
+    Organization.findById(organization_id, function (err, organization) {
+        if (err) { throw err; }
+        Group.find(function (err, groups) {
+            if (err) { next(err); }
+            groups = _.map(groups, function (group) {
+                var g = group.toJSON();
+                g.oid = util.h2b64(group.id);
+                return g;
+            });
+            res.render('organization/groups', {
+                groups: groups,
+                igroups: organization.instrument_groups
+            });
         });
-        res.render('organization/groups', {groups: groups});
     });
 };
 
@@ -347,5 +356,35 @@ module.exports.group = function (req, res, next){
         .exec(function (err, group) {
             if (err) { next(err); }
             res.render('organization/group', {group: group});
+    });
+};
+
+module.exports.add_instrument_group = function (req, res, next) {
+    var groupid = req.body._id;
+
+    Organization.findById('nidarholm', function (err, organization) {
+        if (err) { next(err); }
+        Group.findById(groupid, function (err, group) {
+            if (err) { next(err); }
+            organization.instrument_groups.push(group);
+            organization.save(function (err) {
+                if (err) { next(err); }
+                res.json(200);
+            });
+        });
+    });
+};
+
+module.exports.remove_instrument_group = function (req, res, next) {
+    var groupid = req.params.id;
+    console.log("her");
+
+    Organization.findById('nidarholm', function (err, organization) {
+        if (err) { next(err); }
+        organization.instrument_groups.pull(groupid);
+        organization.save(function (err) {
+            if (err) { next(err); }
+            res.json(200);
+        });
     });
 };

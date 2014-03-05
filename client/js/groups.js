@@ -19,5 +19,15 @@ module.exports.groupListView = function () {
         form[0].reset();
     });
 
+    grouplist.on('addInstrumentGroup', function (event) {
+        var group = event.context;
+        grouplist.addInstrumentGroup(group);
+    });
+
+    grouplist.on('removeInstrumentGroup', function (event) {
+        var group = event.context;
+        grouplist.removeInstrumentGroup(group);
+    });
+
     return grouplist;
 };

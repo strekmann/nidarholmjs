@@ -192,7 +192,7 @@ app.delete('/forum/:postid/replies/:replyid/comments/:commentid', forum_routes.d
 
 var organization_routes = require('./routes/organization');
 app.get('/members', organization_routes.memberlist);
-app.get('/organization/fill_dummy', organization_routes.fill_dummy);
+//app.get('/organization/fill_dummy', organization_routes.fill_dummy);
 app.get('/members/new', organization_routes.add_user);
 app.post('/members/new', organization_routes.create_user);
 //app.post('/members', organization_routes.add_group);
@@ -208,6 +208,8 @@ app.delete('/users/:username/groups/:groupid', organization_routes.user_remove_g
 app.get('/groups', organization_routes.groups);
 app.post('/groups', organization_routes.add_group);
 app.get('/groups/:id', organization_routes.group);
+app.post('/organization', organization_routes.add_instrument_group);
+app.delete('/organization/:id', organization_routes.remove_instrument_group);
 
 var file_routes = require('./routes/files');
 app.get('/files', file_routes.all);

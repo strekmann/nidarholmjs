@@ -1,19 +1,29 @@
 extends ../layouts/main
 
 block content
-  .row
-    .columns
-      h1 Alle grupper
-
-      p Klikk i boksene for å gjøre gruppene til instrumentgrupper
-
-      #groups
+  #groups
 
   script#template(type="text/ractive")
-    ul
-      | {{#groups}}
-      |   {{>group}}
-      | {{/groups}}
+    .row
+      .medium-6.columns
+        h1 Alle grupper
+
+        p Klikk i boksene for å gjøre gruppene til instrumentgrupper
+
+        ul
+          | {{#groups}}
+          |   {{>group}}
+          | {{/groups}}
+
+      .medium-6.columns
+        h1 Instrumentgrupper
+
+        p Klikk i boksene for å ta dem bort fra instrumentgrupper
+
+        ul#instrument_groups
+          | {{#igroups}}
+          |   {{>igroup}}
+          | {{/igroups}}
 
     form(on-submit="addGroup")
       .row
@@ -30,9 +40,15 @@ block content
 
       // {{>group}}
       li.group(style="list-style:none;")
-        input(type="checkbox")
+        input(type="checkbox" on-click="addInstrumentGroup")
         a(href="/groups/{{oid}}") {{name}}
       // {{/group}}
+
+      // {{>igroup}}
+      li.group(style="list-style:none;")
+        input(type="checkbox" on-click="removeInstrumentGroup")
+        a(href="/groups/{{oid}}") {{name}}
+      // {{/igroup}}
 
 
 block javascript
@@ -40,4 +56,7 @@ block javascript
     | var groups = require('s7n').groups.groupListView();
     | groups.set('groups', 
     != JSON.stringify(groups)
+    | );
+    | groups.set('igroups', 
+    != JSON.stringify(igroups)
     | );
