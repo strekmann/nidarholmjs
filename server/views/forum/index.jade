@@ -4,6 +4,25 @@ block content
   .row
     .columns.large-8.medium-10.large-centered.medium-centered
       #forum
+        for post in posts
+          article.post
+            header
+              h1
+                a(href="/forum/{{oid}}") {{title}}
+              .meta
+                .row
+                  .columns.small-9
+                    span.byline
+                      a(href="/users/" + post.creator._id)= post.creator.name
+                    time.created(datetime=post.created)= post.created
+                  .columns.small-3.text-right.creator
+                    a.deletepost(title="Slett innlegget")
+                      i.fa.fa-trash-o
+
+              .content
+                .row
+                  .columns
+                    != post.mdtext
 
   script#template(type="text/ractive")
     form.newpost(method="POST" on-submit="addPost")
