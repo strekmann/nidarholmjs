@@ -98,7 +98,8 @@ describe("User", function () {
                     var groups = $('#groups .group');
                     groups.length.should.equal(0);
                     var possible_groups = $('#group option');
-                    possible_groups.length.should.equal(1);
+                    // organization members group is always present
+                    possible_groups.length.should.equal(2);
                     done(err);
                 });
         });
@@ -128,7 +129,8 @@ describe("User", function () {
                     groups.first().text().should.equal("testgroup");
                     // TODO: should maybe remove the possibility to add the group again
                     var possible_groups = $('#group option');
-                    possible_groups.length.should.equal(1);
+                    // always +1 for org members
+                    possible_groups.length.should.equal(2);
                     groupid = possible_groups.first().attr('value');
                     done(err);
                 });
