@@ -67,34 +67,6 @@ describe("Member", function () {
         });
     });
 
-    describe("Add new instrument group to organization", function () {
-        it("should add new instrument group to organization", function (done) {
-            agent
-            .post('/members')
-            .send({name: 'New group'})
-            .expect(200)
-            .end(function (err, res) {
-                if (err) { return done(err); }
-                //console.log(res.body);
-                done();
-            });
-        });
-        it("should find new instrument group in members combined list", function (done) {
-            agent
-                .get('/members')
-                .set('Accept', 'text/html')
-                .expect(200)
-                .end(function (err, res) {
-                    if (err) { return done(err); }
-                    $ = cheerio.load(res.text);
-                    //console.log(res.text);
-                    var groups = $('#memberlist .group');
-                    groups.last().find('h2').text().should.equal('New group');
-                    done();
-            });
-        });
-    });
-
     describe("Add members using another user", function () {
         var testuser_name = 'Random Testuser';
         it("should create user with organization membership, not instrument group membership", function (done) {

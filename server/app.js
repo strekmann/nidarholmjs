@@ -52,25 +52,31 @@ app.configure(function(){
     // has to go after passport.session()
     app.use(function (req, res, next) {
         if (req.user) {
-            res.locals.active_user = req.user;
-            // TODO: User redis for caching
-            User.find().select('username name').exec(function (err, all_users) {
-                if (err) { next(err); }
-                var indexed_users = _.indexBy(all_users, '_id');
-                var groups_of_users = _.reduce(req.user.groups, function (memo, group) {
-                    if (group) {
-                        return _.union(memo, _.map(group.members, function (member) {
-                            return member._id;
-                        }));
-                    } else {
-                        return memo;
-                    }
-                }, []);
-                // now an array of arrays: use union for now
-                req.user.friends = _.map(_.compact(groups_of_users), function (user_id) {
-                    return indexed_users[user_id];
-                });
-                next();
+            Group.populate(req.user, 'groups', function (err, user) {
+                req.user = res.locals.active_user = user;
+                // TODO: User redis for caching
+                //User.find().select('username name').exec(function (err, all_users) {
+                    //if (err) { next(err); }
+                    //var indexed_users = _.indexBy(all_users, '_id');
+                    //var groups_of_users = _.reduce(req.user.groups, function (memo, group) {
+                        //if (group) {
+                            //console.log(group);
+                            //return _.union(memo, _.map(group.members, function (member) {
+                                //return member._id;
+                            //}));
+                        //} else {
+                            //return memo;
+                        //}
+                    //}, []);
+                    //// now an array of arrays: use union for now
+                    //req.user.friends = _.map(_.compact(groups_of_users), function (user_id) {
+                        //return indexed_users[user_id];
+                    //});
+                    User.populate(req.user, 'friends', function (err, user) {
+                        if (err) { next(err); }
+                        next();
+                    });
+                //});
             });
         } else {
             next();

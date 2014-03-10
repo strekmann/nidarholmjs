@@ -12,18 +12,7 @@ module.exports.all = function (req, res) {
         {creator: req.user},
         {'permissions.public': true},
         {'permissions.users': req.user._id},
-        {'permissions.groups': {
-            $in: _.map(req.user.groups, function (g) {
-                if (g) {
-                    return g._id;
-                }
-            })
-            //$in: _.map(req.user.groups, function (g) {
-                //if (g) {
-                    //return new ObjectId(g._id.toString());
-                //}
-            //})
-        }}
+        {'permissions.groups': { $in: req.user.groups }}
     ]).exec(function (err, files) {
         if (err) {
             throw err;
