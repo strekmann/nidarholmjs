@@ -80,6 +80,7 @@ app.configure(function(){
         Organization.findById('nidarholm', function (err, organization) {
             if (err) { next(err); }
             if (organization) {
+                req.organization = organization;
                 res.locals.organization = organization;
                 next();
             } else {
@@ -97,6 +98,7 @@ app.configure(function(){
                     organization.save(function (err) {
                         group.organization = organization;
                         group.save(function (err) {
+                            req.organization = organization;
                             res.locals.organization = organization;
                             next();
                         });
