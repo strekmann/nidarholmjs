@@ -25,14 +25,14 @@ block content
           |   {{>igroup}}
           | {{/igroups}}
 
-    form(on-submit="addGroup")
+    form(on-submit="addGroup" data-abide)
       .row
         .columns
           h2 Legg til ny gruppe
       .row
         .columns
           label(for='name') Navn på gruppe
-          input#name(type='text')
+          input#name(type='text' required)
       .row
         .columns.text-right
           button.reset.secondary(type='reset') avbryt

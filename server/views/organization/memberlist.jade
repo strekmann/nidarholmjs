@@ -21,12 +21,9 @@ block content
         for group in org.instrument_groups
           .group(data-id=group.id)
             .row
-              .small-11.columns
+              .columns
                 h2
                   = group.name
-              .small-1.columns
-                a.removegroup(href="#")
-                  i.fa.fa-minus
             for member in group.members
               if member && member.user
                 .member.row
@@ -43,24 +40,6 @@ block content
                   .medium-4.columns
                     a(href="mailto:" + member.user.email)
                       = member.user.email
-
-    div.row
-      div.small-12.columns
-        #addgroup
-          button.new_group.small
-            i.fa.fa-plus
-          form
-            .row
-              .columns
-                h2 Legg til ny instrumentgruppe
-            .row
-              .columns
-                label(for='name') navn på gruppe
-                input#name(type='text')
-            .row
-              .columns.text-right
-                button.reset.secondary(type='reset') avbryt
-                button lagre
 
 block javascript
   script.
