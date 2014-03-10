@@ -23,7 +23,6 @@ module.exports.memberlist = function (req, res) {
 
 module.exports.add_user = function (req, res) {
     Group.find({organization: 'nidarholm'}).exec(function (err, groups) {
-        console.log(groups);
         res.render('organization/add_user', {groups: groups});
     });
 };

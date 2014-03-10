@@ -8,7 +8,8 @@ describe("Forum", function () {
         ForumPost = require('../server/models/forum').ForumPost,
         forum_routes = require('../server/routes/forum');
 
-    var user1,
+    var agent = request.agent(app),
+        user1,
         post1,
         post2,
         reply1,
@@ -16,45 +17,16 @@ describe("Forum", function () {
 
     before(function (done) {
         app.db.connection.db.dropDatabase(function () {
-            app.get('/test/forum/forum', function (req, res) {
-                req.user = res.locals.active_user = user1;
-                return forum_routes.all(req, res);
-            });
-            app.post('/test/forum/forum', function (req, res) {
-                req.user = res.locals.active_user = user1;
-                return forum_routes.create_post(req, res);
-            });
-            app.delete('/test/forum/:id', function (req, res, next) {
-                req.user = res.locals.active_user = user1;
-                return forum_routes.delete_post(req, res, next);
-            });
-            app.get('/test/forum/:id', function (req, res) {
-                req.user = res.locals.active_user = user1;
-                return forum_routes.get_post(req, res);
-            });
-            app.post('/test/forum/:postid/replies', function (req, res) {
-                req.user = res.locals.active_user = user1;
-                return forum_routes.create_reply(req, res);
-            });
-            app.post('/test/forum/:postid/replies/:replyid/comments', function (req, res) {
-                req.user = res.locals.active_user = user1;
-                return forum_routes.create_comment(req, res);
-            });
-            app.delete('/test/forum/:postid/replies/:replyid/comments/:commentid', function (req, res) {
-                req.user = res.locals.active_user = user1;
-                return forum_routes.delete_comment(req, res);
-            });
-            app.delete('/test/forum/:postid/replies/:replyid', function (req, res) {
-                req.user = res.locals.active_user = user1;
-                return forum_routes.delete_reply(req, res);
-            });
 
             user1 = new User({
                 _id: 'testid',
                 username: 'testuser',
                 name: 'Test Testson',
                 is_active: true,
-                is_admin: false
+                is_admin: false,
+                algorithm: 'md5',
+                salt: 'oAJl6jsEVadxZ+5DwSlYjoMv7boVjqvyhU5ugd6KFlEFTSZfWpedJkQN6m5ovOq4FXLroFEzVpYugWwuIgEjTnpKQXPhC1feEI79tSlqUaJg8g2EWeazY5X0bby9csezVbJV62ohQ26a69QMgptzRmj8nfIC2R2Du+8gjs4q+Kw=',
+                password: '13b42ad6d1c87bd25db9ad8cc0bf6c30'
             });
 
             post1 = new ForumPost({
@@ -68,7 +40,14 @@ describe("Forum", function () {
                     done(err);
                 } else {
                     post1.save(function (err) {
-                        done(err);
+                        agent
+                            .post('/login')
+                            .send({username: user1.username, password: 'pass'})
+                            .expect(302)
+                            .end(function(err, res) {
+                                res.header.location.should.equal('/');
+                                done(err);
+                            });
                     });
                 }
             });
@@ -83,8 +62,8 @@ describe("Forum", function () {
 
     describe("add post", function () {
         it("should have 1 post", function (done) {
-            request(app)
-                .get('/test/forum/forum')
+            agent
+                .get('/forum')
                 .set('Accept', 'text/html')
                 .expect(200)
                 .end(function (err, res) {
@@ -96,8 +75,8 @@ describe("Forum", function () {
                 });
         });
         it("should add new post", function (done) {
-            request(app)
-                .post('/test/forum/forum')
+            agent
+                .post('/forum')
                 .send({
                     title: 'New post',
                     mdtext: 'New content'
@@ -111,8 +90,8 @@ describe("Forum", function () {
                 });
         });
         it("should have 2 posts", function (done) {
-            request(app)
-                .get('/test/forum/forum')
+            agent
+                .get('/forum')
                 .set('Accept', 'text/html')
                 .expect(200)
                 .end(function (err, res) {
@@ -127,8 +106,8 @@ describe("Forum", function () {
 
     describe("delete post", function () {
         it("should delete one post", function (done) {
-            request(app)
-                .del('/test/forum/' + post2._id)
+            agent
+                .del('/forum/' + post2._id)
                 .expect(200)
                 .end(function (err, res) {
                     if (err) { return done(err); }
@@ -137,8 +116,8 @@ describe("Forum", function () {
                 });
         });
         it("should have 1 post left", function (done) {
-            request(app)
-                .get('/test/forum/forum')
+            agent
+                .get('/forum')
                 .set('Accept', 'text/html')
                 .expect(200)
                 .end(function (err, res) {
@@ -153,8 +132,8 @@ describe("Forum", function () {
 
     describe("have two posts", function () {
         it("should create two posts", function (done) {
-            request(app)
-                .post('/test/forum/forum')
+            agent
+                .post('/forum')
                 .send({
                     title: 'Post 1',
                     mdtext: 'Content 1'
@@ -162,8 +141,8 @@ describe("Forum", function () {
                 .set('Accept', 'application/json')
                 .end(function (err, res) {
                     if (err) { return done(err); }
-                    request(app)
-                        .post('/test/forum/forum')
+                    agent
+                        .post('/forum')
                         .send({
                             title: 'Post 2',
                             mdtext: 'Content 2'
@@ -196,8 +175,8 @@ describe("Forum", function () {
                 //});
         });
         it("should add reply", function (done) {
-            request(app)
-                .post('/test/forum/' + post1.id + '/replies')
+            agent
+                .post('/forum/' + post1.id + '/replies')
                 .send({mdtext: 'A simple reply'})
                 .set('Accept', 'application/json')
                 .expect(200)
@@ -222,8 +201,8 @@ describe("Forum", function () {
             done();
         });
         it("should add comment", function (done) {
-            request(app)
-                .post('/test/forum/' + post1.id + '/replies/' + reply1.id + '/comments')
+            agent
+                .post('/forum/' + post1.id + '/replies/' + reply1.id + '/comments')
                 .send({mdtext: 'A testcomment'})
                 .set('Accept', 'application/json')
                 .expect(200)
@@ -245,8 +224,8 @@ describe("Forum", function () {
 
     describe("remove comment", function () {
         it("should remove comment", function (done) {
-            request(app)
-                .del('/test/forum/' + post1.id + '/replies/' + reply1.id + '/comments/' + comment1.id)
+            agent
+                .del('/forum/' + post1.id + '/replies/' + reply1.id + '/comments/' + comment1.id)
                 .expect(200)
                 .end(function (err, res) {
                     if (err) { return done(err); }
@@ -264,8 +243,8 @@ describe("Forum", function () {
 
     describe("remove reply", function () {
         it("should remove reply", function (done) {
-            request(app)
-                .del('/test/forum/' + post1.id + '/replies/' + reply1.id)
+            agent
+                .del('/forum/' + post1.id + '/replies/' + reply1.id)
                 .expect(200)
                 .end(function (err, res) {
                     if (err) { return done(err); }

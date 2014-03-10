@@ -8,26 +8,23 @@ describe("Files", function () {
         File = require('../server/models/files').File,
         file_routes = require('../server/routes/files');
 
-    var user1,
+    var agent = request.agent(app),
+        user1,
         file1;
 
     before(function (done) {
         app.db.connection.db.dropDatabase(function () {
-            app.get('/test/files/files', function (req, res) {
-                req.user = res.locals.active_user = user1;
-                return file_routes.all(req, res);
-            });
-            app.post('/test/files/upload', function (req, res) {
-                req.user = res.locals.active_user = user1;
-                return file_routes.upload(req, res);
-            });
 
             user1 = new User({
                 _id: 'testid',
                 username: 'testuser',
                 name: 'Test Testson',
                 is_active: true,
-                is_admin: false
+                is_admin: false,
+                algorithm: 'md5',
+                salt: 'oAJl6jsEVadxZ+5DwSlYjoMv7boVjqvyhU5ugd6KFlEFTSZfWpedJkQN6m5ovOq4FXLroFEzVpYugWwuIgEjTnpKQXPhC1feEI79tSlqUaJg8g2EWeazY5X0bby9csezVbJV62ohQ26a69QMgptzRmj8nfIC2R2Du+8gjs4q+Kw=',
+                password: '13b42ad6d1c87bd25db9ad8cc0bf6c30'
+
             });
 
             file1 = new File({
@@ -41,7 +38,14 @@ describe("Files", function () {
                     done(err);
                 } else {
                     file1.save(function (err) {
-                        done(err);
+                        agent
+                            .post('/login')
+                            .send({username: user1.username, password: 'pass'})
+                            .expect(302)
+                            .end(function(err, res) {
+                                res.header.location.should.equal('/');
+                                done(err);
+                            });
                     });
                 }
             });
@@ -56,8 +60,8 @@ describe("Files", function () {
 
     describe("upload file", function () {
         it("should have 1 file already uploaded", function (done) {
-            request(app)
-                .get('/test/files/files')
+            agent
+                .get('/files')
                 .set('Accept', 'text/html')
                 .expect(200)
                 .end(function (err, res) {
@@ -76,21 +80,21 @@ describe("Files", function () {
                 if (err) {
                     return done(err);
                 }
-                request(app)
-                .get('/test/files/files')
-                .set('Accept', 'text/html')
-                .expect(200)
-                .end(function (err, res) {
-                    $ = cheerio.load(res.text);
-                    var files = $('#files .file');
-                    files.length.should.equal(2);
-                    done(err);
-                });
+                agent
+                    .get('/files')
+                    .set('Accept', 'text/html')
+                    .expect(200)
+                    .end(function (err, res) {
+                        $ = cheerio.load(res.text);
+                        var files = $('#files .file');
+                        files.length.should.equal(2);
+                        done(err);
+                    });
             });
         });
         it("should upload file", function (done) {
-            request(app)
-                .post('/test/files/upload')
+            agent
+                .post('/files/upload')
                 .attach('file', 'test/forum.js')
                 .set('Accept', 'application/json')
                 .expect(200)
@@ -102,8 +106,8 @@ describe("Files", function () {
                 });
         });
         it("should have 3 files uploaded", function (done) {
-            request(app)
-                .get('/test/files/files')
+            agent
+                .get('/files')
                 .set('Accept', 'text/html')
                 .expect(200)
                 .end(function (err, res) {

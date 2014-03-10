@@ -11,24 +11,13 @@ describe("User", function () {
         File = require('../server/models/files').File,
         organization_routes = require('../server/routes/organization');
 
-    var user1,
+    var agent = request.agent(app),
+        user1,
         user2,
         group;
 
     before(function (done) {
         app.db.connection.db.dropDatabase(function () {
-            app.get('/test/user/:username', function (req, res) {
-                req.user = res.locals.active_user = user1;
-                return organization_routes.user(req, res);
-            });
-            app.post('/test/user/:username/groups', function (req, res) {
-                req.user = res.locals.active_user = user1;
-                return organization_routes.user_add_group(req, res);
-            });
-            app.get('/test/user/groups/:id', function (req, res) {
-                req.user = res.locals.active_user = user1;
-                return organization_routes.group(req, res);
-            });
 
             //mock
             group = new Group({
@@ -41,7 +30,10 @@ describe("User", function () {
                 name: 'Test Testson',
                 groups: [group],
                 is_active: true,
-                is_admin: false
+                is_admin: false,
+                algorithm: 'md5',
+                salt: 'oAJl6jsEVadxZ+5DwSlYjoMv7boVjqvyhU5ugd6KFlEFTSZfWpedJkQN6m5ovOq4FXLroFEzVpYugWwuIgEjTnpKQXPhC1feEI79tSlqUaJg8g2EWeazY5X0bby9csezVbJV62ohQ26a69QMgptzRmj8nfIC2R2Du+8gjs4q+Kw=',
+                password: '13b42ad6d1c87bd25db9ad8cc0bf6c30'
             });
             user2 = new User({
                 _id: 'friend1',
@@ -60,7 +52,14 @@ describe("User", function () {
                             done(err);
                         } else {
                             user2.save(function (err) {
-                                done(err);
+                                agent
+                                    .post('/login')
+                                    .send({username: user1.username, password: 'pass'})
+                                    .expect(302)
+                                    .end(function(err, res) {
+                                        res.header.location.should.equal('/');
+                                        done(err);
+                                    });
                             });
                         }
                     });
@@ -77,8 +76,8 @@ describe("User", function () {
 
     describe("Add existing user to group", function () {
         it("should have empty group", function (done) {
-            request(app)
-                .get('/test/user/groups/' + util.h2b64(group.id))
+            agent
+                .get('/groups/' + util.h2b64(group.id))
                 .set('Accept', 'text/html')
                 .expect(200)
                 .end(function (err, res) {
@@ -89,8 +88,8 @@ describe("User", function () {
                 });
         });
         it("should see user page with list of groups", function (done) {
-            request(app)
-                .get('/test/user/testuserfriend')
+            agent
+                .get('/users/testuserfriend')
                 .set('Accept', 'text/html')
                 .expect(200)
                 .end(function (err, res) {
@@ -104,8 +103,8 @@ describe("User", function () {
                 });
         });
         it("should add one group", function (done) {
-            request(app)
-                .post('/test/user/testuserfriend/groups')
+            agent
+                .post('/users/testuserfriend/groups')
                 .send({groupid: group.id})
                 .set('Accept', 'application/json')
                 .expect(200)
@@ -118,8 +117,8 @@ describe("User", function () {
                 });
         });
         it("should see added group", function (done) {
-            request(app)
-                .get('/test/user/testuserfriend')
+            agent
+                .get('/users/testuserfriend')
                 .set('Accept', 'text/html')
                 .expect(200)
                 .end(function (err, res) {
@@ -136,8 +135,8 @@ describe("User", function () {
                 });
         });
         it("should see added user in group member page", function (done) {
-            request(app)
-                .get('/test/user/groups/' + util.h2b64(group.id))
+            agent
+                .get('/groups/' + util.h2b64(group.id))
                 .set('Accept', 'text/html')
                 .expect(200)
                 .end(function (err, res) {
