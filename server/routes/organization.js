@@ -191,7 +191,7 @@ module.exports.users = function (req, res) {
 };
 
 module.exports.user = function (req, res) {
-    User.findOne({username: req.params.username}, function (err, user) {
+    User.findOne({username: req.params.username}).populate({path: 'groups', model: 'Group'}).exec(function (err, user) {
         if (err) { throw err; }
         Group.find({organization: 'nidarholm'}, function (err, groups) {
             if (err) { throw err; }
