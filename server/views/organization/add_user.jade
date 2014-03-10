@@ -27,7 +27,7 @@ block content
         label(for='group') Gi rettigheter til instrumentgruppe
         select#group(name='group')
           option (Ingen)
-          for group in instrument_groups
+          for group in groups
             option(value=group.id)= group.name
     .row
       .columns

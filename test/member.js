@@ -12,6 +12,7 @@ describe("Member", function () {
 
     var agent = request.agent(app),
         user1,
+        groupid,
         groups;
 
     before(function (done) {
@@ -41,6 +42,7 @@ describe("Member", function () {
                 if (err) {
                     done(err);
                 } else {
+                    groupid = group._id;
                     user1.save(function (err) {
                         if(err) {
                             done(err);
@@ -92,22 +94,6 @@ describe("Member", function () {
                 members.eq(1).find('a').attr('href').should.equal('/users/nidarholm.random-testuser.1');
                 done(err);
             });
-        });
-        var groupid;
-        it("should find group id for instrument group in form", function (done) {
-            agent
-            .get('/members/new')
-            .set('Accept', 'text/html')
-            .expect(200)
-            .end(function (err, res) {
-                $ = cheerio.load(res.text);
-                var groups = $('#group option');
-                groups.length.should.equal(3); // None, testgroup, New group
-                groups.eq(2).text().should.equal('New group');
-                groupid = groups.eq(2).attr('value');
-                done(err);
-            });
-
         });
         it("should create user with member permission and instrument group", function (done) {
             agent

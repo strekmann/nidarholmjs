@@ -22,8 +22,9 @@ module.exports.memberlist = function (req, res) {
 };
 
 module.exports.add_user = function (req, res) {
-    Organization.findById('nidarholm').exec(function (err, organization) {
-        res.render('organization/add_user', {instrument_groups: organization.instrument_groups});
+    Group.find({organization: 'nidarholm'}).exec(function (err, groups) {
+        console.log(groups);
+        res.render('organization/add_user', {groups: groups});
     });
 };
 

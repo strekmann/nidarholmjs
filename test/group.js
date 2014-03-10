@@ -103,5 +103,18 @@ describe("Group", function () {
                     done();
             });
         });
+        it("should find group id for instrument group in new user form", function (done) {
+            agent
+            .get('/members/new')
+            .set('Accept', 'text/html')
+            .expect(200)
+            .end(function (err, res) {
+                $ = cheerio.load(res.text);
+                var groups = $('#group option');
+                groups.length.should.equal(3); // None, testgroup, New group
+                groups.eq(2).text().should.equal('New group');
+                done(err);
+            });
+        });
     });
 });
