@@ -4,25 +4,24 @@ block content
   .row
     .columns.large-8.medium-10.large-centered.medium-centered
       #forum
+        //
+          Used by tests, also nice for non-js-peeps (rofl)
         for post in posts
           article.post
             header
               h1
-                a(href="/forum/{{oid}}") {{title}}
+                a(href="/forum/{{oid}}")
+                  = post.title
               .meta
                 .row
                   .columns.small-9
                     span.byline
                       a(href="/users/" + post.creator._id)= post.creator.name
                     time.created(datetime=post.created)= post.created
-                  .columns.small-3.text-right.creator
-                    a.deletepost(title="Slett innlegget")
-                      i.fa.fa-trash-o
-
               .content
                 .row
                   .columns
-                    != post.mdtext
+                    != marked(post.mdtext)
 
   script#template(type="text/ractive")
     form.newpost(method="POST" on-submit="addPost")
@@ -58,7 +57,7 @@ block content
               i.fa.fa-globe(title="Tilgjengelig for alle")
               i.fa.fa-users(title="Tilgjengelig for alle medlemmer")
               i.fa.fa-user(title="Tilgjengelig bare for deg")
-              a.deletepost(title="Slett innlegget")
+              a(title="Slett innlegget" on-click="deletePost")
                 i.fa.fa-trash-o
 
         .content

@@ -5,19 +5,24 @@ var Forum = Ractive.extend({
     },
 
     addPost: function(post) {
-        var self = this,
-            url = this.restAPI,
+        var url = this.restAPI,
             promise = $.ajax({
                 url: url,
                 type: 'post',
                 data: post,
                 });
 
-        promise.then(function (data) {
-            self.data.posts.unshift(data);
-        }, function(xhr, status, err){
-            console.error(err);
-        });
+        return promise;
+    },
+
+    deletePost: function(post){
+        var self = this,
+            url = [this.restAPI, post._id],
+            promise = $.ajax({
+                url: url.join('/'),
+                type: 'DELETE'
+            });
+        return promise;
     },
 
     addReply: function(reply){
