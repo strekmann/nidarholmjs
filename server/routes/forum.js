@@ -9,8 +9,19 @@ var isObjectId = function(string){
     return matchObjectId.test(string);
 };
 
-module.exports.all = function (req, res, next) {
-    ForumPost.find({})
+module.exports.index = function (req, res, next) {
+    // sende med prosjekt i url, eller søke opp prosjekter for alle tags?
+    // sende med prosjekt i url
+    var tagquery,
+        tags;
+
+    if (req.params[0]) {
+        tags = req.params[0].split("/");
+        tagquery = {'tags': { $all: tags }};
+    } else {
+        tagquery = {};
+    }
+    ForumPost.find(tagquery)
     .sort('-created')
     .populate('creator', 'username name')
     .select('_id title created mdtext tags permissions creator')

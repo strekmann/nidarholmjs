@@ -2,6 +2,7 @@ var _           = require('underscore'),
     express     = require('express'),
     path        = require('path'),
     multer      = require('multer'),
+    marked      = require('marked'),
     moment      = require('moment'),
     settings    = require('./settings'),
     util        = require('./lib/util'),
@@ -27,6 +28,7 @@ app.configure(function(){
     // utils
     app.use(function (req, res, next) {
         res.locals.hoid = util.h2b64;
+        res.locals.marked = marked;
         res.locals.moment = moment;
         res.locals.isodate = function (str) {
             return moment(str).format();
@@ -188,7 +190,8 @@ app.get('/logout', core_routes.logout);
 app.post('/register', core_routes.register);
 
 var forum_routes = require('./routes/forum');
-app.get('/forum', forum_routes.all);
+app.get('/forum', forum_routes.index);
+app.get(/^\/forum\/tags\/(.+)/, forum_routes.index);
 app.get('/forum/:id', forum_routes.get_post);
 app.get('/forum/:id/replies', forum_routes.get_replies);
 app.post('/forum', forum_routes.create_post);
@@ -233,6 +236,8 @@ app.delete('/projects/:id', project_routes.delete_project);
 app.get('/projects/:id', project_routes.project);
 app.post('/projects/:id/events', project_routes.project_create_event);
 app.delete('/projects/:project_id/events/:event_id', project_routes.project_delete_event);
+app.post('/projects/:id/forum', project_routes.project_create_post);
+app.post('/projects/:id/files', project_routes.project_create_file);
 app.get('/events', project_routes.events);
 
 app.get('/foundation', function(req, res){

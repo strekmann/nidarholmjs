@@ -1,15 +1,48 @@
 extends ../layouts/main.jade
 
 block content
-  .row
-    .columns
-      #project
+  #project
+    .row
+      .medium-8.columns
         h1= project.title
         = project.start
         = project.end
         p.
         = project.private_mdtext
 
+        #forum
+          for post in project.posts
+            article
+              header
+                h1
+                  a(href="/forum/" + hoid(post.id))= post.title
+                .meta
+                  .row
+                    .columns.small-9
+                      span.byline
+                        a(href="/users/" + post.creator._id)= post.creator.name
+                      time.created(datetime=isodate(post.created))= shortdate(post.created)
+                    .columns.small-3.text-right.creator
+                      i.fa.fa-globe(title="Tilgjengelig for alle")
+                      i.fa.fa-users(title="Tilgjengelig for alle medlemmer")
+                      i.fa.fa-user(title="Tilgjengelig bare for deg")
+                      a.deletepost(title="Slett innlegget")
+                        i.fa.fa-trash-o
+
+                .content
+                  .row
+                    .columns
+                      != marked(post.mdtext)
+
+        form(action="/projects/" + project.id + "/forum" method="post")
+          h2 Legg til innlegg
+          label Tittel
+          input.title(name="title" type="text")
+          label Innhold
+          textarea.mdtext(name="mdtext")
+          button Lagre innlegg
+
+      .medium-4.columns
         #events
           for event in project.events
             .event
@@ -33,8 +66,28 @@ block content
           label Slutt
           input.end(name="end" type="text")
           label Beskrivelse
-          textarea.mdtext(name="mktext")
+          textarea.mdtext(name="mdtext")
           button Legg til aktivitet
+
+        #files
+          for file in project.files
+            div.outer.file(data-id=file.id)
+              div.meta
+                strong= file.filename
+                = file.created
+                if file.permissions.public
+                  i.fa.fa-globe
+                else if 'medlemmer' in file.permissions.groups
+                  i.fa.fa-users
+                else if !file.permissions.public && file.permissions.groups.length === 0 && file.permissions.users.length === 0
+                  i.fa.fa-user
+                a.edit(href='#')
+                  i.fa.fa-edit
+                i.fa.fa-trash-o
+
+        form.dropzone(action="/projects/" + project.id + "/files")
+          .fallback
+            input(type="file" name="file" multiple)
 
 block javascript
   script.
