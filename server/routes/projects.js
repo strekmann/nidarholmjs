@@ -31,6 +31,7 @@ module.exports.index = function (req, res, next) {
 module.exports.create_project = function (req, res, next) {
     var title = req.body.title,
         tag = req.body.tag,
+        permissions = req.body.permissions,
         private_mdtext = req.body.private_mdtext,
         public_mdtext = req.body.public_mdtext,
         start = req.body.start,
@@ -43,6 +44,7 @@ module.exports.create_project = function (req, res, next) {
     project.public_mdtext = public_mdtext;
     project.start = start;
     project.end = end;
+    project.permissions = util.set_permissions(permissions);
     project.creator = req.user;
 
     project.save(function (err) {

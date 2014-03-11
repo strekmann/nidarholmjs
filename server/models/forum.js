@@ -27,7 +27,7 @@ var ForumPostSchema = new mongoose.Schema({
     permissions: {
         groups: [{type: ObjectId, ref: 'Group'}],
         users: [{type: String, ref: 'User'}],
-        public: [{type: Boolean, default: false}]
+        public: {type: Boolean, default: false}
     },
     replies: [ForumReplySchema]
 });

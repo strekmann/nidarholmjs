@@ -61,7 +61,8 @@ module.exports.forumView = function () {
         var node = $(event.node),
             post = {
                 title: node.find('#title').val(),
-                mdtext: node.find('#mdtext').val()
+                mdtext: node.find('#mdtext').val(),
+                permissions: node.find('#permissions').val()
             };
 
         forum.addPost(post);

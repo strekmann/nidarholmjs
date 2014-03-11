@@ -18,7 +18,9 @@ block content
           input#start(name="start" type="text")
           label(for="end") Prosjektslutt
           input#end(name="end" type="text")
-          p Rettigheter og bidragsytere kommer etterhvert
+          label(for="permissions") Rettigheter
+          select#permissions(name="permissions")
+            +permission_options(active_user.groups, active_user.friends)
           button Lagre
 
         for project in projects
