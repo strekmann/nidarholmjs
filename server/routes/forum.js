@@ -21,11 +21,16 @@ module.exports.index = function (req, res, next) {
     } else {
         tagquery = {};
     }
-    ForumPost.find(tagquery)
+    var query = ForumPost.find(tagquery)
     .sort('-created')
     .populate('creator', 'username name')
-    .select('_id title created mdtext tags permissions creator')
-    .exec(function (err, posts) {
+    .select('_id title created mdtext tags permissions creator');
+
+    if (req.query.page) {
+        query = query.skip(2 * req.query.page);
+    }
+    query = query.limit(2);
+    query.exec(function (err, posts) {
         if (err) {
             return next(err);
         }
