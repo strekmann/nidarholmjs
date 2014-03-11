@@ -42,6 +42,10 @@ block content
     |   {{>post}}
     | {{/posts}}
 
+    | {{^gotall}}
+    a.getmore(on-click="fetchPosts") Hent flere innlegg
+    | {{/gotall}}
+
     // {{>post}}
     article
       header

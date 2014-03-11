@@ -98,9 +98,31 @@ var Forum = Ractive.extend({
         });
     },
 
+    fetchPosts: function(){
+        this.add('page', 1);
+
+        var self = this,
+            url = [this.restAPI],
+            promise = $.ajax({
+                url: url.join('/'),
+                type: 'GET',
+                data: {page: this.get('page')}
+            });
+
+        promise.then(function(data){
+            console.log(data);
+            if (data.length === 0){
+                self.set('gotall', true);
+            }
+            self.data.posts.push.apply(self.data.posts, data);
+        });
+    },
+
     data: {
         post: {},
         posts: [],
+        gotall: false,
+        page: 0,
 
         marked: function(text){
             return marked(text);

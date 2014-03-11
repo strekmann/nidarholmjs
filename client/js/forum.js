@@ -58,8 +58,7 @@ module.exports.forumView = function () {
     forum.on('addPost', function (event) {
         event.original.preventDefault();
 
-        var self = this,
-            node = $(event.node),
+        var node = $(event.node),
             post = {
                 title: node.find('#title').val(),
                 mdtext: node.find('#mdtext').val(),
@@ -69,7 +68,7 @@ module.exports.forumView = function () {
         var promise = forum.addPost(post);
 
         promise.then(function (data) {
-            self.data.posts.unshift(data);
+            forum.data.posts.unshift(data);
         }, function(xhr, status, err){
             console.error(err);
         });
@@ -85,6 +84,11 @@ module.exports.forumView = function () {
         }, function(xhr, status, err){
             console.error(err);
         });
+    });
+
+    forum.on('fetchPosts', function(event){
+        event.original.preventDefault();
+        forum.fetchPosts();
     });
 
     return forum;
