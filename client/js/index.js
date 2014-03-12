@@ -4,5 +4,6 @@ module.exports = {
     forum: require('./forum'),
     organization: require('./organization'),
     groups: require('./groups'),
+    user: require('./user'),
     projects: require('./projects')
 };

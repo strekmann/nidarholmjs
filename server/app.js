@@ -240,6 +240,9 @@ app.post('/projects/:id/forum', project_routes.project_create_post);
 app.post('/projects/:id/files', project_routes.project_create_file);
 app.get('/events', project_routes.events);
 
+var proxy_routes = require('./routes/proxy');
+app.get('/proxy/postcode/:postcode', proxy_routes.postcode);
+
 app.get('/foundation', function(req, res){
     res.render('foundation');
 });

@@ -36,7 +36,8 @@
     "i18n-abide": "0.0.16",
     "multer": "0.0.5",
     "slug": "~0.4.2",
-    "marked": "^0.3.2"
+    "marked": "^0.3.2",
+    "superagent": "^0.17.0"
   },
   "devDependencies": {
     "uglify-js": "",
