@@ -95,7 +95,7 @@ a:focus {
     select {
         font-size: 1rem;
         border: none;
-        border-bottom: rem-calc(2) solid $secondary-color;
+        border-bottom: rem-calc(2) solid #ddd;
         outline: none;
         -webkit-box-shadow: none;
         box-shadow: none;

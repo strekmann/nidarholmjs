@@ -376,19 +376,23 @@ $global-radius: 0px;
 // $input-font-family: inherit;
 // $input-font-color: rgba(0,0,0,0.75);
 // $input-font-size: rem-calc(14);
-// $input-bg-color: #fff;
+$input-bg-color: #fff;
 // $input-focus-bg-color: scale-color(#fff, $lightness: -2%);
+$input-focus-bg-color: $input-bg-color;
 // $input-border-color: scale-color(#fff, $lightness: -20%);
+$input-border-color: #ddd;
 // $input-focus-border-color: scale-color(#fff, $lightness: -40%);
+$input-focus-border-color: $input-border-color;
 // $input-border-style: solid;
-// $input-border-width: 1px;
+$input-border-width: rem-calc(2);
 // $input-disabled-bg: #ddd;
 // $input-box-shadow: inset 0 1px 2px rgba(0,0,0,0.1);
+$input-box-shadow: none;
 // $input-include-glowing-effect: true;
 
 // We use these to style the fieldset border and spacing.
 // $fieldset-border-style: solid;
-// $fieldset-border-width: 1px;
+$fieldset-border-width: 2px;
 // $fieldset-border-color: #ddd;
 // $fieldset-padding: rem-calc(20);
 // $fieldset-margin: rem-calc(18 0);
@@ -401,7 +405,8 @@ $global-radius: 0px;
 // We use these to style the prefix and postfix input elements
 // $input-prefix-bg: scale-color(#fff, $lightness: -5%);
 // $input-prefix-border-color: scale-color(#fff, $lightness: -20%);
-// $input-prefix-border-size: 1px;
+$input-prefix-border-color: #ddd;
+$input-prefix-border-size: 2px;
 // $input-prefix-border-type: solid;
 // $input-prefix-overflow: hidden;
 // $input-prefix-font-color: #333;
