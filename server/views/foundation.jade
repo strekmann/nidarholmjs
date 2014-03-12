@@ -64,7 +64,7 @@ block content
       h4#forms Forms
       form
         fieldset
-          legend Fieldset
+          legend Default styling
           .row
             .columns
               label Input label
@@ -87,6 +87,28 @@ block content
             .columns
               label Input label
               input(type="text" placeholder="Field #4")
+
+      form
+        fieldset
+          legend Float-labels styling
+          .row
+            .columns.float-labels
+              input(type="text" placeholder="Title")
+              label Title
+          .row
+            .columns.large-4.float-labels
+              input(type="text" placeholder="Height")
+              label Height
+            .columns.large-4.float-labels
+              input(type="text" placeholder="Width")
+              label Width
+            .columns.large-4.float-labels
+                input(type="text" placeholder="Weight")
+                label Weight
+          .row
+            .columns.float-labels
+              input(type="text" placeholder="Location")
+              label Location
 
       hr
 
