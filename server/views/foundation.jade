@@ -84,9 +84,10 @@ block content
                 .columns.small-3
                   span.postfix .com
           .row
-            .columns
+            .columns.error
               label Input label
               input(type="text" placeholder="Field #4")
+              small.error This is an error
           .row
             .columns
               label Input label
@@ -119,8 +120,9 @@ block content
                 input(type="text" placeholder="")
                 label Weight
           .row
-            .columns.float-labels
+            .columns.float-labels.error
               input(type="text" placeholder="")
+              small.error This is an error
               label Location
           .row
             .columns.float-labels

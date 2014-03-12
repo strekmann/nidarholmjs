@@ -75,6 +75,21 @@ a:focus {
         margin: 0;
     }
 
+    small.error {
+        margin-top: -1rem;
+        color: $alert-color;
+        background: white;
+        padding-left: 0;
+    }
+
+    &.error {
+        input,
+        textarea,
+        select {
+            border-bottom-color: $alert-color;
+        }
+    }
+
     input,
     textarea,
     select {
@@ -87,13 +102,14 @@ a:focus {
         padding-left: 0;
         padding-right: 0;
         margin-top: rem-calc(12);
+        margin-bottom: 1rem;
         background-color: white;
 
         &:focus {
             -webkit-box-shadow: none;
             box-shadow: none;
             background-color: white;
-            border-bottom-color: $primary-color;
+            border-bottom-color: $warning-color;
         }
 
         &:focus + label {
