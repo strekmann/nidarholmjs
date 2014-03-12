@@ -12,4 +12,5 @@ module.exports.editUserView = function () {
             });
         }
     });
+    $("#country").chosen();
 };

@@ -3,6 +3,7 @@ var Q = require("q"),
     async = require('async'),
     slug = require('slug'),
     mongoose = require('mongoose'),
+    countries = require('../../bower_components/country-list/country/cldr/nb/country'),
     util = require('../lib/util'),
     User = require('../models').User,
     Group = require('../models').Group,
@@ -92,7 +93,10 @@ module.exports.edit_user = function (req, res, next) {
 
     User.findOne({username: username}, function (err, user) {
         if (err) { next(err); }
-        res.render('organization/user_edit.jade', {user: user});
+        if (!user.country) {
+            user.country = "NO";
+        }
+        res.render('organization/user_edit.jade', {user: user, countries: countries});
     });
 };
 

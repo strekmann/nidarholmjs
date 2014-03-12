@@ -20,12 +20,17 @@ block content
         input#phone(name="phone" type="text" value=user.phone)
         label(for="address") Adresse
         input#address(name="address" type="text" value=user.address)
-        label(for="postcode") Postnummer
-        input#postcode(name="postcode" type="text" value=user.postcode)
-        label(for="city") Poststed
-        input#city(name="city" type="text" value=user.city)
+        .row
+          .small-3.columns
+            label(for="postcode") Postnummer
+            input#postcode(name="postcode" type="text" value=user.postcode)
+          .small-9.columns
+            label(for="city") Poststed
+            input#city(name="city" type="text" value=user.city)
         label(for="country") Land
-        input#country(name="country" type="text" value=user.country)
+        select#country(name="country")
+          for country, code in countries
+            option(value=code selected=code===user.country)= country
 
         if active_user.is_admin
           label(for="joined") Ble medlem første gang
