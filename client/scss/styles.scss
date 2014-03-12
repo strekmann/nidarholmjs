@@ -94,12 +94,12 @@ a:focus {
         }
 
         &:focus + label {
-            color: $dark-orange;
-            visibility: visible;
+            color: $primary-color;
         }
 
-        &:invalid + label {
-            visibility: hidden;
+        &:required + label:after {
+            content: " *";
+            color: $dark-orange;
         }
     }
 }
