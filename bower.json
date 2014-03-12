@@ -9,7 +9,6 @@
     "ractive-events-tap": "",
     "chosen": "",
     "marked": "~0.3.1",
-    "ractive-decorators-sortable": "ractivejs/ractive-decorators-sortable",
-    "country-list": ""
+    "ractive-decorators-sortable": "ractivejs/ractive-decorators-sortable"
   }
 }

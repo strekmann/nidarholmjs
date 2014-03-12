@@ -37,7 +37,8 @@
     "multer": "0.0.5",
     "slug": "~0.4.2",
     "marked": "^0.3.2",
-    "superagent": "^0.17.0"
+    "superagent": "^0.17.0",
+    "country-list": "git://github.com/sigurdga/country-list"
   },
   "devDependencies": {
     "uglify-js": "",
