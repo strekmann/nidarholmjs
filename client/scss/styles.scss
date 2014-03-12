@@ -1,5 +1,29 @@
 @charset "UTF-8";
 
+// our fonts
+@font-face {
+    font-family: 'Crimson Text';
+    font-style: normal;
+    font-weight: 400;
+    src: local('Crimson Text'), local('CrimsonText-Roman'), url(/fonts/CrimsonText-Roman.ttf) format('truetype');
+}
+@font-face {
+    font-family: 'Crimson Text';
+    font-style: italic;
+    font-weight: 700;
+    src: local('Crimson Text Bold Italic'), local('CrimsonText-BoldItalic'), url(/fonts/CrimsonText-BoldItalic.ttf) format('truetype');
+}
+
+@font-face {
+    font-family: 'Open Sans';
+    font-style: normal;
+    font-weight: 400;
+    src: local('Open Sans'), local('OpenSans'), url(/fonts/OpenSans-Regular.ttf) format('truetype');
+}
+
+$sans-font: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+$serif-font: "Crimson Text", georgia, 'Times New Roman', times, serif;
+
 // our variables
 @import "settings";
 
@@ -14,7 +38,6 @@
 @import "font-awesome";
 
 $dark-orange: #f2784b;
-$serif-font: georgia, 'times new roman', times, serif;
 
 /* foundation ++ */
 @media #{$medium-up} {
@@ -44,7 +67,7 @@ body {
 }
 
 h1 {
-    font-family: georgia, 'times new roman', times, serif;
+    font-family: $serif-font;
     font-style: italic;
     margin: rem-calc(0 0 10px 0);
     line-height: 1.2;
@@ -99,9 +122,9 @@ a:focus {
         outline: none;
         -webkit-box-shadow: none;
         box-shadow: none;
-        padding-left: 0;
-        padding-right: 0;
-        margin-top: rem-calc(12);
+        padding: 0;
+        height: 2rem;
+        margin-top: rem-calc(14);
         margin-bottom: 1rem;
         background-color: white;
 
