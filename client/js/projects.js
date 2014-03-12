@@ -1,3 +1,5 @@
+var Project = require('./ractive/project');
+
 module.exports.projectListView = function () {
     $('#projects').on('click', '.deleteproject', function (event) {
         event.preventDefault();
@@ -14,7 +16,26 @@ module.exports.projectListView = function () {
     });
 };
 
-module.exports.projectView = function () {
+module.exports.projectView = function (objectid) {
+
+    var forum = new Project({
+        el: '#forum',
+        template: '#forumtemplate',
+        restAPI: '/project/' + objectid
+    });
+
+    var eventlist = new Project({
+        el: '#events',
+        template: '#eventlisttemplate',
+        restAPI: '/project/' + objectid
+    });
+
+    var filelist = new Project({
+        el: '#files',
+        template: '#filelisttemplate',
+        restAPI: '/project/' + objectid
+    });
+
     $('#events').on('click', '.deleteevent', function (event) {
         event.preventDefault();
         var url = $(this).attr('href');
@@ -28,4 +49,10 @@ module.exports.projectView = function () {
             }
         });
     });
+
+    return {
+        forum: forum,
+        events: eventlist,
+        files: filelist
+    };
 };

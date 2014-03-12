@@ -30,24 +30,10 @@ app.configure(function(){
         res.locals.hoid = util.h2b64;
         res.locals.marked = marked;
         res.locals.moment = moment;
-        res.locals.isodate = function (str) {
-            return moment(str).format();
-        };
-        res.locals.shortdate = function (str) {
-            if (str) {
-                return moment(str).format('ll');
-            }
-        };
-        res.locals.longdate = function (str) {
-            if (str) {
-                return moment(str).format('LLL');
-            }
-        };
-        res.locals.ago = function (str) {
-            if (str) {
-                return moment(str).fromNow();
-            }
-        };
+        res.locals.isodate = util.isodate;
+        res.locals.shortdate = util.shortdate;
+        res.locals.longdate = util.longdate;
+        res.locals.ago = util.ago;
         next();
     });
 

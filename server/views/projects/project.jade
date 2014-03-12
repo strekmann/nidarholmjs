@@ -89,6 +89,77 @@ block content
           .fallback
             input(type="file" name="file" multiple)
 
+  script#forumtemplate(type="text/ractive")
+    | {{#items}}
+    |   {{>post}}
+    | {{/items}}
+
+    // {{>post}}
+    article
+      header
+        h1
+          a(href="/forum/{{oid}}") {{title}}
+        .meta
+          .row
+            .columns.small-9
+              span.byline
+                a(href="/users/{{creator._id}}") {{creator.name}}
+              time.created(datetime="{{isodate(created)}}") {{shortdate(created)}}
+            .columns.small-3.text-right.creator
+              i.fa.fa-globe(title="Tilgjengelig for alle")
+              i.fa.fa-users(title="Tilgjengelig for alle medlemmer")
+              i.fa.fa-user(title="Tilgjengelig bare for deg")
+              a(title="Slett innlegget" on-click="deletePost")
+                i.fa.fa-trash-o
+
+        .content
+          .row
+            .columns {{{marked(mdtext)}}}
+    // {{/post}}
+
+  script#eventlisttemplate(type="text/ractive")
+    | {{#items}}
+    |   {{>event}}
+    | {{/items}}
+
+    // {{>event}}
+    .event
+      h3 {{title}}
+      .meta
+        | av 
+        {{creator.name}}
+        {{shortdate(start)}}
+        {{shortdate(end)}}
+        a.deleteevent(href="/projects/{{../_id}}/events/{{_id}}")
+          i.fa.fa-trash-o
+    // {{/event}}
+
+  script#filelisttemplate(type="text/ractive")
+    | {{#items}}
+    |   {{>file}}
+    | {{/items}}
+
+    // {{>file}}
+    .outer.file(data-id="{{_id}}")
+      div.meta
+        strong {{filename}}
+        {{shortdate(created)}}
+        a.edit(href='#')
+          i.fa.fa-edit
+        i.fa.fa-trash-o
+    // {{/file}}
+
 block javascript
-  script.
-    require('s7n').projects.projectView();
+  script
+    | var p = require('s7n').projects.projectView('
+    = project.id
+    ');
+    | p.forum.set('items', 
+    != JSON.stringify(project.posts)
+    | );
+    | p.events.set('items', 
+    != JSON.stringify(project.events)
+    | );
+    | p.files.set('items', 
+    != JSON.stringify(project.files)
+    | );

@@ -47,26 +47,26 @@ block content
     | {{/gotall}}
 
     // {{>post}}
-    article
-      header
-        h1
-          a(href="/forum/{{oid}}") {{title}}
-        .meta
-          .row
-            .columns.small-9
-              span.byline
-                a(href="/users/{{creator._id}}") {{creator.name}}
-              time.created(datetime="{{isodate(created)}}") {{shortdate(created)}}
-            .columns.small-3.text-right.creator
-              i.fa.fa-globe(title="Tilgjengelig for alle")
-              i.fa.fa-users(title="Tilgjengelig for alle medlemmer")
-              i.fa.fa-user(title="Tilgjengelig bare for deg")
-              a(title="Slett innlegget" on-click="deletePost")
-                i.fa.fa-trash-o
+      article
+        header
+          h1
+            a(href="/forum/{{oid}}") {{title}}
+          .meta
+            .row
+              .columns.small-9
+                span.byline
+                  a(href="/users/{{creator._id}}") {{creator.name}}
+                time.created(datetime="{{isodate(created)}}") {{shortdate(created)}}
+              .columns.small-3.text-right.creator
+                i.fa.fa-globe(title="Tilgjengelig for alle")
+                i.fa.fa-users(title="Tilgjengelig for alle medlemmer")
+                i.fa.fa-user(title="Tilgjengelig bare for deg")
+                a(title="Slett innlegget" on-click="deletePost")
+                  i.fa.fa-trash-o
 
-        .content
-          .row
-            .columns {{{marked(mdtext)}}}
+          .content
+            .row
+              .columns {{{marked(mdtext)}}}
     // {{/post}}
 
 block javascript

@@ -1,9 +1,37 @@
+var moment = require('moment');
+
 module.exports.h2b64 = function(hex){
     return new Buffer(hex, 'hex').toString('base64').replace('+', '-').replace('/', '_');
 };
 
 module.exports.b642h = function(b64){
     return new Buffer(b64.replace('-','+').replace('_','/'), 'base64').toString('hex');
+};
+
+module.exports.isodate = function(date) {
+    if (date) {
+        return moment(date).format();
+    }
+};
+
+module.exports.shortdate = function (date) {
+    if (date) {
+        return moment(date).format('ll');
+    } else {
+        return date;
+    }
+};
+
+module.exports.longdate = function (date) {
+    if (date) {
+        return moment(date).format('LLL');
+    }
+};
+
+module.exports.ago = function (date) {
+    if (date) {
+        return moment(date).fromNow();
+    }
 };
 
 module.exports.set_permissions = function (permissions) {
