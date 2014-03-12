@@ -87,28 +87,53 @@ block content
             .columns
               label Input label
               input(type="text" placeholder="Field #4")
+          .row
+            .columns
+              label Input label
+              textarea(placeholder="Textarea Field")
+          .row
+            .columns
+              label Input label
+              select
+                option(value="en") En
+                option(value="to") To
+                option(value="tre") Tre
+                option(value="fire") Fire
+
 
       form
         fieldset
           legend Float-labels styling
           .row
             .columns.float-labels
-              input(type="text" placeholder="enter a title" required)
+              input(type="text" placeholder="" required)
               label Title
           .row
             .columns.large-4.float-labels
-              input(type="text" placeholder="enter height in cm")
+              input(type="text" placeholder="")
               label Height
             .columns.large-4.float-labels
-              input(type="text" placeholder="enter width in cm")
+              input(type="text" placeholder="")
               label Width
             .columns.large-4.float-labels
-                input(type="text" placeholder="enter weight in kg")
+                input(type="text" placeholder="")
                 label Weight
           .row
             .columns.float-labels
-              input(type="text" placeholder="specify location")
+              input(type="text" placeholder="")
               label Location
+          .row
+            .columns.float-labels
+              textarea(placeholder="Textarea Field")
+              label Input label
+          .row
+            .columns.float-labels
+              select
+                option(value="en") En
+                option(value="to") To
+                option(value="tre") Tre
+                option(value="fire") Fire
+              label Input label
 
       hr
 

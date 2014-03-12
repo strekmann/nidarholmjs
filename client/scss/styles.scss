@@ -75,7 +75,9 @@ a:focus {
         margin: 0;
     }
 
-    input {
+    input,
+    textarea,
+    select {
         font-size: 1rem;
         border: none;
         border-bottom: rem-calc(2) solid $secondary-color;
@@ -85,6 +87,7 @@ a:focus {
         padding-left: 0;
         padding-right: 0;
         margin-top: rem-calc(12);
+        background-color: white;
 
         &:focus {
             -webkit-box-shadow: none;
