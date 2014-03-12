@@ -109,6 +109,10 @@ a:focus {
             -webkit-box-shadow: none;
             box-shadow: none;
             background-color: white;
+            border-bottom-color: $primary-color;
+        }
+
+        &:required:focus {
             border-bottom-color: $warning-color;
         }
 
