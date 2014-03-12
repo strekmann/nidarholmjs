@@ -95,6 +95,11 @@ a:focus {
 
         &:focus + label {
             color: $dark-orange;
+            visibility: visible;
+        }
+
+        &:invalid + label {
+            visibility: hidden;
         }
     }
 }
