@@ -168,8 +168,27 @@ module.exports.project_create_post = function (req, res, next) {
         post.tags.push(project.tag);
         post.save(function (err) {
             if (err) { return next(err); }
-            res.redirect('/projects/' + util.h2b64(project.id));
+            post.populate('creator', 'username name', function (err, post) {
+                if (err) { return next(err); }
+                res.format({
+                    json: function () {
+                        res.json(200, post);
+                    },
+                    html: function () {
+                        res.redirect('/projects/' + util.h2b64(project.id));
+                    }
+                });
+            });
         });
+    });
+};
+//
+// TODO: Only hide. Or remove project tag. Or ask.
+module.exports.project_delete_post = function (req, res, next) {
+    var post_id = req.params.post_id;
+    ForumPost.findByIdAndRemove(post_id, function (err, event) {
+        if (err) { return next(err); }
+        res.json(200, event);
     });
 };
 
@@ -212,9 +231,7 @@ module.exports.project_create_file = function (req, res, next) {
                         file.creator = req.user;
                         file.save(function (err) {
                             if (err) { throw err; }
-                            res.json(200, {
-                                status: "success"
-                            });
+                            res.json(200, file);
                         });
                     });
                 });

@@ -25,6 +25,42 @@ module.exports.projectView = function (project_obj) {
         restAPI: '/project/' + project_obj._id
     });
 
+    project.on('createPost', function (event) {
+        event.original.preventDefault();
+        var node = $(event.node),
+            post = {
+                title: node.find('#post_title').val(),
+                mdtext: node.find('#post_mdtext').val(),
+            },
+            promise = $.ajax({
+                url: event.node.action,
+                type: 'POST',
+                data: post
+            });
+
+        promise.then(function (data) {
+            $('#flash').append('<div data-alert class="alert-box success">' + data.title + ' ble lagt til i forum</div>');
+            project.data.project.posts.push(data);
+        }, function(xhr, status, err){
+            console.error(err);
+        });
+    });
+
+    project.on('deletePost', function (event) {
+        event.original.preventDefault();
+        var promise = $.ajax({
+            url: event.node.href,
+            type: 'delete'
+        });
+        promise.then(function (data) {
+            $('#flash').append('<div data-alert class="alert-box success">' + data.title + ' ble fjernet</div>');
+            var index = event.keypath.split('.').pop();
+            project.data.project.posts.splice(index, 1);
+        }, function(xhr, status, err){
+            console.error(err);
+        });
+    });
+
     project.on('createEvent', function (event) {
         event.original.preventDefault();
         var node = $(event.node),

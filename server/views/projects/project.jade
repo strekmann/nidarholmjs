@@ -106,12 +106,12 @@ block content
           |   {{>post}}
           | {{/posts}}
 
-          form(action="/projects/{{_id}}/forum" method="post")
+          form(on-submit="createPost" action="/projects/{{_id}}/forum" method="post" data-abide)
             h2 Legg til innlegg
             label Tittel
-            input.title(name="title" type="text")
+            input#post_title(name="title" type="text" required)
             label Innhold
-            textarea.mdtext(name="mdtext")
+            textarea#post_mdtext(name="mdtext" required)
             button Lagre innlegg
 
       .medium-4.columns
@@ -135,7 +135,7 @@ block content
             button Legg til aktivitet
 
         #files
-          form.dropzone(action="/projects/{{_id}}/files")
+          form.dropzone(on-submit="createFile" action="/projects/{{_id}}/files")
             .fallback
               input(type="file" name="file" multiple)
               button Send
@@ -158,7 +158,7 @@ block content
                 a(href="/users/{{creator._id}}") {{creator.name}}
               time.created(datetime="{{isodate(created)}}") {{shortdate(created)}}
             .columns.small-3.text-right.creator
-              a(title="slett innlegget" on-click="deletepost")
+              a(href="/projects/{{../../_id}}/forum/{{_id}}" title="slett innlegget" on-click="deletePost")
                 i.fa.fa-trash-o
 
         .content
@@ -176,13 +176,7 @@ block content
     // {{/event}}
 
     // {{>file}}
-    .outer.file(data-id="{{_id}}")
-      div.meta
-        strong {{filename}}
-        {{shortdate(created)}}
-        a.edit(href='#')
-          i.fa.fa-edit
-        i.fa.fa-trash-o
+    <div class="dz-preview dz-file-preview dz-processing dz-success">  <div class="dz-details">    <div class="dz-filename"><span data-dz-name="">{{filename}}</span></div>    <div class="dz-size" data-dz-size=""></div>  <img data-dz-thumbnail="" alt="{{filename}}" src="{{path}}">  <img data-dz-thumbnail="">  </div>  <div class="dz-error-mark"><span>✘</span></div>  </div>
     // {{/file}}
 
 block javascript
