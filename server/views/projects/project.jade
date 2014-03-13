@@ -15,7 +15,7 @@ block content
             article
               header
                 h1
-                  a(href="/forum/" + hoid(post.id))= post.title
+                  a(href="/forum/" + hoid(post._id))= post.title
                 .meta
                   .row
                     .columns.small-9
@@ -34,7 +34,7 @@ block content
                     .columns
                       != marked(post.mdtext)
 
-        form(action="/projects/" + project.id + "/forum" method="post")
+        form(action="/projects/" + project._id + "/forum" method="post")
           h2 Legg til innlegg
           label Tittel
           input.title(name="title" type="text")
@@ -52,10 +52,10 @@ block content
                 = event.creator.name
                 = shortdate(event.start)
                 = shortdate(event.end)
-                a.deleteevent(href="/projects/" + project.id + "/events/" + event.id)
+                a.deleteevent(href="/projects/" + project._id + "/events/" + event._id)
                   i.fa.fa-trash-o
 
-        form(action="/projects/" + project.id + "/events" method="post")
+        form(action="/projects/" + project._id + "/events" method="post")
           h2 Legg til aktivitet
           label Tittel
           input.title(name="title" type="text")
@@ -70,24 +70,25 @@ block content
           button Legg til aktivitet
 
         #files
-          for file in project.files
-            div.outer.file(data-id=file.id)
-              div.meta
-                strong= file.filename
-                = file.created
-                if file.permissions.public
-                  i.fa.fa-globe
-                else if 'medlemmer' in file.permissions.groups
-                  i.fa.fa-users
-                else if !file.permissions.public && file.permissions.groups.length === 0 && file.permissions.users.length === 0
-                  i.fa.fa-user
-                a.edit(href='#')
-                  i.fa.fa-edit
-                i.fa.fa-trash-o
+          form.dropzone(method="post" action="/projects/" + project._id + "/files" enctype="multipart/form-data")
+            .fallback
+              input(type="file" name="file")
+              button Send
+            for file in project.files
+              div.outer.file(data-id=file._id)
+                div.meta
+                  strong= file.filename
+                  = file.created
+                  if file.permissions.public
+                    i.fa.fa-globe
+                  else if 'medlemmer' in file.permissions.groups
+                    i.fa.fa-users
+                  else if !file.permissions.public && file.permissions.groups.length === 0 && file.permissions.users.length === 0
+                    i.fa.fa-user
+                  a.edit(href='#')
+                    i.fa.fa-edit
+                  i.fa.fa-trash-o
 
-        form.dropzone(action="/projects/" + project.id + "/files")
-          .fallback
-            input(type="file" name="file" multiple)
 
   script#template(type="text/ractive")
     {{#project}}
