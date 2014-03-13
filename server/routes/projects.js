@@ -72,10 +72,10 @@ module.exports.delete_project = function (req, res, next) {
 module.exports.project = function (req, res, next) {
     var id = util.b642h(req.params.id);
 
-    Project.findById(id, function (err, project) {
+    Project.findById(id).lean().exec(function (err, project) {
         if (err) { return next(err); }
         Event.find({tags: project.tag}).populate('creator', 'username name').exec(function (err, events) {
-            project = project.toObject();
+            //project = project.toObject();
             project.events = events;
             ForumPost.find({tags: project.tag}).populate('creator', 'username name').exec(function (err, posts) {
                 project.posts = posts;
