@@ -120,18 +120,18 @@ block content
           |   {{>event}}
           | {{/events}}
 
-          form(action="/projects/{{_id}}/events" method="post")
+          form(on-submit="createEvent" action="/projects/{{_id}}/events" method="post" data-abide)
             h2 Legg til aktivitet
             label Tittel
-            input.title(name="title" type="text")
+            input#event_title(name="title" type="text" required)
             label Sted
-            input.location(name="location" type="text")
+            input#event_location(name="location" type="text")
             label Start
-            input.start(name="start" type="text")
+            input#event_start(name="start" type="text" required)
             label Slutt
-            input.end(name="end" type="text")
+            input#event_end(name="end" type="text")
             label Beskrivelse
-            textarea.mdtext(name="mdtext")
+            textarea#event_mdtext(name="mdtext")
             button Legg til aktivitet
 
         #files
@@ -170,11 +170,8 @@ block content
     .event
       h3 {{title}}
       .meta
-        | av 
-        {{creator.name}}
-        {{shortdate(start)}}
-        {{shortdate(end)}}
-        a.deleteevent(href="/projects/{{../_id}}/events/{{_id}}")
+        | {{shortdate(start)}} {{shortdate(end)}}
+        a.deleteevent(on-click="deleteEvent" href="/projects/{{../../_id}}/events/{{_id}}")
           i.fa.fa-trash-o
     // {{/event}}
 

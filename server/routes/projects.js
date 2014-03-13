@@ -117,7 +117,6 @@ module.exports.project_create_event = function (req, res, next) {
         event.mdtext = mdtext;
         event.creator = req.user;
 
-
         event.save(function (err) {
             if (err) { return next(err); }
             res.format({

@@ -25,17 +25,42 @@ module.exports.projectView = function (project_obj) {
         restAPI: '/project/' + project_obj._id
     });
 
-    $('#events').on('click', '.deleteevent', function (event) {
-        event.preventDefault();
-        var url = $(this).attr('href');
-        var projectevent = $(this).parents('.event');
-        $.ajax({
-            url: url,
-            type: 'delete',
-            success: function (data) {
-                $('flash').append('<div data-alert class="alert-box success">' + data + '</div>');
-                projectevent.remove();
-            }
+    project.on('createEvent', function (event) {
+        event.original.preventDefault();
+        var node = $(event.node),
+            ev = {
+                title: node.find('#event_title').val(),
+                location: node.find('#event_location').val(),
+                start: node.find('#event_start').val(),
+                end: node.find('#event_end').val(),
+                md_text: node.find('#event_mdtext').val()
+            },
+            promise = $.ajax({
+                url: event.node.action,
+                type: 'POST',
+                data: ev
+            });
+
+        promise.then(function (data) {
+            $('#flash').append('<div data-alert class="alert-box success">' + data.title + ' ble lagt til i kalenderen</div>');
+            project.data.project.events.push(data);
+        }, function(xhr, status, err){
+            console.error(err);
+        });
+    });
+
+    project.on('deleteEvent', function (event) {
+        event.original.preventDefault();
+        var promise = $.ajax({
+            url: event.node.href,
+            type: 'delete'
+        });
+        promise.then(function (data) {
+            $('#flash').append('<div data-alert class="alert-box success">' + data.title + ' ble fjernet</div>');
+            var index = event.keypath.split('.').pop();
+            project.data.project.events.splice(index, 1);
+        }, function(xhr, status, err){
+            console.error(err);
         });
     });
 
