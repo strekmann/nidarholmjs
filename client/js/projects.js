@@ -16,24 +16,17 @@ module.exports.projectListView = function () {
     });
 };
 
-module.exports.projectView = function (objectid) {
+module.exports.projectView = function (project_obj, posts, events, files) {
 
-    var forum = new Project({
-        el: '#forum',
-        template: '#forumtemplate',
-        restAPI: '/project/' + objectid
-    });
+    project_obj.posts = posts;
+    project_obj.events = events;
+    project_obj.files = files;
 
-    var eventlist = new Project({
-        el: '#events',
-        template: '#eventlisttemplate',
-        restAPI: '/project/' + objectid
-    });
-
-    var filelist = new Project({
-        el: '#files',
-        template: '#filelisttemplate',
-        restAPI: '/project/' + objectid
+    var project = new Project({
+        el: '#project',
+        template: '#template',
+        project: project_obj,
+        restAPI: '/project/' + project_obj._id
     });
 
     $('#events').on('click', '.deleteevent', function (event) {
@@ -50,9 +43,5 @@ module.exports.projectView = function (objectid) {
         });
     });
 
-    return {
-        forum: forum,
-        events: eventlist,
-        files: filelist
-    };
+    return project;
 };

@@ -89,10 +89,61 @@ block content
           .fallback
             input(type="file" name="file" multiple)
 
-  script#forumtemplate(type="text/ractive")
-    | {{#items}}
-    |   {{>post}}
-    | {{/items}}
+  script#template(type="text/ractive")
+    {{#project}}
+    .row
+      .medium-8.columns
+        h1 {{title}}
+
+        {{shortdate(start)}}
+        {{shortdate(end)}}
+        p.
+          {{private_mdtext}}
+
+        #forum
+          | {{#posts}}
+          |   {{>post}}
+          | {{/posts}}
+
+          form(action="/projects/{{_id}}/forum" method="post")
+            h2 Legg til innlegg
+            label Tittel
+            input.title(name="title" type="text")
+            label Innhold
+            textarea.mdtext(name="mdtext")
+            button Lagre innlegg
+
+      .medium-4.columns
+        #events
+          | {{#events}}
+          |   {{>event}}
+          | {{/events}}
+
+          form(action="/projects/{{_id}}/events" method="post")
+            h2 Legg til aktivitet
+            label Tittel
+            input.title(name="title" type="text")
+            label Sted
+            input.location(name="location" type="text")
+            label Start
+            input.start(name="start" type="text")
+            label Slutt
+            input.end(name="end" type="text")
+            label Beskrivelse
+            textarea.mdtext(name="mdtext")
+            button Legg til aktivitet
+
+        #files
+          form.dropzone(action="/projects/{{_id}}/files")
+            .fallback
+              input(type="file" name="file" multiple)
+              button Send
+            | {{#files}}
+            |   {{>file}}
+            | {{/files}}
+
+
+    {{/project}}
 
     // {{>post}}
     article
@@ -106,21 +157,13 @@ block content
                 a(href="/users/{{creator._id}}") {{creator.name}}
               time.created(datetime="{{isodate(created)}}") {{shortdate(created)}}
             .columns.small-3.text-right.creator
-              i.fa.fa-globe(title="Tilgjengelig for alle")
-              i.fa.fa-users(title="Tilgjengelig for alle medlemmer")
-              i.fa.fa-user(title="Tilgjengelig bare for deg")
-              a(title="Slett innlegget" on-click="deletePost")
+              a(title="slett innlegget" on-click="deletepost")
                 i.fa.fa-trash-o
 
         .content
           .row
             .columns {{{marked(mdtext)}}}
     // {{/post}}
-
-  script#eventlisttemplate(type="text/ractive")
-    | {{#items}}
-    |   {{>event}}
-    | {{/items}}
 
     // {{>event}}
     .event
@@ -134,11 +177,6 @@ block content
           i.fa.fa-trash-o
     // {{/event}}
 
-  script#filelisttemplate(type="text/ractive")
-    | {{#items}}
-    |   {{>file}}
-    | {{/items}}
-
     // {{>file}}
     .outer.file(data-id="{{_id}}")
       div.meta
@@ -151,15 +189,12 @@ block content
 
 block javascript
   script
-    | var p = require('s7n').projects.projectView('
-    = project.id
-    ');
-    | p.forum.set('items', 
+    | require('s7n').projects.projectView(
+    != JSON.stringify(project)
+    | ,
     != JSON.stringify(project.posts)
-    | );
-    | p.events.set('items', 
+    | ,
     != JSON.stringify(project.events)
-    | );
-    | p.files.set('items', 
+    | ,
     != JSON.stringify(project.files)
     | );
