@@ -16,11 +16,7 @@ module.exports.projectListView = function () {
     });
 };
 
-module.exports.projectView = function (project_obj, posts, events, files) {
-
-    project_obj.posts = posts;
-    project_obj.events = events;
-    project_obj.files = files;
+module.exports.projectView = function (project_obj) {
 
     var project = new Project({
         el: '#project',

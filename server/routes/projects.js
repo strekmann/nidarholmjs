@@ -75,6 +75,7 @@ module.exports.project = function (req, res, next) {
     Project.findById(id, function (err, project) {
         if (err) { return next(err); }
         Event.find({tags: project.tag}).populate('creator', 'username name').exec(function (err, events) {
+            project = project.toObject();
             project.events = events;
             ForumPost.find({tags: project.tag}).populate('creator', 'username name').exec(function (err, posts) {
                 project.posts = posts;
