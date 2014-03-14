@@ -1,5 +1,49 @@
 var Group = require('./ractive/organization').Group;
 
+module.exports.groupView = function (group, users) {
+    var ractive = new Ractive({
+        el: '#users',
+        template: '#grouptemplate',
+        data: {
+            group: group,
+            users: users
+        }
+    });
+    ractive.on("addUser", function (event) {
+        event.original.preventDefault();
+        var form = $(event.node),
+            promise = $.ajax({
+            url: event.node.action,
+            type: 'POST',
+            dataType: 'json',
+            data: {
+                username: form.find('#user').val()
+            }
+        });
+
+        promise.then(function (user) {
+            ractive.data.group.members.push({user: user});
+        }, function(xhr, status, err){
+            console.error(err);
+        });
+    });
+
+    ractive.on("removeUser", function (event) {
+        event.original.preventDefault();
+        var user = $(event.node),
+            promise = $.ajax({
+                url: event.node.href,
+                type: 'delete',
+                dataType: 'json'
+            });
+
+        promise.then(function () {
+            var index = event.keypath.split('.').pop();
+            ractive.data.group.members.splice(index, 1);
+        });
+    });
+};
+
 module.exports.groupListView = function () {
     var grouplist = new Group({
         el: '#groups',

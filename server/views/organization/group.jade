@@ -8,9 +8,46 @@ block content
 
       h2 Gruppemedlemmer
 
-      ul#members
-        if group.members
-          for member in group.members
-            if member
-              li.member
-                a(href="/users/"+member.user.username)= member.user.name
+      #users
+        ul#members
+          if group.members
+            for member in group.members
+              if member
+                li.member.user
+                  a(href="/users/"+member.user.username)= member.user.name
+
+  script#grouptemplate(type="text/ractive")
+    {{#group}}
+    ul
+      {{#members}}
+      li.user
+        a(href="/users/{{user.username}}") {{ user.name }}
+        a.removegroup(on-click="removeUser" href="/groups/{{../../_id}}/users/{{user.username}}")
+          i.fa.fa-times
+      {{/members}}
+
+    form(on-submit="addUser" method="POST" action="/groups/{{_id}}/users")
+      .row
+        .columns
+          h3 Legg til i grupper
+      .row
+        .columns
+          label(for='user') Finn person
+          select#user
+            {{#users}}
+            option(value="{{username}}") {{name}}
+            {{/users}}
+      .row
+        .columns
+          //button.reset.secondary(type='reset') Avbryt
+          button.tiny Legg til
+
+    {{/group}}
+
+block javascript
+  script
+    | var g = require('s7n').groups.groupView(
+    != JSON.stringify(group)
+    | ,
+    != JSON.stringify(users)
+    | );

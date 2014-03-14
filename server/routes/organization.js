@@ -225,9 +225,53 @@ module.exports.user_add_group = function (req, res, next) {
     });
 };
 
+module.exports.group_add_user = function (req, res, next) {
+    var groupid = req.params.id,
+        username = req.body.username;
+
+    User.findOne({username: username}, function (err, user) {
+        if (err) { throw err; }
+        Group.findById(groupid, function (err, group) {
+            if (err) { return next(err); }
+            if (!group) { return next(new Error("Unrecognized group")); }
+            user.groups.push(group);
+            user.save(function (err) {
+                if (err) { throw err; }
+                group.members.push({user: user._id});
+                group.save(function (err) {
+                    res.json(200, user);
+                });
+            });
+        });
+    });
+};
+
 module.exports.user_remove_group = function (req, res, next) {
     var username = req.params.username,
         groupid = req.params.groupid;
+
+    User.findOne({username: username}, function (err, user) {
+        if (err) { next(err); }
+        user.groups.pull(groupid);
+        user.save(function (err) {
+            if (err) { next(err); }
+            Group.findById(groupid, function (err, group) {
+                if (err) { next(err); }
+                var gs = group.members.pull(username);
+                group.save(function(err) {
+                    if (err) { next(err); }
+                    res.json(200);
+                });
+            });
+        });
+    });
+};
+
+// TODO: Delete does not work correctly below and above
+// must find member_id, then pull
+module.exports.group_remove_user = function (req, res, next) {
+    var groupid = req.params.groupid,
+        username = req.params.username;
 
     User.findOne({username: username}, function (err, user) {
         if (err) { next(err); }
@@ -270,12 +314,15 @@ module.exports.groups = function (req, res, next) {
 module.exports.group = function (req, res, next){
     var groupid = util.b642h(req.params.id);
 
-    Group.findById(groupid)
-        .populate('members.user')
-        //.select('-members.user.password -members.user.salt') // does not work
-        .exec(function (err, group) {
-            if (err) { next(err); }
-            res.render('organization/group', {group: group});
+    User.find().select('username name').lean().exec(function (err, users) {
+        if (err) { next(err); }
+        Group.findById(groupid)
+            .populate('members.user')
+            //.select('-members.user.password -members.user.salt') // does not work
+            .exec(function (err, group) {
+                if (err) { next(err); }
+                res.render('organization/group', {group: group, users: users});
+        });
     });
 };
 

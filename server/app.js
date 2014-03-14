@@ -205,6 +205,8 @@ app.delete('/users/:username/groups/:groupid', organization_routes.user_remove_g
 app.get('/groups', organization_routes.groups);
 app.post('/groups', organization_routes.add_group);
 app.get('/groups/:id', organization_routes.group);
+app.post('/groups/:id/users', organization_routes.group_add_user);
+app.delete('/groups/:groupid/users/:username', organization_routes.group_remove_user);
 app.post('/organization', organization_routes.add_instrument_group);
 app.delete('/organization/:id', organization_routes.remove_instrument_group);
 app.post('/organization/order', organization_routes.order_instrument_groups);
