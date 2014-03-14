@@ -59,4 +59,32 @@ describe("Slug", function () {
             done();
         });
     });
+
+    describe("test creation using unicode, without specifying slug/tag", function () {
+        it("should create new project", function (done) {
+            var title = 'Blåbærsyltetøy er godt',
+                private_mdtext = 'Some description',
+                public_mdtext = 'Some public description',
+                start = '2014-02-27',
+                end = '2014-03-27';
+
+            agent
+                .post('/projects')
+                .send({
+                    title: title,
+                    private_mdtext: private_mdtext,
+                    public_mdtext: public_mdtext,
+                    start: start,
+                    end: end
+                })
+                .end(function (err, res) {
+                    if (err) { return done(err); }
+                    // TODO: Check all possible fields
+                    // TODO: Add another test checking the minimum
+                    res.body._id.should.equal('blåbærsyltetøy-er-godt');
+                    done();
+                });
+        });
+    });
+
 });

@@ -40,7 +40,7 @@ module.exports.create_project = function (req, res, next) {
 
     var project = new Project();
     project.title = title;
-    project._id = uslug(tag.toLowerCase());
+    project._id = uslug(tag);
     project.private_mdtext = private_mdtext;
     project.public_mdtext = public_mdtext;
     project.start = start;
