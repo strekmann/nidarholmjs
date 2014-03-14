@@ -6,10 +6,11 @@ block content
       #projects
         form(action="/projects" method="post")
           h1 Nytt prosjekt
-          label(for="title") Tittel
-          input#title(name="title" type="text")
-          label(for="tag") Merkelapp (del av adressen til projektet)
-          input#tag(name="tag" type="text")
+          #slug
+            label(for="title") Tittel
+            input#title(name="title" type="text")
+            label(for="tag") Merkelapp (del av adressen til projektet)
+            input#tag(name="tag" type="text")
           label(for="private_mdtext") Intern beskrivelse
           textarea#private_mdtext(name="private_mdtext")
           label(for="public_mdtext") Publisert beskrivelse (om denne er tom, blir ikke prosjektet vist eksternt)
@@ -30,6 +31,12 @@ block content
             p= project.end
             form
               button.deleteproject Slett prosjekt
+  script#slugtemplate(type="text/ractive")
+    label(for="title") Tittel
+    input#title(on-keyup="setSlug" name="title" type="text")
+    label(for="tag")
+      abbr(title="Alle innlegg, aktiviteter, o.l merket med etiketten vil listes opp på prosjektsiden. Etiketten vil også bli en del av prosjektsidens adresse.") Etikett (Denne bør ikke endres setter at innlegg, aktiviteter eller filer har blitt lagt til prosjektet)
+    input#tag(name="tag" type="text" value="{{slug}}")
 
 block javascript
   script.

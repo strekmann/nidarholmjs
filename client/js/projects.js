@@ -1,6 +1,20 @@
 var Project = require('./ractive/project');
 
 module.exports.projectListView = function () {
+
+    var ractive = new Ractive({
+        el: '#slug',
+        template: '#slugtemplate',
+        data: {
+            slug: ''
+        }
+    });
+
+    ractive.on('setSlug', function (event) {
+        var node = $(event.node);
+        ractive.set('slug', uslug(node.val()));
+    });
+
     $('#projects').on('click', '.deleteproject', function (event) {
         event.preventDefault();
         var project = $(this).parents('.project');

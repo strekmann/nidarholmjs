@@ -74,6 +74,8 @@ module.exports = function(grunt) {
                     'bower_components/ractive/Ractive.js',
                     'bower_components/ractive-events-tap/Ractive-events-tap.js',
                     'bower_components/ractive-decorators-sortable/Ractive-decorators-sortable.js',
+                    'bower_components/unorm/lib/unorm.js',
+                    'bower_components/uslug/lib/uslug.js',
                     'tmp/js/chosen.js',
                     'client/vendor/js/*.js'
                 ],
