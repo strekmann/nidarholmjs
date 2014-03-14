@@ -34,41 +34,73 @@ block content
 
     .medium-3.columns
       if user.id==active_user.id
-        a.button(href="/users/" + user.username + "/edit") Rediger brukerdata
-        a.button(href="/logout") Logg ut
+        a.button.tiny(href="/users/" + user.username + "/edit") Rediger brukerdata
+        a.button.tiny(href="/logout") Logg ut
 
       h2 Grupper
         if user.groups.length === 0
           p Ingen grupper. Legg personen til i grupper ved å trykke knappen under.
-      ul#groups
-        for group in user.groups
-          if group
-            li.group(data-id=group.id)
-              a(href="/groups/" + hoid(group.id))= group.name
-              a.removegroup(href="#")
-                i.fa.fa-times
-          else
-            = group
+      #groups
+        ul
+          for group in user.groups
+            if group
+              li.group(data-id=group.id)
+                a(href="/groups/" + hoid(group.id))= group.name
+                a.removegroup(href="#")
+                  i.fa.fa-times
+            else
+              = group
 
 
-      #addgroup
-        button.new_group.small
-          i.fa.fa-plus
-        form
-          .row
-            .columns
-              h3 Gi tilgang til grupper
-          .row
-            .columns
-              label(for='group') Finn gruppe
-              select#group
-                for group in groups
-                  option(value=group.id)= group.name
-          .row
-            .columns.text-right
-              button.reset.secondary(type='reset') Avbryt
-              button Gi tilgang
+        #addgroup
+          //button.new_group.small
+            i.fa.fa-plus
+          form(on-submit="addGroup" method="POST" action="/users/" + user.username + "/groups")
+            .row
+              .columns
+                h3 Legg til i grupper
+            .row
+              .columns
+                label(for='group') Finn gruppe
+                select#group
+                  for group in groups
+                    option(value=group.id)= group.name
+            .row
+              .columns
+                //button.reset.secondary(type='reset') Avbryt
+                button.tiny Legg til
+
+  script#usertemplate(type="text/ractive")
+    {{#user}}
+    ul
+      {{#groups}}
+      li.group
+        a(href="/groups/{{hoid(_id)}}") {{name}}
+        a.removegroup(on-click="removeGroup" href="/users/{{../../username}}/groups/{{_id}}")
+          i.fa.fa-times
+      {{/groups}}
+
+    #addgroup
+      //button.new_group.small
+        i.fa.fa-plus
+      form(on-submit="addGroup" method="POST" action="/users/{{username}}/groups")
+        .row
+          .columns
+            h3 Legg til i grupper
+        .row
+          .columns
+            label(for='group') Finn gruppe
+            select#group
+              for group in groups
+                option(value=group.id)= group.name
+        .row
+          .columns
+            //button.reset.secondary(type='reset') Avbryt
+            button.tiny Legg til
+    {{/user}}
 
 block javascript
-  script.
-    require('s7n').organization.userView();
+  script
+    | var user = require('s7n').organization.userView(
+    != JSON.stringify(user)
+    | );
