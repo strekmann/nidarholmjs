@@ -213,14 +213,21 @@ module.exports.user_add_group = function (req, res, next) {
         Group.findById(groupid, function (err, group) {
             if (err) { return next(err); }
             if (!group) { return next(new Error("Unrecognized group")); }
-            user.groups.push(group);
-            user.save(function (err) {
-                if (err) { throw err; }
-                group.members.push({user: user._id});
-                group.save(function (err) {
-                    res.json(200, group);
-                });
+            var already = _.find(user.groups, function (g) {
+                return groupid === g.toString();
             });
+            if (already) {
+                res.json(404, {});
+            } else {
+                user.groups.push(group);
+                user.save(function (err) {
+                    if (err) { throw err; }
+                    group.members.push({user: user._id});
+                    group.save(function (err) {
+                        res.json(200, group);
+                    });
+                });
+            }
         });
     });
 };
@@ -234,14 +241,21 @@ module.exports.group_add_user = function (req, res, next) {
         Group.findById(groupid, function (err, group) {
             if (err) { return next(err); }
             if (!group) { return next(new Error("Unrecognized group")); }
-            user.groups.push(group);
-            user.save(function (err) {
-                if (err) { throw err; }
-                group.members.push({user: user._id});
-                group.save(function (err) {
-                    res.json(200, user);
-                });
+            var already = _.find(user.groups, function (g) {
+                return groupid === g.toString();
             });
+            if (already) {
+                res.json(404, {});
+            } else {
+                user.groups.push(group);
+                user.save(function (err) {
+                    if (err) { throw err; }
+                    group.members.push({user: user._id});
+                    group.save(function (err) {
+                        res.json(200, user);
+                    });
+                });
+            }
         });
     });
 };
@@ -257,7 +271,11 @@ module.exports.user_remove_group = function (req, res, next) {
             if (err) { next(err); }
             Group.findById(groupid, function (err, group) {
                 if (err) { next(err); }
-                var gs = group.members.pull(username);
+                _.each(group.members.filter(function (member){
+                    return member.user === user._id;
+                }), function (member) {
+                    group.members.pull(member);
+                });
                 group.save(function(err) {
                     if (err) { next(err); }
                     res.json(200);
@@ -267,8 +285,6 @@ module.exports.user_remove_group = function (req, res, next) {
     });
 };
 
-// TODO: Delete does not work correctly below and above
-// must find member_id, then pull
 module.exports.group_remove_user = function (req, res, next) {
     var groupid = req.params.groupid,
         username = req.params.username;
@@ -280,7 +296,11 @@ module.exports.group_remove_user = function (req, res, next) {
             if (err) { next(err); }
             Group.findById(groupid, function (err, group) {
                 if (err) { next(err); }
-                var gs = group.members.pull(username);
+                _.each(group.members.filter(function (member){
+                    return member.user === user._id;
+                }), function (member) {
+                    group.members.pull(member);
+                });
                 group.save(function(err) {
                     if (err) { next(err); }
                     res.json(200);

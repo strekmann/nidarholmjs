@@ -23,9 +23,9 @@ module.exports.userView = function (user) {
         });
 
         promise.then(function (group) {
-          grouplist.data.user.groups.push(group);
+            grouplist.data.user.groups.push(group);
         }, function(xhr, status, err){
-            console.error(err);
+            $('#flash').append('<div data-alert class="alert-box alert">Er allerede medlem i ' + form.find('#group :selected').text() + '</div>');
         });
     });
 
