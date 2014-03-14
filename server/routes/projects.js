@@ -171,11 +171,11 @@ module.exports.project_create_post = function (req, res, next) {
             post.populate('creator', 'username name', function (err, post) {
                 if (err) { return next(err); }
                 res.format({
-                    json: function () {
-                        res.json(200, post);
-                    },
                     html: function () {
                         res.redirect('/projects/' + util.h2b64(project.id));
+                    },
+                    json: function () {
+                        res.json(200, post);
                     }
                 });
             });

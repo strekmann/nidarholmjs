@@ -8,6 +8,7 @@ module.exports.projectListView = function () {
         $.ajax({
             url: '/projects/' + id,
             type: 'delete',
+            dataType: 'json',
             success: function (data) {
                 $('#flash').append('<div data-alert class="alert-box success">' + data + '</div>');
                 project.remove();
@@ -35,6 +36,7 @@ module.exports.projectView = function (project_obj) {
             promise = $.ajax({
                 url: event.node.action,
                 type: 'POST',
+                dataType: 'json',
                 data: post
             });
 
@@ -50,7 +52,8 @@ module.exports.projectView = function (project_obj) {
         event.original.preventDefault();
         var promise = $.ajax({
             url: event.node.href,
-            type: 'delete'
+            type: 'delete',
+            dataType: 'json'
         });
         promise.then(function (data) {
             $('#flash').append('<div data-alert class="alert-box success">' + data.title + ' ble fjernet</div>');
@@ -74,6 +77,7 @@ module.exports.projectView = function (project_obj) {
             promise = $.ajax({
                 url: event.node.action,
                 type: 'POST',
+                dataType: 'json',
                 data: ev
             });
 
@@ -89,7 +93,8 @@ module.exports.projectView = function (project_obj) {
         event.original.preventDefault();
         var promise = $.ajax({
             url: event.node.href,
-            type: 'delete'
+            type: 'delete',
+            dataType: 'json'
         });
         promise.then(function (data) {
             $('#flash').append('<div data-alert class="alert-box success">' + data.title + ' ble fjernet</div>');
