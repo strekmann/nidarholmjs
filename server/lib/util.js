@@ -1,4 +1,5 @@
-var moment = require('moment');
+var moment = require('moment'),
+    slug = require('slug');
 
 module.exports.h2b64 = function(hex){
     return new Buffer(hex, 'hex').toString('base64').replace('+', '-').replace('/', '_');
@@ -8,6 +9,9 @@ module.exports.b642h = function(b64){
     return new Buffer(b64.replace('-','+').replace('_','/'), 'base64').toString('hex');
 };
 
+module.exports.slug = function (text) {
+    return slug(text.toLowerCase());
+};
 module.exports.isodate = function(date) {
     if (date) {
         return moment(date).format();
