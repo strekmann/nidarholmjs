@@ -8,7 +8,7 @@ block content
           h1 Nytt prosjekt
           label(for="title") Tittel
           input#title(name="title" type="text")
-          label(for="tag") Merkelapp
+          label(for="tag") Merkelapp (del av adressen til projektet)
           input#tag(name="tag" type="text")
           label(for="private_mdtext") Intern beskrivelse
           textarea#private_mdtext(name="private_mdtext")
@@ -26,7 +26,7 @@ block content
         for project in projects
           .project(data-id=project.id)
             h1
-              a(href="/projects/" + hoid(project.id))= project.title
+              a(href="/projects/" + project._id)= project.title
             p= project.end
             form
               button.deleteproject Slett prosjekt

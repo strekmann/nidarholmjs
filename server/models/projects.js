@@ -34,8 +34,9 @@ var EventSchema = new mongoose.Schema({
 });
 
 var ProjectSchema = new mongoose.Schema({
+    _id: {type: String, lowercase: true, required: true, unique: true, trim: true},
+    //tag: {type: String, required: true},
     title: {type: String, required: true},
-    tag: {type: String, required: true},
     public_mdtext: {type: String},
     private_mdtext: {type: String},
     start: {type: Date},

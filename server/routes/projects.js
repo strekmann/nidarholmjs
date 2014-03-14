@@ -1,4 +1,5 @@
-var util = require('../lib/util'),
+var uslug = require('uslug'),
+    util = require('../lib/util'),
     Project = require('../models/projects').Project,
     Event = require('../models/projects').Event,
     File = require('../models/files').File,
@@ -30,7 +31,7 @@ module.exports.index = function (req, res, next) {
 
 module.exports.create_project = function (req, res, next) {
     var title = req.body.title,
-        tag = req.body.tag,
+        tag = req.body.tag || req.body.title,
         permissions = req.body.permissions,
         private_mdtext = req.body.private_mdtext,
         public_mdtext = req.body.public_mdtext,
@@ -39,7 +40,7 @@ module.exports.create_project = function (req, res, next) {
 
     var project = new Project();
     project.title = title;
-    project.tag = tag;
+    project._id = uslug(tag.toLowerCase());
     project.private_mdtext = private_mdtext;
     project.public_mdtext = public_mdtext;
     project.start = start;
@@ -54,7 +55,7 @@ module.exports.create_project = function (req, res, next) {
                 res.json(200, project);
             },
             html: function () {
-                res.redirect('/projects/' + util.h2b64(project.id));
+                res.redirect('/projects/' + project._id);
             }
         });
     });
@@ -70,16 +71,16 @@ module.exports.delete_project = function (req, res, next) {
 };
 
 module.exports.project = function (req, res, next) {
-    var id = util.b642h(req.params.id);
+    var id = req.params.id;
 
     Project.findById(id).lean().exec(function (err, project) {
         if (err) { return next(err); }
-        Event.find({tags: project.tag}).populate('creator', 'username name').exec(function (err, events) {
+        Event.find({tags: project._id}).populate('creator', 'username name').exec(function (err, events) {
             //project = project.toObject();
             project.events = events;
-            ForumPost.find({tags: project.tag}).populate('creator', 'username name').exec(function (err, posts) {
+            ForumPost.find({tags: project._id}).populate('creator', 'username name').exec(function (err, posts) {
                 project.posts = posts;
-                File.find({tags: project.tag}).populate('creator', 'username name').exec(function (err, files) {
+                File.find({tags: project._id}).populate('creator', 'username name').exec(function (err, files) {
                     project.files = files;
                     res.format({
                         json: function () {
@@ -109,7 +110,7 @@ module.exports.project_create_event = function (req, res, next) {
         if (err) { return next(err); }
 
         var event = new Event();
-        event.tags = [project.tag];
+        event.tags = [project._id];
         event.title = title;
         event.location = location;
         event.start = start;
@@ -125,7 +126,7 @@ module.exports.project_create_event = function (req, res, next) {
                 },
                 html: function () {
                     req.flash('success', 'Aktiviteten ble lagret');
-                    res.redirect('/projects/' + util.h2b64(project.id));
+                    res.redirect('/projects/' + project._id);
                 }
             });
         });
@@ -165,14 +166,14 @@ module.exports.project_create_post = function (req, res, next) {
         post.mdtext = mdtext;
         post.permissions = project.permissions;
         post.creator = req.user;
-        post.tags.push(project.tag);
+        post.tags.push(project._id);
         post.save(function (err) {
             if (err) { return next(err); }
             post.populate('creator', 'username name', function (err, post) {
                 if (err) { return next(err); }
                 res.format({
                     html: function () {
-                        res.redirect('/projects/' + util.h2b64(project.id));
+                        res.redirect('/projects/' + project._id);
                     },
                     json: function () {
                         res.json(200, post);
@@ -226,7 +227,7 @@ module.exports.project_create_file = function (req, res, next) {
                         var file = new File();
                         file.filename = req.files.file.originalname;
                         file.permissions = project.permissions;
-                        file.tags.push(project.tag);
+                        file.tags.push(project._id);
                         file.path = new_symlink;
                         file.creator = req.user;
                         file.save(function (err) {

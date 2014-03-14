@@ -70,7 +70,7 @@ describe("Projects", function () {
                 .post('/projects')
                 .send({
                     title: title,
-                    tag: tag,
+                    _id: tag,
                     private_mdtext: private_mdtext,
                     public_mdtext: public_mdtext,
                     start: start,
@@ -113,7 +113,7 @@ describe("Projects", function () {
     });
 
     describe("create minimal project", function () {
-        it("should create a minimal project inteded for reuse by other tests", function (done) {
+        it("should create a minimal project intended for reuse by other tests", function (done) {
             var title = 'Project 1',
                 tag = 'project1',
                 end = '2014-03-27';
@@ -122,7 +122,7 @@ describe("Projects", function () {
                 .post('/projects')
                 .send({
                     title: title,
-                    tag: tag,
+                    _id: tag,
                     end: end
                 })
                 .end(function (err, res) {
@@ -137,7 +137,7 @@ describe("Projects", function () {
     describe("add event to minimal project", function () {
         var event;
         it("should load project page using short url", function (done) {
-            var id = util.h2b64(project1._id);
+            var id = project1._id;
             agent
                 .get('/projects/' + id)
                 .set('Accept', 'text/html')
@@ -169,13 +169,13 @@ describe("Projects", function () {
                 .end(function (err, res) {
                     if (err) { return done(err); }
                     res.body.title.should.equal(title);
-                    res.body.tags[0].should.equal(project1.tag);
+                    res.body.tags[0].should.equal(project1._id);
                     event = res.body;
                     done();
                 });
         });
         it("should find new event on project page", function (done) {
-            var id = util.h2b64(project1._id);
+            var id = project1._id;
             agent
                 .get('/projects/' + id)
                 .set('Accept', 'text/html')
@@ -201,7 +201,7 @@ describe("Projects", function () {
                 });
         });
         it("should see that event is deleted", function (done) {
-            var id = util.h2b64(project1._id);
+            var id = project1._id;
             agent
                 .get('/projects/' + id)
                 .set('Accept', 'text/html')
