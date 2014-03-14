@@ -55,23 +55,24 @@ html(lang=lang dir=lang_dir)
                 a.login(href="/login") Logg inn
 
     .row
-      .large-12.columns#flash
-        if messages.error
-          each message in messages.error
-            .alert-box.alert(data-alert)= message
-              a.close &times;
-        if messages.warning
-          each message in messages.warning
-            .alert-box.warning(data-alert)= message
-              a.close &times;
-        if messages.success
-          each message in messages.success
-            .alert-box.success(data-alert)= message
-              a.close &times;
-        if messages.info
-          each message in messages.info
-            .alert-box.info(data-alert)= message
-              a.close &times;
+      .large-12.columns
+        #flash
+          if messages.error
+            each message in messages.error
+              .alert-box.alert(data-alert)= message
+                a.close &times;
+          if messages.warning
+            each message in messages.warning
+              .alert-box.warning(data-alert)= message
+                a.close &times;
+          if messages.success
+            each message in messages.success
+              .alert-box.success(data-alert)= message
+                a.close &times;
+          if messages.info
+            each message in messages.info
+              .alert-box.info(data-alert)= message
+                a.close &times;
 
     block content
 
@@ -125,7 +126,30 @@ html(lang=lang dir=lang_dir)
     script(src="/js/vendor.js")
     script(src="/js/site.js")
 
+    script#flashtemplate(type="text/ractive")
+      {{#error}}
+      .alert-box.alert(data-alert) {{.}}
+        a.close &times;
+      {{/error}}
+      {{#warning}}
+      .alert-box.warning(data-alert) {{.}}
+        a.close &times;
+      {{/warning}}
+      {{#success}}
+      .alert-box.success(data-alert) {{.}}
+        a.close &times;
+      {{/success}}
+      {{#info}}
+      .alert-box.info(data-alert) {{.}}
+        a.close &times;
+      {{/info}}
+
     script.
       $(document).foundation();
+
+    script
+        | var flash = require('s7n').flash(
+        != JSON.stringify(messages)
+        | );
 
     block javascript

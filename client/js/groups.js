@@ -24,7 +24,7 @@ module.exports.groupView = function (group, users) {
         promise.then(function (user) {
             ractive.data.group.members.push({user: user});
         }, function(xhr, status, err){
-            $('#flash').append('<div data-alert class="alert-box alert">' + form.find('#user :selected').text() + ' er allerede med gruppa</div>');
+            flash.data.error.push(form.find('#user :selected').text() + ' er allerede med gruppa');
         });
     });
 

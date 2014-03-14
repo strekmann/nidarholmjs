@@ -24,7 +24,7 @@ module.exports.projectListView = function () {
             type: 'delete',
             dataType: 'json',
             success: function (data) {
-                $('#flash').append('<div data-alert class="alert-box success">' + data + '</div>');
+                flash.data.success.push(data);
                 project.remove();
             }
         });
@@ -55,7 +55,7 @@ module.exports.projectView = function (project_obj) {
             });
 
         promise.then(function (data) {
-            $('#flash').append('<div data-alert class="alert-box success">' + data.title + ' ble lagt til i forum</div>');
+            flash.data.success.push(data.title + ' ble lagt til i forum');
             project.data.project.posts.push(data);
         }, function(xhr, status, err){
             console.error(err);
@@ -70,7 +70,7 @@ module.exports.projectView = function (project_obj) {
             dataType: 'json'
         });
         promise.then(function (data) {
-            $('#flash').append('<div data-alert class="alert-box success">' + data.title + ' ble fjernet</div>');
+            flash.data.success.push(data.title + ' ble fjernet');
             var index = event.keypath.split('.').pop();
             project.data.project.posts.splice(index, 1);
         }, function(xhr, status, err){
@@ -96,7 +96,7 @@ module.exports.projectView = function (project_obj) {
             });
 
         promise.then(function (data) {
-            $('#flash').append('<div data-alert class="alert-box success">' + data.title + ' ble lagt til i kalenderen</div>');
+            flash.data.success.push(data.title + ' ble lagt til i kalenderen');
             project.data.project.events.push(data);
         }, function(xhr, status, err){
             console.error(err);
@@ -111,7 +111,7 @@ module.exports.projectView = function (project_obj) {
             dataType: 'json'
         });
         promise.then(function (data) {
-            $('#flash').append('<div data-alert class="alert-box success">' + data.title + ' ble fjernet</div>');
+            flash.data.success.push(data.title + ' ble fjernet fra kalenderen');
             var index = event.keypath.split('.').pop();
             project.data.project.events.splice(index, 1);
         }, function(xhr, status, err){

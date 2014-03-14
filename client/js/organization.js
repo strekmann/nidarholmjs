@@ -25,7 +25,7 @@ module.exports.userView = function (user) {
         promise.then(function (group) {
             grouplist.data.user.groups.push(group);
         }, function(xhr, status, err){
-            $('#flash').append('<div data-alert class="alert-box alert">Er allerede medlem i ' + form.find('#group :selected').text() + '</div>');
+            flash.data.error.push('Er allerede medlem i ' + form.find('#group :selected').text());
         });
     });
 
