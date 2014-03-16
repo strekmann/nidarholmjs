@@ -2,16 +2,53 @@
 
 // our fonts
 @font-face {
-    font-family: 'Crimson Text';
+    font-family: 'Old Standard TT';
     font-style: normal;
     font-weight: 400;
-    src: local('Crimson Text'), local('CrimsonText-Roman'), url(/fonts/CrimsonText-Roman.ttf) format('truetype');
+    src: local('Old Standard TT Regular'), local('OldStandardTT-Regular'), url(/fonts/OldStandard-Regular.ttf) format('truetype');
 }
 @font-face {
-    font-family: 'Crimson Text';
+    font-family: 'Old Standard TT';
+    font-style: italic;
+    font-weight: 400;
+    src: local('Old Standard TT Italic'), local('OldStandardTT-Italic'), url(/fonts/OldStandard-Italic.ttf) format('truetype');
+}
+@font-face {
+    font-family: 'Old Standard TT';
+    font-style: normal;
+    font-weight: 700;
+    src: local('Old Standard TT Bold'), local('OldStandardTT-Bold'), url(/fonts/OldStandard-Bold.ttf) format('truetype');
+}
+@font-face {
+    font-family: 'Old Standard TT';
     font-style: italic;
     font-weight: 700;
-    src: local('Crimson Text Bold Italic'), local('CrimsonText-BoldItalic'), url(/fonts/CrimsonText-BoldItalic.ttf) format('truetype');
+    src: local('Old Standard TT Italic'), local('OldStandardTT-Italic'), url(/fonts/OldStandard-Italic.ttf) format('truetype');
+}
+
+@font-face {
+  font-family: 'Alegreya';
+  font-style: normal;
+  font-weight: 400;
+  src: local('Alegreya'), local('Alegreya-Regular'), url(/fonts/Alegreya-Regular.ttf) format('truetype');
+}
+@font-face {
+  font-family: 'Alegreya';
+  font-style: normal;
+  font-weight: 700;
+  src: local('Alegreya Bold'), local('Alegreya-Bold'), url(/fonts/Alegreya-Bold.ttf) format('truetype');
+}
+@font-face {
+  font-family: 'Alegreya';
+  font-style: italic;
+  font-weight: 400;
+  src: local('Alegreya Italic'), local('Alegreya-Italic'), url(/fonts/Alegreya-Italic.ttf) format('truetype');
+}
+@font-face {
+  font-family: 'Alegreya';
+  font-style: italic;
+  font-weight: 700;
+  src: local('Alegreya Italic'), local('Alegreya-Italic'), url(/fonts/Alegreya-Italic.ttf) format('truetype');
 }
 
 @font-face {
@@ -20,9 +57,27 @@
     font-weight: 400;
     src: local('Open Sans'), local('OpenSans'), url(/fonts/OpenSans-Regular.ttf) format('truetype');
 }
+@font-face {
+  font-family: 'Open Sans';
+  font-style: normal;
+  font-weight: 700;
+  src: local('Open Sans Bold'), local('OpenSans-Bold'), url(/fonts/OpenSans-Bold.ttf) format('truetype');
+}
+@font-face {
+  font-family: 'Open Sans';
+  font-style: italic;
+  font-weight: 400;
+  src: local('Open Sans Italic'), local('OpenSans-Italic'), url(/fonts/OpenSans-Italic) format('truetype');
+}
+@font-face {
+  font-family: 'Open Sans';
+  font-style: italic;
+  font-weight: 700;
+  src: local('Open Sans Italic'), local('OpenSans-Italic'), url(/fonts/OpenSans-Italic) format('truetype');
+}
 
-$sans-font: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
-$serif-font: "Crimson Text", georgia, 'Times New Roman', times, serif;
+$sans-font: "Open Sans", sans-serif;
+$serif-font: "Old Standard TT", serif;
 
 // our variables
 @import "settings";
