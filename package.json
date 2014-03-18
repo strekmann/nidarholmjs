@@ -44,7 +44,7 @@
     "uglify-js": "",
     "mocha": "",
     "chai": "",
-    "supertest": "sigurdga/supertest",
+    "supertest": "",
     "cheerio": "",
     "browserify": "3.x",
     "grunt-cli": "",
