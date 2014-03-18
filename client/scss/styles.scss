@@ -2,31 +2,6 @@
 
 // our fonts
 @font-face {
-    font-family: 'Old Standard TT';
-    font-style: normal;
-    font-weight: 400;
-    src: local('Old Standard TT Regular'), local('OldStandardTT-Regular'), url(/fonts/OldStandard-Regular.ttf) format('truetype');
-}
-@font-face {
-    font-family: 'Old Standard TT';
-    font-style: italic;
-    font-weight: 400;
-    src: local('Old Standard TT Italic'), local('OldStandardTT-Italic'), url(/fonts/OldStandard-Italic.ttf) format('truetype');
-}
-@font-face {
-    font-family: 'Old Standard TT';
-    font-style: normal;
-    font-weight: 700;
-    src: local('Old Standard TT Bold'), local('OldStandardTT-Bold'), url(/fonts/OldStandard-Bold.ttf) format('truetype');
-}
-@font-face {
-    font-family: 'Old Standard TT';
-    font-style: italic;
-    font-weight: 700;
-    src: local('Old Standard TT Italic'), local('OldStandardTT-Italic'), url(/fonts/OldStandard-Italic.ttf) format('truetype');
-}
-
-@font-face {
   font-family: 'Alegreya';
   font-style: normal;
   font-weight: 400;
@@ -77,7 +52,7 @@
 }
 
 $sans-font: "Open Sans", sans-serif;
-$serif-font: "Old Standard TT", serif;
+$serif-font: "Alegreya", serif;
 
 // our variables
 @import "settings";
