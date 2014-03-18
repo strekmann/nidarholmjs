@@ -71,14 +71,14 @@ block content
                 button.tiny Legg til
 
   script#usertemplate(type="text/ractive")
-    {{#user}}
+    | {{#user}}
     ul
-      {{#groups}}
+      | {{#groups}}
       li.group
         a(href="/groups/{{hoid(_id)}}") {{name}}
         a.removegroup(on-click="removeGroup" href="/users/{{../../username}}/groups/{{_id}}")
           i.fa.fa-times
-      {{/groups}}
+      | {{/groups}}
 
     #addgroup
       //button.new_group.small
@@ -97,7 +97,7 @@ block content
           .columns
             //button.reset.secondary(type='reset') Avbryt
             button.tiny Legg til
-    {{/user}}
+    | {{/user}}
 
 block javascript
   script

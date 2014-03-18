@@ -127,22 +127,25 @@ html(lang=lang dir=lang_dir)
     script(src="/js/site.js")
 
     script#flashtemplate(type="text/ractive")
-      {{#error}}
+      | {{#error}}
       .alert-box.alert(data-alert) {{.}}
         a.close &times;
-      {{/error}}
-      {{#warning}}
+      | {{/error}}
+
+      | {{#warning}}
       .alert-box.warning(data-alert) {{.}}
         a.close &times;
-      {{/warning}}
-      {{#success}}
+      | {{/warning}}
+
+      | {{#success}}
       .alert-box.success(data-alert) {{.}}
         a.close &times;
-      {{/success}}
-      {{#info}}
+      | {{/success}}
+
+      | {{#info}}
       .alert-box.info(data-alert) {{.}}
         a.close &times;
-      {{/info}}
+      | {{/info}}
 
     script.
       $(document).foundation();

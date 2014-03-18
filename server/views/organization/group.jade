@@ -17,14 +17,14 @@ block content
                   a(href="/users/"+member.user.username)= member.user.name
 
   script#grouptemplate(type="text/ractive")
-    {{#group}}
+    | {{#group}}
     ul
-      {{#members}}
+      | {{#members}}
       li.user
         a(href="/users/{{user.username}}") {{ user.name }}
         a.removegroup(on-click="removeUser" href="/groups/{{../../_id}}/users/{{user.username}}")
           i.fa.fa-times
-      {{/members}}
+      | {{/members}}
 
     form(on-submit="addUser" method="POST" action="/groups/{{_id}}/users")
       .row
@@ -34,15 +34,15 @@ block content
         .columns
           label(for='user') Finn person
           select#user
-            {{#users}}
+            | {{#users}}
             option(value="{{username}}") {{name}}
-            {{/users}}
+            | {{/users}}
       .row
         .columns
           //button.reset.secondary(type='reset') Avbryt
           button.tiny Legg til
 
-    {{/group}}
+    | {{/group}}
 
 block javascript
   script

@@ -91,15 +91,15 @@ block content
 
 
   script#template(type="text/ractive")
-    {{#project}}
+    | {{#project}}
     .row
       .medium-8.columns
         h1 {{title}}
 
-        {{shortdate(start)}}
-        {{shortdate(end)}}
+        | {{shortdate(start)}}
+        | {{shortdate(end)}}
         p.
-          {{private_mdtext}}
+          | {{private_mdtext}}
 
         #forum
           | {{#posts}}
@@ -144,7 +144,7 @@ block content
             | {{/files}}
 
 
-    {{/project}}
+    | {{/project}}
 
     // {{>post}}
     article
