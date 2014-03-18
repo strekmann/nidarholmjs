@@ -2,28 +2,28 @@
 
 // our fonts
 @font-face {
-  font-family: 'Alegreya';
+  font-family: 'Merriweather';
   font-style: normal;
   font-weight: 400;
-  src: local('Alegreya'), local('Alegreya-Regular'), url(/fonts/Alegreya-Regular.ttf) format('truetype');
+  src: local('Merriweather'), url(/fonts/Merriweather-Regular.ttf) format('truetype');
 }
 @font-face {
-  font-family: 'Alegreya';
+  font-family: 'Merriweather';
   font-style: normal;
   font-weight: 700;
-  src: local('Alegreya Bold'), local('Alegreya-Bold'), url(/fonts/Alegreya-Bold.ttf) format('truetype');
+  src: local('Merriweather Bold'), local('Merriweather-Bold'), url(/fonts/Merriweather-Bold.ttf) format('truetype');
 }
 @font-face {
-  font-family: 'Alegreya';
+  font-family: 'Merriweather';
   font-style: italic;
   font-weight: 400;
-  src: local('Alegreya Italic'), local('Alegreya-Italic'), url(/fonts/Alegreya-Italic.ttf) format('truetype');
+  src: local('Merriweather Italic'), local('Merriweather-Italic'), url(/fonts/Merriweather-Italic.ttf) format('truetype');
 }
 @font-face {
-  font-family: 'Alegreya';
+  font-family: 'Merriweather';
   font-style: italic;
   font-weight: 700;
-  src: local('Alegreya Italic'), local('Alegreya-Italic'), url(/fonts/Alegreya-Italic.ttf) format('truetype');
+  src: local('Merriweather Italic'), local('Merriweather-Italic'), url(/fonts/Merriweather-Italic.ttf) format('truetype');
 }
 
 @font-face {
@@ -52,7 +52,7 @@
 }
 
 $sans-font: "Open Sans", sans-serif;
-$serif-font: "Alegreya", serif;
+$serif-font: "Merriweather", serif;
 
 // our variables
 @import "settings";
@@ -120,6 +120,8 @@ a:focus {
     text-decoration: underline;
 }
 
+
+[data-abide] .float-labels,
 .float-labels {
     label {
         font-size: rem-calc(12);
