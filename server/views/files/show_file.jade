@@ -1,0 +1,18 @@
+extends ../layouts/main
+
+block content
+  section#file
+
+    .row
+      .medium-8.columns
+        h1= file.filename
+        p= file.path
+        p= file.tags
+        p= file.caption
+        p= file.mimetype
+        p= file.permissions
+        p= file.creator
+
+      if file.is_image
+        .medium-4.columns
+          img(src="/files/" + file.path)

@@ -9,14 +9,12 @@ block content
         form.dropzone(action="/files/upload")
           .fallback
             input(type="file" name="file" multiple)
-            //input(type="hidden" name="hiddenfield" value="hiddenvalue")
-            //input(type="text" name="visiblefield" value="visiblevalue")
 
         #files
           each file in files
             div.outer.file(data-id=file.id)
               div.meta
-                strong= file.filename
+                a(href="/files/" + file.id)= file.filename
                 = file.created
                 if file.permissions.public
                   i.fa.fa-globe

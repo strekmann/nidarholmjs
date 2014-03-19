@@ -216,6 +216,8 @@ app.get('/files', file_routes.all);
 app.get('/files/new', file_routes.index);
 app.post('/files/upload', file_routes.upload);
 app.put('/files/:id', file_routes.update);
+app.get('/files/:id', file_routes.show_file);
+app.get('/files/:path/:filename', file_routes.raw_file);
 
 var project_routes = require('./routes/projects');
 app.get('/projects', project_routes.index);

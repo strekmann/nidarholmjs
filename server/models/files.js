@@ -8,12 +8,19 @@ var FileSchema = new mongoose.Schema({
     path: {type: String, trim: true, required: true},
     created: {type: Date, default: Date.now},
     creator: {type: String, ref: 'User'},
+    mimetype: {type: String},
     permissions: {
         groups: [{type: ObjectId, ref: 'Group'}],
         users: [{type: String, ref: 'User'}],
         public: {type: Boolean, default: false}
     },
     tags: [{type: String}]
+});
+
+FileSchema.virtual('is_image').get(function () {
+    if (this.mimetype && this.mimetype.match(/^image/)) {
+        return true;
+    }
 });
 
 module.exports = {

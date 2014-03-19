@@ -38,7 +38,8 @@
     "slug": "0.4.x",
     "marked": "0.3.x",
     "superagent": "0.17.x",
-    "country-list": "sigurdga/country-list"
+    "country-list": "sigurdga/country-list",
+    "mmmagic": "^0.3.6"
   },
   "devDependencies": {
     "uglify-js": "",
