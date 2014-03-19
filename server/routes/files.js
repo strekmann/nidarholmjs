@@ -1,12 +1,7 @@
 var _ = require('underscore'),
-    fs = require('fs'),
     path = require('path'),
-    mkdirp = require('mkdirp'),
-    crypto = require('crypto'),
     mongoose = require('mongoose'),
-    ObjectId = mongoose.Types.ObjectId,
-    mmm = require('mmmagic'),
-    Magic = mmm.Magic,
+    upload_file = require('../lib/util').upload_file,
     config = require('../settings'),
     File = require('../models/files').File;
 
@@ -42,60 +37,17 @@ module.exports.index = function (req, res) {
 module.exports.upload = function (req, res) {
     //console.log(req.body);
     //console.log(req.files);
-    // TODO: config param
     var filename = req.files.file.originalname,
         tmp_path = req.files.file.path,
-        prefix = config.files.path_prefix;
+        user = req.user,
+        prefix = config.files.path_prefix,
+        permissions,
+        tags;
 
-    fs.readFile(tmp_path, function (err, data) {
-        var shasum, hex, new_dir, new_symlink, new_file, lookup_path;
-
-        var magic = new Magic(mmm.MAGIC_MIME_TYPE);
-
-        magic.detectFile(tmp_path, function(err, mimetype) {
-            if (err) throw err;
-
-            shasum = crypto.createHash('sha1');
-            shasum.update('blob ' + data.length +'%s\0');
-            shasum.update(data);
-            hex = shasum.digest('hex');
-
-            new_dir = path.join(prefix, hex.substr(0,2), hex.substr(2,2), hex);
-            if (prefix[0] !== '/') {
-                // TODO: Check upon installation / debug that this is writable
-                new_dir = path.join(__dirname, '..', '..', new_dir);
-            }
-            new_file = path.join(new_dir, hex);
-            new_symlink = path.join(new_dir, filename);
-
-            // for database
-            lookup_path = path.join(hex, filename);
-
-            mkdirp(new_dir, function (err) {
-                if (err) { throw err; }
-                fs.writeFile(new_file, data, function (err) {
-                    if (err) { throw err; }
-                    fs.unlink(req.files.file.path);
-                    fs.symlink(new_file, new_symlink, function (err) {
-
-                        // 47: Already exists
-                        if (err && err.errno !== 47) {
-                            res.json(500, { error: err });
-                        }
-                        var file = new File();
-                        file.filename = filename;
-                        file.path = lookup_path;
-                        file.mimetype = mimetype;
-                        file.creator = req.user;
-                        file.save(function (err) {
-                            if (err) { throw err; }
-                            res.json(200, {
-                                status: "success"
-                            });
-                        });
-                    });
-                });
-            });
+    upload_file(tmp_path, filename, prefix, user, permissions, tags, function (err, file) {
+        if (err) { throw err; }
+        res.json(200, {
+            status: "success"
         });
     });
 };

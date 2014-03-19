@@ -1,5 +1,7 @@
 var uslug = require('uslug'),
     util = require('../lib/util'),
+    upload_file = util.upload_file,
+    config = require('../settings'),
     Project = require('../models/projects').Project,
     Event = require('../models/projects').Event,
     File = require('../models/files').File,
@@ -197,46 +199,9 @@ module.exports.project_create_file = function (req, res, next) {
     var id = req.params.id;
 
     Project.findById(id, function (err, project) {
-        var prefix = 'uploaded_files';
-        fs.readFile(req.files.file.path, function (err, data) {
-            var shasum, hex, new_dir, new_symlink, new_file;
-
-            shasum = crypto.createHash('sha1');
-            shasum.update('blob ' + data.length +'%s\0');
-            shasum.update(data);
-            hex = shasum.digest('hex');
-
-            new_dir = path.join(prefix, hex.substr(0,2), hex.substr(2,2), hex);
-            if (prefix[0] !== '/') {
-                // TODO: Check upon installation / debug that this is writable
-                new_dir = path.join(__dirname, '..', '..', new_dir);
-            }
-            new_file = path.join(new_dir, hex);
-            new_symlink = path.join(new_dir, req.files.file.originalname);
-            mkdirp(new_dir, function (err) {
-                if (err) { throw err; }
-                fs.writeFile(new_file, data, function (err) {
-                    if (err) { throw err; }
-                    fs.unlink(req.files.file.path);
-                    fs.symlink(new_file, new_symlink, function (err) {
-
-                        // 47: Already exists
-                        if (err && err.errno !== 47) {
-                            res.json(500, { error: err });
-                        }
-                        var file = new File();
-                        file.filename = req.files.file.originalname;
-                        file.permissions = project.permissions;
-                        file.tags.push(project._id);
-                        file.path = new_symlink;
-                        file.creator = req.user;
-                        file.save(function (err) {
-                            if (err) { throw err; }
-                            res.json(200, file);
-                        });
-                    });
-                });
-            });
+        upload_file(req.files.file.path, req.files.file.originalname, config.files.path_prefix, req.user, project.permissions, [project._id], function (err, file) {
+            if (err) { throw err; }
+            res.json(200, file);
         });
     });
 };
