@@ -1,61 +1,132 @@
 extends ../layouts/main
 
 block content
-  .row
-    .medium-2.columns
-      img(src="/img/user.png")
+  #user
+    .row
+      .medium-2.columns
+        img(src="/img/user.png")
 
-      if user.is_active
+        if user.is_active
+          | Aktiv bruker
+        if user.is_admin
+          | Admin
+
+      .medium-6.columns
+        h1= user.name
+
+        p#username(data-username=user.username)= user.username
+
+        p= user.instrument
+        p= user.email
+        p= user.phone
+        p= user.address
+        p= user.postcode
+        p= user.city
+        p= user.country
+        p= user.nmf_id
+
+        if active_user.is_admin
+          // TODO: Set better permission checks
+          p= user.born
+          p= user.joined
+          p= user.reskontro
+          = user.membership_history
+
+      .medium-3.columns
+        if user.id==active_user.id
+          a.button.tiny(href="/users/" + user.username + "/edit") Rediger brukerdata
+          a.button.tiny(href="/logout") Logg ut
+
+        h2 Grupper
+          if user.groups.length === 0
+            p Ingen grupper. Legg personen til i grupper ved å trykke knappen under.
+        #groups
+          ul
+            for group in user.groups
+              if group
+                li.group(data-id=group.id)
+                  a(href="/groups/" + hoid(group.id))= group.name
+                  a.removegroup(href="#")
+                    i.fa.fa-times
+              else
+                = group
+
+
+          #addgroup
+            //button.new_group.small
+              i.fa.fa-plus
+            form(on-submit="addGroup" method="POST" action="/users/" + user.username + "/groups")
+              .row
+                .columns
+                  h3 Legg til i grupper
+              .row
+                .columns
+                  label(for='group') Finn gruppe
+                  select#group
+                    for group in groups
+                      option(value=group.id)= group.name
+              .row
+                .columns
+                  //button.reset.secondary(type='reset') Avbryt
+                  button.tiny Legg til
+
+  script#usertemplate(type="text/ractive")
+    | {{#user}}
+    .row
+      .medium-3.columns
+        img(src="/img/user.png")
+
+        {{#is_active}}
         | Aktiv bruker
-      if user.is_admin
+        {{/is_active}}
+        {{#is_admin}}
         | Admin
+        {{/is_admin}}
 
-    .medium-6.columns
-      h1= user.name
+      .medium-6.columns
+        h1 {{name}}
 
-      p#username(data-username=user.username)= user.username
+        p#username(data-username="{{username}}") {{username}}
 
-      p= user.instrument
-      p= user.email
-      p= user.phone
-      p= user.address
-      p= user.postcode
-      p= user.city
-      p= user.country
-      p= user.nmf_id
+        p {{instrument}}
+        p {{email}}
+        p {{phone}}
+        p {{address}}
+        p {{postcode}}
+        p {{city}}
+        p {{country}}
+        p {{nmf_id}}
 
-      if active_user.is_admin
-        // TODO: Set better permission checks
-        p= user.born
-        p= user.joined
-        p= user.reskontro
-        = user.membership_history
+        {{#active_user.is_admin}}
+        // todo: set better permission checks
+        p {{born}}
+        p {{joined}}
+        p {{reskontro}}
+        | {{membership_history}}
+        {{/active_user.is_admin}}
 
-
-    .medium-3.columns
-      if user.id==active_user.id
-        a.button.tiny(href="/users/" + user.username + "/edit") Rediger brukerdata
+      .medium-3.columns
+        {{#is_active_user}}
+        a.button.tiny(href="/users/{{../username}}/edit") Rediger brukerdata
         a.button.tiny(href="/logout") Logg ut
+        {{/is_active_user}}
 
-      h2 Grupper
-        if user.groups.length === 0
-          p Ingen grupper. Legg personen til i grupper ved å trykke knappen under.
-      #groups
+        h2 Grupper
+          if user.groups.length === 0
+            p Ingen grupper. Legg personen til i grupper ved å trykke knappen under.
+
         ul
-          for group in user.groups
-            if group
-              li.group(data-id=group.id)
-                a(href="/groups/" + hoid(group.id))= group.name
-                a.removegroup(href="#")
-                  i.fa.fa-times
-            else
-              = group
-
+          | {{#groups}}
+          li.group
+            a(href="/groups/{{hoid(_id)}}") {{name}}
+            a.removegroup(on-click="removeGroup" href="/users/{{../../username}}/groups/{{_id}}")
+              i.fa.fa-times
+          | {{/groups}}
 
         #addgroup
           //button.new_group.small
             i.fa.fa-plus
-          form(on-submit="addGroup" method="POST" action="/users/" + user.username + "/groups")
+          form(on-submit="addGroup" method="POST" action="/users/{{username}}/groups")
             .row
               .columns
                 h3 Legg til i grupper
@@ -69,38 +140,12 @@ block content
               .columns
                 //button.reset.secondary(type='reset') Avbryt
                 button.tiny Legg til
-
-  script#usertemplate(type="text/ractive")
-    | {{#user}}
-    ul
-      | {{#groups}}
-      li.group
-        a(href="/groups/{{hoid(_id)}}") {{name}}
-        a.removegroup(on-click="removeGroup" href="/users/{{../../username}}/groups/{{_id}}")
-          i.fa.fa-times
-      | {{/groups}}
-
-    #addgroup
-      //button.new_group.small
-        i.fa.fa-plus
-      form(on-submit="addGroup" method="POST" action="/users/{{username}}/groups")
-        .row
-          .columns
-            h3 Legg til i grupper
-        .row
-          .columns
-            label(for='group') Finn gruppe
-            select#group
-              for group in groups
-                option(value=group.id)= group.name
-        .row
-          .columns
-            //button.reset.secondary(type='reset') Avbryt
-            button.tiny Legg til
     | {{/user}}
 
 block javascript
   script
-    | var user = require('s7n').organization.userView(
+    | var user = require('s7n').user.userView(
     != JSON.stringify(user)
+    | ,
+    != JSON.stringify(active_user)
     | );
