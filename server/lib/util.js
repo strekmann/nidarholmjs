@@ -94,7 +94,7 @@ module.exports.upload_file = function (tmp_path, filename, prefix, user, permiss
         var magic = new Magic(mmm.MAGIC_MIME_TYPE);
 
         magic.detectFile(tmp_path, function(err, mimetype) {
-            if (err) throw err;
+            if (err) { throw err; }
 
             shasum = crypto.createHash('sha1');
             shasum.update('blob ' + data.length +'%s\0');
