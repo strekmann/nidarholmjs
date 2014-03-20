@@ -158,12 +158,12 @@ a:focus {
         height: 2rem;
         margin-top: rem-calc(14);
         margin-bottom: 1rem;
-        background-color: white;
+        background-color: transparent;
 
         &:focus {
             -webkit-box-shadow: none;
             box-shadow: none;
-            background-color: white;
+            background-color: transparent;
             border-bottom-color: $primary-color;
         }
 
