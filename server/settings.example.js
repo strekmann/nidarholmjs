@@ -20,7 +20,14 @@ module.exports = {
     i18n: {
         locales: ['en'],
         defaultLocale: 'en'
-    }
+    },
+    files: {
+        url_prefix: '/files',
+        raw_file_prefix: '/files/raw',
+        path_prefix: 'uploaded_files'
+    },
+    organization: 'nidarholm',
+    profile_picture_tag: 'profilbilde'
 };
 
 /* secret gen: cat /dev/urandom| base64 | fold -w 64 */
