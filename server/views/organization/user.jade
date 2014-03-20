@@ -76,12 +76,12 @@ block content
     .row
       .medium-3.columns
         a(href="/users/{{username}}/picture" on-click="changeProfilePicture")
-          {{#profile_picture_path}}
+          | {{#profile_picture_path}}
           img#picture(src="/files/{{profile_picture_path}}")
-          {{/profile_picture_path}}
-          {{^profile_picture_path}}
+          | {{/profile_picture_path}}
+          | {{^profile_picture_path}}
           img#picture(src="/img/user.png")
-          {{/profile_picture_path}}
+          | {{/profile_picture_path}}
 
 
         | {{#files}}
