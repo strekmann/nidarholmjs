@@ -4,7 +4,8 @@ block content
   #user
     .row
       .medium-2.columns
-        img(src="/img/user.png")
+          a(href="#" on-click="changeProfilePicture")
+            img#picture(src=user.profile_picture_url)
 
         if user.is_active
           | Aktiv bruker
@@ -45,7 +46,7 @@ block content
             for group in user.groups
               if group
                 li.group(data-id=group.id)
-                  a(href="/groups/" + hoid(group.id))= group.name
+                  a(href="/groups/" + hoid(group._id))= group.name
                   a.removegroup(href="#")
                     i.fa.fa-times
               else
@@ -74,14 +75,26 @@ block content
     | {{#user}}
     .row
       .medium-3.columns
-        img(src="/img/user.png")
+        a(href="/users/{{username}}/picture" on-click="changeProfilePicture")
+          {{#profile_picture_path}}
+          img#picture(src="/files/{{profile_picture_path}}")
+          {{/profile_picture_path}}
+          {{^profile_picture_path}}
+          img#picture(src="/img/user.png")
+          {{/profile_picture_path}}
 
-        {{#is_active}}
+
+        | {{#files}}
+        a(href="/users/{{username}}/picture/{{_id}}" on-click="setProfilePicture")
+          img.th(src="/files/{{path}}")
+        | {{/files}}
+
+        | {{#is_active}}
         | Aktiv bruker
-        {{/is_active}}
-        {{#is_admin}}
+        | {{/is_active}}
+        | {{#is_admin}}
         | Admin
-        {{/is_admin}}
+        | {{/is_admin}}
 
       .medium-6.columns
         h1 {{name}}
@@ -97,19 +110,19 @@ block content
         p {{country}}
         p {{nmf_id}}
 
-        {{#active_user.is_admin}}
+        | {{#active_user.is_admin}}
         // todo: set better permission checks
         p {{born}}
         p {{joined}}
         p {{reskontro}}
         | {{membership_history}}
-        {{/active_user.is_admin}}
+        | {{/active_user.is_admin}}
 
       .medium-3.columns
-        {{#is_active_user}}
+        | {{#is_active_user}}
         a.button.tiny(href="/users/{{../username}}/edit") Rediger brukerdata
         a.button.tiny(href="/logout") Logg ut
-        {{/is_active_user}}
+        | {{/is_active_user}}
 
         h2 Grupper
           if user.groups.length === 0

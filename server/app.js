@@ -199,6 +199,8 @@ app.get('/users', organization_routes.users);
 app.get('/users/:username', organization_routes.user);
 app.get('/users/:username/edit', organization_routes.edit_user);
 app.post('/users/:id/edit', organization_routes.update_user);
+app.post('/users/:username/picture', organization_routes.upload_profile_picture);
+app.put('/users/:username/picture/:id', organization_routes.set_profile_picture);
 app.post('/users/:username/groups', organization_routes.user_add_group);
 app.delete('/users/:username/groups/:groupid', organization_routes.user_remove_group);
 

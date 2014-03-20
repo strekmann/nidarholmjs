@@ -5,9 +5,12 @@ var Q = require("q"),
     mongoose = require('mongoose'),
     countries = require('country-list/country/cldr/nb/country'),
     util = require('../lib/util'),
+    upload_file = util.upload_file,
+    config = require('../settings'),
     User = require('../models').User,
     Group = require('../models').Group,
-    Organization = require('../models').Organization;
+    Organization = require('../models').Organization,
+    File = require('../models/files').File;
 
 module.exports.memberlist = function (req, res) {
     req.organization.populate('instrument_groups', function (err, organization) {
@@ -195,11 +198,15 @@ module.exports.users = function (req, res) {
 };
 
 module.exports.user = function (req, res) {
-    User.findOne({username: req.params.username}).populate({path: 'groups', model: 'Group'}).exec(function (err, user) {
+    User.findOne({username: req.params.username}).populate({path: 'groups', model: 'Group'}).lean().exec(function (err, user) {
         if (err) { throw err; }
         Group.find({organization: 'nidarholm'}, function (err, groups) {
             if (err) { throw err; }
-            res.render('organization/user', {user: user, groups: groups});
+            File.find({creator: user._id, tags: config.profile_picture_tag}, function (err, files) {
+                if (err) { throw err; }
+                user.files = files;
+                res.render('organization/user', {user: user, groups: groups});
+            });
         });
     });
 };
@@ -382,6 +389,39 @@ module.exports.order_instrument_groups = function (req, res, next) {
         organization.save(function (err) {
             if (err) { next(err); }
             res.json(200);
+        });
+    });
+};
+
+module.exports.upload_profile_picture = function (req, res, next) {
+    var username = req.params.username;
+
+    User.findOne({username: username}, function (err, user) {
+        upload_file(req.files.file.path, req.files.file.originalname, config.files.path_prefix, req.user, null, [config.profile_picture_tag], function (err, file) {
+            if (err) { throw err; }
+            user.profile_picture_path = file.path;
+            user.save(function (err) {
+                if (err) { throw err; }
+                res.json(200, file);
+            });
+        });
+    });
+};
+
+module.exports.set_profile_picture = function (req, res, next) {
+    var username = req.params.username,
+        id = req.params.id;
+
+    // TODO: Check that the file is of the users profile pictures
+    User.findOne({username: username}, function (err, user) {
+        if (err) { throw err; }
+        File.findById(id, function (err, file) {
+            if (err) { throw err; }
+            user.profile_picture_path = file.path;
+            user.save(function (err) {
+                if (err) { throw err; }
+                res.json(200, file);
+            });
         });
     });
 };

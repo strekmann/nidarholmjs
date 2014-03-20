@@ -61,4 +61,33 @@ module.exports.userView = function (user, active_user) {
             ractive.data.user.groups.splice(index, 1);
         });
     });
+
+    ractive.on("changeProfilePicture", function (event) {
+        event.original.preventDefault();
+        var picture = $(event.node);
+        picture.dropzone({
+            url: event.node.href,
+            init: function() {
+                this.on("success", function(frontend_file, backend_file) {
+                    ractive.data.user.files.push(backend_file);
+                    $('#picture').attr('src', '/files/' + backend_file.path);
+                });
+            }
+        });
+        ractive.off("changeProfilePicture");
+    });
+
+    ractive.on("setProfilePicture", function (event) {
+        event.original.preventDefault();
+        var picture = $(event.node);
+        var path = picture.children('img').attr('src'),
+            promise = $.ajax({
+                url: event.node.href,
+                type: 'put',
+                dataType: 'json'
+            });
+        promise.then(function (file) {
+            $('#picture').attr('src', '/files/' + file.path);
+        });
+    });
 };

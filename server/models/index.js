@@ -1,5 +1,6 @@
 var mongoose = require('mongoose'),
-    ObjectId = mongoose.Schema.Types.ObjectId;
+    ObjectId = mongoose.Schema.Types.ObjectId,
+    config = require('../settings');
 
 var GroupSchema = new mongoose.Schema({
     name: {type: String, trim: true, required: true},
@@ -34,7 +35,8 @@ var UserSchema = new mongoose.Schema({
     instrument: {type: String},
     instrument_insurance: {type: Boolean},
     reskontro: {type: String},
-    membership_history: {type: String}
+    membership_history: {type: String},
+    profile_picture_path: {type: String}
 });
 
 var OrganizationSchema = new mongoose.Schema({
