@@ -51,6 +51,10 @@ module.exports.groupListView = function () {
         restAPI: '/groups'
     });
 
+    grouplist.on('toggleNew', function (event) {
+        this.toggle('expanded');
+    });
+
     grouplist.on('addGroup', function (event) {
         event.original.preventDefault();
 

@@ -5,6 +5,29 @@ block content
 
   script#template(type="text/ractive")
     .row
+      .columns.text-right
+        i.fa.fa-file-o
+        | &nbsp;
+        a(on-click="toggleNew") Ny gruppe
+
+    .row
+      .columns
+        | {{#expanded}}
+        form(on-submit="addGroup" data-abide intro-outro="slide")
+          .row
+            .columns
+              h1 Legg til ny gruppe
+          .row
+            .columns
+              label(for='name') Navn på gruppe
+              input#name(type='text' required)
+          .row
+            .columns
+              button.small Lagre
+              button.small.reset.secondary(type='reset' on-click='toggleNew') Avbryt
+        | {{/expanded}}
+
+    .row
       .medium-6.columns
         h1 Alle grupper
 
@@ -24,19 +47,6 @@ block content
           | {{#igroups}}
           |   {{>igroup}}
           | {{/igroups}}
-
-    form(on-submit="addGroup" data-abide)
-      .row
-        .columns
-          h2 Legg til ny gruppe
-      .row
-        .columns
-          label(for='name') Navn på gruppe
-          input#name(type='text' required)
-      .row
-        .columns
-          button Lagre
-          button.reset.secondary(type='reset') Avbryt
 
     // {{>group}}
     li.text-right.group(style="list-style:none;")
