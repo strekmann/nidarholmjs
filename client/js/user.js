@@ -26,7 +26,7 @@ module.exports.userView = function (user, active_user) {
                 return this.data.user === this.data.active_user;
             },
             is_active_image: function(image_id) {
-                return this.data.user.profile_picture === image_id;
+                return this.get('user.profile_picture') === image_id;
             }
         }
     });
@@ -80,12 +80,17 @@ module.exports.userView = function (user, active_user) {
         promise.then(function (files) {
             ractive.set('user.files', files);
             Dropzone.autoDiscover = false;
-            var uploadzone = new Dropzone("#upload");
+            var uploadzone = new Dropzone("#upload", {
+                previewTemplate: '<div><span data-dz-name></span><div class="progress"> <span class="meter" data-dz-uploadprogress></span> </div></div>'
+            });
             uploadzone.on("success", function (frontend_file, backend_file) {
                 ractive.data.user.files.unshift(backend_file);
-                $('#picture').attr('src', '/files/' + backend_file.path);
+                ractive.set('user.profile_picture', backend_file._id);
+                ractive.set('user.profile_picture_path', backend_file.path);
+                //$('#picture').attr('src', '/files/' + backend_file.path);
+                uploadzone.removeFile(frontend_file);
             });
-            uploadzone.on("addedfile", function(file) { alert("Added file."); });
+            //uploadzone.on("addedfile", function(file) { alert("Added file."); });
         });
     });
 
