@@ -12,6 +12,8 @@
     "ractive-decorators-sortable": "ractivejs/ractive-decorators-sortable",
     "uslug": "sigurdga/uslug",
     "unorm": "",
-    "dropzone": ""
+    "dropzone": "",
+    "Ractive-transitions-fade": "~0.1.1",
+    "Ractive-transitions-slide": "~0.1.1"
   }
 }
