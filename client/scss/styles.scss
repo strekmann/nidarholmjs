@@ -133,7 +133,7 @@ a:focus {
     small.error {
         margin-top: -1rem;
         color: $alert-color;
-        background: white;
+        background: transparent;
         padding-left: 0;
     }
 
@@ -355,8 +355,12 @@ nav.top-bar {
         margin-right: 1em; /* want some air since jade strips spaces */
     }
 
+    .getmore {
+        display: inline-block;
+        margin-bottom: 1rem;
+    }
+
     #replies {
-        
         .highlight:hover {
             .meta i.fa {
                 color: $primary-color;

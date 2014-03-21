@@ -24,26 +24,34 @@ block content
                     != marked(post.mdtext)
 
   script#template(type="text/ractive")
+    .row
+      .columns.text-right
+        i.fa.fa-file-o
+        | &nbsp;
+        a(on-click="toggleNew") Nytt innlegg
+
+    | {{#expanded}}
     form.newpost(method="POST" on-submit="addPost")
       h1 Nytt innlegg
       label(for="title") Tittel
       input#title(name="title" type="text")
       label(for="mdtext") Innhold
-      textarea#mdtext(name="mdtext")
+      textarea#mdtext(name="mdtext" on-focus-blur="checkAreaSize")
       label(for="permissions") Rettigheter
       select#permissions(name="permissions")
         +permission_options(active_user.groups, active_user.friends)
       button.small Lagre
       button.small.secondary(type="reset") Avbryt
-
-    a#newpost.small.button Nytt innlegg
+    | {{/expanded}}
 
     | {{#posts}}
     |   {{>post}}
     | {{/posts}}
 
     | {{^gotall}}
-    a.getmore(on-click="fetchPosts") Hent flere innlegg
+    .row
+      .columns.text-center.dtborder
+        a.getmore(on-click="fetchPosts") Hent flere innlegg
     | {{/gotall}}
 
     // {{>post}}

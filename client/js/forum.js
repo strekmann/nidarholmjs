@@ -1,5 +1,18 @@
 var Forum = require('./ractive/forum');
 
+var checkAreaSize = function(openSize) {
+    return function(event){
+        var type = event.original.type,
+            elem = $(event.node);
+
+        if (type === 'focus' && elem.val().trim().length === 0){
+            elem.css('height', openSize);
+        } else if (elem.val().trim().length === 0){
+            elem.css('height', '');
+        }
+    };
+};
+
 module.exports.threadView = function(){
     var forum = new Forum({
         el: '#forum',
@@ -34,16 +47,7 @@ module.exports.threadView = function(){
         forum.deleteComment(replyid, {_id: event.context._id});
     });
 
-    forum.on('checkAreaSize', function(event){
-        var type = event.original.type,
-            elem = $(event.node);
-
-        if (type === 'focus' && elem.val().trim().length === 0){
-            elem.css('height', '6rem');
-        } else if (elem.val().trim().length === 0){
-            elem.css('height', '');
-        }
-    });
+    forum.on('checkAreaSize', checkAreaSize('6rem'));
 
     return forum;
 };
@@ -89,6 +93,12 @@ module.exports.forumView = function () {
     forum.on('fetchPosts', function(event){
         event.original.preventDefault();
         forum.fetchPosts();
+    });
+
+    forum.on('checkAreaSize', checkAreaSize('12rem'));
+
+    forum.on('toggleNew', function(event){
+        this.toggle('expanded');
     });
 
     return forum;
