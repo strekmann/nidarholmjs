@@ -8,7 +8,7 @@ block content
       .medium-6.columns
         h1 Alle grupper
 
-        p Klikk i boksene for å gjøre gruppene til instrumentgrupper
+        p Klikk på pilene for å velge hvilke grupper som er instrumentgrupper
 
         ul#all_groups
           | {{#groups}}
@@ -18,7 +18,7 @@ block content
       .medium-6.columns
         h1 Instrumentgrupper
 
-        p Klikk i boksene for å ta dem bort fra instrumentgrupper
+        p Klikk på pilene for å ta gruppene ut av medlemslista
 
         ul#instrument_groups
           | {{#igroups}}
@@ -34,21 +34,23 @@ block content
           label(for='name') Navn på gruppe
           input#name(type='text' required)
       .row
-        .columns.text-right
-          button.reset.secondary(type='reset') avbryt
-          button lagre
+        .columns
+          button Lagre
+          button.reset.secondary(type='reset') Avbryt
 
-      // {{>group}}
-      li.group(style="list-style:none;")
-        input(type="checkbox" on-click="addInstrumentGroup")
-        a(href="/groups/{{oid}}") {{name}}
-      // {{/group}}
+    // {{>group}}
+    li.text-right.group(style="list-style:none;")
+      a(href="/groups/{{oid}}") {{name}}
+      | &nbsp;
+      i.fa.fa-arrow-circle-right(on-click="addInstrumentGroup")
+    // {{/group}}
 
-      // {{>igroup}}
-      li.group(style="list-style:none;" decorator="sortable" on-drop="moveInstrumentGroup")
-        input(type="checkbox" on-click="removeInstrumentGroup")
-        | {{name}}
-      // {{/igroup}}
+    // {{>igroup}}
+    li.group(style="list-style:none;" decorator="sortable" on-drop="moveInstrumentGroup")
+      i.fa.fa-arrow-circle-left(on-click="removeInstrumentGroup")
+      | &nbsp;
+      | {{name}}
+    // {{/igroup}}
 
 
 block javascript

@@ -388,6 +388,29 @@ nav.top-bar {
     }
 }
 
+#groups {
+    #all_groups {
+        margin: 0;
+        li {
+            list-style: none;
+            i {
+                margin: 0 0 0 0.5rem;
+                font-size: 1.2rem;
+            }
+        }
+    }
+    #instrument_groups {
+        margin: 0;
+        li {
+            list-style: none;
+            i {
+                margin: 0 0.5rem 0 0;
+                font-size: 1.2rem;
+            }
+        }
+    }
+}
+
 #login {
     form {
         border: rem-calc(3px) solid $hr-border-color;
