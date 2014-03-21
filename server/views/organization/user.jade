@@ -72,22 +72,35 @@ block content
                   button.tiny Legg til
 
   script#usertemplate(type="text/ractive")
+    #profile-pictures.reveal-modal(data-reveal)
+      .row
+        | {{#user}}
+        .columns
+          form#upload(action='/users/{{username}}/pictures')
+            | Drop files here
+            .fallback
+              input(name="file" type="file" multiple)
+
+          ul.small-block-grid-4
+            | {{#files}}
+            li(class="{{ is_active_image(_id) ? 'active' : '' }}")
+              a(href="/users/{{username}}/pictures/{{_id}}" on-click="setProfilePicture")
+                img.th(src="/files/{{path}}")
+            | {{/files}}
+        | {{/user}}
+      a.close-reveal-modal
+        i.fa.fa-times
+
     | {{#user}}
     .row
       .medium-3.columns
         a(href="/users/{{username}}/picture" on-click="changeProfilePicture")
-          | {{#profile_picture_path}}
+          | {{#profile_picture}}
           img#picture(src="/files/{{profile_picture_path}}")
-          | {{/profile_picture_path}}
-          | {{^profile_picture_path}}
+          | {{/profile_picture}}
+          | {{^profile_picture}}
           img#picture(src="/img/user.png")
-          | {{/profile_picture_path}}
-
-
-        | {{#files}}
-        a(href="/users/{{username}}/picture/{{_id}}" on-click="setProfilePicture")
-          img.th(src="/files/{{path}}")
-        | {{/files}}
+          | {{/profile_picture}}
 
         | {{#is_active}}
         | Aktiv bruker

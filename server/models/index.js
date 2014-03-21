@@ -36,6 +36,7 @@ var UserSchema = new mongoose.Schema({
     instrument_insurance: {type: Boolean},
     reskontro: {type: String},
     membership_history: {type: String},
+    profile_picture: {type: String, ref: 'File'},
     profile_picture_path: {type: String}
 });
 

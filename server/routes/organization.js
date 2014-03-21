@@ -202,11 +202,18 @@ module.exports.user = function (req, res) {
         if (err) { throw err; }
         Group.find({organization: 'nidarholm'}, function (err, groups) {
             if (err) { throw err; }
-            File.find({creator: user._id, tags: config.profile_picture_tag}, function (err, files) {
-                if (err) { throw err; }
-                user.files = files;
-                res.render('organization/user', {user: user, groups: groups});
-            });
+            res.render('organization/user', {user: user, groups: groups});
+        });
+    });
+};
+
+module.exports.user_pictures = function (req, res, next) {
+    User.findOne({username: req.params.username}, function (err, user) {
+        if (err) { throw err; }
+        File.find({creator: user._id, tags: config.profile_picture_tag}, function (err, files) {
+            if (err) { throw err; }
+            files.reverse();
+            res.json(200, files);
         });
     });
 };
@@ -399,6 +406,7 @@ module.exports.upload_profile_picture = function (req, res, next) {
     User.findOne({username: username}, function (err, user) {
         upload_file(req.files.file.path, req.files.file.originalname, config.files.path_prefix, req.user, null, [config.profile_picture_tag], function (err, file) {
             if (err) { throw err; }
+            user.profile_picture = file._id;
             user.profile_picture_path = file.path;
             user.save(function (err) {
                 if (err) { throw err; }
@@ -417,6 +425,7 @@ module.exports.set_profile_picture = function (req, res, next) {
         if (err) { throw err; }
         File.findById(id, function (err, file) {
             if (err) { throw err; }
+            user.profile_picture = file._id;
             user.profile_picture_path = file.path;
             user.save(function (err) {
                 if (err) { throw err; }

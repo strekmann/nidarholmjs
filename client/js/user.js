@@ -23,7 +23,10 @@ module.exports.userView = function (user, active_user) {
             user: user,
             active_user: active_user,
             is_active_user: function () {
-                return this.user === this.active_user;
+                return this.data.user === this.data.active_user;
+            },
+            is_active_image: function(image_id) {
+                return this.data.user.profile_picture === image_id;
             }
         }
     });
@@ -64,17 +67,26 @@ module.exports.userView = function (user, active_user) {
 
     ractive.on("changeProfilePicture", function (event) {
         event.original.preventDefault();
-        var picture = $(event.node);
-        picture.dropzone({
-            url: event.node.href,
-            init: function() {
-                this.on("success", function(frontend_file, backend_file) {
-                    ractive.data.user.files.push(backend_file);
-                    $('#picture').attr('src', '/files/' + backend_file.path);
-                });
-            }
+        var pictures = $('#profile-pictures');
+        $(document).foundation('reflow');
+        pictures.foundation('reveal', 'open');
+        var picture = $(event.node),
+            upload = $('#upload'),
+            promise = $.ajax({
+                url: '/users/sigurdga/pictures',
+                type: 'GET',
+                dataType: 'json'
+            });
+        promise.then(function (files) {
+            ractive.set('user.files', files);
+            Dropzone.autoDiscover = false;
+            var uploadzone = new Dropzone("#upload");
+            uploadzone.on("success", function (frontend_file, backend_file) {
+                ractive.data.user.files.unshift(backend_file);
+                $('#picture').attr('src', '/files/' + backend_file.path);
+            });
+            uploadzone.on("addedfile", function(file) { alert("Added file."); });
         });
-        ractive.off("changeProfilePicture");
     });
 
     ractive.on("setProfilePicture", function (event) {
