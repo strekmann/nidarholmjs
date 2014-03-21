@@ -77,13 +77,20 @@ block content
         | {{#user}}
         .columns
           form#upload(action='/users/{{username}}/pictures')
-            | Drop files here
+            | Dra filer hit, eller klikk for å velge
             .fallback
               input(name="file" type="file" multiple)
 
+            | {{#uploading_files}}
+            .uploading(outro='fade:500')
+              strong {{name}}
+              .progress
+                span.meter(style="width: {{uploading.progress}}%")
+            | {{/uploading_files}}
+
           ul.small-block-grid-4
             | {{#files}}
-            li(class="{{ is_active_image(_id) ? 'active' : '' }}")
+            li(intro="fade" class="{{ is_active_image(_id) ? 'active' : '' }}")
               a(href="/users/{{username}}/pictures/{{_id}}" on-click="setProfilePicture")
                 img.th(src="/files/{{path}}")
             | {{/files}}

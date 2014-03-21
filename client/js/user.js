@@ -27,7 +27,8 @@ module.exports.userView = function (user, active_user) {
             },
             is_active_image: function(image_id) {
                 return this.get('user.profile_picture') === image_id;
-            }
+            },
+            uploading_files: []
         }
     });
 
@@ -81,14 +82,29 @@ module.exports.userView = function (user, active_user) {
             ractive.set('user.files', files);
             Dropzone.autoDiscover = false;
             var uploadzone = new Dropzone("#upload", {
-                previewTemplate: '<div><span data-dz-name></span><div class="progress"> <span class="meter" data-dz-uploadprogress></span> </div></div>'
+                acceptedFiles: 'image/*',
+                previewTemplate: '<span></span>'
+            });
+            uploadzone.on("sending", function (file) {
+                ractive.data.uploading_files.push(file);
+            });
+            uploadzone.on("uploadprogress", function (file, progress) {
+                _.each(ractive.data.uploading_files, function (f, i) {
+                    if (f.name === file.name) {
+                        ractive.set('uploading_files.' + i, file);
+                    }
+                });
             });
             uploadzone.on("success", function (frontend_file, backend_file) {
+                _.each(ractive.data.uploading_files, function (f, i) {
+                    if (f.name === frontend_file.name) {
+                        ractive.data.uploading_files.splice(i, 1);
+                    }
+                });
                 ractive.data.user.files.unshift(backend_file);
                 ractive.set('user.profile_picture', backend_file._id);
                 ractive.set('user.profile_picture_path', backend_file.path);
-                //$('#picture').attr('src', '/files/' + backend_file.path);
-                uploadzone.removeFile(frontend_file);
+                //uploadzone.removeFile(frontend_file); // unclutter empty spans from ignored template
             });
             //uploadzone.on("addedfile", function(file) { alert("Added file."); });
         });
@@ -104,7 +120,8 @@ module.exports.userView = function (user, active_user) {
                 dataType: 'json'
             });
         promise.then(function (file) {
-            $('#picture').attr('src', '/files/' + file.path);
+            ractive.set('user.profile_picture', file._id);
+            ractive.set('user.profile_picture_path', file.path);
         });
     });
 };

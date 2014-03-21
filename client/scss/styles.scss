@@ -371,6 +371,18 @@ nav.top-bar {
         }
     }
 }
+
+#profile-pictures {
+    #upload {
+        padding: 2rem;
+        border: 4px dashed $hr-border-color;
+        margin-bottom: 1rem;
+    }
+    .active .th {
+        -webkit-box-shadow: 0 0 0 2px $warning-color;
+        box-shadow: 0 0 0 2px $warning-color;
+    }
+}
 .dropzone .dz-default.dz-message {
   background-image: url("/img/spritemap.png");
 }
