@@ -7,26 +7,27 @@ block content
         form(method="post")
           .row
             .small-12.columns
-              h2= __('Returning user: Log in')
+              h2= __('Logg inn')
           .row
             .small-12.columns.float-labels
               label(for="username")= __('Username')
               input(type="text" placeholder="Username" id="username" name="username" required)
-              //small.error Username is required
           .row
             .small-12.columns.float-labels
               label(for="password") Password
               input(type="password" placeholder="Password" id="password" name="password" required pattern="^\\S+")
-              //small.error Password is required and can not start with a whitespace.
           .row
             .small-12.columns
               button.small(type="submit") Log in
+    .row
+      .medium-6.medium-centered.columns.text-center
+        | - ELLER -
     .row
       .medium-6.medium-centered.columns
         form(method="post" action="/register" data-abide)
           .row
             .small-12.columns
-              h2 New user: Register
+              h2 Registrer
           .row
             .small-12.columns.float-labels
               label(for="name") Name

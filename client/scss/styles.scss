@@ -387,6 +387,15 @@ nav.top-bar {
         box-shadow: 0 0 0 2px $warning-color;
     }
 }
+
+#login {
+    form {
+        border: rem-calc(3px) solid $hr-border-color;
+        margin: 1rem 0 ;
+        padding: 0 1rem;
+    }
+}
+
 .dropzone .dz-default.dz-message {
   background-image: url("/img/spritemap.png");
 }
