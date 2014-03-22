@@ -94,7 +94,9 @@ module.exports.upload_file = function (tmp_path, filename, prefix, user, permiss
                             file.permissions = permissions;
                         }
                         if (tags) {
-                            file.tags = tags;
+                            _.each(tags.split(","), function (tag) {
+                                file.tags.addToSet(tag.trim().toLowerCase());
+                            });
                         }
                         file.save(function (err) {
                             callback(err, file);

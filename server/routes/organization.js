@@ -411,7 +411,7 @@ module.exports.upload_profile_picture = function (req, res, next) {
     var username = req.params.username;
 
     User.findOne({username: username}, function (err, user) {
-        upload_file(req.files.file.path, req.files.file.originalname, config.files.path_prefix, req.user, null, [config.profile_picture_tag], function (err, file) {
+        upload_file(req.files.file.path, req.files.file.originalname, config.files.path_prefix, req.user, null, config.profile_picture_tag, function (err, file) {
             if (err) { throw err; }
             user.profile_picture = file._id;
             user.profile_picture_path = file.path;

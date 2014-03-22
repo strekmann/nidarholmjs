@@ -61,17 +61,13 @@ var set_permissions = function (permissions, callback) {
     return perm;
 };
 
-var set_tags = function (tags) {
-    if (_.isString(tags)) {
-        return _.uniq(_.map(tags.split(","), function (tag) {
-            return tag.trim().toLowerCase();
-        }));
-    }
-};
-
 FileSchema.pre('save', function (next) {
     this.permissions = set_permissions(this.permissions.toJSON());
-    this.tags = set_tags(this.tags.toString());
+
+    // this should be OK already if we are using addToSet(x.trim().toLowerCase())
+    this.tags = _.uniq(_.map(this.tags, function (tag) {
+        return tag.trim().toLowerCase();
+    }));
     next();
 });
 
