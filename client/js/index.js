@@ -12,6 +12,11 @@ var flash = function (messages) {
         }
     });
 
+    ractive.on('closeMessage', function (event) {
+        var key_num = event.keypath.split(".");
+        this.data[key_num[0]].splice(key_num[1], 1);
+    });
+
     return ractive;
 };
 

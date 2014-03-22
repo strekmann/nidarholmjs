@@ -128,23 +128,27 @@ html(lang=lang dir=lang_dir)
 
     script#flashtemplate(type="text/ractive")
       | {{#error}}
-      .alert-box.alert(data-alert) {{.}}
-        a.close &times;
+      .alert-box.alert(intro-outro="fade" on-click="closeMessage") {{.}}
+        a.close
+          i.fa.fa-times-circle-o
       | {{/error}}
 
       | {{#warning}}
-      .alert-box.warning(data-alert) {{.}}
-        a.close &times;
+      .alert-box.warning(intro-outro="fade" on-click="closeMessage") {{.}}
+        a.close
+          i.fa.fa-times-circle-o
       | {{/warning}}
 
       | {{#success}}
-      .alert-box.success(data-alert) {{.}}
-        a.close &times;
+      .alert-box.success(intro-outro="fade" on-click="closeMessage") {{.}}
+        a.close
+          i.fa.fa-times-circle-o
       | {{/success}}
 
       | {{#info}}
-      .alert-box.info(data-alert) {{.}}
-        a.close &times;
+      .alert-box.info(intro-outro="fade" on-click="closeMessage") {{.}}
+        a.close
+          i.fa.fa-times-circle-o
       | {{/info}}
 
     script.
