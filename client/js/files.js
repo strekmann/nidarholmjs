@@ -8,7 +8,9 @@ module.exports.fileListView = function (files, active_user, active_organization)
             active_user: active_user,
             active_organization: active_organization,
             is_image: function (file) {
-                return file.mimetype.match(/^image\//);
+                if(file.mimetype.match(/^image\/(png|jpeg|gif)/)) {
+                    return true;
+                }
             },
             is_public: function (permissions) {
                 return permissions.public;
@@ -25,11 +27,14 @@ module.exports.fileListView = function (files, active_user, active_organization)
                     for_any_members = permissions.users.length;
 
                 return !for_public && !for_any_groups && !for_any_members;
+            },
+            shortdate: function (date) {
+                return moment(date).format("ll");
             }
         }
     });
     var uploadzone = new Dropzone("#upload", {
-      acceptedFiles: 'image/*',
+      //acceptedFiles: 'image/*',
       previewTemplate: '<span></span>'
     });
 

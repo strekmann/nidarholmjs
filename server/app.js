@@ -215,8 +215,7 @@ app.delete('/organization/:id', organization_routes.remove_instrument_group);
 app.post('/organization/order', organization_routes.order_instrument_groups);
 
 var file_routes = require('./routes/files');
-app.get('/files', file_routes.all);
-app.get('/files/new', file_routes.index);
+app.get('/files', file_routes.index);
 app.post('/files/upload', file_routes.upload);
 app.put('/files/:id', file_routes.update);
 app.get('/files/:id', file_routes.show_file);

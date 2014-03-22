@@ -3,63 +3,51 @@ extends ../layouts/main
 block content
   section#files
     div.row
-      div.small-12.columns
-        h1 Upload file
-        p= organization
+      div.columns.medium-10.large-8.medium-centered
+        form#upload(method="post" action="/files/upload" enctype="multipart/form-data")
+          h1 Last opp filer
+          input(type="file" name="file" multiple)
+          button.small Send
 
-        form.dropzone(action="/files/upload")
-          .fallback
-            input(type="file" name="file" multiple)
-
-        #list
-          each file in files
-            .file(data-id=file.id)
-              a(href="/files/" + file.id)= file.filename
+        each file in files
+          .row
+            .columns.small-2
+              if file.is_image
+                img(src=file.path)
+            .file.columns.small-10
+              a(href="/files/" + file.id)
+                h2= file.filename
               .meta
-                = file.created
-                if file.permissions.public
-                  i.fa.fa-globe
-                else if 'medlemmer' in file.permissions.groups
-                  i.fa.fa-users
-                else if !file.permissions.public && file.permissions.groups.length === 0 && file.permissions.users.length === 0
-                  i.fa.fa-user
-                a.edit(href='#')
-                  i.fa.fa-edit
-                i.fa.fa-trash-o
-
-              .update(colspan="4")
-                form.update_meta(method='post')
-                  .row
-                    .columns
-                      label(for="filename") Filnavn
-                      input#filename.filename(type="text" name="filename" placeholder="Filnavn" value="Filnavn 3")
-                  .row
-                    .columns
-                      label(for="permissions") Vises for
-                      select#permissions.chosen-permissions(name="permissions" data-placeholder="Velg rettigheter" multiple)
-                        +permission_options(active_user.groups, active_user.friends)
-                  .row
-                    .columns
-                      label(for="tags") Merkelapper
-                      input#tags.tags(type="text" name="tags" placeholder="musikk,korps")
-
-                  .row
-                    .columns.text-right
-                      button.secondary.reset(type="reset") Avbryt
-                      button Lagre
+                .row
+                  .columns.small-9
+                    span.byline
+                      = shortdate(file.created)
+                  .columns.small-3.text-right
+                    if file.permissions.public
+                      i.fa.fa-globe
+                    else if 'medlemmer' in file.permissions.groups
+                      i.fa.fa-users
+                    else if !file.permissions.public && file.permissions.groups.length === 0 && file.permissions.users.length === 0
+                      i.fa.fa-user
+                    a.edit(href='#')
+                      i.fa.fa-edit
+                    i.fa.fa-trash-o
+              .tags
+                p Merkelapper:
+                  = file.tags
 
   script#template(type="text/ractive")
     .row
-      .columns
-        h1 Upload file
+      .columns.large-8.medium-10.large-centered.medium-centered
         form#upload(action="/files/upload")
+          h1 Last opp filer
           | Dra filer hit, eller klikk for å velge
           .fallback
             input(type="file" name="file" multiple)
 
         | {{#uploading_files}}
         .file(intro="fade")
-          strong {{name}}
+          h2 {{name}}
           .progress
             span.meter(style="width: {{uploading.progress}}%")
         | {{/uploading_files}}
@@ -68,22 +56,33 @@ block content
         .row
           .small-2.columns
             {{#is_image(.)}}
-            img.th(src="{{path}}")
+            img(src="{{path}}")
             {{/is_image}}
           .small-10.columns
             .file(outro="fade")
-              a(href="/files/{{_id}}") {{filename}}
+              a(href="/files/{{_id}}")
+                h2 {{filename}}
               .meta
-                | {{created}}
-                | {{#is_public(permissions)}}
-                i.fa.fa-globe
-                | {{/is_public}}
-                | {{#is_for_members(this.data.active_organization.member_group, permissions)}}
-                i.fa.fa-users
-                | {{/is_for_group}}
-                | {{#is_unpublished(permissions)}}
-                i.fa.fa-user
-                | {{/is_unpublished}}
+                .row
+                  .columns.small-9
+                    span.byline
+                      a(href="/users/{{creator.username}}") {{creator.name}}
+                    time.created(datetime="{{isodate(created)}}") {{shortdate(created)}}
+                  .columns.small-3.text-right.creator
+                    | {{#is_public(permissions)}}
+                    i.fa.fa-globe
+                    | {{/is_public}}
+                    | {{#is_for_members(this.data.active_organization.member_group, permissions)}}
+                    i.fa.fa-users
+                    | {{/is_for_group}}
+                    | {{#is_unpublished(permissions)}}
+                    i.fa.fa-user.alert
+                    | {{/is_unpublished}}
+                    a.edit(href='#')
+                      i.fa.fa-edit
+                    i.fa.fa-trash-o
+              .tags
+                p Merkelapper: {{tags}}
         | {{/files}}
 
 block javascript

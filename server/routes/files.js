@@ -5,7 +5,7 @@ var _ = require('underscore'),
     config = require('../settings'),
     File = require('../models/files').File;
 
-module.exports.all = function (req, res) {
+module.exports.index = function (req, res) {
     File.find().or([
         {creator: req.user},
         {'permissions.public': true},
@@ -31,10 +31,6 @@ module.exports.all = function (req, res) {
     });
 };
 
-module.exports.index = function (req, res) {
-    res.render('files/index');
-};
-
 module.exports.upload = function (req, res) {
     var filename = req.files.file.originalname,
         tmp_path = req.files.file.path,
@@ -45,7 +41,15 @@ module.exports.upload = function (req, res) {
 
     upload_file(tmp_path, filename, prefix, user, permissions, tags, function (err, file) {
         if (err) { throw err; }
-        res.json(200, file);
+        file.path = "/files/" + file.path;
+        res.format({
+            json: function () {
+                res.json(200, file);
+            },
+            html: function () {
+                res.redirect("/files");
+            }
+        });
     });
 };
 

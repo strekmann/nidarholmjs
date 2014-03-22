@@ -103,6 +103,10 @@ h1 {
     line-height: 1.2;
 }
 
+h2 {
+    font-family: $serif-font;
+}
+
 .button {
     -webkit-box-shadow: none;
        -moz-box-shadow: none;
@@ -379,6 +383,45 @@ nav.top-bar {
     #forum {
         span.created {
             display: none;
+        }
+    }
+}
+#files {
+    #upload {
+        padding: 2rem;
+        border: 4px dashed $hr-border-color;
+        margin-bottom: 1rem;
+    }
+    h2 {
+        margin: 0;
+        font-size: rem-calc(18px);
+    }
+    .meta {
+        border-top: 1px solid $hr-border-color;
+        padding-top: rem-calc(2px);
+        font-size: rem-calc(12px);
+        font-family: $serif-font;
+        margin-bottom: 1em;
+
+        a {
+            color: $body-font-color;
+            text-transform: uppercase;
+        }
+
+        time.created {
+            text-transform: uppercase;
+            font-weight: 300;
+        }
+
+        i.fa {
+            margin-left: 0.5em;
+            color: $hr-border-color;
+            transition: color 300ms;
+
+            &:hover {
+                color: $body-font-color;
+                transition: color 300ms;
+            }
         }
     }
 }

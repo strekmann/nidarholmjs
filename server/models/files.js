@@ -18,7 +18,7 @@ var FileSchema = new mongoose.Schema({
 });
 
 FileSchema.virtual('is_image').get(function () {
-    if (this.mimetype && this.mimetype.match(/^image/)) {
+    if (this.mimetype && this.mimetype.match(/^image\/(png|jpeg|gif)/)) {
         return true;
     }
 });
