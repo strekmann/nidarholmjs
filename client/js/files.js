@@ -16,9 +16,9 @@ module.exports.fileListView = function (files, active_user, active_organization)
                 return permissions.public;
             },
             is_for_members: function (permissions) {
+                var self = this;
                 return _.find(permissions.groups, function (g) {
-                    // FIXME: Not sure if this works, or if it needs toStrings()s
-                    return g.toString() === this.active_organization.member_group.toString();
+                    return g === self.data.active_organization.member_group;
                 });
             },
             is_unpublished: function (permissions) {

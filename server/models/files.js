@@ -1,6 +1,7 @@
 var mongoose = require('mongoose'),
     ObjectId = mongoose.Schema.Types.ObjectId,
-    schema = require('../models').schema;
+    schema = require('../models').schema,
+    _ = require('underscore');
 
 var FileSchema = new mongoose.Schema({
     filename: {type: String, trim: true, required: true},
@@ -21,6 +22,48 @@ FileSchema.virtual('is_image').get(function () {
     if (this.mimetype && this.mimetype.match(/^image\/(png|jpeg|gif)/)) {
         return true;
     }
+});
+
+var set_permissions = function (permissions, callback) {
+    perm = {public: false, groups: [], users: []};
+    if (_.isArray(permissions)) {
+        _.each(permissions, function (permission) {
+            if (permission === "p") {
+                perm.public = true;
+            } else {
+                var type_id = permission.split("-"),
+                    type = type_id[0],
+                    id = type_id[1];
+
+                if (type === "g") {
+                    perm.groups.push(id);
+                } else if (type === "u") {
+                    perm.users.push(id);
+                }
+            }
+        });
+    } else if (_.isString(permissions)) {
+        permission = permissions;
+        if (permission === "p") {
+            perm.public = true;
+        } else {
+            var type_id = permission.split("-"),
+                type = type_id[0],
+                id = type_id[1];
+
+            if (type === "g") {
+                perm.groups.push(id);
+            } else if (type === "u") {
+                perm.users.push(id);
+            }
+        }
+    }
+    return perm;
+};
+
+FileSchema.pre('save', function (next) {
+    this.permissions = set_permissions(this.permissions.toJSON());
+    next();
 });
 
 module.exports = {

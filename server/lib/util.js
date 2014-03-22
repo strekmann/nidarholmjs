@@ -1,4 +1,5 @@
 var moment = require('moment'),
+    _ = require('underscore'),
     slug = require('slug'),
     fs = require('fs'),
     path = require('path'),
@@ -48,45 +49,6 @@ module.exports.ago = function (date) {
     }
 };
 
-module.exports.set_permissions = function (permissions) {
-    var permissions_obj = { 'public': false, groups: [], users: []};
-    if (permissions) {
-        if (Array.isArray(permissions)) {
-            _.each(permissions, function (perm) {
-                if (perm === "p") {
-                    permissions_obj.public = true;
-                } else {
-                    var type_id = perm.split("-"),
-                        type = type_id[0],
-                        object_id = type_id[1];
-
-                    if (type === "g") {
-                        permissions_obj.groups.push(object_id);
-                    } else if (type === "u") {
-                        permissions_obj.users.push(object_id);
-                    }
-                }
-            });
-        } else {
-            var perm = permissions;
-            if (perm === "p") {
-                permissions_obj.public = true;
-            } else {
-                var type_id = perm.split("-"),
-                    type = type_id[0],
-                    object_id = type_id[1];
-
-                if (type === "g") {
-                    permissions_obj.groups.push(object_id);
-                } else if (type === "u") {
-                    permissions_obj.users.push(object_id);
-                }
-            }
-        }
-    }
-    return permissions_obj;
-};
-
 module.exports.upload_file = function (tmp_path, filename, prefix, user, permissions, tags, callback) {
     fs.readFile(tmp_path, function (err, data) {
         var shasum, hex, new_dir, new_symlink, new_file, lookup_path;
@@ -131,9 +93,9 @@ module.exports.upload_file = function (tmp_path, filename, prefix, user, permiss
                         if (permissions) {
                             file.permissions = permissions;
                         }
-                        if (tags) {
-                            file.tags.push(tags);
-                        }
+                        _.each(tags, function (tag) {
+                            file.tags.push(tag);
+                        });
                         file.save(function (err) {
                             callback(err, file);
                         });

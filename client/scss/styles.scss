@@ -396,6 +396,10 @@ nav.top-bar {
         margin: 0;
         font-size: rem-calc(18px);
     }
+    select {
+        height: inherit;
+        background: inherit;
+    }
     .meta {
         border-top: 1px solid $hr-border-color;
         padding-top: rem-calc(2px);

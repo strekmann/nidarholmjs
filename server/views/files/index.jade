@@ -6,6 +6,11 @@ block content
       div.columns.medium-10.large-8.medium-centered
         form#upload(method="post" action="/files/upload" enctype="multipart/form-data")
           h1 Last opp filer
+          label(for="permissions") Først, velg hvem som skal kunne se filene
+          select#permissions(name="permissions" placeholder="Vises bare for meg" multiple)
+            +permission_options(active_user.groups, active_user.friends)
+          label(for="tags") Det er valgfritt om du vil kategorisere med merkelapper
+          input#tags(type="text" name="tags" placeholder="kommaseparert, liste, med, merkelapper")
           input(type="file" name="file" multiple)
           button.small Send
 
@@ -22,13 +27,14 @@ block content
                   .columns.small-9
                     span.byline
                       = shortdate(file.created)
+                      = organization.member_group
+                      = file.permissions.groups
+                      | A
+                      = typeof organization.member_group
+                      if file.permissions.groups
+                        | K
+                        = typeof file.permissions.groups[0]
                   .columns.small-3.text-right
-                    if file.permissions.public
-                      i.fa.fa-globe
-                    else if 'medlemmer' in file.permissions.groups
-                      i.fa.fa-users
-                    else if !file.permissions.public && file.permissions.groups.length === 0 && file.permissions.users.length === 0
-                      i.fa.fa-user
                     a.edit(href='#')
                       i.fa.fa-edit
                     i.fa.fa-trash-o
@@ -41,9 +47,12 @@ block content
       .columns.large-8.medium-10.large-centered.medium-centered
         form#upload(action="/files/upload")
           h1 Last opp filer
-          | Dra filer hit, eller klikk for å velge
-          .fallback
-            input(type="file" name="file" multiple)
+          label(for="permissions") Først, velg hvem som skal kunne se filene
+          select#permissions.chosen-permissions(name="permissions" data-placeholder="Vises bare for meg" multiple)
+            +permission_options(active_user.groups, active_user.friends)
+          label(for="tags") Det er valgfritt om du vil kategorisere med merkelapper
+          input#tags(type="text" name="tags" placeholder="kommaseparert, liste, med, merkelapper")
+          | Dra filer hit, eller klikk for å velge. Opplasting starter umiddelbart.
 
         | {{#uploading_files}}
         .file(intro="fade")
@@ -72,7 +81,7 @@ block content
                     | {{#is_public(permissions)}}
                     i.fa.fa-globe
                     | {{/is_public}}
-                    | {{#is_for_members(this.data.active_organization.member_group, permissions)}}
+                    | {{#is_for_members(permissions)}}
                     i.fa.fa-users
                     | {{/is_for_group}}
                     | {{#is_unpublished(permissions)}}
