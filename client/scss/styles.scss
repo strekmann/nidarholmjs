@@ -267,6 +267,10 @@ nav.top-bar {
     margin-right: 0;
 }
 
+#submenu {
+    margin-top: 2rem;
+}
+
 @media #{$topbar-media-query} {
     #logobtn {
         display: block;
