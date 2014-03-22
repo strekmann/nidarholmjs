@@ -37,9 +37,7 @@ module.exports.upload = function (req, res) {
         user = req.user,
         prefix = config.files.path_prefix,
         permissions = req.body.permissions,
-        tags = _.uniq(_.map(req.body.tags.split(","), function (tag) {
-            return tag.trim().toLowerCase();
-        }));
+        tags = req.body.tags;
 
     upload_file(tmp_path, filename, prefix, user, permissions, tags, function (err, file) {
         if (err) { throw err; }

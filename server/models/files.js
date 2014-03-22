@@ -61,8 +61,17 @@ var set_permissions = function (permissions, callback) {
     return perm;
 };
 
+var set_tags = function (tags) {
+    if (_.isString(tags)) {
+        return _.uniq(_.map(tags.split(","), function (tag) {
+            return tag.trim().toLowerCase();
+        }));
+    }
+};
+
 FileSchema.pre('save', function (next) {
     this.permissions = set_permissions(this.permissions.toJSON());
+    this.tags = set_tags(this.tags.toString());
     next();
 });
 
