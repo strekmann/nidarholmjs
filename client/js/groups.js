@@ -63,8 +63,8 @@ module.exports.groupListView = function () {
                 name: form.find('#name').val()
             };
 
+        this.toggle('expanded');
         grouplist.addGroup(group);
-        form[0].reset();
     });
 
     grouplist.on('addInstrumentGroup', function (event) {

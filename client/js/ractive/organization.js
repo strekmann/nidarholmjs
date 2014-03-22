@@ -32,7 +32,7 @@ var Group = Ractive.extend({
         promise.then(function (data) {
             self.data.igroups.push(group);
         }, function(xhr, status, err){
-            console.error(err);
+            flash.data.error.push(group.name + ' er allerede en instrumentgruppe');
         });
     },
 

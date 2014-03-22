@@ -36,16 +36,16 @@ block content
       .medium-6.columns
         h1 Instrumentgrupper
 
-        p Klikk på pilene for å ta gruppene ut av medlemslista
+        p Klikk på kryssene for å ta grupper ut av medlemslista
 
     .row
-      .medium-6.columns
+      .small-6.columns
         ul#all_groups
           | {{#groups}}
           |   {{>group}}
           | {{/groups}}
 
-      .medium-6.columns
+      .small-6.columns
 
         ul#instrument_groups
           | {{#igroups}}
@@ -61,7 +61,7 @@ block content
 
     // {{>igroup}}
     li.group(style="list-style:none;" decorator="sortable" on-drop="moveInstrumentGroup")
-      i.fa.fa-arrow-circle-left(on-click="removeInstrumentGroup")
+      i.fa.fa-times-circle(on-click="removeInstrumentGroup")
       | &nbsp;
       | {{name}}
     // {{/igroup}}

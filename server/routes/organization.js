@@ -365,11 +365,18 @@ module.exports.add_instrument_group = function (req, res, next) {
 
     Organization.findById('nidarholm', function (err, organization) {
         if (err) { next(err); }
-        organization.instrument_groups.push(groupid);
-        organization.save(function (err) {
-            if (err) { next(err); }
-            res.json(200);
+        var already = _.find(organization.instrument_groups, function (g) {
+            return groupid === g.toString();
         });
+        if (!already) {
+            organization.instrument_groups.push(groupid);
+            organization.save(function (err) {
+                if (err) { next(err); }
+                res.json(200, {});
+            });
+        } else {
+            res.json(400, {});
+        }
     });
 };
 
