@@ -33,15 +33,19 @@ block content
 
         p Klikk på pilene for å velge hvilke grupper som er instrumentgrupper
 
+      .medium-6.columns
+        h1 Instrumentgrupper
+
+        p Klikk på pilene for å ta gruppene ut av medlemslista
+
+    .row
+      .medium-6.columns
         ul#all_groups
           | {{#groups}}
           |   {{>group}}
           | {{/groups}}
 
       .medium-6.columns
-        h1 Instrumentgrupper
-
-        p Klikk på pilene for å ta gruppene ut av medlemslista
 
         ul#instrument_groups
           | {{#igroups}}
