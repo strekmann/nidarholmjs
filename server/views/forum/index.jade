@@ -31,7 +31,7 @@ block content
         a(on-click="toggleNew") Nytt innlegg
 
     | {{#expanded}}
-    form.newpost(method="POST" on-submit="addPost")
+    form.newpost(method="POST" on-submit="addPost" intro-outro='slide')
       h1 Nytt innlegg
       label(for="title") Tittel
       input#title(name="title" type="text")
@@ -41,7 +41,7 @@ block content
       select#permissions(name="permissions")
         +permission_options(active_user.groups, active_user.friends)
       button.small Lagre
-      button.small.secondary(type="reset") Avbryt
+      button.small.secondary(type="reset" on-click="toggleNew") Avbryt
     | {{/expanded}}
 
     | {{#posts}}
