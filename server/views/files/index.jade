@@ -1,20 +1,21 @@
 extends ../layouts/main
 
 block content
-  section#upload
+  section#files
     div.row
       div.small-12.columns
         h1 Upload file
+        p= organization
 
         form.dropzone(action="/files/upload")
           .fallback
             input(type="file" name="file" multiple)
 
-        #files
+        #list
           each file in files
-            div.outer.file(data-id=file.id)
-              div.meta
-                a(href="/files/" + file.id)= file.filename
+            .file(data-id=file.id)
+              a(href="/files/" + file.id)= file.filename
+              .meta
                 = file.created
                 if file.permissions.public
                   i.fa.fa-globe
@@ -26,7 +27,7 @@ block content
                   i.fa.fa-edit
                 i.fa.fa-trash-o
 
-              div.update(colspan="4")
+              .update(colspan="4")
                 form.update_meta(method='post')
                   .row
                     .columns
@@ -47,41 +48,53 @@ block content
                       button.secondary.reset(type="reset") Avbryt
                       button Lagre
 
+  script#template(type="text/ractive")
+    .row
+      .columns
+        h1 Upload file
+        form#upload(action="/files/upload")
+          | Dra filer hit, eller klikk for å velge
+          .fallback
+            input(type="file" name="file" multiple)
+
+        | {{#uploading_files}}
+        .file(intro="fade")
+          strong {{name}}
+          .progress
+            span.meter(style="width: {{uploading.progress}}%")
+        | {{/uploading_files}}
+
+        | {{#files}}
+        .row
+          .small-2.columns
+            {{#is_image(.)}}
+            img.th(src="{{path}}")
+            {{/is_image}}
+          .small-10.columns
+            .file(outro="fade")
+              a(href="/files/{{_id}}") {{filename}}
+              .meta
+                | {{created}}
+                | {{#is_public(permissions)}}
+                i.fa.fa-globe
+                | {{/is_public}}
+                | {{#is_for_members(this.data.active_organization.member_group, permissions)}}
+                i.fa.fa-users
+                | {{/is_for_group}}
+                | {{#is_unpublished(permissions)}}
+                i.fa.fa-user
+                | {{/is_unpublished}}
+        | {{/files}}
+
 block javascript
+  script
+    | var ractive = require('s7n').files.fileListView(
+    != JSON.stringify(files)
+    | ,
+    != JSON.stringify(active_user)
+    | ,
+    != JSON.stringify(organization)
+    | );
+
   script.
     $('.chosen-permissions').chosen({width: '100%'});
-    $('.update').hide();
-
-    var files = $('#files');
-    files.on('submit', '.update_meta', function (event) {
-      event.preventDefault();
-      var id = $(this).parents('.outer').attr('data-id');
-      var filename = $(this).find('.filename').val();
-      var permissions = $(this).find('.chosen-permissions').val();
-      var tags = $(this).find('.tags').val();
-      var form = $.ajax(id, {
-        type: 'put',
-        data: {
-          filename: filename,
-          permissions: permissions,
-          tags: tags
-        }
-      });
-      form.done(function (data) {
-        console.log("OST");
-        console.log(data);
-      });
-      console.log("SUBMIT");
-    });
-    files.on('click', '.edit', function (event) {
-      event.preventDefault();
-      var parent = $(this).parent();
-      parent.hide();
-      parent.siblings().show();
-    });
-    files.on('click', '.reset', function (event) {
-      console.log('reset');
-      var parent = $(this).parents('.update');
-      parent.hide();
-      parent.siblings().show();
-    })

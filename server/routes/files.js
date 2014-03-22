@@ -17,6 +17,7 @@ module.exports.all = function (req, res) {
         }
         res.format({
             html: function () {
+                files.reverse();
                 files = _.map(files, function (file) {
                     file.path = path.join(config.files.url_prefix, file.path);
                     return file;
@@ -35,8 +36,6 @@ module.exports.index = function (req, res) {
 };
 
 module.exports.upload = function (req, res) {
-    //console.log(req.body);
-    //console.log(req.files);
     var filename = req.files.file.originalname,
         tmp_path = req.files.file.path,
         user = req.user,
@@ -46,9 +45,7 @@ module.exports.upload = function (req, res) {
 
     upload_file(tmp_path, filename, prefix, user, permissions, tags, function (err, file) {
         if (err) { throw err; }
-        res.json(200, {
-            status: "success"
-        });
+        res.json(200, file);
     });
 };
 

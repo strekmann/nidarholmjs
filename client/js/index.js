@@ -27,5 +27,6 @@ module.exports = {
     groups: require('./groups'),
     user: require('./user'),
     projects: require('./projects'),
+    files: require('./files'),
     flash: flash
 };

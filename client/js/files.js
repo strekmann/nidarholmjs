@@ -1,0 +1,54 @@
+module.exports.fileListView = function (files, active_user, active_organization) {
+    var ractive = new Ractive({
+        el: '#files',
+        template: '#template',
+        data: {
+            files: files,
+            uploading_files: [],
+            active_user: active_user,
+            active_organization: active_organization,
+            is_image: function (file) {
+                return file.mimetype.match(/^image\//);
+            },
+            is_public: function (permissions) {
+                return permissions.public;
+            },
+            is_for_members: function (permissions) {
+                return _.find(permissions.groups, function (g) {
+                    // FIXME: Not sure if this works, or if it needs toStrings()s
+                    return g.toString() === this.active_organization.member_group.toString();
+                });
+            },
+            is_unpublished: function (permissions) {
+                var for_public = permissions.public,
+                    for_any_groups = permissions.groups.length,
+                    for_any_members = permissions.users.length;
+
+                return !for_public && !for_any_groups && !for_any_members;
+            }
+        }
+    });
+    var uploadzone = new Dropzone("#upload", {
+      acceptedFiles: 'image/*',
+      previewTemplate: '<span></span>'
+    });
+
+    uploadzone.on("sending", function (file) {
+        ractive.data.uploading_files.push(file);
+    });
+    uploadzone.on("uploadprogress", function (file, progress) {
+        _.each(ractive.data.uploading_files, function (f, i) {
+            if (f.name === file.name) {
+                ractive.set('uploading_files.' + i, file);
+            }
+        });
+    });
+    uploadzone.on("success", function (frontend_file, backend_file) {
+        _.each(ractive.data.uploading_files, function (f, i) {
+            if (f.name === frontend_file.name) {
+                ractive.data.uploading_files.splice(i, 1);
+            }
+        });
+        ractive.data.files.unshift(backend_file);
+    });
+};
