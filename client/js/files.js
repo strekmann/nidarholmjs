@@ -7,6 +7,8 @@ module.exports.fileListView = function (files, active_user, active_organization)
             uploading_files: [],
             active_user: active_user,
             active_organization: active_organization,
+            gotall: false,
+            page: 0,
             is_image: function (file) {
                 if(file.mimetype.match(/^image\/(png|jpeg|gif)/)) {
                     return true;
@@ -32,6 +34,37 @@ module.exports.fileListView = function (files, active_user, active_organization)
                 return moment(date).format("ll");
             }
         }
+    });
+    ractive.on('deleteFile', function (event) {
+        event.original.preventDefault();
+        var file = $(event.node),
+            promise = $.ajax({
+                url: event.node.href,
+                type: 'delete',
+                dataType: 'json'
+            });
+
+        promise.then(function (file) {
+            var index = event.keypath.split('.').pop();
+            ractive.data.files.splice(index, 1);
+        });
+    });
+    ractive.on('fetchMore', function (event) {
+        event.original.preventDefault();
+        ractive.add('page', 1);
+        var promise = $.ajax({
+            url: '/files',
+            type: 'GET',
+            dataType: 'json',
+            data: {page: ractive.get('page')}
+        });
+
+        promise.then(function (data) {
+            if (data.length === 0) {
+                self.set('gotall', true);
+            }
+            ractive.data.files.push.apply(ractive.data.files, data);
+        });
     });
     var uploadzone = new Dropzone("#upload", {
       //acceptedFiles: 'image/*',

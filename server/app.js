@@ -218,6 +218,7 @@ var file_routes = require('./routes/files');
 app.get('/files', file_routes.index);
 app.post('/files/upload', file_routes.upload);
 app.put('/files/:id', file_routes.update);
+app.delete('/files/:id', file_routes.delete_file);
 app.get('/files/:id', file_routes.show_file);
 app.get('/files/:path/:filename', file_routes.raw_file);
 

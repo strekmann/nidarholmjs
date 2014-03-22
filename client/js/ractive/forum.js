@@ -110,7 +110,6 @@ var Forum = Ractive.extend({
             });
 
         promise.then(function(data){
-            console.log(data);
             if (data.length === 0){
                 self.set('gotall', true);
             }

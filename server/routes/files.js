@@ -6,22 +6,28 @@ var _ = require('underscore'),
     File = require('../models/files').File;
 
 module.exports.index = function (req, res) {
-    File.find().or([
+    var query = File.find().or([
         {creator: req.user},
         {'permissions.public': true},
         {'permissions.users': req.user._id},
         {'permissions.groups': { $in: req.user.groups }}
-    ]).exec(function (err, files) {
+    ])
+        .sort('-created')
+        //.populate('creator', 'username name')
+        .limit(20);
+    if (req.query.page) {
+        query = query.skip(20 * req.query.page);
+    }
+    query.exec(function (err, files) {
         if (err) {
             throw err;
         }
+        files = _.map(files, function (file) {
+            file.path = path.join(config.files.url_prefix, file.path);
+            return file;
+        });
         res.format({
             html: function () {
-                files.reverse();
-                files = _.map(files, function (file) {
-                    file.path = path.join(config.files.url_prefix, file.path);
-                    return file;
-                });
                 res.render('files/index', {files: files});
             },
             json: function () {
@@ -77,9 +83,16 @@ module.exports.update = function (req, res) {
     });
 };
 
-module.exports.show_file = function (req, res) {
-    var id;
+module.exports.delete_file = function (req, res, next) {
+    var id = req.params.id;
 
+    File.findByIdAndRemove(id, function (err, file) {
+        if (err) { return next(err); }
+        res.json(200, file);
+    });
+};
+
+module.exports.show_file = function (req, res) {
     File.findById(req.params.id, function (err, file) {
         res.render('files/show_file', {file: file});
     });
