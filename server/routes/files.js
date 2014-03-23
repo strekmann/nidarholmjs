@@ -22,10 +22,6 @@ module.exports.index = function (req, res) {
         if (err) {
             throw err;
         }
-        files = _.map(files, function (file) {
-            file.path = path.join(config.files.url_prefix, file.path);
-            return file;
-        });
         res.format({
             html: function () {
                 res.render('files/index', {files: files});
@@ -47,7 +43,6 @@ module.exports.upload = function (req, res) {
 
     upload_file(tmp_path, filename, prefix, user, permissions, tags, function (err, file) {
         if (err) { throw err; }
-        file.path = "/files/" + file.path;
         res.format({
             json: function () {
                 res.json(200, file);
@@ -102,5 +97,5 @@ module.exports.raw_file = function (req, res) {
     var filepath = req.params.path,
         filename = req.params.filename;
 
-    res.sendfile(filename, {root: path.join(config.files.path_prefix, filepath.substr(0,2), filepath.substr(2,2), filepath)});
+    res.sendfile(path.join(config.files.path_prefix, filepath.substr(0,2), filepath.substr(2,2), filepath));
 };

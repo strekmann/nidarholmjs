@@ -17,7 +17,7 @@ block content
         each file in files
           .row
             .columns.small-2
-              if file.is_image
+              if file.is_image && file.path
                 img(src=file.path)
             .file.columns.small-10
               a(href="/files/" + file.id)
@@ -58,7 +58,7 @@ block content
         .row(intro-outro="slide")
           .small-2.columns
             {{#is_image(.)}}
-            img(src="{{path}}")
+            img(src="{{path(.)}}")
             {{/is_image}}
           .small-10.columns
             .file(outro="fade")

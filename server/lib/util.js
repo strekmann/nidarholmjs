@@ -50,57 +50,57 @@ module.exports.ago = function (date) {
 };
 
 module.exports.upload_file = function (tmp_path, filename, prefix, user, permissions, tags, callback) {
-    fs.readFile(tmp_path, function (err, data) {
-        var shasum, hex, new_dir, new_symlink, new_file, lookup_path;
+    var magic = new Magic(mmm.MAGIC_MIME_TYPE);
 
-        var magic = new Magic(mmm.MAGIC_MIME_TYPE);
+    magic.detectFile(tmp_path, function(err, mimetype) {
+        if (err) { throw err; }
 
-        magic.detectFile(tmp_path, function(err, mimetype) {
-            if (err) { throw err; }
+        var hash = crypto.createHash('sha1');
+        var stream = fs.createReadStream(tmp_path);
+        stream.on('data', function (data) {
+            hash.update(data);
+        });
 
-            shasum = crypto.createHash('sha1');
-            shasum.update('blob ' + data.length +'%s\0');
-            shasum.update(data);
-            hex = shasum.digest('hex');
+        stream.on('end', function () {
+            var hex = hash.digest('hex');
 
-            new_dir = path.join(prefix, hex.substr(0,2), hex.substr(2,2), hex);
+            // compute paths
             if (prefix[0] !== '/') {
-                // TODO: Check upon installation / debug that this is writable
-                new_dir = path.join(__dirname, '..', '..', new_dir);
+                prefix = path.join(__dirname, '..', '..', prefix);
             }
-            new_file = path.join(new_dir, hex);
-            new_symlink = path.join(new_dir, filename);
 
-            // for database
-            lookup_path = path.join(hex, filename);
+            var directory = path.join(prefix, hex.substr(0,2), hex.substr(2,2));
+            var file_path = path.join(directory, hex);
 
-            mkdirp(new_dir, function (err) {
+            // make sure directories exists
+            mkdirp(directory, function (err) {
                 if (err) { throw err; }
-                fs.writeFile(new_file, data, function (err) {
-                    if (err) { throw err; }
-                    fs.unlink(tmp_path);
-                    fs.symlink(new_file, new_symlink, function (err) {
 
-                        // 47: Already exists
-                        if (err && err.errno !== 47) {
-                            res.json(500, { error: err });
-                        }
-                        var file = new File();
-                        file.filename = filename;
-                        file.path = lookup_path;
-                        file.mimetype = mimetype;
-                        file.creator = user;
-                        if (permissions) {
-                            file.permissions = permissions;
-                        }
-                        if (tags) {
-                            _.each(tags.split(","), function (tag) {
-                                file.tags.addToSet(tag.trim().toLowerCase());
-                            });
-                        }
-                        file.save(function (err) {
-                            callback(err, file);
+                // move file (or copy + unlink)
+                // fs.rename does not work from tmp to other partition
+                var is = fs.createReadStream(tmp_path);
+                var os = fs.createWriteStream(file_path);
+
+                is.pipe(os);
+                is.on('end',function() {
+                    fs.unlinkSync(tmp_path);
+
+                    // save to database
+                    var file = new File();
+                    file.hash = hex;
+                    file.filename = filename;
+                    file.mimetype = mimetype;
+                    file.creator = user;
+                    if (permissions) {
+                        file.permissions = permissions;
+                    }
+                    if (tags) {
+                        _.each(tags.split(","), function (tag) {
+                            file.tags.addToSet(tag.trim().toLowerCase());
                         });
+                    }
+                    file.save(function (err) {
+                        callback(err, file);
                     });
                 });
             });
