@@ -13,7 +13,7 @@ module.exports.index = function (req, res) {
         {'permissions.groups': { $in: req.user.groups }}
     ])
         .sort('-created')
-        //.populate('creator', 'username name')
+        .populate('creator', 'username name')
         .limit(20);
     if (req.query.page) {
         query = query.skip(20 * req.query.page);
@@ -45,7 +45,10 @@ module.exports.upload = function (req, res) {
         if (err) { throw err; }
         res.format({
             json: function () {
-                res.json(200, file);
+                file.populate('creator', 'username name', function (err, file) {
+                    if (err) { throw err; }
+                    res.json(200, file);
+                });
             },
             html: function () {
                 res.redirect("/files");

@@ -69,6 +69,7 @@ block content
                   .columns.small-9
                     span.byline
                       a(href="/users/{{creator.username}}") {{creator.name}}
+                      | &nbsp;
                     time.created(datetime="{{isodate(created)}}") {{shortdate(created)}}
                   .columns.small-3.text-right.creator
                     | {{#is_public(permissions)}}
