@@ -78,8 +78,6 @@ block content
         .columns
           form#upload(action='/users/{{username}}/pictures')
             | Dra filer hit, eller klikk for å velge
-            .fallback
-              input(name="file" type="file" multiple)
 
             | {{#uploading_files}}
             .uploading(outro='fade:500')

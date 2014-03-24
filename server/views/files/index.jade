@@ -11,8 +11,8 @@ block content
             +permission_options(active_user.groups, active_user.friends)
           label(for="tags") Det er valgfritt om du vil kategorisere med merkelapper
           input#tags(type="text" name="tags" placeholder="kommaseparert, liste, med, merkelapper")
-          input(type="file" name="file" multiple)
-          button.small Send
+          input(type="file" name="file")
+          button.small send
 
         each file in files
           .row
