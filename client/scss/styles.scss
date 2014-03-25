@@ -124,6 +124,11 @@ a:focus {
     text-decoration: underline;
 }
 
+.ace_editor {
+    border: rem-calc(2) solid $hr-border-color;
+    min-height: 12rem;
+    margin-bottom: 1rem;
+}
 
 [data-abide] .float-labels,
 .float-labels {

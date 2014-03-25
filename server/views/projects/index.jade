@@ -12,7 +12,7 @@ block content
             label(for="tag") Merkelapp (del av adressen til projektet)
             input#tag(name="tag" type="text")
           label(for="private_mdtext") Intern beskrivelse
-          textarea#private_mdtext(name="private_mdtext")
+          div#private_mdtext
           label(for="public_mdtext") Publisert beskrivelse (om denne er tom, blir ikke prosjektet vist eksternt)
           textarea#public_mdtext(name="public_mdtext")
           label(for="start") Prosjektstart
@@ -41,3 +41,6 @@ block content
 block javascript
   script.
     require('s7n').projects.projectListView();
+    var edit0r = ace.edit('private_mdtext');
+    edit0r.setTheme('ace/theme/tomorrow');
+    edit0r.getSession().setMode('ace/mode/markdown');
