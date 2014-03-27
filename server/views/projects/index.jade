@@ -20,7 +20,7 @@ block content
           label(for="end") Prosjektslutt
           input#end(name="end" type="text")
           label(for="permissions") Rettigheter
-          select#permissions(name="permissions")
+          select#permissions.chosen-permissions(name="permissions" multiple data-placeholder="Velg prosjektgruppe")
             +permission_options(active_user.groups, active_user.friends)
           button Lagre
 

@@ -29,6 +29,8 @@ module.exports.projectListView = function () {
             }
         });
     });
+
+    $('.chosen-permissions').chosen({width: '100%'});
 };
 
 module.exports.projectView = function (project_obj) {

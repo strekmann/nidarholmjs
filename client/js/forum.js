@@ -99,6 +99,8 @@ module.exports.forumView = function () {
 
     forum.on('toggleNew', function(event){
         this.toggle('expanded');
+        $('.chosen-permissions').chosen({width: '100%'});
+
     });
 
     return forum;

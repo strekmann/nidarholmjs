@@ -38,7 +38,7 @@ block content
       label(for="mdtext") Innhold
       textarea#mdtext(name="mdtext" on-focus-blur="checkAreaSize")
       label(for="permissions") Rettigheter
-      select#permissions(name="permissions")
+      select#permissions.chosen-permissions(name="permissions" multiple data-placeholder="Velg hvem som skal få se innlegget")
         +permission_options(active_user.groups, active_user.friends)
       button.small Lagre
       button.small.secondary(type="reset" on-click="toggleNew") Avbryt
