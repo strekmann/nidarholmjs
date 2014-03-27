@@ -1,7 +1,7 @@
 var _ = require('underscore'),
     path = require('path'),
     mongoose = require('mongoose'),
-    upload_file = require('../lib/util').upload_file,
+    util = require('../lib/util'),
     config = require('../settings'),
     File = require('../models/files').File;
 
@@ -38,10 +38,10 @@ module.exports.upload = function (req, res) {
         tmp_path = req.files.file.path,
         user = req.user,
         prefix = config.files.path_prefix,
-        permissions = req.body.permissions,
+        permissions = util.parse_web_permissions(req.body.permissions),
         tags = req.body.tags;
 
-    upload_file(tmp_path, filename, prefix, user, permissions, tags, function (err, file) {
+    util.upload_file(tmp_path, filename, prefix, user, permissions, tags, function (err, file) {
         if (err) { throw err; }
         res.format({
             json: function () {

@@ -49,6 +49,47 @@ module.exports.ago = function (date) {
     }
 };
 
+// takes permission object from chosen, and converts it to what the database
+// expects. Input is an array or string of p, g-id or u-id strings.
+// Was trying to do this in pre-save, but mongoose should get the kind of
+// objects it expects, or it gets too magic.
+module.exports.parse_web_permissions = function (permissions, callback) {
+    perm = {public: false, groups: [], users: []};
+    if (_.isArray(permissions)) {
+        _.each(permissions, function (permission) {
+            if (permission === "p") {
+                perm.public = true;
+            } else {
+                var type_id = permission.split("-"),
+                    type = type_id[0],
+                    id = type_id[1];
+
+                if (type === "g") {
+                    perm.groups.push(id);
+                } else if (type === "u") {
+                    perm.users.push(id);
+                }
+            }
+        });
+    } else if (_.isString(permissions)) {
+        permission = permissions;
+        if (permission === "p") {
+            perm.public = true;
+        } else {
+            var type_id = permission.split("-"),
+                type = type_id[0],
+                id = type_id[1];
+
+            if (type === "g") {
+                perm.groups.push(id);
+            } else if (type === "u") {
+                perm.users.push(id);
+            }
+        }
+    }
+    return perm;
+};
+
 module.exports.upload_file = function (tmp_path, filename, prefix, user, permissions, tags, callback) {
     var magic = new Magic(mmm.MAGIC_MIME_TYPE);
 

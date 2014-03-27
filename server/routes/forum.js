@@ -60,7 +60,7 @@ module.exports.create_post = function (req, res, next) {
     post.title = req.body.title;
     post.creator = req.user;
     post.mdtext = req.body.mdtext;
-    post.permissions = util.set_permissions(req.body.permissions);
+    post.permissions = util.parse_web_permissions(req.body.permissions);
     post.save(function (err) {
         if (err) {
             return next(err);

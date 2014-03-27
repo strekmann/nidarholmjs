@@ -31,53 +31,6 @@ FileSchema.virtual('path').get(function () {
     }
 });
 
-var set_permissions = function (permissions, callback) {
-    perm = {public: false, groups: [], users: []};
-    if (_.isArray(permissions)) {
-        _.each(permissions, function (permission) {
-            if (permission === "p") {
-                perm.public = true;
-            } else {
-                var type_id = permission.split("-"),
-                    type = type_id[0],
-                    id = type_id[1];
-
-                if (type === "g") {
-                    perm.groups.push(id);
-                } else if (type === "u") {
-                    perm.users.push(id);
-                }
-            }
-        });
-    } else if (_.isString(permissions)) {
-        permission = permissions;
-        if (permission === "p") {
-            perm.public = true;
-        } else {
-            var type_id = permission.split("-"),
-                type = type_id[0],
-                id = type_id[1];
-
-            if (type === "g") {
-                perm.groups.push(id);
-            } else if (type === "u") {
-                perm.users.push(id);
-            }
-        }
-    }
-    return perm;
-};
-
-FileSchema.pre('save', function (next) {
-    this.permissions = set_permissions(this.permissions.toJSON());
-
-    // this should be OK already if we are using addToSet(x.trim().toLowerCase())
-    this.tags = _.uniq(_.map(this.tags, function (tag) {
-        return tag.trim().toLowerCase();
-    }));
-    next();
-});
-
 module.exports = {
     File: mongoose.model('File', FileSchema)
 };
