@@ -72,15 +72,7 @@ block content
                       | &nbsp;
                     time.created(datetime="{{isodate(created)}}") {{shortdate(created)}}
                   .columns.small-3.text-right.creator
-                    | {{#is_public(permissions)}}
-                    i.fa.fa-globe
-                    | {{/is_public}}
-                    | {{#is_for_members(permissions)}}
-                    i.fa.fa-users
-                    | {{/is_for_members}}
-                    | {{#is_unpublished(permissions)}}
-                    i.fa.fa-user.alert
-                    | {{/is_unpublished}}
+                    permissionicons(permissions="{{permissions}}")
                     a.edit(href='#')
                       i.fa.fa-edit
                     a.delete(href="/files/{{_id}}" on-click="deleteFile")

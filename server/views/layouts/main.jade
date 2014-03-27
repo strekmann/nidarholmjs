@@ -123,9 +123,6 @@ html(lang=lang dir=lang_dir)
                   | <a href="/">nidarholm.js</a> av strekmann as
 
 
-    script(src="/js/vendor.js")
-    script(src="/js/site.js")
-
     script#flashtemplate(type="text/ractive")
       | {{#error}}
       .alert-box.alert(intro-outro="fade" on-click="closeMessage") {{.}}
@@ -151,12 +148,28 @@ html(lang=lang dir=lang_dir)
           i.fa.fa-times-circle-o
       | {{/info}}
 
+    script#permissionstemplate(type="text/ractive")
+      | {{#is_public(permissions)}}
+      i.fa.fa-globe(title="Tilgjengelig for alle")
+      | {{/is_public}}
+      | {{#is_for_members(permissions)}}
+      i.fa.fa-users(title="Tilgjengelig for alle medlemmer")
+      | {{/is_for_members}}
+      | {{#is_unpublished(permissions)}}
+      i.fa.fa-user.alert(title="Tilgjengelig bare for deg")
+      | {{/is_unpublished}}
+
+    script(src="/js/vendor.js")
+    script(src="/js/site.js")
+
     script.
       $(document).foundation();
 
     script
         | var flash = require('s7n').flash(
         != JSON.stringify(messages)
+        | ,
+        != JSON.stringify(organization.member_group)
         | );
 
     block javascript
