@@ -36,7 +36,7 @@ block content
       label(for="title") Tittel
       input#title(name="title" type="text")
       label(for="mdtext") Innhold
-      textarea#mdtext(name="mdtext" on-focus-blur="checkAreaSize")
+      #mdtext
       label(for="permissions") Rettigheter
       select#permissions.chosen-permissions(name="permissions" multiple data-placeholder="Velg hvem som skal få se innlegget")
         +permission_options(active_user.groups, active_user.friends)
@@ -77,7 +77,6 @@ block content
 
 block javascript
   script
-    | var forum = require('s7n').forum.forumView();
-    | forum.set('posts', 
+    | require('s7n').forum.forumView(
     != JSON.stringify(posts)
     | );

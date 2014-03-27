@@ -52,12 +52,15 @@ module.exports.threadView = function(){
     return forum;
 };
 
-module.exports.forumView = function () {
-    var forum = new Forum({
-        el: '#forum',
-        template: '#template',
-        restAPI: '/forum'
-    });
+module.exports.forumView = function (posts) {
+    var ace_edit,
+        forum = new Forum({
+            el: '#forum',
+            template: '#template',
+            restAPI: '/forum'
+        });
+
+    forum.set('posts', posts);
 
     forum.on('addPost', function (event) {
         event.original.preventDefault();
@@ -65,7 +68,7 @@ module.exports.forumView = function () {
         var node = $(event.node),
             post = {
                 title: node.find('#title').val(),
-                mdtext: node.find('#mdtext').val(),
+                mdtext: ace_edit.getSession().getValue(),
                 permissions: node.find('#permissions').val()
             };
 
@@ -95,12 +98,16 @@ module.exports.forumView = function () {
         forum.fetchPosts();
     });
 
-    forum.on('checkAreaSize', checkAreaSize('12rem'));
-
     forum.on('toggleNew', function(event){
         this.toggle('expanded');
-        $('.chosen-permissions').chosen({width: '100%'});
 
+        setTimeout(function(){
+            if (forum.get('expanded')){
+                ace_edit = ace.edit('mdtext');
+                ace_edit.setTheme('ace/theme/tomorrow');
+                ace_edit.getSession().setMode('ace/mode/markdown');
+            }
+        }, 1);
     });
 
     return forum;

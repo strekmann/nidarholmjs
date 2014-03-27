@@ -367,8 +367,10 @@ nav.top-bar {
         h4 { font-size: $h4-font-size - rem-calc(3px); }
     }
 
-    span {
-        margin-right: 1em; /* want some air since jade strips spaces */
+    article {
+        span {
+            margin-right: 1em; /* want some air since jade strips spaces */
+        }
     }
 
     .getmore {
