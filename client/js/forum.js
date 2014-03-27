@@ -103,6 +103,7 @@ module.exports.forumView = function (posts) {
 
         setTimeout(function(){
             if (forum.get('expanded')){
+                $('.chosen-permissions').chosen({width: '100%'});
                 ace_edit = ace.edit('mdtext');
                 ace_edit.setTheme('ace/theme/tomorrow');
                 ace_edit.getSession().setMode('ace/mode/markdown');
