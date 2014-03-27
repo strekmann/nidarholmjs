@@ -57,9 +57,9 @@ block content
         | {{#files}}
         .row(intro-outro="slide")
           .small-2.columns
-            {{#is_image(.)}}
+            | {{#is_image(.)}}
             img(src="{{path(.)}}")
-            {{/is_image}}
+            | {{/is_image}}
           .small-10.columns
             .file(outro="fade")
               a(href="/files/{{_id}}")

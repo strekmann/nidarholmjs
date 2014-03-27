@@ -10,6 +10,7 @@ block content
         p.
         = project.private_mdtext
         = project.public_mdtext
+        = project.permissions
 
         #forum
           for post in project.posts
@@ -99,8 +100,18 @@ block content
 
         | {{shortdate(start)}}
         | {{shortdate(end)}}
+        | {{#is_public(permissions)}}
+        i.fa.fa-globe
+        | {{/is_public}}
+        | {{#is_for_members(permissions)}}
+        i.fa.fa-users
+        | {{/is_for_members}}
+        | {{#is_unpublished(permissions)}}
+        i.fa.fa-user.alert
+        | {{/is_unpublished}}
         p
           | {{private_mdtext}}
+          | {{public_mdtext}}
 
         #forum
           | {{#posts}}
