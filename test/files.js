@@ -30,7 +30,7 @@ describe("Files", function () {
             file1 = new File({
                 creator: user1,
                 filename: 'Already uploaded',
-                path: '/somewhere/else'
+                hash: 'c22'
             });
 
             user1.save(function (err) {
@@ -74,7 +74,7 @@ describe("Files", function () {
         it("should add another file programmatically", function (done) {
             var f = new File();
             f.filename = "testfile.bmp";
-            f.path = "/some/strange/place/on/the/server";
+            f.hash = "b17";
             f.creator = user1;
             f.save(function (err) {
                 if (err) {

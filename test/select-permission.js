@@ -92,6 +92,20 @@ describe("Select permission", function () {
 
     describe("Check group membership in permission select", function () {
 
+        it("should see public option", function (done) {
+            agent
+                .get('/files')
+                .set('Accept', 'text/html')
+                .expect(200)
+                .end(function (err, res) {
+                    $ = cheerio.load(res.text);
+                    var select = $('#permissions');
+                    var p = select.children().eq(0).children().first();
+                    p.attr('value').should.equal('p');
+                    done(err);
+                });
+        });
+
         it("should see one group in permission select", function (done) {
             agent
                 .get('/files')
@@ -99,12 +113,7 @@ describe("Select permission", function () {
                 .expect(200)
                 .end(function (err, res) {
                     $ = cheerio.load(res.text);
-                    var files = $('#files .file');
-                    files.length.should.equal(1);
-                    var first = files.first();
-                    var select = first.find('.chosen-permissions');
-
-                    // Very specific about how it is built
+                    var select = $('#permissions');
                     var groups = select.children().eq(1).children();
                     groups.length.should.equal(1);
                     groups.first().attr('value').should.equal('g-'+group.id);
@@ -121,12 +130,7 @@ describe("Select permission", function () {
                     .expect(200)
                     .end(function (err, res) {
                         $ = cheerio.load(res.text);
-                        var files = $('#files .file');
-                        files.length.should.equal(1);
-                        var first = files.first();
-                        var select = first.find('.chosen-permissions');
-
-                        // Very specific about how it is built
+                        var select = $('#permissions');
                         var people = select.children().eq(2).children();
                         people.length.should.equal(1);
                         people.first().attr('value').should.equal('u-'+user2.id);

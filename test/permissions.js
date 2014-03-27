@@ -42,7 +42,7 @@ describe("Permissions", function () {
             });
             file = new File({
                 filename: 'filename',
-                path: 'secret/place/file',
+                hash: 'e33',
                 creator: 'user1',
                 permissions: {
                     users: [],
