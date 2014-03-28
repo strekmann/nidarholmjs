@@ -91,7 +91,7 @@ block content
             | {{#files}}
             li(intro="fade" class="{{ is_active_image(_id) ? 'active' : '' }}")
               a(href="/users/{{username}}/pictures/{{_id}}" on-click="setProfilePicture")
-                img.th(src="/files/{{path}}")
+                img.th(src="{{path}}")
             | {{/files}}
         | {{/user}}
       a.close-reveal-modal
@@ -102,10 +102,10 @@ block content
       .medium-3.columns
         a(href="/users/{{username}}/picture" on-click="changeProfilePicture")
           | {{#profile_picture}}
-          img#picture(src="/files/{{profile_picture_path}}")
+          img#picture(src="{{profile_picture_path}}")
           | {{/profile_picture}}
           | {{^profile_picture}}
-          img#picture(src="/img/user.png")
+          img#picture(src="/img/user.svg")
           | {{/profile_picture}}
 
         | {{#is_active}}
