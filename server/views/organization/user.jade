@@ -39,18 +39,19 @@ block content
           a.button.tiny(href="/logout") Logg ut
 
         h2 Grupper
-          if user.groups.length === 0
+          if !user.groups || user.groups.length === 0
             p Ingen grupper. Legg personen til i grupper ved å trykke knappen under.
         #groups
           ul
-            for group in user.groups
-              if group
-                li.group(data-id=group.id)
-                  a(href="/groups/" + hoid(group._id))= group.name
-                  a.removegroup(href="#")
-                    i.fa.fa-times
-              else
-                = group
+            if user.groups
+                for group in user.groups
+                  if group
+                    li.group(data-id=group.id)
+                      a(href="/groups/" + hoid(group._id))= group.name
+                      a.removegroup(href="#")
+                        i.fa.fa-times
+                  else
+                    = group
 
 
           #addgroup
@@ -143,7 +144,7 @@ block content
         | {{/is_active_user}}
 
         h2 Grupper
-          if user.groups.length === 0
+          if !user.groups || user.groups.length === 0
             p Ingen grupper. Legg personen til i grupper ved å trykke knappen under.
 
         ul
