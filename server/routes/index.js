@@ -44,11 +44,11 @@ module.exports.register = function(req, res) {
                         res.redirect('/login');
                     } else {
                         // Hash password and save password, salt and hashing algorithm
-                        var algorithm = 'md5';
+                        var algorithm = 'sha1';
                         var salt = crypto.randomBytes(128).toString('base64');
                         var hashedPassword = crypto.createHash(algorithm);
-                        hashedPassword.update(password1);
                         hashedPassword.update(salt);
+                        hashedPassword.update(password1);
 
                         var user = new User();
                         user.name = req.body.name.trim();
