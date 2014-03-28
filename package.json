@@ -61,6 +61,7 @@
     "grunt-concurrent": "",
     "groc": "strekmann/groc",
     "grunt-i18n-abide": "",
-    "grunt-contrib-coffee": ""
+    "grunt-contrib-coffee": "",
+    "pg": "^2.11.1"
   }
 }
