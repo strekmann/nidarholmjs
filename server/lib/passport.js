@@ -30,8 +30,8 @@ module.exports = function(app){
                 return done(null, false, {message: 'Unrecognized username.'});
             }
             var hashedPassword = crypto.createHash(user.algorithm);
-            hashedPassword.update(password);
             hashedPassword.update(user.salt);
+            hashedPassword.update(password);
             if (user.password === hashedPassword.digest('hex')) {
                 return done(null, user);
             } else {
