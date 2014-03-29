@@ -159,7 +159,13 @@ module.exports.upload_file = function (tmp_path, filename, user, param_options, 
                         });
                     });
                 } else {
-                    callback(new Error('File already exists'), null);
+                    if (!options.do_create_duplicates_in_database) {
+                        File.findOne({filename: filename, hash: hex}, function (err, file) {
+                            callback(err, file);
+                        });
+                    } else {
+                        callback(new Error('File already exists'), null);
+                    }
                 }
             });
         });

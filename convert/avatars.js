@@ -32,11 +32,21 @@ client.connect(function(err) {
                     tags: [config.profile_picture_tag],
                     do_delete: false,
                     do_create_duplicates_in_database: false,
-                }, function (err, f) {
-                    if (err.message === "File already exists") {
-                        callback();
-                    } else {
+                }, function (err, file) {
+                    if (err && err.message !== "File already exists") {
                         callback(err);
+                    }
+                    if (avatar.primary) {
+                        User.findById('nidarholm.' + avatar.user_id, function (err, user) {
+                            if (err) { callback(err); }
+                            user.profile_picture = file._id;
+                            user.profile_picture_path = file.path;
+                            user.save(function (err) {
+                                callback(err);
+                            });
+                        });
+                    } else {
+                        callback();
                     }
                 });
         } else {
