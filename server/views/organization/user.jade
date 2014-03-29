@@ -5,7 +5,7 @@ block content
     .row
       .medium-2.columns
           a(href="#" on-click="changeProfilePicture")
-            img#picture(src=user.profile_picture_url)
+            img#picture(src=user.profile_picture_path)
 
         if user.is_active
           | Aktiv bruker
