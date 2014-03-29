@@ -31,6 +31,10 @@ FileSchema.virtual('path').get(function () {
     }
 });
 
+FileSchema.set('toJSON', {
+    virtuals: true
+});
+
 module.exports = {
     File: mongoose.model('File', FileSchema)
 };
