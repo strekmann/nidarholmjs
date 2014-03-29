@@ -90,8 +90,16 @@ module.exports.parse_web_permissions = function (permissions, callback) {
     return perm;
 };
 
-module.exports.upload_file = function (tmp_path, filename, prefix, user, permissions, tags, callback) {
-    var magic = new Magic(mmm.MAGIC_MIME_TYPE);
+module.exports.upload_file = function (tmp_path, filename, user, param_options, callback) {
+    var magic = new Magic(mmm.MAGIC_MIME_TYPE),
+        options = _.extend({
+            prefix: config.files.path_prefix,
+            permissions: {public: false, groups: [], users: []},
+            tags: [],
+            do_delete: true,
+            do_create_duplicates_in_database: true
+        }, param_options),
+        prefix = options.prefix;
 
     magic.detectFile(tmp_path, function(err, mimetype) {
         if (err) { throw err; }
@@ -113,37 +121,46 @@ module.exports.upload_file = function (tmp_path, filename, prefix, user, permiss
             var directory = path.join(prefix, hex.substr(0,2), hex.substr(2,2));
             var file_path = path.join(directory, hex);
 
-            // make sure directories exists
-            mkdirp(directory, function (err) {
-                if (err) { throw err; }
+            fs.exists(file_path, function (exists) {
+                if (!exists || options.do_create_duplicates_in_database) {
 
-                // move file (or copy + unlink)
-                // fs.rename does not work from tmp to other partition
-                var is = fs.createReadStream(tmp_path);
-                var os = fs.createWriteStream(file_path);
+                    // make sure directories exists
+                    mkdirp(directory, function (err) {
+                        if (err) { throw err; }
 
-                is.pipe(os);
-                is.on('end',function() {
-                    fs.unlinkSync(tmp_path);
+                        // move file (or copy + unlink)
+                        // fs.rename does not work from tmp to other partition
+                        var is = fs.createReadStream(tmp_path);
+                        var os = fs.createWriteStream(file_path);
 
-                    // save to database
-                    var file = new File();
-                    file.hash = hex;
-                    file.filename = filename;
-                    file.mimetype = mimetype;
-                    file.creator = user;
-                    if (permissions) {
-                        file.permissions = permissions;
-                    }
-                    if (tags) {
-                        _.each(tags.split(","), function (tag) {
-                            file.tags.addToSet(tag.trim().toLowerCase());
+                        is.pipe(os);
+                        is.on('end',function() {
+                            if (options.do_delete) {
+                                fs.unlinkSync(tmp_path);
+                            }
+
+                            // save to database
+                            var file = new File();
+                            file.hash = hex;
+                            file.filename = filename;
+                            file.mimetype = mimetype;
+                            file.creator = user;
+                            if (options.permissions) {
+                                file.permissions = options.permissions;
+                            }
+                            if (options.tags) {
+                                _.each(options.tags, function (tag) {
+                                    file.tags.addToSet(tag.trim().toLowerCase());
+                                });
+                            }
+                            file.save(function (err) {
+                                callback(err, file);
+                            });
                         });
-                    }
-                    file.save(function (err) {
-                        callback(err, file);
                     });
-                });
+                } else {
+                    callback(new Error('File already exists'), null);
+                }
             });
         });
     });
