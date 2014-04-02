@@ -13,11 +13,15 @@ var checkAreaSize = function(openSize) {
     };
 };
 
-module.exports.threadView = function(){
+module.exports.threadView = function(post, active_user){
     var forum = new Forum({
         el: '#forum',
         template: '#template',
-        restAPI: '/forum'
+        restAPI: '/forum',
+        data: {
+            post: post,
+            active_user: active_user
+        }
     });
 
     forum.on('addReply', function(event){
