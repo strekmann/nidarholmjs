@@ -27,7 +27,12 @@ block content
 
       section#replies.dtborder
         .row
+          {{#active_user.profile_picture_path}}
+          img(src="{{active_user.profile_picture_path}}").columns.small-2
+          {{/active_user.profile_picture_path}}
+          {{^active_user.profile_picture_path}}
           img(src="/img/user.svg").columns.small-2
+          {{/active_user.profile_picture_path}}
           .columns.small-10
             form
               label(for="reply") Legg inn en kommentar:
@@ -36,7 +41,12 @@ block content
 
         | {{#replies}}
         .row
+          {{#creator.profile_picture_path}}
+          img(src="{{creator.profile_picture_path}}").columns.small-2
+          {{/creator.profile_picture_path}}
+          {{^creator.profile_picture_path}}
           img(src="/img/user.svg").columns.small-2
+          {{/creator.profile_picture_path}}
           .columns.small-10
             .highlight
               .meta
@@ -48,7 +58,12 @@ block content
 
             | {{#comments}}
             .row
+              {{#creator.profile_picture_path}}
+              img(src="{{creator.profile_picture_path}}").columns.small-2
+              {{/creator.profile_picture_path}}
+              {{^creator.profile_picture_path}}
               img(src="/img/user.svg").columns.small-2
+              {{/creator.profile_picture_path}}
               .columns.small-10
                 .highlight
                   .meta
@@ -59,7 +74,12 @@ block content
                   .content {{{marked(mdtext)}}}
             | {{/comments}}
             .row
+              {{#active_user.profile_picture_path}}
+              img(src="{{active_user.profile_picture_path}}").columns.small-2
+              {{/active_user.profile_picture_path}}
+              {{^active_user.profile_picture_path}}
               img(src="/img/user.svg").columns.small-2
+              {{/active_user.profile_picture_path}}
               .columns.small-10
                 form
                   label Svar:
@@ -70,7 +90,8 @@ block content
 
 block javascript
   script
-    | var forum = require('s7n').forum.threadView();
-    | forum.set('post', 
+    | var forum = require('s7n').forum.threadView(
     != JSON.stringify(post)
+    | ,
+    != JSON.stringify(active_user)
     | );
