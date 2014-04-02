@@ -33,8 +33,6 @@ client.connect(function(err) {
             });
         }
         User.findByIdAndUpdate('nidarholm.' + user.id, new_user, {upsert: true}, function (err, betauser) {
-            console.log(user);
-            console.log(betauser);
             callback(err);
         });
     }, function (err) {

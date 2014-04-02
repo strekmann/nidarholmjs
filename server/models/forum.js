@@ -7,14 +7,19 @@ var mongoose = require('mongoose'),
 var ForumCommentSchema = new mongoose.Schema({
     created: {type: Date, default: Date.now},
     creator: {type: String, ref: 'User'},
-    mdtext: {type: String, trim: true}
+    mdtext: {type: String, trim: true},
+    original_id: {type: Number},
+    parent_id: {type: Number}
 });
 
 var ForumReplySchema = new mongoose.Schema({
     created: {type: Date, default: Date.now},
     creator: {type: String, ref: 'User'},
     mdtext: {type: String, trim: true},
-    comments: [ForumCommentSchema]
+    comments: [ForumCommentSchema],
+    original_id: {type: Number},
+    original_title: {type: String},
+    original_slug: {type: String}
 });
 
 var ForumPostSchema = new mongoose.Schema({
@@ -29,7 +34,9 @@ var ForumPostSchema = new mongoose.Schema({
         users: [{type: String, ref: 'User'}],
         public: {type: Boolean, default: false}
     },
-    replies: [ForumReplySchema]
+    replies: [ForumReplySchema],
+    original_id: {type: Number},
+    original_slug: {type: String}
 });
 
 module.exports = {
