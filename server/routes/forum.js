@@ -88,7 +88,7 @@ module.exports.get_post = function (req, res, next) {
         return next();
     }
 
-    ForumPost.findById(req.params.id).populate('creator').exec(function (err, post) {
+    ForumPost.findById(req.params.id).populate('creator').populate('replies.creator').populate('replies.comments.creator').exec(function (err, post) {
         if (err) {
             return next(err);
         }
