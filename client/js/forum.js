@@ -80,6 +80,7 @@ module.exports.forumView = function (posts) {
 
         promise.then(function (data) {
             forum.data.posts.unshift(data);
+            forum.toggle('expanded');
         }, function(xhr, status, err){
             console.error(err);
         });
@@ -111,6 +112,16 @@ module.exports.forumView = function (posts) {
                 ace_edit = ace.edit('mdtext');
                 ace_edit.setTheme('ace/theme/tomorrow');
                 ace_edit.getSession().setMode('ace/mode/markdown');
+                ace_edit.getSession().setUseWrapMode(true);
+
+                $('#mdtext textarea').attr('id', 'mdtext-ace');
+
+                ace_edit.on('change', function(e){
+                    // only update ractive data if preview is visible
+                    if($('#mdpreview').is(':visible')){
+                        forum.set('mdpreview', ace_edit.getValue());
+                    }
+                });
             }
         }, 1);
     });

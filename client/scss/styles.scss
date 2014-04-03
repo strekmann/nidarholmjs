@@ -126,7 +126,7 @@ a:focus {
 
 .ace_editor {
     border: rem-calc(2) solid $hr-border-color;
-    min-height: 12rem;
+    min-height: 20rem;
     margin-bottom: 1rem;
 }
 
@@ -159,7 +159,7 @@ a:focus {
     select {
         font-size: 1rem;
         border: none;
-        border-bottom: rem-calc(2) solid #ddd;
+        border-bottom: rem-calc(2) solid $hr-border-color;
         outline: none;
         -webkit-box-shadow: none;
         box-shadow: none;
@@ -238,7 +238,7 @@ footer {
 }
 
 nav.top-bar {
-    border-bottom: 1px solid #ddd;
+    border-bottom: 1px solid $hr-border-color;
 
     .title-area h1 {
         text-transform: uppercase;
@@ -376,6 +376,13 @@ nav.top-bar {
     .getmore {
         display: inline-block;
         margin-bottom: 1rem;
+    }
+
+    #mdpreview {
+        border: rem-calc(2) solid $hr-border-color;
+        height: 20rem;
+        padding: 0.5rem;
+        overflow: auto;
     }
 
     #replies {
