@@ -7,7 +7,8 @@ var GroupSchema = new mongoose.Schema({
     organization: {type: String, ref: 'Organization'},
     members: [{user: {type: String, ref: 'User'}, role: {type: String, trim: true}}],
     group_email: {type: String, lowercase: true, trim: true},
-    group_leader_email: {type: String, lowercase: true, trim: true}
+    group_leader_email: {type: String, lowercase: true, trim: true},
+    old_id: {type: Number}
 });
 
 var UserSchema = new mongoose.Schema({
