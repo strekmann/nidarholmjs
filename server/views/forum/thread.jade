@@ -17,9 +17,7 @@ block content
                 a(href="/users/{{creator.username}}") {{creator.name}}
               time.created(datetime="{{isodate(created)}}") {{shortdate(created)}}
             .columns.small-3.text-right.creator
-              i.fa.fa-globe(title="Tilgjengelig for alle")
-              i.fa.fa-users(title="Tilgjengelig for alle medlemmer")
-              i.fa.fa-user(title="Tilgjengelig bare for deg")
+              permissionicons(permissions="{{permissions}}")
 
       .content
         .row
