@@ -4,6 +4,7 @@ var pg = require('pg'),
     async = require('async'),
     config = require('../server/settings'),
     User = require('../server/models').User,
+    Group = require('../server/models').Group,
     ForumPost = require('../server/models/forum').ForumPost,
     ForumComment = require('../server/models/forum').ForumComment;
 
@@ -138,12 +139,22 @@ client.connect(function(err) {
                 original_slug: post.slug,
                 mdtext: post.content
             };
-            ForumPost.findOneAndUpdate({original_id: post.id}, new_post, {upsert: true}, function (err, newpost) {
-                console.log("toppinnlegg: ", post.id);
-                callback(err);
-            });
+            if (!post.group_id) {
+                _.extend(new_post, {permissions: {public: true, groups: [], users: []}});
+                ForumPost.findOneAndUpdate({original_id: post.id}, new_post, {upsert: true}, function (err, newpost) {
+                    console.log("toppinnlegg: ", post.id);
+                    callback(err);
+                });
+            } else {
+                Group.findOne({old_id: post.group_id}, function (err, group) {
+                    _.extend(new_post, {permissions: {public: false, groups: [group.id], users: []}});
+                    ForumPost.findOneAndUpdate({original_id: post.id}, new_post, {upsert: true}, function (err, newpost) {
+                        console.log("toppinnlegg: ", post.id);
+                        callback(err);
+                    });
+                });
+            }
         }
-
     }, function (err) {
         if (err) {
             console.error(err);
