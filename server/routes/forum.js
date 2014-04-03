@@ -27,9 +27,9 @@ module.exports.index = function (req, res, next) {
     .select('_id title created mdtext tags permissions creator');
 
     if (req.query.page) {
-        query = query.skip(2 * req.query.page);
+        query = query.skip(20 * req.query.page);
     }
-    query = query.limit(2);
+    query = query.limit(20);
     query.exec(function (err, posts) {
         if (err) {
             return next(err);
