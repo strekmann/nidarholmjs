@@ -1,17 +1,17 @@
 @font-face {
-	font-family: 'icomoon';
-	src:url('/fonts/icomoon.eot');
-	src:url('/fonts/icomoon.eot?#iefix') format('embedded-opentype'),
-		url('/fonts/icomoon.woff') format('woff'),
-		url('/fonts/icomoon.ttf') format('truetype'),
-		url('/fonts/icomoon.svg#icomoon') format('svg');
+	font-family: 'FontAwesome';
+	src:url('/fonts/fontawesome-webfont.eot');
+	src:url('/fonts/fontawesome-webfont.eot?#iefix') format('embedded-opentype'),
+		url('/fonts/fontawesome-webfont.woff') format('woff'),
+		url('/fonts/fontawesome-webfont.ttf') format('truetype'),
+		url('/fonts/fontawesome-webfont.svg#icomoon') format('svg');
 	font-weight: normal;
 	font-style: normal;
 }
 
 /* Use the following CSS code if you want to use data attributes for inserting your icons */
 [data-icon]:before {
-	font-family: 'icomoon';
+	font-family: 'FontAwesome';
 	content: attr(data-icon);
 	speak: none;
 	font-weight: normal;
@@ -28,7 +28,7 @@ you can use the generic selector below, but it's slower:
 [class*="icon-"] {
 */
 .icon-bold, .icon-italic, .icon-quote, .icon-unordered-list, .icon-ordered-list, .icon-link, .icon-image, .icon-play, .icon-music, .icon-contract, .icon-fullscreen, .icon-question, .icon-info, .icon-undo, .icon-redo, .icon-code, .icon-preview {
-	font-family: 'icomoon';
+	font-family: 'FontAwesome';
 	speak: none;
 	font-style: normal;
 	font-weight: normal;
@@ -38,55 +38,55 @@ you can use the generic selector below, but it's slower:
 	-webkit-font-smoothing: antialiased;
 }
 .icon-bold:before {
-	content: "\e000";
+	content: "\f032";
 }
 .icon-italic:before {
-	content: "\e001";
+	content: "\f033";
 }
 .icon-quote:before {
-	content: "\e003";
+	content: "\f10d";
 }
 .icon-unordered-list:before {
-	content: "\e004";
+	content: "\f0ca";
 }
 .icon-ordered-list:before {
-	content: "\e005";
+	content: "\f0cb";
 }
 .icon-link:before {
-	content: "\e006";
+	content: "\f08e";
 }
 .icon-image:before {
-	content: "\e007";
+	content: "\f03e";
 }
 .icon-play:before {
-	content: "\e008";
+	content: "\f04b";
 }
 .icon-music:before {
-	content: "\e009";
+	content: "\f001";
 }
 .icon-contract:before {
-	content: "\e00a";
+	content: "\f046";
 }
 .icon-fullscreen:before {
-	content: "\e00b";
+	content: "\f047";
 }
 .icon-question:before {
-	content: "\e00c";
+	content: "\f059";
 }
 .icon-info:before {
-	content: "\e00d";
+	content: "\f05a";
 }
 .icon-undo:before {
-	content: "\e00e";
+	content: "\f0e2";
 }
 .icon-redo:before {
-	content: "\e00f";
+	content: "\f01e";
 }
 .icon-code:before {
-	content: "\e011";
+	content: "\f121";
 }
 .icon-preview:before {
-	content: "\e002";
+	content: "\f06e";
 }
 /* BASICS */
 
@@ -129,6 +129,9 @@ you can use the generic selector below, but it's slower:
 /* Can style cursor different in overwrite (non-insert) mode */
 .CodeMirror div.CodeMirror-cursor.CodeMirror-overwrite {}
 
+.cm-s-paper {
+    border: 2px solid #ddd;
+}
 /* DEFAULT THEME */
 
 .cm-s-paper .cm-keyword {color: #555;}
@@ -308,14 +311,14 @@ div.CodeMirror span.CodeMirror-nonmatchingbracket {color: #f22;}
   height: 100%;
 }
 .editor-wrapper {
-  font: 16px/1.62 "Helvetica Neue", "Xin Gothic", "Hiragino Sans GB", "WenQuanYi Micro Hei", "Microsoft YaHei", sans-serif;
-  color: #2c3e50;
+  /*font: 16px/1.62 "Helvetica Neue", "Xin Gothic", "Hiragino Sans GB", "WenQuanYi Micro Hei", "Microsoft YaHei", sans-serif;*/
+  /*color: #2c3e50;*/
 }
 /* this is the title */
 .editor-wrapper input.title {
-  font: 18px "Helvetica Neue", "Xin Gothic", "Hiragino Sans GB", "WenQuanYi Micro Hei", "Microsoft YaHei", sans-serif;
+  /*font: 18px "Helvetica Neue", "Xin Gothic", "Hiragino Sans GB", "WenQuanYi Micro Hei", "Microsoft YaHei", sans-serif;*/
   background: transparent;
-  padding: 4px;
+  /*padding: 4px;*/
   width: 100%;
   border: none;
   outline: none;
@@ -330,6 +333,7 @@ div.CodeMirror span.CodeMirror-nonmatchingbracket {color: #f22;}
   -o-user-select: none;
   user-select: none;
 }
+/*
 .editor-toolbar:before, .editor-toolbar:after {
   display: block;
   content: ' ';
@@ -341,11 +345,12 @@ div.CodeMirror span.CodeMirror-nonmatchingbracket {color: #f22;}
   background: linear-gradient(45deg, #f9f9f9, #bdc3c7, #f9f9f9);
 }
 .editor-toolbar:before {
-  margin-bottom: 8px;
+  margin-bottom: 2px;
 }
 .editor-toolbar:after {
-  margin-top: 8px;
+  margin-top: 2px;
 }
+*/
 .editor-wrapper input.title:hover, .editor-wrapper input.title:focus, .editor-toolbar:hover {
   opacity: 0.8;
 }
@@ -353,7 +358,7 @@ div.CodeMirror span.CodeMirror-nonmatchingbracket {color: #f22;}
   display: inline-block;
   text-align: center;
   text-decoration: none !important;
-  color: #2c3e50 !important;
+  /*color: #2c3e50 !important;*/
   width: 24px;
   height: 24px;
   margin: 2px;
@@ -382,8 +387,8 @@ div.CodeMirror span.CodeMirror-nonmatchingbracket {color: #f22;}
   right: 0;
 }
 .editor-statusbar {
-  border-top: 1px solid #ece9e9;
-  padding: 8px 10px;
+  /*border-top: 1px solid #ece9e9;
+  padding: 8px 10px;*/
   font-size: 12px;
   color: #959694;
   text-align: right;

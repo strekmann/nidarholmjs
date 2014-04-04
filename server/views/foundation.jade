@@ -91,7 +91,7 @@ block content
           .row
             .columns
               label Input label
-              textarea(placeholder="Textarea Field")
+              textarea(placeholder="Textarea Field" style="z-index: 1000;")
           .row
             .columns
               label Input label
@@ -222,3 +222,8 @@ block content
       h5 Blockquote
       blockquote MongoDB er helt dust!
         cite Sigurd Gartmann
+
+block javascript
+  script.
+    var editor = new Editor();
+    editor.render();
