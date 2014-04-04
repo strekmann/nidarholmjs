@@ -101,6 +101,7 @@ module.exports = function(grunt) {
                 filter: 'isFile',
                 src: [
                     'bower_components/font-awesome/fonts/*',
+                    'bower_components/leptureeditor/vendor/icomoon/fonts/*',
                     'client/fonts/*'
                 ],
                 dest: 'public/fonts/'
