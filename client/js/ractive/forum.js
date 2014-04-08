@@ -105,7 +105,7 @@ var Forum = Ractive.extend({
         this.add('page', 1);
 
         var self = this,
-            url = [this.restAPI],
+            url = _.union([this.restAPI], this.data.tags);
             promise = $.ajax({
                 url: url.join('/'),
                 type: 'GET',
