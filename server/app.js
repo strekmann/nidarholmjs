@@ -177,7 +177,6 @@ app.post('/register', core_routes.register);
 
 var forum_routes = require('./routes/forum');
 app.get('/forum', forum_routes.index);
-app.get(/^\/forum\/tags\/(.+)/, forum_routes.index);
 app.get('/forum/:id', forum_routes.get_post);
 app.get('/forum/:id/replies', forum_routes.get_replies);
 app.post('/forum', forum_routes.create_post);
@@ -186,6 +185,7 @@ app.post('/forum/:postid/replies', forum_routes.create_reply);
 app.delete('/forum/:postid/replies/:replyid', forum_routes.delete_reply);
 app.post('/forum/:postid/replies/:replyid/comments', forum_routes.create_comment);
 app.delete('/forum/:postid/replies/:replyid/comments/:commentid', forum_routes.delete_comment);
+app.get(/^\/forum\/(.+)/, forum_routes.index);  // tags
 
 var organization_routes = require('./routes/organization');
 app.get('/members', organization_routes.memberlist);
