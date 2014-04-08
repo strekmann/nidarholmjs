@@ -2,6 +2,9 @@ var Forum = Ractive.extend({
     // Will be called as soon as the instance has finished rendering.
     init: function(options){
         this.restAPI = options.restAPI || '/api/forum';
+        this.data.tags = _.filter(window.location.pathname.replace(this.restAPI, '').split('/'), function (element) {
+            if (element) { return element; }
+        });
     },
 
     addPost: function(post) {
@@ -122,6 +125,7 @@ var Forum = Ractive.extend({
         posts: [],
         gotall: false,
         page: 0,
+        tags: [],
 
         marked: function(text){
             return marked(text);
@@ -131,6 +135,13 @@ var Forum = Ractive.extend({
         },
         isodate: function(date){
             return moment(date).format();
+        },
+        taglink: function(tag) {
+            var tagpath = this.restAPI + '/' + this.data.tags.join('/');
+            if (!_.contains(this.data.tags, tag)) {
+                tagpath += tag;
+            }
+            return tagpath;
         }
     }
 });

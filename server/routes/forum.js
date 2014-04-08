@@ -16,7 +16,7 @@ module.exports.index = function (req, res, next) {
         tags;
 
     if (req.params[0]) {
-        tags = req.params[0].split("/");
+        tags = req.params[0].replace(/\/$/, '').split("/");
         tagquery = {'tags': { $all: tags }};
     } else {
         tagquery = {};
