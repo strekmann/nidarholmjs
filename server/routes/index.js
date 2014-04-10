@@ -1,9 +1,32 @@
 var crypto = require('crypto'),
-    User = require('../models').User;
+    User = require('../models').User,
+    Activity = require('../models').Activity;
 
 // core routes - base is /
 module.exports.index = function(req, res) {
-    res.render('index');
+    var query = Activity.find().or([
+        {'permissions.public': true},
+        {'permissions.users': req.user._id},
+        {'permissions.groups': { $in: req.user.groups }}
+    ])
+    .sort('-modified')
+    .limit(20);
+    if (req.query.page) {
+        query = query.skip(20 * req.query.page);
+    }
+    query.populate('users', 'profile_picture_path').exec(function (err, activities) {
+        if (err) {
+            throw err;
+        }
+        res.format({
+            html: function () {
+                res.render('index', {activities: activities});
+            },
+            json: function () {
+                res.json(200, activities);
+            }
+        });
+    });
 };
 
 module.exports.login = function(req, res){
@@ -44,11 +67,11 @@ module.exports.register = function(req, res) {
                         res.redirect('/login');
                     } else {
                         // Hash password and save password, salt and hashing algorithm
-                        var algorithm = 'md5';
+                        var algorithm = 'sha1';
                         var salt = crypto.randomBytes(128).toString('base64');
                         var hashedPassword = crypto.createHash(algorithm);
-                        hashedPassword.update(password1);
                         hashedPassword.update(salt);
+                        hashedPassword.update(password1);
 
                         var user = new User();
                         user.name = req.body.name.trim();

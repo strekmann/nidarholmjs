@@ -65,7 +65,7 @@ module.exports = function(grunt) {
                 src: [
                     'bower_components/underscore/underscore.js',
                     'bower_components/foundation/js/vendor/jquery.js',
-                    'bower_components/foundation/js/vendor/fastclick.js',
+                    //'bower_components/foundation/js/vendor/fastclick.js',
                     'bower_components/foundation/js/foundation.js',
                     'bower_components/moment/moment.js',
                     'bower_components/moment/min/langs.js',
@@ -101,6 +101,7 @@ module.exports = function(grunt) {
                 filter: 'isFile',
                 src: [
                     'bower_components/font-awesome/fonts/*',
+                    'bower_components/leptureeditor/vendor/icomoon/fonts/*',
                     'client/fonts/*'
                 ],
                 dest: 'public/fonts/'

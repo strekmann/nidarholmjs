@@ -10,7 +10,7 @@ module.exports = function(app){
     });
 
     passport.deserializeUser(function(id, done) {
-        User.findById(id, function(err, user){
+        User.findById(id, 'name username profile_picture_path groups friends', function(err, user){
             if (err) {
                 return done(err.message, null);
             }

@@ -2,7 +2,8 @@ var _ = require('underscore'),
     util = require('../lib/util'),
     ForumPost = require('../models/forum').ForumPost,
     ForumReply = require('../models/forum').ForumReply,
-    ForumComment = require('../models/forum').ForumComment;
+    ForumComment = require('../models/forum').ForumComment,
+    Activity = require('../models').Activity;
 
 var matchObjectId = /^[0-9a-fA-F]{24}$/;
 var isObjectId = function(string){
@@ -65,6 +66,16 @@ module.exports.create_post = function (req, res, next) {
         if (err) {
             return next(err);
         }
+        var activity = new Activity();
+        activity.content_type = 'forum';
+        activity.content_id = post._id;
+        activity.title = post.title;
+        activity.users.push(req.user);
+        activity.permissions = post.permissions;
+        activity.save(function (err) {});
+        if (err) {
+            return next(err);
+        }
         post.populate('creator', function (err, post) {
             res.json(200, post);
         });
@@ -76,6 +87,7 @@ module.exports.delete_post = function (req, res, next) {
 
     ForumPost.findByIdAndRemove(id, function (err, post) {
         if (err) { return next(err); }
+        Activity.findOneAndRemove({content_type: 'forum', content_id: post._id}, function (err, activity) {});
         res.json(200, post);
     });
 };
@@ -88,7 +100,7 @@ module.exports.get_post = function (req, res, next) {
         return next();
     }
 
-    ForumPost.findById(req.params.id).populate('creator').populate('replies.creator').populate('replies.comments.creator').exec(function (err, post) {
+    ForumPost.findById(req.params.id).populate('creator').populate('replies.creator', 'username name profile_picture_path').populate('replies.comments.creator', 'username name profile_picture_path').exec(function (err, post) {
         if (err) {
             return next(err);
         }
@@ -123,9 +135,12 @@ module.exports.create_reply = function (req, res, next) {
         post.replies.push(reply);
         post.save(function (err) {
             if (err) {
-            return next(err);
+                return next(err);
             }
-            res.json(200, reply);
+            Activity.findOneAndUpdate({content_type: 'forum', content_id: post._id}, {$push: {users: req.user}, $set: {modified: new Date()}}, function (err, activity) {});
+            reply.populate('creator', 'username name profile_picture_path', function (err, reply) {
+                res.json(200, reply);
+            });
         });
     });
 };
@@ -143,6 +158,8 @@ module.exports.delete_reply = function (req, res, next) {
             if (err) {
                 return next(err);
             }
+            // TODO: Better to leave name here than to remove all.
+            // Activity.findOneAndUpdate({content_type: 'forum', content_id: post._id}, {$pull: {users: req.user}, $set: {modified: new Date()}}, function (err, activity) {});
             res.json(200);
         });
     });
@@ -177,7 +194,10 @@ module.exports.create_comment = function (req, res, next) {
                 if (err) {
                     return next(err);
                 }
-                res.json(200, comment);
+                Activity.findOneAndUpdate({content_type: 'forum', content_id: post._id}, {$push: {users: req.user}, $set: {modified: new Date()}}, function (err, activity) {});
+                comment.populate('creator', 'username name profile_picture_path', function (err, comment) {
+                    res.json(200, comment);
+                });
             });
         } else {
             return next(new Error('Post not found, could not add comment'));

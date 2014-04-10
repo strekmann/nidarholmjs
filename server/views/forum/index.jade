@@ -33,13 +33,23 @@ block content
     | {{#expanded}}
     form.newpost(method="POST" on-submit="addPost" intro-outro='slide')
       h1 Nytt innlegg
-      label(for="title") Tittel
-      input#title(name="title" type="text")
-      label(for="mdtext") Innhold
-      #mdtext
-      label(for="permissions") Rettigheter
-      select#permissions.chosen-permissions(name="permissions" multiple data-placeholder="Velg hvem som skal få se innlegget")
-        +permission_options(active_user.groups, active_user.friends)
+      .row
+        .columns
+          label(for="title") Tittel
+          input#title(name="title" type="text")
+      .row
+        .columns
+          label(for="mdtext-ace") Innhold
+          #mdtext
+        .columns.show-for-large-up
+          label(for="mdpreview") Forhåndsvisning
+          #mdpreview
+            | {{{marked(mdpreview)}}}
+      .row
+        .columns
+          label(for="permissions") Rettigheter
+          select#permissions.chosen-permissions(name="permissions" multiple data-placeholder="Velg hvem som skal få se innlegget")
+            +permission_options(active_user.groups, active_user.friends)
       button.small Lagre
       button.small.secondary(type="reset" on-click="toggleNew") Avbryt
     | {{/expanded}}
@@ -65,9 +75,9 @@ block content
               span.byline
                 a(href="/users/{{creator._id}}") {{creator.name}}
               time.created(datetime="{{isodate(created)}}") {{shortdate(created)}}
-              {{#tags}}
+              | {{#tags}}
               a(href="{{taglink(.)}}") {{.}}
-              {{/tags}}
+              | {{/tags}}
             .columns.small-3.text-right.creator
               permissionicons(permissions="{{permissions}}")
               a(title="Slett innlegget" on-click="deletePost")

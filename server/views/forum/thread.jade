@@ -39,17 +39,17 @@ block content
 
         | {{#replies}}
         .row
-          | {{#creator.profile_picture_path}}
-          img(src="{{creator.profile_picture_path}}").columns.small-2
-          | {{/creator.profile_picture_path}}
-          | {{^creator.profile_picture_path}}
+          | {{#.creator.profile_picture_path}}
+          img(src="{{.creator.profile_picture_path}}").columns.small-2
+          | {{/.creator.profile_picture_path}}
+          | {{^.creator.profile_picture_path}}
           img(src="/img/user.svg").columns.small-2
-          | {{/creator.profile_picture_path}}
+          | {{/.creator.profile_picture_path}}
           .columns.small-10
             .highlight
               .meta
                 span.byline Av 
-                  a(href="/users/{{creator.username}}") {{creator.name}}
+                  a(href="/users/{{.creator.username}}") {{.creator.name}}
                 time.created(datetime="{{isodate(created)}}") {{shortdate(created)}}
                 a.right(on-click="deleteReply")
                   i.fa.fa-trash-o
@@ -58,7 +58,7 @@ block content
             | {{#comments}}
             .row
               | {{#.creator.profile_picture_path}}
-              img(src="{{creator.profile_picture_path}}").columns.small-2
+              img(src="{{.creator.profile_picture_path}}").columns.small-2
               | {{/.creator.profile_picture_path}}
               | {{^.creator.profile_picture_path}}
               img(src="/img/user.svg").columns.small-2
@@ -67,7 +67,7 @@ block content
                 .highlight
                   .meta
                     span.byline Av 
-                      a(href="/users/{{creator.username}}") {{creator.name}}
+                      a(href="/users/{{.creator.username}}") {{.creator.name}}
                     time.created(datetime="{{isodate(created)}}") {{shortdate(created)}}
                     a.right(on-click="deleteComment")
                       i.fa.fa-trash-o
