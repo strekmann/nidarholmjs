@@ -4,29 +4,34 @@ var crypto = require('crypto'),
 
 // core routes - base is /
 module.exports.index = function(req, res) {
-    var query = Activity.find().or([
-        {'permissions.public': true},
-        {'permissions.users': req.user._id},
-        {'permissions.groups': { $in: req.user.groups }}
-    ])
-    .sort('-modified')
-    .limit(20);
-    if (req.query.page) {
-        query = query.skip(20 * req.query.page);
-    }
-    query.populate('users', 'profile_picture_path').exec(function (err, activities) {
-        if (err) {
-            throw err;
+    if (req.user) {
+        var query = Activity.find().or([
+            {'permissions.public': true},
+            {'permissions.users': req.user._id},
+            {'permissions.groups': { $in: req.user.groups }}
+        ])
+        .sort('-modified')
+        .limit(20);
+        if (req.query.page) {
+            query = query.skip(20 * req.query.page);
         }
-        res.format({
-            html: function () {
-                res.render('index', {activities: activities});
-            },
-            json: function () {
-                res.json(200, activities);
+        query.populate('users', 'profile_picture_path').exec(function (err, activities) {
+            if (err) {
+                throw err;
             }
+            res.format({
+                html: function () {
+                    res.render('index', {activities: activities});
+                },
+                json: function () {
+                    res.json(200, activities);
+                }
+            });
         });
-    });
+    }
+    else {
+        res.render('index');
+    }
 };
 
 module.exports.login = function(req, res){
