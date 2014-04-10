@@ -47,6 +47,20 @@ var OrganizationSchema = new mongoose.Schema({
     member_group: {type: ObjectId, ref: 'Group'},
 });
 
+var ActivitySchema = new mongoose.Schema({
+    content_type: {type: String, required: true},
+    content_id: {type: String, required: true},
+    title: {type: String, required: true},
+    mdtext: {type: String},
+    users: [{type: String, ref: 'User'}],
+    permissions: {
+        groups: [{type: ObjectId, ref: 'Group'}],
+        users: [{type: String, ref: 'User'}],
+        public: {type: Boolean, default: false}
+    },
+    modified: {type: Date, default: Date.now}
+});
+
 module.exports = {
     schema: {
         user: UserSchema,
@@ -54,5 +68,6 @@ module.exports = {
     },
     User: mongoose.model('User', UserSchema),
     Group: mongoose.model('Group', GroupSchema),
-    Organization: mongoose.model('Organization', OrganizationSchema)
+    Organization: mongoose.model('Organization', OrganizationSchema),
+    Activity: mongoose.model('Activity', ActivitySchema)
 };
