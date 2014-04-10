@@ -17,25 +17,26 @@ block content
         #more-events
           a(href="/aktiviteter") Flere aktiviteter
 
-      .columns
-        ul
-          for activity in activities
-            li
-              h2
-                if activity.content_type == "upload"
-                  a(href='/files/'+activity.content_id)
-                    = activity.title
-                    | &nbsp; (
-                    = activity.content_type
-                    | )
-                if activity.content_type == "forum"
-                  a(href='/forum/'+activity.content_id)
-                    = activity.title
-                    | &nbsp; (
-                    = activity.content_type
-                    | )
-              for user in activity.users
-                img(src=user.profile_picture_path style="height: 40px; width: 40px;")
+      if activities
+        .columns
+          ul
+            for activity in activities
+              li
+                h2
+                  if activity.content_type == "upload"
+                    a(href='/files/'+activity.content_id)
+                      = activity.title
+                      | &nbsp; (
+                      = activity.content_type
+                      | )
+                  if activity.content_type == "forum"
+                    a(href='/forum/'+activity.content_id)
+                      = activity.title
+                      | &nbsp; (
+                      = activity.content_type
+                      | )
+                for user in activity.users
+                  img(src=user.profile_picture_path style="height: 40px; width: 40px;")
 
       .large-9.columns.large-pull-3.entry
         h1 Magiske Toner - en Disneykonsert
