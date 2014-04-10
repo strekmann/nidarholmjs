@@ -72,13 +72,12 @@ module.exports.create_post = function (req, res, next) {
         activity.title = post.title;
         activity.users.push(req.user);
         activity.permissions = post.permissions;
-        activity.save(function (err) {
-            if (err) {
-                return next(err);
-            }
-            post.populate('creator', function (err, post) {
-                res.json(200, post);
-            });
+        activity.save(function (err) {});
+        if (err) {
+            return next(err);
+        }
+        post.populate('creator', function (err, post) {
+            res.json(200, post);
         });
     });
 };

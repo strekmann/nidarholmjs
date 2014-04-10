@@ -3,7 +3,8 @@ var _ = require('underscore'),
     mongoose = require('mongoose'),
     util = require('../lib/util'),
     config = require('../settings'),
-    File = require('../models/files').File;
+    File = require('../models/files').File,
+    Activity = require('../models').Activity;
 
 module.exports.index = function (req, res) {
     var query = File.find().or([
@@ -43,6 +44,15 @@ module.exports.upload = function (req, res) {
 
     util.upload_file(tmp_path, filename, prefix, user, permissions, tags, function (err, file) {
         if (err) { throw err; }
+
+        var activity = new Activity();
+        activity.content_type = 'upload';
+        activity.content_id = file._id;
+        activity.title = file.filename;
+        activity.users.push(req.user);
+        activity.permissions = file.permissions;
+        activity.save(function (err) {});
+
         res.format({
             json: function () {
                 file.populate('creator', 'username name', function (err, file) {
@@ -86,6 +96,7 @@ module.exports.delete_file = function (req, res, next) {
 
     File.findByIdAndRemove(id, function (err, file) {
         if (err) { return next(err); }
+        Activity.findOneAndRemove({content_type: 'upload', content_id: file._id}, function (err, activity) {});
         res.json(200, file);
     });
 };
