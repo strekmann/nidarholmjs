@@ -101,7 +101,7 @@ module.exports.get_post = function (req, res, next) {
         return next();
     }
 
-    ForumPost.findById(req.params.id).populate('creator').populate('replies.creator').populate('replies.comments.creator').exec(function (err, post) {
+    ForumPost.findById(req.params.id).populate('creator').populate('replies.creator', 'username name profile_picture_path').populate('replies.comments.creator', 'username name profile_picture_path').exec(function (err, post) {
         if (err) {
             return next(err);
         }
@@ -139,7 +139,9 @@ module.exports.create_reply = function (req, res, next) {
                 return next(err);
             }
             Activity.findOneAndUpdate({content_type: 'forum', content_id: post._id}, {$push: {users: req.user}, $set: {modified: new Date()}}, function (err, activity) {});
-            res.json(200, reply);
+            reply.populate('creator', 'username name profile_picture_path', function (err, reply) {
+                res.json(200, reply);
+            });
         });
     });
 };
@@ -194,7 +196,9 @@ module.exports.create_comment = function (req, res, next) {
                     return next(err);
                 }
                 Activity.findOneAndUpdate({content_type: 'forum', content_id: post._id}, {$push: {users: req.user}, $set: {modified: new Date()}}, function (err, activity) {});
-                res.json(200, comment);
+                comment.populate('creator', 'username name profile_picture_path', function (err, comment) {
+                    res.json(200, comment);
+                });
             });
         } else {
             return next(new Error('Post not found, could not add comment'));
