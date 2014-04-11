@@ -7,8 +7,7 @@ var pg = require('pg'),
     User = require('../server/models').User,
     Group = require('../server/models').Group,
     ForumPost = require('../server/models/forum').ForumPost,
-    ForumComment = require('../server/models/forum').ForumComment,
-    Activity = require('../server/models').Activity;
+    ForumComment = require('../server/models/forum').ForumComment;
 
 mongoose.connect('mongodb://localhost/nidarholm');
 var client = new pg.Client("postgres://nidarholm@localhost/nidarholm");
@@ -72,12 +71,7 @@ client.connect(function(err) {
                                     parent.replies.push(reply);
                                     parent.save(function (err) {
                                         log.debug("added new reply ", post.id);
-                                        Activity.findOneAndUpdate({content_type: 'forum', content_id: parent._id}, {$push: {users: reply.creator}, $set: {modified: reply.created}}, function (err, activity) {
-                                            if (err) {
-                                                log.warn(err, post, parent, reply);
-                                            }
-                                            callback(err);
-                                        });
+                                        callback(err);
                                     });
                                 }
                             }
@@ -124,12 +118,7 @@ client.connect(function(err) {
                                 } else {
                                     ForumPost.update({'replies.original_id': post.parent_id}, {$push: {'replies.$.comments': new_comment}}, function (err, updated) {
                                         log.debug("add toplevel", post.id);
-                                        Activity.findOneAndUpdate({content_type: 'forum', content_id: parent._id}, {$push: {users: new_comment.creator}, $set: {modified: new_comment.created}}, function (err, activity) {
-                                            if (err) {
-                                                log.warn(err, post, parent, new_comment);
-                                            }
-                                            callback(err);
-                                        });
+                                        callback(err);
                                     });
                                 }
                             } else {
@@ -161,12 +150,7 @@ client.connect(function(err) {
                                         } else {
                                             ForumPost.update({'replies.comments.original_id': post.parent_id}, {$push: {'replies.$.comments': new_comment}}, function (err, updated) {
                                                 log.debug("add inner", post.id);
-                                                Activity.findOneAndUpdate({content_type: 'forum', content_id: parent._id}, {$push: {users: new_comment.creator}, $set: {modified: new_comment.created}}, function (err, activity) {
-                                                    if (err) {
-                                                        log.warn(err, post, parent, new_comment);
-                                                    }
-                                                    callback(err);
-                                                });
+                                                callback(err);
                                             });
                                         }
                                     }

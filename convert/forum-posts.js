@@ -7,8 +7,7 @@ var pg = require('pg'),
     User = require('../server/models').User,
     Group = require('../server/models').Group,
     ForumPost = require('../server/models/forum').ForumPost,
-    ForumComment = require('../server/models/forum').ForumComment,
-    Activity = require('../server/models').Activity;
+    ForumComment = require('../server/models/forum').ForumComment;
 
 mongoose.connect('mongodb://localhost/nidarholm');
 var client = new pg.Client("postgres://nidarholm@localhost/nidarholm");
@@ -53,20 +52,7 @@ client.connect(function(err) {
                         console.error(err, post, newpost);
                     }
 
-                    var activity = new Activity();
-                    activity.content_type = 'forum';
-                    activity.content_id = newpost._id;
-                    activity.title = newpost.title;
-                    activity.users.push(newpost.creator);
-                    activity.permissions = newpost.permissions;
-                    activity.modified = newpost.created;
-                    activity.save(function (err) {
-                        if (err) {
-                            console.error(err, newpost);
-                        }
-                        callback(err);
-                    });
-
+                    callback(err);
                 });
             } else {
                 Group.findOne({old_id: post.group_id}, function (err, group) {
@@ -78,20 +64,7 @@ client.connect(function(err) {
                             console.error(err, post, newpost);
                         }
 
-                        var activity = new Activity();
-                        activity.content_type = 'forum';
-                        activity.content_id = newpost._id;
-                        activity.title = newpost.title;
-                        activity.users.push(newpost.creator);
-                        activity.permissions = newpost.permissions;
-                        activity.modified = newpost.created;
-                        activity.save(function (err) {
-                            if (err) {
-                                console.error(err, newpost);
-                            }
-                            callback(err);
-                        });
-
+                        callback(err);
                     });
                 });
             }

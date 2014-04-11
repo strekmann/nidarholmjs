@@ -54,6 +54,7 @@ var ActivitySchema = new mongoose.Schema({
     title: {type: String, required: true},
     mdtext: {type: String},
     users: [{type: String, ref: 'User'}],
+    changes: [{type: Date}],
     permissions: {
         groups: [{type: ObjectId, ref: 'Group'}],
         users: [{type: String, ref: 'User'}],
