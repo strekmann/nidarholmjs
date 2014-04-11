@@ -8,6 +8,7 @@ var ForumCommentSchema = new mongoose.Schema({
     created: {type: Date, default: Date.now},
     creator: {type: String, ref: 'User'},
     mdtext: {type: String, trim: true},
+    removed_by: {type: String, ref: 'User'},
     original_id: {type: Number},
     parent_id: {type: Number}
 });
@@ -16,10 +17,9 @@ var ForumReplySchema = new mongoose.Schema({
     created: {type: Date, default: Date.now},
     creator: {type: String, ref: 'User'},
     mdtext: {type: String, trim: true},
+    removed_by: {type: String, ref: 'User'},
     comments: [ForumCommentSchema],
-    original_id: {type: Number},
-    original_title: {type: String},
-    original_slug: {type: String}
+    original_id: {type: Number}
 });
 
 var ForumPostSchema = new mongoose.Schema({
@@ -29,6 +29,7 @@ var ForumPostSchema = new mongoose.Schema({
     modified: {type: Date},
     tags: [{type: String, lowercase: true, trim: true}],
     mdtext: {type: String, trim: true},
+    removed_by: {type: String, ref: 'User'},
     permissions: {
         groups: [{type: ObjectId, ref: 'Group'}],
         users: [{type: String, ref: 'User'}],
