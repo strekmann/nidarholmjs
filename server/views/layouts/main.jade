@@ -166,10 +166,10 @@ html(lang=lang dir=lang_dir)
       $(document).foundation();
 
     script
-        | var flash = require('s7n').flash(
-        != JSON.stringify(messages)
-        | ,
-        != JSON.stringify(organization.member_group)
-        | );
+      | var flash = require('s7n').flash(
+      != JSON.stringify(messages)
+      | ,
+      != JSON.stringify(organization.member_group)
+      | );
 
     block javascript
