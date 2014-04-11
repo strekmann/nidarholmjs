@@ -19,191 +19,36 @@ var log = new (winston.Logger)({
     ]
 });
 
+var tagify = function (tagstring) {
+    return _.map(tagstring.split(","), function (tag) {
+        return tag.toLowerCase().replace(/\s+/, '').replace(/\-\_\(\)\#\.\%\\\/\$\"\'\*/, '');
+    });
+};
+
 client.connect(function(err) {
-  if(err) {
-    return console.error('could not connect to postgres', err);
-  }
-  client.query('SELECT * from news_story order by id', function(err, result) {
     if(err) {
-      return console.error('error running query', err);
+        return console.error('could not connect to postgres', err);
     }
+    client.query('SELECT * from news_story where parent_id is null order by id', function(err, result) {
+        if(err) {
+            return console.error('error running query', err);
+        }
 
-    async.eachSeries(result.rows, function (post, callback) {
-        log.debug(post.id, post.title);
-        if (post.parent_id) {
-            ForumPost.findOne({original_id: post.parent_id+10000}, function (err, parent) {
-                if (parent) {
-                    // this is a ForumReply, check if it is already added:
-                    ForumPost.findOne({'replies.original_id': post.id+10000}, function (err, forumpost) {
-                        if (err) {
-                            callback(err);
-                        } else {
-                            var reply = {
-                                created: post.created,
-                                creator: 'nidarholm.' + post.user_id,
-                                mdtext: post.content,
-                                original_id: post.id+10000,
-                                original_title: post.title,
-                                original_slug: post.slug
-                            };
-
-                            if (forumpost) {
-                                ForumPost.update({'replies.original_id': post.id+10000}, {$set: {'replies.$': reply}}, function (err, updated) {
-                                    log.debug("updated reply", post.id);
-                                    callback(err);
-                                });
-                            } else {
-                                parent.replies.push(reply);
-                                parent.save(function (err) {
-                                    if (err) {
-                                        console.error(post, reply, parent, forumpost);
-                                    }
-                                    log.debug("added new reply ", post.id);
-                                    Activity.findOneAndUpdate({content_type: 'forum', content_id: parent._id}, {$push: {users: reply.creator}, $set: {modified: reply.created}}, function (err, activity) {
-                                        if (err) {
-                                            console.error(err, post, parent, reply);
-                                        }
-                                        callback(err);
-                                    });
-                                });
-                            }
-                        }
-                    });
-                } else {
-                    ForumPost.findOne({'replies.original_id': post.parent_id+10000}, function (err, parent) {
-                        var new_comment = new ForumComment();
-                        new_comment.created = post.created;
-                        new_comment.creator = 'nidarholm.' + post.user_id;
-                        new_comment.mdtext = post.content;
-                        new_comment.original_id = post.id+10000;
-                        new_comment.original_title = post.title;
-                        new_comment.original_slug = post.slug;
-
-                        if (parent) {
-                            var reply_index;
-                            var reply = _.find(parent.replies, function (reply, i) {
-                                //log.debug(reply.original_id, post.parent_id, reply.original_id === post.parent_id);
-                                if (reply.original_id === post.parent_id+10000) {
-                                    reply_index = i;
-                                    return true;
-                                }
-                            });
-                            //log.debug("r", reply);
-
-                            // check if comment already exists:
-                            var comment_index;
-                            var comment = _.find(reply.comments, function (comment, i) {
-                                if (comment.original_id === post.id+10000) {
-                                    comment_index = i;
-                                    return true;
-                                }
-                            });
-
-                            //log.debug(comment);
-                            if (comment) {
-                                log.debug("update", post.id);
-                                parent.replies[reply_index].comments[comment_index] = new_comment;
-                                parent.save(function (err) {
-                                    //log.debug(parent);
-                                    callback(err);
-                                });
-                            } else {
-                                log.debug("add", post.id);
-                                parent.replies[reply_index].comments.push(new_comment);
-                                Activity.findOneAndUpdate({content_type: 'forum', content_id: parent._id}, {$push: {users: new_comment.creator}, $set: {modified: new_comment.created}}, function (err, activity) {
-                                    if (err) {
-                                        console.error(err, post, parent, new_comment);
-                                    }
-                                    parent.save(function (err) {
-                                        //log.debug(parent);
-                                        callback(err);
-                                    });
-                                });
-                            }
-                        } else {
-                            //log.debug("her");
-                            ForumPost.findOne({'replies.comments.original_id': post.parent_id+10000}, {replies:{$elemMatch: {'comments.original_id': post.parent_id+10000}}}, function (err, parent) {
-                                if (parent) {
-                                    var reply_index;
-                                    var reply = parent.replies[0];
-                                    //console.error(parent.replies.length);
-                                    //log.debug("r", reply);
-
-                                    // check if comment already exists:
-                                    var comment_index;
-                                    var comment = _.find(reply.comments, function (comment, i) {
-                                        if (comment.original_id === post.id+10000) {
-                                            comment_index = i;
-                                            return true;
-                                        }
-                                    });
-
-                                    if (comment) {
-                                        ForumPost.update({'replies.comments.original_id': post.parent_id+10000}, {$set: {'replies.$.comments.$': new_comment}}, function (err, updated) {
-                                            log.debug("update inner", post.id);
-                                            callback(err);
-                                        });
-                                        //parent.replies[0].comments[comment_index] = new_comment;
-                                    } else {
-                                        ForumPost.update({'replies.comments.original_id': post.parent_id+10000}, {$push: {'replies.$.comments': new_comment}}, function (err, updated) {
-                                            log.debug("add inner", post.id);
-                                            Activity.findOneAndUpdate({content_type: 'forum', content_id: parent._id}, {$push: {users: new_comment.creator}, $set: {modified: new_comment.created}}, function (err, activity) {
-                                                if (err) {
-                                                    console.error(err, post, parent, new_comment);
-                                                }
-                                                callback(err);
-                                            });
-                                        });
-                                    }
-                                } else {
-                                    log.warn("not found: ", post);
-                                    callback(err);
-                                }
-                            });
-                        }
-                    });
-                }
-            });
-        } else {
+        async.each(result.rows, function (post, callback) {
             if (!post.title) {
-                post.title = 'nidarholm.blank';
-            }
-            var new_post = {
-                title: post.title,
-                created: post.created,
-                modified: post.updated,
-                creator: 'nidarholm.' + post.user_id,
-                original_slug: post.slug,
-                tags: ['nyheter'],
-                mdtext: post.content
-            };
-            if (!post.group_id) {
-                _.extend(new_post, {permissions: {public: true, groups: [], users: []}});
-                ForumPost.findOneAndUpdate({original_id: post.id+10000}, new_post, {upsert: true}, function (err, newpost) {
-                    log.debug("toppinnlegg: ", post.id);
-
-                    if (err) {
-                        console.error(err, post);
-                    }
-
-                    var activity = new Activity();
-                    activity.content_type = 'forum';
-                    activity.content_id = newpost._id;
-                    activity.title = newpost.title;
-                    activity.users.push(newpost.creator);
-                    activity.permissions = newpost.permissions;
-                    activity.modified = newpost.created;
-                    activity.save(function (err) {
-                        if (err) {
-                            console.error(err, newpost);
-                        }
-                        callback(err);
-                    });
-
-                });
+                callback();
             } else {
-                Group.findOne({old_id: post.group_id}, function (err, group) {
-                    _.extend(new_post, {permissions: {public: false, groups: [group.id], users: []}});
+                var new_post = {
+                    title: post.title,
+                    created: post.created,
+                    modified: post.updated,
+                    creator: 'nidarholm.' + post.user_id,
+                    original_slug: post.slug,
+                    tags: ['nyheter'],
+                    mdtext: post.content
+                };
+                if (!post.group_id) {
+                    _.extend(new_post, {permissions: {public: true, groups: [], users: []}});
                     ForumPost.findOneAndUpdate({original_id: post.id+10000}, new_post, {upsert: true}, function (err, newpost) {
                         log.debug("toppinnlegg: ", post.id);
 
@@ -226,17 +71,118 @@ client.connect(function(err) {
                         });
 
                     });
-                });
+                } else {
+                    Group.findOne({old_id: post.group_id}, function (err, group) {
+                        _.extend(new_post, {permissions: {public: false, groups: [group.id], users: []}});
+                        ForumPost.findOneAndUpdate({original_id: post.id+10000}, new_post, {upsert: true}, function (err, newpost) {
+                            log.debug("toppinnlegg: ", post.id);
+
+                            if (err) {
+                                console.error(err, post);
+                            }
+
+                            var activity = new Activity();
+                            activity.content_type = 'forum';
+                            activity.content_id = newpost._id;
+                            activity.title = newpost.title;
+                            activity.users.push(newpost.creator);
+                            activity.permissions = newpost.permissions;
+                            activity.modified = newpost.created;
+                            activity.save(function (err) {
+                                if (err) {
+                                    console.error(err, newpost);
+                                }
+                                callback(err);
+                            });
+
+                        });
+                    });
+                }
             }
-        }
-    }, function (err) {
-        if (err) {
-            log.error(err);
-        } else {
-            log.info("Done");
-        }
-        client.end();
-        mongoose.connection.close();
+        }, function (err) {
+            if (err) {
+                log.error(err);
+            } else {
+                log.info("Done");
+            }
+
+            // forum
+            client.query('SELECT * from s7n_forum order by id', function(err, result) {
+                if(err) {
+                    return console.error('error running query', err);
+                }
+
+                async.each(result.rows, function (post, callback) {
+                    var new_post = {
+                        title: post.title,
+                        created: post.created_date,
+                        modified: post.updated_date,
+                        creator: 'nidarholm.' + post.user_id,
+                        tags: tagify(post.tags),
+                        original_slug: post.slug,
+                        mdtext: post.content
+                    };
+                    if (!post.group_id) {
+                        _.extend(new_post, {permissions: {public: true, groups: [], users: []}});
+                        ForumPost.findOneAndUpdate({original_id: post.id}, new_post, {upsert: true}, function (err, newpost) {
+                            log.debug("toppinnlegg: ", post.id);
+
+                            if (err) {
+                                console.error(err, post, newpost);
+                            }
+
+                            var activity = new Activity();
+                            activity.content_type = 'forum';
+                            activity.content_id = newpost._id;
+                            activity.title = newpost.title;
+                            activity.users.push(newpost.creator);
+                            activity.permissions = newpost.permissions;
+                            activity.modified = newpost.created;
+                            activity.save(function (err) {
+                                if (err) {
+                                    console.error(err, newpost);
+                                }
+                                callback(err);
+                            });
+
+                        });
+                    } else {
+                        Group.findOne({old_id: post.group_id}, function (err, group) {
+                            _.extend(new_post, {permissions: {public: false, groups: [group.id], users: []}});
+                            ForumPost.findOneAndUpdate({original_id: post.id}, new_post, {upsert: true}, function (err, newpost) {
+                                log.debug("toppinnlegg: ", post.id);
+
+                                if (err) {
+                                    console.error(err, post, newpost);
+                                }
+
+                                var activity = new Activity();
+                                activity.content_type = 'forum';
+                                activity.content_id = newpost._id;
+                                activity.title = newpost.title;
+                                activity.users.push(newpost.creator);
+                                activity.permissions = newpost.permissions;
+                                activity.modified = newpost.created;
+                                activity.save(function (err) {
+                                    if (err) {
+                                        console.error(err, newpost);
+                                    }
+                                    callback(err);
+                                });
+
+                            });
+                        });
+                    }
+                }, function (err) {
+                    if (err) {
+                        log.error(err);
+                    } else {
+                        log.info("Done");
+                    }
+                    client.end();
+                    mongoose.connection.close();
+                });
+            });
+        });
     });
-  });
 });
