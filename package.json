@@ -39,7 +39,8 @@
     "marked": "0.3.x",
     "superagent": "0.17.x",
     "country-list": "sigurdga/country-list",
-    "mmmagic": "^0.3.6"
+    "mmmagic": "^0.3.6",
+    "winston": "^0.7.3"
   },
   "devDependencies": {
     "uglify-js": "",
