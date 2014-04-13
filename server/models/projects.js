@@ -7,6 +7,9 @@ var EventSchema = new mongoose.Schema({
     start: {type: Date, required: true},
     end: {type: Date},
     // whole_day needed? from nidarholm
+    original_whole_day: {type: Boolean, default: false},
+    original_event_serie: {type: Number},
+    original_event_category: {type: Number},
     location: {type: String},
     permissions: {
         groups: [{type: ObjectId, ref: 'Group'}],
@@ -16,6 +19,7 @@ var EventSchema = new mongoose.Schema({
     tags: [{type: String}],
     creator: {type: String, ref: 'User', required: true},
     created: {type: Date, default: Date.now},
+    modified: {type: Date},
     music: [{
         title: {type: String, required: true},
         part: {type: String},
