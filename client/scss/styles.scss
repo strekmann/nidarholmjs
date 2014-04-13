@@ -486,6 +486,25 @@ nav.top-bar {
     }
 }
 
+#activities {
+    ul {
+        list-style: none;
+        margin-left: 0;
+        h2 {
+            font-size: 1.4rem;
+        }
+        .contributors {
+            height: 40px;
+            overflow: hidden;
+            img {
+                float: right;
+                height: 40px;
+                width: 40px;
+            }
+        }
+    }
+}
+
 .dropzone .dz-default.dz-message {
   background-image: url("/img/spritemap.png");
 }
