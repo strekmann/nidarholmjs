@@ -15,18 +15,28 @@ var fs = require('fs'),
     crypto = require('crypto');
 
 module.exports.index = function (req, res, next) {
-    Project.find().exec(function (err, projects) {
+    var query = Project.find().or([
+        {creator: req.user},
+        {'permissions.public': true},
+        {'permissions.users': req.user._id},
+        {'permissions.groups': { $in: req.user.groups }}
+    ])
+        .sort('-end')
+        .populate('creator', 'username name')
+        .limit(20);
+    if (req.query.page) {
+        query = query.skip(20 * req.query.page);
+    }
+    query.exec(function (err, projects) {
         if (err) {
-            return next(err);
+            throw err;
         }
         res.format({
+            html: function () {
+                res.render('projects/index', {projects: projects});
+            },
             json: function () {
                 res.json(200, projects);
-            },
-            html: function () {
-                res.render('projects/index', {
-                    projects: projects
-                });
             }
         });
     });

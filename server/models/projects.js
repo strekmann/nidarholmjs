@@ -45,7 +45,7 @@ var ProjectSchema = new mongoose.Schema({
     private_mdtext: {type: String},
     start: {type: Date},
     end: {type: Date, required: true},
-    creator: {type: String, ref: 'user', required: true},
+    creator: {type: String, ref: 'User', required: true},
     created: {type: Date, default: Date.now},
     permissions: {
         groups: [{type: ObjectId, ref: 'Group'}],
