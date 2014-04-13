@@ -123,3 +123,34 @@ module.exports.projectView = function (project_obj) {
 
     return project;
 };
+
+module.exports.upcomingView = function (events) {
+    var event_list = new Ractive({
+        el: '#events',
+        template: '#template',
+        data: {
+            events: events,
+            marked: function (mdtext) {
+                return marked(mdtext);
+            },
+            daterange: function (start, end) {
+                var startm, endm;
+                if (end) {
+                    startm = moment(start);
+                    endm = moment(end);
+                    if (startm.isSame(endm, 'day')) {
+                        // same day
+                        return '<time class="start" datetime="' + startm.format() + '">' + startm.format('LLL') + '</time> – <time class="end" datetime="' + endm.format() + '">' + endm.format('LT') + '</time>';
+                    }
+                    else {
+                        // different days
+                        return '<time class="start" datetime="' + startm.format() + '">' + startm.format('LLL') + '</time> – <time class="end" datetime="' + endm.format() + '">' + endm.format('LLL') + '</time>';
+                    }
+                } else {
+                    startm = moment(start);
+                    return '<time datetime="' + startm.format() + '">' + startm.format('LLL') + '</time>';
+                }
+            }
+        }
+    });
+};

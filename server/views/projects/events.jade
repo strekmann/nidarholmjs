@@ -14,3 +14,32 @@ block content
             p= event.location
             p= event.tags
             p!= marked(event.mdtext)
+
+  script#template(type="text/ractive")
+    {{#events}}
+    article
+      header
+        h1 {{title}}
+        .meta
+          .row
+            .columns.small-9
+              span.byline
+                {{{daterange(start, end)}}}
+                {{#location}}
+                | {{location}}
+                {{/location}}
+              | {{#tags}}
+              a(href="{{taglink(.)}}") {{.}}
+              | {{/tags}}
+            .columns.small-3.text-right
+              permissionicons(permissions="{{permissions}}")
+      .content
+        .row
+          .columns
+            {{{marked(mdtext)}}}
+
+block javascript
+  script
+    | require('s7n').projects.upcomingView(
+    != JSON.stringify(events)
+    );
