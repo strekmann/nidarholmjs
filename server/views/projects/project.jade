@@ -96,13 +96,15 @@ block content
     .row
       .medium-8.columns
         h1 {{title}}
-
-        | {{shortdate(start)}}
-        | {{shortdate(end)}}
-        permissionicons(permissions="{{permissions}}")
-        p
-          | {{private_mdtext}}
-          | {{public_mdtext}}
+        .meta
+          .row
+            .columns.small-9
+              span.byline
+                {{{daterange(start, end)}}}
+            .columns.small-3.text-right
+              permissionicons(permissions="{{permissions}}")
+        | {{{marked(private_mdtext)}}}
+        | {{{marked(public_mdtext)}}}
 
         #forum
           | {{#posts}}
