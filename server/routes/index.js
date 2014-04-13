@@ -15,7 +15,7 @@ module.exports.index = function(req, res) {
         if (req.query.page) {
             query = query.skip(20 * req.query.page);
         }
-        query.populate('users', 'profile_picture_path').exec(function (err, activities) {
+        query.populate('users', 'name profile_picture_path').exec(function (err, activities) {
             if (err) {
                 throw err;
             }

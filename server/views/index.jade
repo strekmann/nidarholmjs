@@ -17,26 +17,7 @@ block content
         #more-events
           a(href="/aktiviteter") Flere aktiviteter
 
-      if activities
-        .columns
-          ul
-            for activity in activities
-              li
-                h2
-                  if activity.content_type == "upload"
-                    a(href='/files/'+activity.content_id)
-                      = activity.title
-                      | &nbsp; (
-                      = activity.content_type
-                      | )
-                  if activity.content_type == "forum"
-                    a(href='/forum/'+activity.content_id)
-                      = activity.title
-                      | &nbsp; (
-                      = activity.content_type
-                      | )
-                for user in activity.users
-                  img(src=user.profile_picture_path style="height: 40px; width: 40px;")
+      #activities
 
       .large-9.columns.large-pull-3.entry
         h1 Magiske Toner - en Disneykonsert
@@ -82,8 +63,38 @@ block content
     p.
       What she said, {{text}}
 
+  script#activity-template(type="text/ractive")
+    .columns
+      ul
+        {{#activities}}
+        li
+          h2
+            {{#content_type == "upload"}}
+            a(href='/files/{{content_id}}')
+              | {{title}} ({{content_type}})
+            {{/content_type}}
+            {{#content_type == "forum"}}
+            a(href='/forum/{{content_id}}')
+              | {{title}} ({{content_type}})
+            {{/content_type}}
+          .row
+            .small-5.medium-4.large-3.columns
+              {{ago(modified)}}
+            .small-7.medium-8.large-9.columns.contributors
+              {{#users}}
+              {{#profile_picture_path}}
+              img(src="{{profile_picture_path}}" alt="{{name}}" title="{{name}}")
+              {{/profile_picture_path}}
+              {{^profile_picture_path}}
+              img(src="/img/user.svg" alt="{{name}}" title="{{name}}")
+              {{/profile_picture_path}}
+              {{/users}}
+        {{/activities}}
+
 block javascript
-  script.
-    require('s7n').base.indexView();
+  script
+    | require('s7n').base.indexView(
+    != JSON.stringify(activities)
+    | );
 
     $('.chosen-permissions').chosen();
