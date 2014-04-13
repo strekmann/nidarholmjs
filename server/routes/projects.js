@@ -1,4 +1,5 @@
 var uslug = require('uslug'),
+    moment = require('moment'),
     util = require('../lib/util'),
     upload_file = util.upload_file,
     config = require('../settings'),
@@ -144,13 +145,31 @@ module.exports.project_delete_event = function (req, res, next) {
     });
 };
 
-// TODO: Temporary page? Add ical format? How to find URL to it?
+// TODO: Add ical format? How to find URL to it?
 module.exports.events = function (req, res, next) {
-    Event.find({}, function (err, events) {
-        if (err) { return next(err); }
+    var query = Event.find().or([
+        {creator: req.user},
+        {'permissions.public': true},
+        {'permissions.users': req.user._id},
+        {'permissions.groups': { $in: req.user.groups }}
+    ])
+        .where({start: {$gt: moment().startOf('day')}})
+        .sort('start')
+        .populate('creator', 'username name')
+        .limit(20);
+    if (req.query.page) {
+        query = query.skip(20 * req.query.page);
+    }
+    query.exec(function (err, events) {
+        if (err) {
+            throw err;
+        }
         res.format({
             html: function () {
                 res.render('projects/events', {events: events});
+            },
+            json: function () {
+                res.json(200, events);
             }
         });
     });
