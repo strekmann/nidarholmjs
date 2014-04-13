@@ -1,6 +1,7 @@
 var moment = require('moment'),
     _ = require('underscore'),
     slug = require('slug'),
+    uslug = require('uslug'),
     fs = require('fs'),
     path = require('path'),
     mkdirp = require('mkdirp'),
@@ -47,6 +48,13 @@ module.exports.ago = function (date) {
     if (date) {
         return moment(date).fromNow();
     }
+};
+
+// lowercases words, removes spaces and punctuation to avoid tag duplicates
+module.exports.tagify = function (tagstring) {
+    return _.map(tagstring.split(","), function (tag) {
+        return uslug(tag, {allowedChars: '-'}).replace('-', '');
+    });
 };
 
 // takes permission object from chosen, and converts it to what the database

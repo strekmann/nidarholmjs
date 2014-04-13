@@ -4,6 +4,7 @@ var pg = require('pg'),
     async = require('async'),
     winston = require('winston'),
     config = require('../server/settings'),
+    tagify = require('../server/lib/util').tagify,
     User = require('../server/models').User,
     Group = require('../server/models').Group,
     ForumPost = require('../server/models/forum').ForumPost,
@@ -17,12 +18,6 @@ var log = new (winston.Logger)({
         new (winston.transports.Console)({level: process.env.DEBUG ? 'debug' : 'info'})
     ]
 });
-
-var tagify = function (tagstring) {
-    return _.map(tagstring.split(","), function (tag) {
-        return tag.toLowerCase().replace(/\s+/, '').replace(/\-\_\(\)\#\.\%\\\/\$\"\'\*/, '');
-    });
-};
 
 client.connect(function(err) {
     if(err) {
