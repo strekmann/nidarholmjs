@@ -55,7 +55,8 @@ var ProjectSchema = new mongoose.Schema({
     contributors: [{
         user: {type: String, ref: 'User'},
         role: {type: String}
-    }]
+    }],
+    original_project_users: [{type: String, ref: 'User'}]
 });
 
 module.exports = {

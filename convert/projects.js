@@ -62,9 +62,19 @@ client.connect(function(err) {
             }
             promise.then(function (permissions) {
                 new_project.permissions = permissions;
-                Project.update({end: p.end, _id: tag}, new_project, {upsert: true}, function (err, project) {
-                    console.log(err, project);
-                    callback(err);
+                client.query('SELECT * from projects_project_users WHERE project_id=' + p.id, function (err, result) {
+                    if(err) {
+                        return console.error('error running query', err);
+                    }
+                    new_project.original_project_users = _.map(result.rows, function (project_user) {
+                        return 'nidarholm.' + project_user.user_id;
+                    });
+
+                    Project.update({end: p.end, _id: tag}, new_project, {upsert: true}, function (err, project) {
+
+                        console.log(err, project);
+                        callback(err);
+                    });
                 });
             });
         }, function (err) {
