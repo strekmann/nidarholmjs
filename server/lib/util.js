@@ -8,11 +8,11 @@ var moment = require('moment'),
     crypto = require('crypto'),
     mongoose = require('mongoose'),
     ObjectId = mongoose.Types.ObjectId,
+    request = require('superagent'),
     mmm = require('mmmagic'),
     Magic = mmm.Magic,
     config = require('../settings'),
     File = require('../models/files').File;
-
 module.exports.h2b64 = function(hex){
     return new Buffer(hex, 'hex').toString('base64').replace('+', '-').replace('/', '_');
 };
@@ -51,10 +51,33 @@ module.exports.ago = function (date) {
 };
 
 // lowercases words, removes spaces and punctuation to avoid tag duplicates
+var normalize = function (string) {
+    return uslug(string, {allowedChars: '-'}).replace(/-/g, '');
+};
+module.exports.normalize = normalize;
+
 module.exports.tagify = function (tagstring) {
     return _.map(tagstring.split(","), function (tag) {
-        return uslug(tag, {allowedChars: '-'}).replace('-', '');
+        return normalize(tag);
     });
+};
+
+// Fetch postcode from posten's service
+module.exports.fetch_city = function (postcode, callback) {
+    if (postcode && postcode.match(/\d{4}/)) {
+        request
+            .get('http://adressesok.posten.no/api/v1/postal_codes.json?postal_code=' + postcode)
+            .end(function (error, result) {
+                var data = result.body;
+                if (data.status !== "ok") {
+                    callback("notfound");
+                } else {
+                    callback(null, data.postal_codes[0].city);
+                }
+        });
+    } else {
+        callback("notvalid");
+    }
 };
 
 // takes permission object from chosen, and converts it to what the database

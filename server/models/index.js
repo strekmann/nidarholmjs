@@ -24,8 +24,8 @@ var UserSchema = new mongoose.Schema({
     is_active: {type: Boolean, 'default': true},
     is_admin: {type: Boolean, 'default': false},
     created: {type: Date, required: true, 'default': Date.now},
-    google_id: {type: String},
     nmf_id: {type: String},
+    //google_id: {type: String},
     phone: {type: String},
     address: {type: String},
     postcode: {type: String},
@@ -38,7 +38,16 @@ var UserSchema = new mongoose.Schema({
     reskontro: {type: String},
     membership_history: {type: String},
     profile_picture: {type: String, ref: 'File'},
-    profile_picture_path: {type: String}
+    profile_picture_path: {type: String},
+    membership_status: {type: Number},
+    social_media: {
+        website: {type: String},
+        blog: {type: String},
+        google: {type: String},
+        twitter: {type: String},
+        facebook: {type: String},
+        instagram: {type: String}
+    }
 });
 
 var OrganizationSchema = new mongoose.Schema({
