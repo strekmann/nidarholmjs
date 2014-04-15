@@ -50,6 +50,9 @@ html(lang=lang dir=lang_dir)
               li
                 a#topbar-username(href="/users/"+active_user.username)
                   = active_user.username
+              li
+                a(href="/logout")
+                  i.fa.fa-sign-out
             else
               li
                 a.login(href="/login") Logg inn

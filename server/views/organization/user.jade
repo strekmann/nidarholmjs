@@ -109,39 +109,65 @@ block content
           | {{/profile_picture}}
 
         | {{#is_active}}
-        | Aktiv bruker
+        | Aktiv
         | {{/is_active}}
         | {{#is_admin}}
         | Admin
         | {{/is_admin}}
 
       .medium-6.columns
-        h1 {{name}}
+        .right
+          | {{#is_active_user}}
+          a(href="/users/{{username}}/edit")
+            i.fa.fa-edit(title="Rediger personalia")
+          | {{/is_active_user}}
 
-        p#username(data-username="{{username}}") {{username}}
+        <h1>{{name}} <small>{{instrument}}</small></h1>
 
-        p {{instrument}}
-        p {{email}}
-        p {{phone}}
-        p {{address}}
-        p {{postcode}}
-        p {{city}}
-        p {{country}}
-        p {{nmf_id}}
+        .email
+          i.fa.fa-envelope
+          | &nbsp;
+          a(href="mailto:{{email}}") {{email}}
+
+        | {{#phone}}
+        p.phone
+          i.fa.fa-phone
+          | &nbsp;
+          | {{phoneformat(phone)}}
+        | {{/phone}}
+
+        .address
+          | {{address}}
+        .city
+          | {{postcode}} {{city}}
+        | {{#country!='NO'}}
+        .country
+          | {{country}}
+        | {{/country}}
+
+        hr
+
+        | {{#joined}}
+        p
+          | Startet {{ago(joined)}} og har NMF-nummer {{nmf_id}}
+        | {{/joined}}
+
+        | {{#born}}
+        p
+          | Bursdag {{bday(born)}}
+        | {{/born}}
+
+        hr
+
+        p Brukernavn <code>{{username}}</code>, passordalgoritme: <code>{{algorithm}}</code>, krypteringsstyrke: <code>{{length(salt)}}</code>
 
         | {{#active_user.is_admin}}
         // todo: set better permission checks
-        p {{born}}
-        p {{joined}}
         p {{reskontro}}
         | {{membership_history}}
         | {{/active_user.is_admin}}
 
       .medium-3.columns
-        | {{#is_active_user}}
-        a.button.tiny(href="/users/{{../username}}/edit") Rediger brukerdata
-        a.button.tiny(href="/logout") Logg ut
-        | {{/is_active_user}}
 
         h2 Grupper
           if !user.groups || user.groups.length === 0
