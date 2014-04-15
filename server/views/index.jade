@@ -5,14 +5,12 @@ block content
     .row
       .large-3.columns.large-push-9
         ul#next-events.small-block-grid-4.large-block-grid-1
-          li
-            a.event Event #1
-          li
-            a.event Event #2
-          li
-            a.event Event #3
-          li
-            a.event Event #4
+          for event in events
+            li
+              a.event
+                = moment(event.start).format('Do MMMM')
+                br
+                = event.title
 
         #more-events
           a(href="/aktiviteter") Flere aktiviteter
