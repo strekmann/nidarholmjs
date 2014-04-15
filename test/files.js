@@ -16,15 +16,14 @@ describe("Files", function () {
         app.db.connection.db.dropDatabase(function () {
 
             user1 = new User({
-                _id: 'testid',
+                _id: 'tester',
                 username: 'testuser',
                 name: 'Test Testson',
                 is_active: true,
                 is_admin: false,
-                algorithm: 'md5',
-                salt: 'oAJl6jsEVadxZ+5DwSlYjoMv7boVjqvyhU5ugd6KFlEFTSZfWpedJkQN6m5ovOq4FXLroFEzVpYugWwuIgEjTnpKQXPhC1feEI79tSlqUaJg8g2EWeazY5X0bby9csezVbJV62ohQ26a69QMgptzRmj8nfIC2R2Du+8gjs4q+Kw=',
-                password: '13b42ad6d1c87bd25db9ad8cc0bf6c30'
-
+                algorithm: 'sha1',
+                salt: 'FSvFjOd5A0hmU2DeFebbf7PHRfA6+MZ6cLhdXstDre1K7o+4PGE//UGsb1P4RT03IlfrjV+Kzl4+F+68bDmyPpUsII3f3xbqfB67r1/ROHCGZL2lLyCFCeQ7AaMexaPrOc9c3oFd5ikAyZy43hknvYligkcGlV1a2mAJCqmodMs=',
+                password: 'db14b6f48c30e441ef9f2ef7f3e1b0185f8eb5e3'
             });
 
             file1 = new File({
@@ -40,7 +39,7 @@ describe("Files", function () {
                     file1.save(function (err) {
                         agent
                             .post('/login')
-                            .send({username: user1.username, password: 'pass'})
+                            .send({username: user1.username, password: 'Passw0rd'})
                             .expect(302)
                             .end(function(err, res) {
                                 res.header.location.should.equal('/');

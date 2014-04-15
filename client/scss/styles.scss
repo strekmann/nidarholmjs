@@ -504,6 +504,36 @@ nav.top-bar {
         }
     }
 }
+#events {
+    .meta {
+        border-top: 1px solid $hr-border-color;
+        padding-top: rem-calc(2px);
+        font-size: rem-calc(12px);
+        font-family: $serif-font;
+        margin-bottom: 1em;
+
+        a {
+            color: $body-font-color;
+            text-transform: uppercase;
+        }
+
+        time {
+            text-transform: uppercase;
+            font-weight: 300;
+        }
+
+        i.fa {
+            margin-left: 0.5em;
+            color: $hr-border-color;
+            transition: color 300ms;
+
+            &:hover {
+                color: $body-font-color;
+                transition: color 300ms;
+            }
+        }
+    }
+}
 
 .dropzone .dz-default.dz-message {
   background-image: url("/img/spritemap.png");
