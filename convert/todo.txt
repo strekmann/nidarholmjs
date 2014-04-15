@@ -1,7 +1,7 @@
                       List of relations
  Schema |               Name               | Type  |   Owner   
 --------+----------------------------------+-------+-----------
- public | accounts_userprofile             | table | nidarholm til user
+ public | accounts_userprofile             | table | nidarholm --- til user
  public | auth_group                       | table | nidarholm ---
  public | auth_user                        | table | nidarholm ---
  public | auth_user_groups                 | table | nidarholm ---
@@ -13,8 +13,8 @@
  public | news_story                       | table | nidarholm ---
  public | organization_groupcategory       | table | nidarholm utsettes
  public | pages_flatpage                   | table | nidarholm utsettes
- public | projects_project                 | table | nidarholm
- public | projects_project_users           | table | nidarholm utsettes/manuelt
+ public | projects_project                 | table | nidarholm ---
+ public | projects_project_users           | table | nidarholm --- utsettes/manuelt
  public | s7n_forum                        | table | nidarholm ---
  public | s7n_threaded_comment             | table | nidarholm ---
  public | s7n_timeline_action              | table | nidarholm nei, tror ikke det
