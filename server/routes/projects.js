@@ -15,7 +15,7 @@ var fs = require('fs'),
     crypto = require('crypto');
 
 module.exports.index = function (req, res, next) {
-    Project.find().exec(function (err, projects) {
+    Project.find().sort('-end').exec(function (err, projects) {
         if (err) {
             return next(err);
         }
