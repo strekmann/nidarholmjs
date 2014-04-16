@@ -175,6 +175,19 @@ module.exports.events = function (req, res, next) {
     });
 };
 
+module.exports.event = function (req, res, next) {
+    Event.findById(req.params.id, function (err, event) {
+        if (err) {
+            return next(err);
+        }
+        res.format({
+            html: function () {
+                res.render('projects/event', {event: event});
+            }
+        });
+    });
+};
+
 module.exports.project_create_post = function (req, res, next) {
     var id = req.params.id,
         title = req.body.title,
