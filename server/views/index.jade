@@ -3,58 +3,62 @@ extends layouts/main
 block content
   section#index
     .row
-      .large-3.columns.large-push-9
-        ul#next-events.small-block-grid-4.large-block-grid-1
-          for event in events
-            li
-              a.event
-                = moment(event.start).format('Do MMMM')
-                br
-                = event.title
+      .columns.large-3.large-push-9
+        if events
+          ul#next-events.small-block-grid-4.large-block-grid-1
+            for event in events
+              li
+                a.event
+                  = moment(event.start).format('Do MMMM')
+                  br
+                  = event.title
 
-        #more-events
-          a(href="/aktiviteter") Flere aktiviteter
+          #more-events
+            a(href="/aktiviteter") Flere aktiviteter
 
-      #activities
 
       .large-9.columns.large-pull-3.entry
-        h1 Magiske Toner - en Disneykonsert
-        .text
-          p
-            img(src="http://nidarholm.no/files/get/5164/5" style="float:right")
-          p.
-            Musikkforeningen Nidarholm  inviterer til en magisk aften på Rosenborg skole under ledelse av Stian E. Svendsen.</p>
-          p.
-            Ensemblet vil denne kvelden spille musikk fra Disney, med blant annet Natt på Bloksberg fra Fantasia, filmmusikken til Pirates of the Car~
-          p.
-            Til denne konserten er vi gjestet av Åsvang og Eberg Skolekorps som spiller filmmusikk fra Star Wars, Limelight, Indiana Jones og Blues B~
-          p.
-            Dette blir en konsert med gamle Disney-klassikere, nyere filmmusikk og kostymer – en konsert som passer for hele familien!</p>
-          p.
-            Billetter kan kjøpes på forhånd <a href="https://nidarholm.hoopla.no/sales/magiske_toner/">fra denne linken</a> eller fra korpsets medlem~
-          p.
-            Velkommen til konsert på Rosenborg skole, <strong>lørdag 9. november kl 17</strong>!</p>
+        if active_user
+          #activities
 
-        #chosen
-            h1 Testing chosen
+        else
+          h1 Magiske Toner - en Disneykonsert
+          .text
+            p
+              img(src="http://nidarholm.no/files/get/5164/5" style="float:right")
+            p.
+              Musikkforeningen Nidarholm  inviterer til en magisk aften på Rosenborg skole under ledelse av Stian E. Svendsen.</p>
+            p.
+              Ensemblet vil denne kvelden spille musikk fra Disney, med blant annet Natt på Bloksberg fra Fantasia, filmmusikken til Pirates of the Car~
+            p.
+              Til denne konserten er vi gjestet av Åsvang og Eberg Skolekorps som spiller filmmusikk fra Star Wars, Limelight, Indiana Jones og Blues B~
+            p.
+              Dette blir en konsert med gamle Disney-klassikere, nyere filmmusikk og kostymer – en konsert som passer for hele familien!</p>
+            p.
+              Billetter kan kjøpes på forhånd <a href="https://nidarholm.hoopla.no/sales/magiske_toner/">fra denne linken</a> eller fra korpsets medlem~
+            p.
+              Velkommen til konsert på Rosenborg skole, <strong>lørdag 9. november kl 17</strong>!</p>
 
-            form
-                select.chosen-permissions(name="permissions" data-placeholder="Velg rettigheter" multiple)
-                    optgroup(label="Alle")
-                        option(value="p") Verden
-                    optgroup(label="Grupper")
-                        option(value="g-11") Medlemmer
-                        option(value="g-12") Styret
-                        option(value="g-13") Info
-                        option(value="g-14") Valgkomite
-                        option(value="g-15") Treblås
-                        option(value="g-16") Fagott
-                    optgroup(label="Personer")
-                        option(value="u-21") Sigurd
-                        option(value="u-22") Jørgen
-                button Send
+          #chosen
+              h1 Testing chosen
 
-        #ractive
+              form
+                  select.chosen-permissions(name="permissions" data-placeholder="Velg rettigheter" multiple)
+                      optgroup(label="Alle")
+                          option(value="p") Verden
+                      optgroup(label="Grupper")
+                          option(value="g-11") Medlemmer
+                          option(value="g-12") Styret
+                          option(value="g-13") Info
+                          option(value="g-14") Valgkomite
+                          option(value="g-15") Treblås
+                          option(value="g-16") Fagott
+                      optgroup(label="Personer")
+                          option(value="u-21") Sigurd
+                          option(value="u-22") Jørgen
+                  button Send
+
+          #ractive
 
   script#tmpl-test(type="text/ractive")
     input(placeholder="ractive" value="{{text}}")
@@ -76,9 +80,9 @@ block content
               | {{title}} ({{content_type}})
             | {{/content_type}}
           .row
-            .small-5.medium-4.large-3.columns
+            .small-5.medium-4.columns
               | {{ago(modified)}}
-            .small-7.medium-8.large-9.columns.contributors
+            .small-7.medium-8.columns.contributors
               | {{#users}}
               | {{#profile_picture_path}}
               img(src="{{profile_picture_path}}" alt="{{name}}" title="{{name}}")
