@@ -19,7 +19,8 @@ block content
     {{#events}}
     article
       header
-        h1 {{title}}
+        h1
+          a(href="/events/{{_id}}") {{title}}
         .meta
           .row
             .columns.small-9
@@ -37,6 +38,7 @@ block content
         .row
           .columns
             {{{marked(mdtext)}}}
+      {{/events}}
 
 block javascript
   script

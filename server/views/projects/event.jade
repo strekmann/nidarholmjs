@@ -1,0 +1,14 @@
+extends ../layouts/main.jade
+
+block content
+  .row
+    .columns
+      #event
+        h1= event.title
+        p= moment(event.start).format('LLL')
+          if event.end
+            | &nbsp;–&nbsp;
+            = moment(event.end).format('LLL')
+        p= event.location
+        p= event.tags
+        p!= marked(event.mdtext)

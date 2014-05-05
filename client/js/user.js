@@ -23,10 +23,36 @@ module.exports.userView = function (user, active_user) {
             user: user,
             active_user: active_user,
             is_active_user: function () {
-                return this.data.user === this.data.active_user;
+                return this.get('user') === this.get('active_user');
             },
             is_active_image: function(image_id) {
                 return this.get('user.profile_picture') === image_id;
+            },
+            ago: function (datetime) {
+                return moment(datetime).from();
+            },
+            bday: function (datetime) {
+                return moment(datetime).format('Do MMMM');
+            },
+            length: function (string) {
+                return string.length;
+            },
+            phoneformat: function (number) {
+                var original = number;
+                number = number.replace(/^\+47/).trim();
+                if (number.length === 8) {
+                    // let's say it's a norwegian number
+                    if (number.match(/^(?:4|9)/)) {
+                        // mobile xxx xx xxx
+                        return number.substr(0, 3) + " " + number.substr(3, 2) + " " + number.substr(5, 3);
+                    }
+                    else {
+                        return number.substr(0, 2) + " " + number.substr(2, 2) + " " + number.substr(4 ,2) + " " + number.substr(6, 2);
+                    }
+                }
+                else {
+                    return original;
+                }
             },
             uploading_files: []
         }

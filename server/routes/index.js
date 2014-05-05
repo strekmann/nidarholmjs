@@ -1,6 +1,8 @@
 var crypto = require('crypto'),
+    moment = require('moment'),
     User = require('../models').User,
-    Activity = require('../models').Activity;
+    Activity = require('../models').Activity,
+    Event = require('../models/projects').Event;
 
 // core routes - base is /
 module.exports.index = function(req, res) {
@@ -19,13 +21,28 @@ module.exports.index = function(req, res) {
             if (err) {
                 throw err;
             }
-            res.format({
-                html: function () {
-                    res.render('index', {activities: activities});
-                },
-                json: function () {
-                    res.json(200, activities);
-                }
+
+            query = Event.find().or([
+                {creator: req.user},
+                {'permissions.public': true},
+                {'permissions.users': req.user._id},
+                {'permissions.groups': { $in: req.user.groups }}
+            ])
+            .where({start: {$gt: moment().startOf('day')}})
+            .sort('start')
+            .limit(4);
+            query.exec(function (err, events) {
+                res.format({
+                    html: function () {
+                        res.render('index', {
+                            activities: activities,
+                            events: events
+                        });
+                    },
+                    json: function () {
+                        res.json(200, activities);
+                    }
+                });
             });
         });
     }
