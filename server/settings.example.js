@@ -17,10 +17,8 @@ module.exports = {
         servers: ['mongodb://localhost/nidarholm'],
         replset: null
     },
-    i18n: {
-        locales: ['en'],
-        defaultLocale: 'en'
-    },
+    locales: ['en'],
+    defaultLocale: 'en',
     files: {
         url_prefix: '/files',
         raw_file_prefix: '/files/raw',

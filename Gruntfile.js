@@ -171,11 +171,11 @@ module.exports = function(grunt) {
         abideExtract: {
             js: {
                 src: 'server/**/*.js',
-                dest: 'locale/templates/LC_MESSAGES/messages.pot'
+                dest: 'server/locale/templates/LC_MESSAGES/messages.pot'
             },
             jade: {
                 src: 'server/views/**/*.jade',
-                dest: 'locale/templates/LC_MESSAGES/messages.pot',
+                dest: 'server/locale/templates/LC_MESSAGES/messages.pot',
                 options: {
                     language: 'jade',
                     keyword: '__'
@@ -185,16 +185,17 @@ module.exports = function(grunt) {
         abideMerge: {
             messages: {
                 options: {
-                    template: 'locale/templates/LC_MESSAGES/messages.pot',
-                    localeDir: 'locale'
+                    template: 'server/locale/templates/LC_MESSAGES/messages.pot',
+                    localeDir: 'server/locale'
                 }
             }
         },
         abideCompile: {
             json: {
-                dest: 'public/locale/',
+                dest: 'public/js/',
                 options: {
-                    type: 'json'
+                    type: 'json',
+                    localeDir: 'server/locale'
                 }
             }
         }
@@ -217,5 +218,5 @@ module.exports = function(grunt) {
     grunt.registerTask('default', ['jshint', 'sass', 'coffee', 'concat', 'copy', 'browserify', 'abideCompile']);
     grunt.registerTask('prod', ['default', 'uglify']);
     grunt.registerTask('hint', ['jshint']);
-    grunt.registerTask('translate', ['abideExtract', 'abideMerge']);
+    grunt.registerTask('locales', ['abideExtract', 'abideMerge']);
 };
