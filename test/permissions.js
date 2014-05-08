@@ -22,6 +22,7 @@ describe("Permissions", function () {
 
             //mock
             group = new Group({
+                _id: 'testgroup',
                 name: 'testgroup',
                 organization: 'nidarholm'
             });
@@ -41,6 +42,7 @@ describe("Permissions", function () {
                 instrument_groups: [group]
             });
             file = new File({
+                _id: 'file1',
                 filename: 'filename',
                 hash: 'e33',
                 creator: 'user1',

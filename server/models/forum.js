@@ -1,5 +1,5 @@
 var mongoose = require('mongoose'),
-    ObjectId = mongoose.Schema.Types.ObjectId,
+    shortid = require('short-mongo-id'),
     User = require('../models').User,
     UserSchema = require('../models').schema.user,
     GroupSchema = require('../models').schema.group;
@@ -23,6 +23,7 @@ var ForumReplySchema = new mongoose.Schema({
 });
 
 var ForumPostSchema = new mongoose.Schema({
+    _id: {type: String, required: true, unique: true},
     title: {type: String, trim: true, required: true},
     created: {type: Date, default: Date.now},
     creator: {type: String, ref: 'User'},
@@ -31,7 +32,7 @@ var ForumPostSchema = new mongoose.Schema({
     mdtext: {type: String, trim: true},
     removed_by: {type: String, ref: 'User'},
     permissions: {
-        groups: [{type: ObjectId, ref: 'Group'}],
+        groups: [{type: String, ref: 'Group'}],
         users: [{type: String, ref: 'User'}],
         public: {type: Boolean, default: false}
     },

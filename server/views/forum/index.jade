@@ -10,7 +10,7 @@ block content
           article.post
             header
               h1
-                a(href="/forum/{{oid}}")
+                a(href="/forum/"+post.id)
                   = post.title
               .meta
                 .row
@@ -68,13 +68,14 @@ block content
     article
       header
         h1
-          a(href="/forum/{{oid}}") {{title}}
+          a(href="/forum/{{_id}}") {{title}}
         .meta
           .row
             .columns.small-9
               span.byline
                 a(href="/users/{{creator._id}}") {{creator.name}}
               time.created(datetime="{{isodate(created)}}") {{shortdate(created)}}
+              | &nbsp;
               | {{#tags}}
               a(href="{{taglink(.)}}") {{.}}
               | {{/tags}}

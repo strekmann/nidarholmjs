@@ -47,7 +47,7 @@ block content
                 for group in user.groups
                   if group
                     li.group(data-id=group.id)
-                      a(href="/groups/" + hoid(group._id))= group.name
+                      a(href="/groups/" + group._id)= group.name
                       a.removegroup(href="#")
                         i.fa.fa-times
                   else
@@ -176,7 +176,7 @@ block content
         ul
           | {{#groups}}
           li.group
-            a(href="/groups/{{hoid(_id)}}") {{name}}
+            a(href="/groups/{{_id}}") {{name}}
             a.removegroup(on-click="removeGroup" href="/users/{{../../username}}/groups/{{_id}}")
               i.fa.fa-times
           | {{/groups}}

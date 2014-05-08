@@ -3,6 +3,7 @@ var Q = require("q"),
     async = require('async'),
     slug = require('slug'),
     mongoose = require('mongoose'),
+    shortid = require('short-mongo-id'),
     countries = require('country-list/country/cldr/nb/country'),
     util = require('../lib/util'),
     upload_file = util.upload_file,
@@ -145,9 +146,16 @@ module.exports.add_group = function (req, res) {
 
     Organization.findById(organization, function (err, org) {
         if (err) { throw err; }
-        Group.findOneAndUpdate({name: name, organization: org}, {}, {upsert: true}, function (err, group) {
+        Group.findOne({name: name, organization: org}, function (err, group) {
             if (err) { throw err; }
-            res.json(200, group);
+            if (!group) {
+                Group.create({_id: shortid(), name: name, organization: org}, function (err, group) {
+                    res.json(200, group);
+                });
+            }
+            else {
+                res.json(200, group);
+            }
         });
     });
 };
@@ -332,11 +340,6 @@ module.exports.groups = function (req, res, next) {
         if (err) { throw err; }
         Group.find(function (err, groups) {
             if (err) { next(err); }
-            groups = _.map(groups, function (group) {
-                var g = group.toJSON();
-                g.oid = util.h2b64(group.id);
-                return g;
-            });
             res.render('organization/groups', {
                 groups: groups,
                 igroups: organization.instrument_groups
@@ -346,7 +349,7 @@ module.exports.groups = function (req, res, next) {
 };
 
 module.exports.group = function (req, res, next){
-    var groupid = util.b642h(req.params.id);
+    var groupid = req.params.id;
 
     User.find().select('username name').lean().exec(function (err, users) {
         if (err) { next(err); }

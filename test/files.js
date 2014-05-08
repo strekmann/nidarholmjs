@@ -27,6 +27,7 @@ describe("Files", function () {
             });
 
             file1 = new File({
+                _id: "file1",
                 creator: user1,
                 filename: 'Already uploaded',
                 hash: 'c22'
@@ -72,6 +73,7 @@ describe("Files", function () {
         });
         it("should add another file programmatically", function (done) {
             var f = new File();
+            f._id = "another";
             f.filename = "testfile.bmp";
             f.hash = "b17";
             f.creator = user1;

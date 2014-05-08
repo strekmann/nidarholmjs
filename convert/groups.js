@@ -2,6 +2,7 @@ var pg = require('pg'),
     mongoose = require('mongoose'),
     _ = require('underscore'),
     async = require('async'),
+    toBase = require('short-mongo-id/lib/utils').toBase,
     config = require('../server/settings'),
     User = require('../server/models').User,
     Group = require('../server/models').Group;
@@ -29,10 +30,13 @@ client.connect(function(err) {
                 members: members
             };
 
-            Group.findOneAndUpdate({old_id: group.id}, g, {upsert: true}, function (err, updated) {
+            Group.findOneAndUpdate({_id: toBase(group.id, 64), old_id: group.id}, g, {upsert: true}, function (err, updated) {
+                if (err) {
+                    callback(err);
+                }
                 async.each(user_result.rows, function (row, cb) {
                     User.findByIdAndUpdate('nidarholm.' + row.user_id, {$addToSet: {groups: updated.id}}, function (err, user) {
-                        console.log(user);
+                        //console.log(user);
                         cb (err);
                     });
                 }, function (err) {

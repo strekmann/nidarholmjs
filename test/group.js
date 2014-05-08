@@ -18,6 +18,7 @@ describe("Group", function () {
         app.db.connection.db.dropDatabase(function () {
 
             group = new Group({
+                _id: 'testgroup',
                 name: 'testgroup',
                 organization: 'nidarholm'
             });
@@ -72,7 +73,7 @@ describe("Group", function () {
         it("should add new group to organization", function (done) {
             agent
             .post('/groups')
-            .send({name: 'New group'})
+            .send({name: 'New group', _id: 'newgroup'})
             .expect(200)
             .end(function (err, res) {
                 if (err) { return done(err); }

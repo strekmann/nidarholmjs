@@ -1,14 +1,10 @@
 var _ = require('underscore'),
-    util = require('../lib/util'),
+    shortid = require('short-mongo-id'),
+    parse_web_permissions = require('../lib/util').parse_web_permissions,
     ForumPost = require('../models/forum').ForumPost,
     ForumReply = require('../models/forum').ForumReply,
     ForumComment = require('../models/forum').ForumComment,
     Activity = require('../models').Activity;
-
-var matchObjectId = /^[0-9a-fA-F]{24}$/;
-var isObjectId = function(string){
-    return matchObjectId.test(string);
-};
 
 module.exports.index = function (req, res, next) {
     // sende med prosjekt i url, eller søke opp prosjekter for alle tags?
@@ -36,13 +32,6 @@ module.exports.index = function (req, res, next) {
             return next(err);
         }
 
-        // TODO: have nicer ids on posts?
-        posts = _.map(posts, function(post){
-            var p = post.toJSON();
-            p.oid = util.h2b64(post.id);
-            return p;
-        });
-
         res.format({
             json: function () {
                 res.json(200, posts);
@@ -58,10 +47,11 @@ module.exports.index = function (req, res, next) {
 
 module.exports.create_post = function (req, res, next) {
     var post = new ForumPost();
+    post._id = shortid();
     post.title = req.body.title;
     post.creator = req.user;
     post.mdtext = req.body.mdtext;
-    post.permissions = util.parse_web_permissions(req.body.permissions);
+    post.permissions = parse_web_permissions(req.body.permissions);
     post.save(function (err) {
         if (err) {
             return next(err);
@@ -93,12 +83,6 @@ module.exports.delete_post = function (req, res, next) {
 };
 
 module.exports.get_post = function (req, res, next) {
-    req.params.id = util.b642h(req.params.id);
-
-    // if given id is not a valid ObjectID, return 404.
-    if (!isObjectId(req.params.id)){
-        return next();
-    }
 
     ForumPost.findById(req.params.id).populate('creator').populate('replies.creator', 'username name profile_picture_path').populate('replies.comments.creator', 'username name profile_picture_path').exec(function (err, post) {
         if (err) {

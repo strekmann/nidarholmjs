@@ -30,6 +30,7 @@ describe("Forum", function () {
             });
 
             post1 = new ForumPost({
+                _id: 'post1',
                 creator: user1,
                 title: 'Testpost',
                 mdtext: 'Some text'

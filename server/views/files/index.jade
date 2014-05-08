@@ -45,7 +45,8 @@ block content
             +permission_options(active_user.groups, active_user.friends)
           label(for="tags") Det er valgfritt om du vil kategorisere med merkelapper
           input#tags(type="text" name="tags" placeholder="kommaseparert, liste, med, merkelapper")
-          | Dra filer hit, eller klikk for å velge. Opplasting starter umiddelbart.
+          #drop
+            | Dra filer hit, eller klikk for å velge. Opplasting starter umiddelbart.
 
         | {{#uploading_files}}
         .file(intro="fade")

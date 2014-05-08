@@ -1,5 +1,4 @@
 var mongoose = require('mongoose'),
-    ObjectId = mongoose.Schema.Types.ObjectId,
     schema = require('../models').schema;
 
 var EventSchema = new mongoose.Schema({
@@ -12,7 +11,7 @@ var EventSchema = new mongoose.Schema({
     original_event_category: {type: Number},
     location: {type: String},
     permissions: {
-        groups: [{type: ObjectId, ref: 'Group'}],
+        groups: [{type: String, ref: 'Group'}],
         users: [{type: String, ref: 'User'}],
         public: {type: Boolean, default: false}
     },
@@ -48,7 +47,7 @@ var ProjectSchema = new mongoose.Schema({
     creator: {type: String, ref: 'User', required: true},
     created: {type: Date, default: Date.now},
     permissions: {
-        groups: [{type: ObjectId, ref: 'Group'}],
+        groups: [{type: String, ref: 'Group'}],
         users: [{type: String, ref: 'User'}],
         public: {type: Boolean, default: false}
     },

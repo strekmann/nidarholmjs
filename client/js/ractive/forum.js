@@ -2,7 +2,7 @@ var Forum = Ractive.extend({
     // Will be called as soon as the instance has finished rendering.
     init: function(options){
         this.restAPI = options.restAPI || '/api/forum';
-        this.data.tags = _.filter(window.location.pathname.replace(this.restAPI, '').split('/'), function (element) {
+        this.data.tags = _.filter(window.location.pathname.replace(this.restAPI, '').replace(/^\/t/, '').split('/'), function (element) {
             if (element) { return element; }
         });
     },
@@ -104,8 +104,17 @@ var Forum = Ractive.extend({
     fetchPosts: function(){
         this.add('page', 1);
 
+        var tags;
+        if (this.data.tags.length) {
+            tags = "t";
+        }
+        else {
+            tags = "";
+        }
+
         var self = this,
-            url = _.union([this.restAPI], this.data.tags);
+            url = _.union([this.restAPI], tags, this.data.tags);
+            console.log(url);
             promise = $.ajax({
                 url: url.join('/'),
                 type: 'GET',
@@ -137,7 +146,7 @@ var Forum = Ractive.extend({
             return moment(date).format();
         },
         taglink: function(tag) {
-            var tagpath = this.restAPI + '/' + this.data.tags.join('/');
+            var tagpath = this.restAPI + '/t/' + this.data.tags.join('/');
             if (!_.contains(this.data.tags, tag)) {
                 tagpath += tag;
             }

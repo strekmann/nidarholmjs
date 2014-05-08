@@ -4,6 +4,7 @@ var _           = require('underscore'),
     multer      = require('multer'),
     marked      = require('marked'),
     moment      = require('moment'),
+    mongoose    = require('mongoose'),
     settings    = require('./settings'),
     util        = require('./lib/util'),
     app         = require('libby')(express, settings);
@@ -14,6 +15,29 @@ var User = require('./models/index').User,
 
 app.passport = require('./lib/passport')(app);
 app.ensureAuthenticated = require('./lib/middleware').ensureAuthenticated;
+
+var get_member_group = function () {
+    var promise = new mongoose.Promise();
+
+    Group.findOne({name: 'Medlemmer'}, function (err, group) {
+        if (err) { next(err); }
+
+        if (!group) {
+            // testing
+            group = new Group();
+            group._id = 'medlemmer';
+            group.name = 'Medlemmer';
+            group.save(function (err) {
+                promise.fulfill(group);
+            });
+        }
+        else {
+            promise.fulfill(group);
+        }
+    });
+
+    return promise;
+};
 
 app.configure(function(){
 
@@ -27,7 +51,6 @@ app.configure(function(){
 
     // utils
     app.use(function (req, res, next) {
-        res.locals.hoid = util.h2b64;
         res.locals.marked = marked;
         res.locals.moment = moment;
         res.locals.isodate = util.isodate;
@@ -78,11 +101,7 @@ app.configure(function(){
                 res.locals.organization = organization;
                 next();
             } else {
-                var group = new Group();
-                group.name = 'Medlemmer';
-                group.save(function (err) {
-                    if (err) { next(err); }
-
+                get_member_group().then(function (group) {
                     organization = new Organization();
                     organization._id = 'nidarholm';
                     organization.instrument_groups = [];
@@ -177,6 +196,7 @@ app.post('/register', core_routes.register);
 
 var forum_routes = require('./routes/forum');
 app.get('/forum', forum_routes.index);
+app.get(/^\/forum\/t\/(.+)/, forum_routes.index);  // tags
 app.get('/forum/:id', forum_routes.get_post);
 app.get('/forum/:id/replies', forum_routes.get_replies);
 app.post('/forum', forum_routes.create_post);
@@ -185,7 +205,6 @@ app.post('/forum/:postid/replies', forum_routes.create_reply);
 app.delete('/forum/:postid/replies/:replyid', forum_routes.delete_reply);
 app.post('/forum/:postid/replies/:replyid/comments', forum_routes.create_comment);
 app.delete('/forum/:postid/replies/:replyid/comments/:commentid', forum_routes.delete_comment);
-app.get(/^\/forum\/(.+)/, forum_routes.index);  // tags
 
 var organization_routes = require('./routes/organization');
 app.get('/members', organization_routes.memberlist);

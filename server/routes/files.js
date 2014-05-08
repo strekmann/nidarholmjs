@@ -38,11 +38,13 @@ module.exports.upload = function (req, res) {
     var filename = req.files.file.originalname,
         tmp_path = req.files.file.path,
         user = req.user,
-        prefix = config.files.path_prefix,
-        permissions = util.parse_web_permissions(req.body.permissions),
-        tags = req.body.tags;
+        options = {
+            prefix: config.files.path_prefix,
+            permissions: util.parse_web_permissions(req.body.permissions),
+            tags: req.body.tags
+        };
 
-    util.upload_file(tmp_path, filename, prefix, user, permissions, tags, function (err, file) {
+    util.upload_file(tmp_path, filename, user, options, function (err, file) {
         if (err) { throw err; }
 
         var activity = new Activity();

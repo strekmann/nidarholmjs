@@ -20,6 +20,7 @@ describe("Select permission", function () {
 
             //mock
             group = new Group({
+                _id: 'testgroup',
                 name: 'testgroup',
                 organization: 'nidarholm'
             });

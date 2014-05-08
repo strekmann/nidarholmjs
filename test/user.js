@@ -21,6 +21,7 @@ describe("User", function () {
 
             //mock
             group = new Group({
+                _id: 'testgroup',
                 name: 'testgroup',
                 organization: 'nidarholm'
             });
@@ -77,7 +78,7 @@ describe("User", function () {
     describe("Add existing user to group", function () {
         it("should have empty group", function (done) {
             agent
-                .get('/groups/' + util.h2b64(group.id))
+                .get('/groups/' + group.id)
                 .set('Accept', 'text/html')
                 .expect(200)
                 .end(function (err, res) {
@@ -136,7 +137,7 @@ describe("User", function () {
         });
         it("should see added user in group member page", function (done) {
             agent
-                .get('/groups/' + util.h2b64(group.id))
+                .get('/groups/' + group.id)
                 .set('Accept', 'text/html')
                 .expect(200)
                 .end(function (err, res) {

@@ -1,8 +1,8 @@
 var mongoose = require('mongoose'),
-    ObjectId = mongoose.Schema.Types.ObjectId,
     config = require('../settings');
 
 var GroupSchema = new mongoose.Schema({
+    _id: {type: String, unique: true, required: true},
     name: {type: String, trim: true, required: true},
     organization: {type: String, ref: 'Organization'},
     members: [{user: {type: String, ref: 'User'}, role: {type: String, trim: true}}],
@@ -19,7 +19,7 @@ var UserSchema = new mongoose.Schema({
     password: {type: String},
     algorithm: {type: String},
     salt: {type: String},
-    groups: [{type: ObjectId, ref: 'Group'}],
+    groups: [{type: String, ref: 'Group'}],
     friends: [{type: String, ref: 'User'}],
     is_active: {type: Boolean, 'default': true},
     is_admin: {type: Boolean, 'default': false},
@@ -52,9 +52,9 @@ var UserSchema = new mongoose.Schema({
 
 var OrganizationSchema = new mongoose.Schema({
     _id: {type: String, lowercase: true, trim: true, required: true, unique: true},
-    instrument_groups: [{type: ObjectId, ref: 'Group'}],
-    administration_groups: [{type: ObjectId, ref: 'Group'}],
-    member_group: {type: ObjectId, ref: 'Group'},
+    instrument_groups: [{type: String, ref: 'Group'}],
+    administration_groups: [{type: String, ref: 'Group'}],
+    member_group: {type: String, ref: 'Group'},
 });
 
 var ActivitySchema = new mongoose.Schema({
@@ -65,7 +65,7 @@ var ActivitySchema = new mongoose.Schema({
     users: [{type: String, ref: 'User'}],
     changes: [{type: Date}],
     permissions: {
-        groups: [{type: ObjectId, ref: 'Group'}],
+        groups: [{type: String, ref: 'Group'}],
         users: [{type: String, ref: 'User'}],
         public: {type: Boolean, default: false}
     },

@@ -16,7 +16,7 @@ block content
             article
               header
                 h1
-                  a(href="/forum/" + hoid(post._id))= post.title
+                  a(href="/forum/" + post._id)= post.title
                 .meta
                   .row
                     .columns.small-9
@@ -155,7 +155,7 @@ block content
     article
       header
         h1
-          a(href="/forum/{{oid}}") {{title}}
+          a(href="/forum/{{id}}") {{title}}
         .meta
           .row
             .columns.small-9

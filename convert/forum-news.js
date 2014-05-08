@@ -4,6 +4,7 @@ var pg = require('pg'),
     async = require('async'),
     winston = require('winston'),
     config = require('../server/settings'),
+    shortid = require('short-mongo-id'),
     User = require('../server/models').User,
     Group = require('../server/models').Group,
     ForumPost = require('../server/models/forum').ForumPost;
@@ -41,24 +42,41 @@ client.connect(function(err) {
                 };
                 if (!post.group_id) {
                     _.extend(new_post, {permissions: {public: true, groups: [], users: []}});
-                    ForumPost.findOneAndUpdate({original_id: post.id+10000}, new_post, {upsert: true}, function (err, newpost) {
+                    ForumPost.findOneAndUpdate({original_id: post.id+10000}, new_post, function (err, newpost) {
                         log.debug("toppinnlegg: ", post.id);
 
-                        if (err) {
-                            console.error(err, post);
+                        if (!newpost) {
+                            _.extend(new_post, {_id: shortid(), original_id: post.id+10000});
+                            ForumPost.create(new_post, function (err, newpost) {
+                                callback(err);
+                            });
                         }
-                        callback(err);
+                        else {
+                            if (err) {
+                                console.error(err, post, newpost);
+                            }
+
+                            callback(err);
+                        }
                     });
                 } else {
                     Group.findOne({old_id: post.group_id}, function (err, group) {
                         _.extend(new_post, {permissions: {public: false, groups: [group.id], users: []}});
-                        ForumPost.findOneAndUpdate({original_id: post.id+10000}, new_post, {upsert: true}, function (err, newpost) {
+                        ForumPost.findOneAndUpdate({original_id: post.id+10000}, new_post, function (err, newpost) {
                             log.debug("toppinnlegg: ", post.id);
-
-                            if (err) {
-                                console.error(err, post);
+                            if (!newpost) {
+                                _.extend(new_post, {_id: shortid(), original_id: post.id+10000});
+                                ForumPost.create(new_post, function (err, newpost) {
+                                    callback(err);
+                                });
                             }
-                            callback(err);
+                            else {
+                                if (err) {
+                                    console.error(err, post, newpost);
+                                }
+
+                                callback(err);
+                            }
                         });
                     });
                 }

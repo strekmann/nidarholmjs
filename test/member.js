@@ -19,6 +19,7 @@ describe("Member", function () {
         app.db.connection.db.dropDatabase(function () {
 
             group = new Group({
+                _id: 'testgroup',
                 name: 'testgroup',
                 organization: 'nidarholm'
             });

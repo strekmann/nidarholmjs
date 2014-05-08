@@ -1,18 +1,19 @@
 var mongoose = require('mongoose'),
-    ObjectId = mongoose.Schema.Types.ObjectId,
     schema = require('../models').schema,
     _ = require('underscore'),
     path = require('path'),
+    shortid = require('short-mongo-id'),
     config = require('../settings');
 
 var FileSchema = new mongoose.Schema({
+    _id: {type: String, required: true, unique: true},
     filename: {type: String, trim: true, required: true},
     hash: {type: String, required: true},
     created: {type: Date, default: Date.now},
     creator: {type: String, ref: 'User'},
     mimetype: {type: String},
     permissions: {
-        groups: [{type: ObjectId, ref: 'Group'}],
+        groups: [{type: String, ref: 'Group'}],
         users: [{type: String, ref: 'User'}],
         public: {type: Boolean, default: false}
     },

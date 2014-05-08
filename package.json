@@ -40,7 +40,8 @@
     "superagent": "0.17.x",
     "country-list": "sigurdga/country-list",
     "mmmagic": "^0.3.6",
-    "winston": "^0.7.3"
+    "winston": "^0.7.3",
+    "short-mongo-id": "sigurdga/short-mongo-id"
   },
   "devDependencies": {
     "uglify-js": "",
