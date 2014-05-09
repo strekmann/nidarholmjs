@@ -16,6 +16,14 @@ block content
           #more-events
             a(href="/aktiviteter") Flere aktiviteter
 
+        if projects
+          ul#next-projects
+            for project in projects
+              li
+                a.project(href="/projects/"+project._id)
+                  h3= project.title
+                  p= shortdate(project.end)
+
 
       .large-9.columns.large-pull-3.entry
         if active_user

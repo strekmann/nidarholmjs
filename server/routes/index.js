@@ -2,12 +2,15 @@ var crypto = require('crypto'),
     moment = require('moment'),
     User = require('../models').User,
     Activity = require('../models').Activity,
+    Project = require('../models/projects').Project,
     Event = require('../models/projects').Event;
 
 // core routes - base is /
 module.exports.index = function(req, res) {
-    if (req.user) {
-        var query = Activity.find().or([
+    var query;
+    if (req.user) {  // we know the user
+        console.log(req.user._id);
+        query = Activity.find().or([
             {'permissions.public': true},
             {'permissions.users': req.user._id},
             {'permissions.groups': { $in: req.user.groups }}
@@ -32,22 +35,62 @@ module.exports.index = function(req, res) {
             .sort('start')
             .limit(4);
             query.exec(function (err, events) {
-                res.format({
-                    html: function () {
-                        res.render('index', {
-                            activities: activities,
-                            events: events
-                        });
-                    },
-                    json: function () {
-                        res.json(200, activities);
-                    }
+                query = Project.find().or([
+                    {'permissions.public': true},
+                    {'permissions.users': req.user._id},
+                    {'permissions.groups': { $in: req.user.groups }}
+                ])
+                .or([
+                    {start: null},
+                    {start: {$gt: moment().startOf('day')}}
+                ])
+                .where({end: {$gt: moment().startOf('day')}})
+                .sort('end')
+                .limit(2);
+                query.exec(function (err, projects) {
+                    res.format({
+                        html: function () {
+                            res.render('index', {
+                                activities: activities,
+                                projects: projects,
+                                events: events
+                            });
+                        },
+                        json: function () {
+                            // only activities, as this is called when users
+                            // fetches more activites from the log
+                            res.json(200, activities);
+                        }
+                    });
                 });
             });
         });
     }
     else {
-        res.render('index');
+        query = Event.find({'permissions.public': true})
+        .where({start: {$gt: moment().startOf('day')}})
+        .sort('start')
+        .limit(4);
+        query.exec(function (err, events) {
+            query = Project.find({'permissions.public': true})
+            .or([
+                {start: null},
+                {start: {$gt: moment().startOf('day')}}
+            ])
+            .where({end: {$gt: moment().startOf('day')}})
+            .sort('end')
+            .limit(2);
+            query.exec(function (err, projects) {
+                res.format({
+                    html: function () {
+                        res.render('index', {
+                            projects: projects,
+                            events: events
+                        });
+                    }
+                });
+            });
+        });
     }
 };
 
