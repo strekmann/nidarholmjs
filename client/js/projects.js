@@ -1,18 +1,30 @@
-var Project = require('./ractive/project');
+var ProjectList = require('./ractive/project');
 
-module.exports.projectListView = function () {
+module.exports.projectListView = function (projects) {
+    var internal_editor;
 
-    var ractive = new Ractive({
-        el: '#slug',
-        template: '#slugtemplate',
+    var projectlist = new ProjectList({
+        el: '#projects',
+        template: '#template',
         data: {
             slug: ''
         }
     });
+    projectlist.set('projects', projects);
 
-    ractive.on('setSlug', function (event) {
+    projectlist.on('setSlug', function (event) {
         var node = $(event.node);
-        ractive.set('slug', uslug(node.val()));
+        projectlist.set('slug', uslug(node.val()));
+    });
+
+    projectlist.on('toggleNew', function (event) {
+        this.toggle('expanded');
+        setTimeout(function(){
+            if (projectlist.get('expanded')) {
+                internal_editor = new Editor($('#private_mdtext'));
+                internal_editor.render();
+            }
+        }, 1);
     });
 
     $('#projects').on('click', '.deleteproject', function (event) {

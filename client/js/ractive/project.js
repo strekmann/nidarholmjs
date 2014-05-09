@@ -2,12 +2,15 @@ var Project = Ractive.extend({
 
     // Will be called as soon as the instance has finished rendering.
     init: function(options){
-        this.restAPI = options.restAPI || '/api/forum';
+        this.restAPI = options.restAPI || '/api/projects';
         this.set('project', options.project);
     },
 
     data: {
         project: {},
+        projects: [],
+        gotall: false,
+        page: 0,
 
         marked: function(text){
             return marked(text);
