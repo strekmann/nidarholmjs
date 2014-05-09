@@ -42,7 +42,7 @@ module.exports.index = function(req, res) {
                 ])
                 .or([
                     {start: null},
-                    {start: {$gt: moment().startOf('day')}}
+                    {start: {$lt: moment().startOf('day')}}
                 ])
                 .where({end: {$gt: moment().startOf('day')}})
                 .sort('end')
@@ -75,7 +75,7 @@ module.exports.index = function(req, res) {
             query = Project.find({'permissions.public': true})
             .or([
                 {start: null},
-                {start: {$gt: moment().startOf('day')}}
+                {start: {$lt: moment().startOf('day')}}
             ])
             .where({end: {$gt: moment().startOf('day')}})
             .sort('end')

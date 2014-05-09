@@ -249,7 +249,9 @@ nav.top-bar {
     }
 }
 
-#next-events {
+#next-events,
+#next-projects {
+    a.project,
     a.event {
         display: inline-block;
         width: 100%;

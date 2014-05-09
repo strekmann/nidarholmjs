@@ -17,12 +17,14 @@ block content
             a(href="/aktiviteter") Flere aktiviteter
 
         if projects
-          ul#next-projects
+          ul#next-projects.small-block-grid-2.large-block-grid-1
             for project in projects
               li
                 a.project(href="/projects/"+project._id)
-                  h3= project.title
-                  p= shortdate(project.end)
+                  p
+                    = project.title
+                    br
+                    = shortdate(project.end)
 
 
       .large-9.columns.large-pull-3.entry
