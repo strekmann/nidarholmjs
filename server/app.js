@@ -65,7 +65,7 @@ app.configure(function(){
     // has to go after passport.session()
     app.use(function (req, res, next) {
         if (req.user) {
-            Group.populate(req.user, 'groups', function (err, user) {
+            req.user.populate('groups', function (err, user) {
                 req.user = res.locals.active_user = user;
                 // TODO: User redis for caching
                 //User.find().select('username name').exec(function (err, all_users) {
