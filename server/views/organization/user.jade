@@ -3,28 +3,41 @@ extends ../layouts/main
 block content
   #user
     .row
-      .medium-2.columns
+      .medium-3.columns.hide-for-small-only
           a(href="#" on-click="changeProfilePicture")
-            img#picture(src=user.profile_picture_path)
+            if user.profile_picture_path
+              img#picture(src=user.profile_picture_path)
+            else
+              img#picture(src="/img/user.svg")
+
+      .medium-9.columns
+        if active_user.username == user.username
+          .right
+            a(href="/users/"+user.username+"/edit")
+              i.fa.fa-edit(title="Rediger personalia")
+
+        h1= user.name 
+          small= user.instrument
+
+        p= user.email
+          br
+          = user.phone
+
+        p
+          = user.address
+          br
+          = user.postcode
+          &nbsp;
+          = user.city
+          br
+          = user.country
+
+        p= user.nmf_id
 
         if user.is_active
           | Aktiv bruker
         if user.is_admin
           | Admin
-
-      .medium-6.columns
-        h1= user.name
-
-        p#username(data-username=user.username)= user.username
-
-        p= user.instrument
-        p= user.email
-        p= user.phone
-        p= user.address
-        p= user.postcode
-        p= user.city
-        p= user.country
-        p= user.nmf_id
 
         if active_user.is_admin
           // TODO: Set better permission checks
@@ -32,6 +45,8 @@ block content
           p= user.joined
           p= user.reskontro
           = user.membership_history
+
+        p#username(data-username=user.username)= user.username
 
       .medium-3.columns
         if user.id==active_user.id
@@ -99,7 +114,7 @@ block content
 
     | {{#user}}
     .row
-      .medium-3.columns
+      .medium-3.columns.hide-for-small-only
         a(href="/users/{{username}}/picture" on-click="changeProfilePicture")
           | {{#profile_picture}}
           img#picture(src="{{profile_picture_path}}")
@@ -108,14 +123,7 @@ block content
           img#picture(src="/img/user.svg")
           | {{/profile_picture}}
 
-        | {{#is_active}}
-        | Aktiv
-        | {{/is_active}}
-        | {{#is_admin}}
-        | Admin
-        | {{/is_admin}}
-
-      .medium-6.columns
+      .medium-9.columns
         .right
           | {{#is_active_user}}
           a(href="/users/{{username}}/edit")
@@ -123,6 +131,15 @@ block content
           | {{/is_active_user}}
 
         <h1>{{name}} <small>{{instrument}}</small></h1>
+
+        .show-for-small-only
+          a(href="/users/{{username}}/picture" on-click="changeProfilePicture")
+            | {{#profile_picture}}
+            img#picture(src="{{profile_picture_path}}")
+            | {{/profile_picture}}
+            | {{^profile_picture}}
+            img#picture(src="/img/user.svg")
+            | {{/profile_picture}}
 
         .email
           i.fa.fa-envelope
@@ -145,29 +162,39 @@ block content
           | {{country}}
         | {{/country}}
 
-        hr
-
-        | {{#joined}}
-        p
-          | Startet {{ago(joined)}} og har NMF-nummer {{nmf_id}}
-        | {{/joined}}
-
-        | {{#born}}
-        p
-          | Bursdag {{bday(born)}}
-        | {{/born}}
-
-        hr
-
-        p Brukernavn <code>{{username}}</code>, passordalgoritme: <code>{{algorithm}}</code>, krypteringsstyrke: <code>{{length(salt)}}</code>
-
         | {{#active_user.is_admin}}
         // todo: set better permission checks
         p {{reskontro}}
         | {{membership_history}}
         | {{/active_user.is_admin}}
 
-      .medium-3.columns
+        p Brukernavn <code>{{username}}</code>, passordalgoritme: <code>{{algorithm}}</code>, krypteringsstyrke: <code>{{length(salt)}}</code>
+        | {{#is_active}}
+        | Aktiv
+        | {{/is_active}}
+        | {{#is_admin}}
+        | Admin
+        | {{/is_admin}}
+
+
+
+    .row
+      .hide-for-small-only
+        .medium-3.columns
+          hr
+
+          | {{#born}}
+          p
+            | Bursdag {{bday(born)}}
+          | {{/born}}
+
+          | {{#joined}}
+          p
+            | Startet {{ago(joined)}} og har NMF-nummer {{nmf_id}}
+          | {{/joined}}
+
+      .medium-9.columns
+        hr
 
         h2 Grupper
           if !user.groups || user.groups.length === 0
