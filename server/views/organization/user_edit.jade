@@ -15,7 +15,7 @@ block content
         label(for="instrument") Instrument
         input#instrument(name="instrument" type="text" value=user.instrument)
         label(for="born") Født
-        input#born(name="born" type="text" value=user.born)
+        input#born(name="born" type="text" value=simpledate(user.born))
         label(for="phone") Telefon
         input#phone(name="phone" type="text" value=user.phone)
         label(for="address") Adresse

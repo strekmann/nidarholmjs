@@ -51,9 +51,11 @@ app.configure(function(){
 
     // utils
     app.use(function (req, res, next) {
+        moment.lang(req.lang); // has to be before the next functions
         res.locals.marked = marked;
         res.locals.moment = moment;
         res.locals.isodate = util.isodate;
+        res.locals.simpledate = util.simpledate;
         res.locals.shortdate = util.shortdate;
         res.locals.longdate = util.longdate;
         res.locals.ago = util.ago;

@@ -23,6 +23,11 @@ module.exports.isodate = function(date) {
         return moment(date).format();
     }
 };
+module.exports.simpledate = function(date) {
+    if (date) {
+        return moment(date).format("YYYY-MM-DD");
+    }
+};
 
 module.exports.shortdate = function (date) {
     if (date) {
