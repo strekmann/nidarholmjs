@@ -2,17 +2,18 @@ extends ../layouts/main
 
 block content
   section
-    div.row
-      div.columns
-        ul.right.side-nav
-          li
-            a(href="/users") Alle registrerte
-          li
-            a(href="/groups") Alle grupper
-          li
-            a(href="/members/new") Legg til medlem
-          li
-            a(href="/groups") Legg til gruppe
+    if active_user
+      div.row
+        div.columns
+          ul.right.side-nav
+            li
+              a(href="/users") Alle registrerte
+            li
+              a(href="/groups") Alle grupper
+            li
+              a(href="/members/new") Legg til medlem
+            li
+              a(href="/groups") Legg til gruppe
 
     div.row
       div.small-12.columns#memberlist
@@ -35,11 +36,12 @@ block content
                       = member.role
                     else
                       | &nbsp;
-                  .medium-2.columns
-                    = member.user.phone
-                  .medium-4.columns
-                    a(href="mailto:" + member.user.email)
-                      = member.user.email
+                  if active_user
+                    .medium-2.columns
+                      = member.user.phone
+                    .medium-4.columns
+                      a(href="mailto:" + member.user.email)
+                        = member.user.email
 
 block javascript
   script.

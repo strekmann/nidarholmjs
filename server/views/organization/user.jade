@@ -11,7 +11,7 @@ block content
               img#picture(src="/img/user.svg")
 
       .medium-9.columns
-        if active_user.username == user.username
+        if active_user && active_user.username == user.username
           .right
             a(href="/users/"+user.username+"/edit")
               i.fa.fa-edit(title="Rediger personalia")
@@ -39,7 +39,7 @@ block content
         if user.is_admin
           | Admin
 
-        if active_user.is_admin
+        if active_user && active_user.is_admin
           // TODO: Set better permission checks
           p= user.born
           p= user.joined
@@ -49,7 +49,7 @@ block content
         p#username(data-username=user.username)= user.username
 
       .medium-3.columns
-        if user.id==active_user.id
+        if active_user && user.id==active_user.id
           a.button.tiny(href="/users/" + user.username + "/edit") Rediger brukerdata
           a.button.tiny(href="/logout") Logg ut
 
@@ -59,14 +59,14 @@ block content
         #groups
           ul
             if user.groups
-                for group in user.groups
-                  if group
-                    li.group(data-id=group.id)
-                      a(href="/groups/" + group._id)= group.name
-                      a.removegroup(href="#")
-                        i.fa.fa-times
-                  else
-                    = group
+              for group in user.groups
+                if group
+                  li.group(data-id=group.id)
+                    a(href="/groups/" + group._id)= group.name
+                    a.removegroup(href="#")
+                      i.fa.fa-times
+                else
+                  = group
 
 
           #addgroup
@@ -231,6 +231,7 @@ block javascript
   script
     | var user = require('s7n').user.userView(
     != JSON.stringify(user)
-    | ,
-    != JSON.stringify(active_user)
+    if active_user
+      | ,
+      != JSON.stringify(active_user)
     | );

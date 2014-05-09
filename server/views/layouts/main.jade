@@ -94,10 +94,11 @@ html(lang=lang dir=lang_dir)
               a(href="/files") Filer
             dd
               a(href="/members") Medlemmer
-            dd
-              a(href="/users") Brukere
-            dd
-              a(href="/groups") Grupper
+            if active_user
+              dd
+                a(href="/users") Brukere
+              dd
+                a(href="/groups") Grupper
 
           footer.dtborder
             .row

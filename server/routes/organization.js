@@ -200,9 +200,14 @@ module.exports.remove_group = function (req, res, next) {
 };
 
 module.exports.users = function (req, res) {
-    User.find(function (err, users) {
-        res.render('organization/users', {users: users});
-    });
+    if (!req.user) {
+        res.send(403);
+    }
+    else {
+        User.find(function (err, users) {
+            res.render('organization/users', {users: users});
+        });
+    }
 };
 
 module.exports.user = function (req, res) {
@@ -333,19 +338,24 @@ module.exports.group_remove_user = function (req, res, next) {
 };
 
 module.exports.groups = function (req, res, next) {
-    var name = req.body.name,
-        organization_id = 'nidarholm';//req.body.organization;
+    if (!req.user) {
+        res.send(403);
+    }
+    else {
+        var name = req.body.name,
+            organization_id = 'nidarholm';//req.body.organization;
 
-    Organization.findById(organization_id).populate('instrument_groups').exec(function (err, organization) {
-        if (err) { throw err; }
-        Group.find(function (err, groups) {
-            if (err) { next(err); }
-            res.render('organization/groups', {
-                groups: groups,
-                igroups: organization.instrument_groups
+        Organization.findById(organization_id).populate('instrument_groups').exec(function (err, organization) {
+            if (err) { throw err; }
+            Group.find(function (err, groups) {
+                if (err) { next(err); }
+                res.render('organization/groups', {
+                    groups: groups,
+                    igroups: organization.instrument_groups
+                });
             });
         });
-    });
+    }
 };
 
 module.exports.group = function (req, res, next){

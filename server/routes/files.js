@@ -7,12 +7,19 @@ var _ = require('underscore'),
     Activity = require('../models').Activity;
 
 module.exports.index = function (req, res) {
-    var query = File.find().or([
-        {creator: req.user},
-        {'permissions.public': true},
-        {'permissions.users': req.user._id},
-        {'permissions.groups': { $in: req.user.groups }}
-    ])
+    var query;
+    if (req.user) {
+        query = File.find().or([
+            {creator: req.user},
+            {'permissions.public': true},
+            {'permissions.users': req.user._id},
+            {'permissions.groups': { $in: req.user.groups }}
+        ]);
+    }
+    else {
+        query = File.find({'permissions.public': true});
+    }
+    query = query
         .sort('-created')
         .populate('creator', 'username name')
         .limit(20);

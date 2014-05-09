@@ -9,49 +9,49 @@ block content
             h1
               a(href="/projects/" + project._id)= project.title
             p= project.end
-            form
-              button.deleteproject Slett prosjekt
   script#template(type="text/ractive")
-    .row
-      .columns.text-right
-        i.fa.fa-file-o
-        | &nbsp;
-        a(on-click="toggleNew") Nytt prosjekt
+    if (active_user)
+      .row
+        .columns.text-right
+          i.fa.fa-file-o
+          | &nbsp;
+          a(on-click="toggleNew") Nytt prosjekt
     | {{#expanded}}
-    form(action="/projects" method="post" intro-outro='slide')
-      h1 Nytt prosjekt
-      .row
-        .columns
-          label(for="title") Tittel
-          input#title(on-keyup="setSlug" name="title" type="text")
-      .row
-        .columns
-          label(for="tag")
-            abbr(title="Alle innlegg, aktiviteter, o.l som merkes med denne merkelappen blir vist på prosjektsiden. Merkelappen vil også bli en del av prosjektsidens adresse.") Merkelapp (Kan ikke endres setter at innlegg, aktiviteter eller filer har blitt lagt til prosjektet)
-          input#tag(name="tag" type="text" value="{{slug}}")
-      .row
-        .columns
-          label(for="private_mdtext") Intern beskrivelse
-          textarea#private_mdtext(name="private_mdtext")
-      .row
-        .columns
-          label(for="public_mdtext") Ekstern beskrivelse
-          textarea#public_mdtext(name="public_mdtext")
-      .row
-        .columns
-          label(for="start") Prosjektstart
-          input#start(name="start" type="text")
-      .row
-        .columns
-          label(for="end") Prosjektslutt
-          input#end(name="end" type="text")
-      .row
-        .columns
-          label(for="permissions") Rettigheter
-          select#permissions.chosen-permissions(name="permissions" multiple data-placeholder="Velg prosjektgruppe")
-            +permission_options(active_user.groups, active_user.friends)
-      button.small Lagre
-      button.small.secondary(type="reset" on-click="toggleNew") Avbryt
+    if (active_user)
+      form(action="/projects" method="post" intro-outro='slide')
+        h1 Nytt prosjekt
+        .row
+          .columns
+            label(for="title") Tittel
+            input#title(on-keyup="setSlug" name="title" type="text")
+        .row
+          .columns
+            label(for="tag")
+              abbr(title="Alle innlegg, aktiviteter, o.l som merkes med denne merkelappen blir vist på prosjektsiden. Merkelappen vil også bli en del av prosjektsidens adresse.") Merkelapp (Kan ikke endres setter at innlegg, aktiviteter eller filer har blitt lagt til prosjektet)
+            input#tag(name="tag" type="text" value="{{slug}}")
+        .row
+          .columns
+            label(for="private_mdtext") Intern beskrivelse
+            textarea#private_mdtext(name="private_mdtext")
+        .row
+          .columns
+            label(for="public_mdtext") Ekstern beskrivelse
+            textarea#public_mdtext(name="public_mdtext")
+        .row
+          .columns
+            label(for="start") Prosjektstart
+            input#start(name="start" type="text")
+        .row
+          .columns
+            label(for="end") Prosjektslutt
+            input#end(name="end" type="text")
+        .row
+          .columns
+            label(for="permissions") Rettigheter
+            select#permissions.chosen-permissions(name="permissions" multiple data-placeholder="Velg prosjektgruppe")
+              +permission_options(active_user.groups, active_user.friends)
+        button.small Lagre
+        button.small.secondary(type="reset" on-click="toggleNew") Avbryt
     | {{/expanded}}
 
     | {{#projects}}

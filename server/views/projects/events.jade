@@ -16,7 +16,7 @@ block content
             p!= marked(event.mdtext)
 
   script#template(type="text/ractive")
-    {{#events}}
+    | {{#events}}
     article
       header
         h1
@@ -25,10 +25,10 @@ block content
           .row
             .columns.small-9
               span.byline
-                {{{daterange(start, end)}}}
-                {{#location}}
+                | {{{daterange(start, end)}}}
+                | {{#location}}
                 | {{location}}
-                {{/location}}
+                | {{/location}}
               | {{#tags}}
               a(href="{{taglink(.)}}") {{.}}
               | {{/tags}}
@@ -37,11 +37,11 @@ block content
       .content
         .row
           .columns
-            {{{marked(mdtext)}}}
-      {{/events}}
+            | {{{marked(mdtext)}}}
+    | {{/events}}
 
 block javascript
   script
     | require('s7n').projects.upcomingView(
     != JSON.stringify(events)
-    );
+    | );

@@ -18,10 +18,21 @@ module.exports.index = function (req, res, next) {
     } else {
         tagquery = {};
     }
-    var query = ForumPost.find(tagquery)
-    .sort('-created')
-    .populate('creator', 'username name')
-    .select('_id title created mdtext tags permissions creator');
+    var query = ForumPost.find(tagquery);
+    if (req.user) {
+        query = query.or([
+            {creator: req.user._id},
+            {'permissions.public': true},
+            {'permissions.users': req.user._id},
+            {'permissions.groups': { $in: req.user.groups }}
+        ]);
+    }
+    else {
+        query = query.where({'permissions.public': true});
+    }
+    query = query.sort('-created')
+        .populate('creator', 'username name')
+        .select('_id title created mdtext tags permissions creator');
 
     if (req.query.page) {
         query = query.skip(20 * req.query.page);

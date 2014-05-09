@@ -15,13 +15,19 @@ var fs = require('fs'),
     crypto = require('crypto');
 
 module.exports.index = function (req, res, next) {
-    var query = Project.find().or([
-        {creator: req.user},
-        {'permissions.public': true},
-        {'permissions.users': req.user._id},
-        {'permissions.groups': { $in: req.user.groups }}
-    ])
-        .sort('-end')
+    var query;
+    if (req.user) {
+        query = Project.find().or([
+            {creator: req.user},
+            {'permissions.public': true},
+            {'permissions.users': req.user._id},
+            {'permissions.groups': { $in: req.user.groups }}
+        ]);
+    }
+    else {
+        query = Project.find().or({'permissions.public': true});
+    }
+    query.sort('-end')
         .populate('creator', 'username name')
         .limit(20);
     if (req.query.page) {
@@ -157,12 +163,19 @@ module.exports.project_delete_event = function (req, res, next) {
 
 // TODO: Add ical format? How to find URL to it?
 module.exports.events = function (req, res, next) {
-    var query = Event.find().or([
-        {creator: req.user},
-        {'permissions.public': true},
-        {'permissions.users': req.user._id},
-        {'permissions.groups': { $in: req.user.groups }}
-    ])
+    var query;
+    if (req.user) {
+        query = Event.find().or([
+            {creator: req.user},
+            {'permissions.public': true},
+            {'permissions.users': req.user._id},
+            {'permissions.groups': { $in: req.user.groups }}
+        ]);
+    }
+    else {
+        query = Event.find({'permissions.public': true});
+    }
+    query = query
         .where({start: {$gt: moment().startOf('day')}})
         .sort('start')
         .populate('creator', 'username name')

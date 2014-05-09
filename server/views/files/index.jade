@@ -4,15 +4,16 @@ block content
   section#files
     div.row
       div.columns.medium-10.large-8.medium-centered
-        form#upload(method="post" action="/files/upload" enctype="multipart/form-data")
-          h1 Last opp filer
-          label(for="permissions") Først, velg hvem som skal kunne se filene
-          select#permissions(name="permissions" placeholder="Vises bare for meg" multiple)
-            +permission_options(active_user.groups, active_user.friends)
-          label(for="tags") Det er valgfritt om du vil kategorisere med merkelapper
-          input#tags(type="text" name="tags" placeholder="kommaseparert, liste, med, merkelapper")
-          input(type="file" name="file")
-          button.small send
+        if active_user
+          form#upload(method="post" action="/files/upload" enctype="multipart/form-data")
+            h1 Last opp filer
+            label(for="permissions") Først, velg hvem som skal kunne se filene
+            select#permissions(name="permissions" placeholder="Vises bare for meg" multiple)
+              +permission_options(active_user.groups, active_user.friends)
+            label(for="tags") Det er valgfritt om du vil kategorisere med merkelapper
+            input#tags(type="text" name="tags" placeholder="kommaseparert, liste, med, merkelapper")
+            input(type="file" name="file")
+            button.small send
 
         each file in files
           .row
@@ -38,22 +39,23 @@ block content
   script#template(type="text/ractive")
     .row
       .columns.large-8.medium-10.large-centered.medium-centered
-        form#upload(action="/files/upload")
-          h1 Last opp filer
-          label(for="permissions") Først, velg hvem som skal kunne se filene
-          select#permissions.chosen-permissions(name="permissions" data-placeholder="Vises bare for meg" multiple)
-            +permission_options(active_user.groups, active_user.friends)
-          label(for="tags") Det er valgfritt om du vil kategorisere med merkelapper
-          input#tags(type="text" name="tags" placeholder="kommaseparert, liste, med, merkelapper")
-          #drop
-            | Dra filer hit, eller klikk for å velge. Opplasting starter umiddelbart.
+        if active_user
+          form#upload(action="/files/upload")
+            h1 Last opp filer
+            label(for="permissions") Først, velg hvem som skal kunne se filene
+            select#permissions.chosen-permissions(name="permissions" data-placeholder="Vises bare for meg" multiple)
+              +permission_options(active_user.groups, active_user.friends)
+            label(for="tags") Det er valgfritt om du vil kategorisere med merkelapper
+            input#tags(type="text" name="tags" placeholder="kommaseparert, liste, med, merkelapper")
+            #drop
+              | Dra filer hit, eller klikk for å velge. Opplasting starter umiddelbart.
 
-        | {{#uploading_files}}
-        .file(intro="fade")
-          h2 {{name}}
-          .progress
-            span.meter(style="width: {{uploading.progress}}%")
-        | {{/uploading_files}}
+          | {{#uploading_files}}
+          .file(intro="fade")
+            h2 {{name}}
+            .progress
+              span.meter(style="width: {{uploading.progress}}%")
+          | {{/uploading_files}}
 
         | {{#files}}
         .row(intro-outro="slide")
