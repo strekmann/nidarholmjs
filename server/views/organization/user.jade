@@ -26,8 +26,7 @@ block content
         p
           = user.address
           br
-          = user.postcode
-          &nbsp;
+          = user.postcode 
           = user.city
           br
           = user.country
@@ -39,7 +38,7 @@ block content
         if user.is_admin
           | Admin
 
-        if active_user && active_user.is_admin
+        if is_admin
           // TODO: Set better permission checks
           p= user.born
           p= user.joined
@@ -49,7 +48,7 @@ block content
         p#username(data-username=user.username)= user.username
 
       .medium-3.columns
-        if active_user && user.id==active_user.id
+        if active_user && user.id==active_user.id || is_admin
           a.button.tiny(href="/users/" + user.username + "/edit") Rediger brukerdata
           a.button.tiny(href="/logout") Logg ut
 
@@ -162,11 +161,9 @@ block content
           | {{country}}
         | {{/country}}
 
-        | {{#active_user.is_admin}}
-        // todo: set better permission checks
-        p {{reskontro}}
-        | {{membership_history}}
-        | {{/active_user.is_admin}}
+        if is_admin
+          p {{reskontro}}
+          | {{membership_history}}
 
         p Brukernavn <code>{{username}}</code>, passordalgoritme: <code>{{algorithm}}</code>, krypteringsstyrke: <code>{{length(salt)}}</code>
         | {{#is_active}}
@@ -175,8 +172,6 @@ block content
         | {{#is_admin}}
         | Admin
         | {{/is_admin}}
-
-
 
     .row
       .hide-for-small-only

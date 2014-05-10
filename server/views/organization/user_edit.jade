@@ -15,7 +15,7 @@ block content
         label(for="instrument") Instrument
         input#instrument(name="instrument" type="text" value=user.instrument)
         label(for="born") Født
-        input#born(name="born" type="text" value=simpledate(user.born))
+        input#born(name="born" type="date" value=simpledate(user.born))
         label(for="phone") Telefon
         input#phone(name="phone" type="text" value=user.phone)
         label(for="address") Adresse
@@ -32,15 +32,15 @@ block content
           for country, code in countries
             option(value=code selected=code===user.country)= country
 
-        if active_user.is_admin
+        if is_admin
           label(for="joined") Ble medlem første gang
-          input#joined(name="joined" type="date" value=user.joined)
+          input#joined(name="joined" type="date" value=simpledate(user.joined))
           label(for="nmf_id") Medlemsnummer i NMF
           input#nmf_id(name="nmf_id" type="text" value=user.nmf_id)
           label(for="reskontro") Reskontro
           input#reskontro(name="reskontro" type="text" value=user.reskontro)
           label(for="membership_history") Medlemskapshistorikk
-          textarea#membership_history(name="membership_history")
+          textarea#membership_history(name="membership_history")= user.membership_history
 
         button Lagre
 

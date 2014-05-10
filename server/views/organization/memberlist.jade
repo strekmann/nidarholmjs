@@ -2,7 +2,7 @@ extends ../layouts/main
 
 block content
   section
-    if active_user
+    if active_user && is_member
       div.row
         div.columns
           ul.right.side-nav
@@ -36,7 +36,7 @@ block content
                       = member.role
                     else
                       | &nbsp;
-                  if active_user
+                  if active_user && is_member
                     .medium-2.columns
                       = member.user.phone
                     .medium-4.columns

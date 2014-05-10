@@ -53,7 +53,7 @@ var UserSchema = new mongoose.Schema({
 var OrganizationSchema = new mongoose.Schema({
     _id: {type: String, lowercase: true, trim: true, required: true, unique: true},
     instrument_groups: [{type: String, ref: 'Group'}],
-    administration_groups: [{type: String, ref: 'Group'}],
+    administration_group: {type: String, ref: 'Group'},
     member_group: {type: String, ref: 'Group'},
 });
 

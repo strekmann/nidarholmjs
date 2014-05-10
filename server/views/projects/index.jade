@@ -10,14 +10,14 @@ block content
               a(href="/projects/" + project._id)= project.title
             p= project.end
   script#template(type="text/ractive")
-    if (active_user)
+    if active_user
       .row
         .columns.text-right
           i.fa.fa-file-o
           | &nbsp;
           a(on-click="toggleNew") Nytt prosjekt
     | {{#expanded}}
-    if (active_user)
+    if active_user
       form(action="/projects" method="post" intro-outro='slide')
         h1 Nytt prosjekt
         .row

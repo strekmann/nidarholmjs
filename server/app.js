@@ -62,11 +62,45 @@ app.configure(function(){
         next();
     });
 
+    // init org
+    app.use(function (req, res, next) {
+        Organization.findById('nidarholm').populate('administration_group member_group').exec(function (err, organization) {
+            if (err) { next(err); }
+            if (organization) {
+                req.organization = organization;
+                res.locals.organization = organization;
+                next();
+            } else {
+                get_member_group().then(function (group) {
+                    organization = new Organization();
+                    organization._id = 'nidarholm';
+                    organization.instrument_groups = [];
+                    organization.administration_group = group;
+                    organization.member_group = group;
+
+                    organization.save(function (err) {
+                        group.organization = organization;
+                        group.save(function (err) {
+                            req.organization = organization;
+                            res.locals.organization = organization;
+                            next();
+                        });
+                    });
+                });
+            }
+        });
+    });
     // has to go after passport.session()
     app.use(function (req, res, next) {
         if (req.user) {
             req.user.populate('groups', function (err, user) {
                 req.user = res.locals.active_user = user;
+                req.is_member = res.locals.is_member = _.some(req.organization.member_group.members, function (member) {
+                    return member.user === req.user._id;
+                });
+                req.is_admin = res.locals.is_admin = _.some(req.organization.administration_group.members, function (member) {
+                    return member.user === req.user._id;
+                });
                 // TODO: User redis for caching
                 //User.find().select('username name').exec(function (err, all_users) {
                     //if (err) { next(err); }
@@ -94,33 +128,6 @@ app.configure(function(){
         } else {
             next();
         }
-    });
-    app.use(function (req, res, next) {
-        Organization.findById('nidarholm', function (err, organization) {
-            if (err) { next(err); }
-            if (organization) {
-                req.organization = organization;
-                res.locals.organization = organization;
-                next();
-            } else {
-                get_member_group().then(function (group) {
-                    organization = new Organization();
-                    organization._id = 'nidarholm';
-                    organization.instrument_groups = [];
-                    organization.administration_groups = [];
-                    organization.member_group = group;
-
-                    organization.save(function (err) {
-                        group.organization = organization;
-                        group.save(function (err) {
-                            req.organization = organization;
-                            res.locals.organization = organization;
-                            next();
-                        });
-                    });
-                });
-            }
-        });
     });
 
     app.use(multer());

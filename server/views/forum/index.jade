@@ -24,7 +24,7 @@ block content
                     != marked(post.mdtext)
 
   script#template(type="text/ractive")
-    if (active_user)
+    if active_user
       .row
         .columns.text-right
           i.fa.fa-file-o
@@ -32,7 +32,7 @@ block content
           a(on-click="toggleNew") Nytt innlegg
 
     | {{#expanded}}
-    if (active_user)
+    if active_user
       form.newpost(method="POST" on-submit="addPost" intro-outro='slide')
         h1 Nytt innlegg
         .row

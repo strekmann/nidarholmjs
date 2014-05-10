@@ -94,7 +94,7 @@ html(lang=lang dir=lang_dir)
               a(href="/files") Filer
             dd
               a(href="/members") Medlemmer
-            if active_user
+            if active_user && is_admin
               dd
                 a(href="/users") Brukere
               dd
