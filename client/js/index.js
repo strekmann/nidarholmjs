@@ -14,7 +14,7 @@ var flash = function (messages, member_group) {
             is_for_members: function (permissions) {
                 var self = this;
                 return _.find(permissions.groups, function (g) {
-                    return g === self.data.member_group;
+                    return g === self.data.member_group._id;
                 });
             },
             is_unpublished: function (permissions) {

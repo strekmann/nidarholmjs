@@ -1,16 +1,25 @@
 doctype html
 
-mixin permission_options(groups, users)
+mixin permission_options(groups, users, selected)
   optgroup(label="Alle")
-    option(value="p") Verden
+    if selected && selected.public
+      option(value="p" selected) Verden
+    else
+      option(value="p") Verden
   optgroup(label="Grupper")
     for group in groups
       if group
-        option(value="g-"+group.id)= group.name
+        if selected && group.id in selected.groups
+          option(value="g-"+group.id selected)= group.name
+        else
+          option(value="g-"+group.id)= group.name
   optgroup(label="Personer")
     for friend in users
       if friend
-        option(value="u-"+friend.id)= friend.name
+        if selected && friend.id in selected.users
+          option(value="u-"+friend.id selected)= friend.name
+        else
+          option(value="u-"+friend.id)= friend.name
 
 html(lang=lang dir=lang_dir)
   head
@@ -153,15 +162,16 @@ html(lang=lang dir=lang_dir)
       | {{/info}}
 
     script#permissionstemplate(type="text/ractive")
-      | {{#is_public(permissions)}}
-      i.fa.fa-globe(title="Tilgjengelig for alle")
-      | {{/is_public}}
-      | {{#is_for_members(permissions)}}
-      i.fa.fa-users(title="Tilgjengelig for alle medlemmer")
-      | {{/is_for_members}}
-      | {{#is_unpublished(permissions)}}
-      i.fa.fa-user.alert(title="Tilgjengelig bare for deg")
-      | {{/is_unpublished}}
+      span.permissions
+        | {{#is_public(permissions)}}
+        i.fa.fa-globe.public(title="Tilgjengelig for alle")
+        | {{/is_public}}
+        | {{#is_for_members(permissions)}}
+        i.fa.fa-users.members(title="Tilgjengelig for alle medlemmer")
+        | {{/is_for_members}}
+        | {{#is_unpublished(permissions)}}
+        i.fa.fa-user.private.alert(title="Ikke publisert, bare jeg ser denne")
+        | {{/is_unpublished}}
 
     script(src="/js/vendor.js")
     script(src="/js/site.js")

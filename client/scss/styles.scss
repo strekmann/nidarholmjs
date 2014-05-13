@@ -345,7 +345,7 @@ nav.top-bar {
 
         i.fa {
             margin-left: 0.5em;
-            color: $hr-border-color;
+            //color: $hr-border-color;
             transition: color 300ms;
 
             &:hover {
@@ -534,5 +534,19 @@ nav.top-bar {
                 transition: color 300ms;
             }
         }
+    }
+}
+
+span.permissions {
+    .public {
+        color: $primary-color;
+    }
+
+    .members {
+        color: $success-color;
+    }
+
+    .private {
+        color: $alert-color;
     }
 }

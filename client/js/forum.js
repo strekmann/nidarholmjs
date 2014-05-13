@@ -7,6 +7,8 @@ var checkAreaSize = function(openSize) {
 
         if (type === 'focus' && elem.val().trim().length === 0){
             elem.css('height', openSize);
+        } else if (type === 'focus' && elem.val().trim().length > 100) {
+            elem.css('height', openSize);
         } else if (elem.val().trim().length === 0){
             elem.css('height', '');
         }
@@ -20,7 +22,45 @@ module.exports.threadView = function(post, active_user){
         restAPI: '/forum',
         data: {
             post: post,
-            active_user: active_user
+            active_user: active_user,
+            permission_options: function () {
+                var active_user = forum.get('active_user');
+                var selected_permissions = forum.get('post.permissions');
+
+                // public
+                var retval = '<select id="permissions" class="chosen-permissions" name="permissions" multiple data-placeholder="Velg hvem som skal kunne se innlegget"><optgroup label="Alle">';
+                if (selected_permissions.public) {
+                    retval += '<option value="p" selected>Verden</option>';
+                } else {
+                    retval += '<option value="p">Verden</option>';
+                }
+                retval += '</optgroup>';
+
+                // groups
+                retval += '<optgroup label="Grupper">';
+                _.each(active_user.groups, function (group) {
+                    if (_.contains(selected_permissions.groups, group._id)) {
+                        retval += '<option value="g-'+group._id+'" selected>' + group.name + '</option>';
+                    } else {
+                        retval += '<option value="g-'+group._id+'">' + group.name + '</option>';
+                    }
+                });
+                retval += '</optgroup>';
+
+                // friends
+                retval += '<optgroup label="Personer">';
+                _.each(active_user.friends, function (user) {
+                    if (_.contains(selected_permissions.users, user._id)) {
+                        retval += '<option value="u-'+user._id+'" selected>';
+                    } else {
+                        retval += '<option value="u-'+user._id+'">';
+                    }
+                });
+                retval += '</optgroup>';
+                retval += '</select>';
+
+                return retval;
+            }
         }
     });
 
@@ -51,7 +91,38 @@ module.exports.threadView = function(post, active_user){
         forum.deleteComment(replyid, {_id: event.context._id});
     });
 
+    forum.on('updatePost', function (event) {
+        event.original.preventDefault();
+
+        var post = {
+            title: $('#title').val(),
+            mdtext: $('#mdtext').val(),
+            tags: $('#tags').val(),
+            permissions: $('#permissions').val()
+        };
+        var promise = forum.updatePost(post);
+        promise.then(function (data) {
+            forum.set('post', data);
+            forum.toggle('is_editing');
+        }, function(xhr, status, err){
+            console.error(err);
+        });
+    });
+
+    forum.on('toggleEdit', function (event) {
+        this.toggle('is_editing');
+        var format = function (item) {
+            return item.name;
+        };
+        setTimeout(function(){
+            if (forum.get('is_editing')) {
+                $('.chosen-permissions').chosen({width: '100%'});
+            }
+        }, 1);
+    });
+
     forum.on('checkAreaSize', checkAreaSize('6rem'));
+    forum.on('checkLargeAreaSize', checkAreaSize('16rem'));
 
     return forum;
 };

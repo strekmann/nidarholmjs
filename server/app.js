@@ -207,6 +207,7 @@ var forum_routes = require('./routes/forum');
 app.get('/forum', forum_routes.index);
 app.get(/^\/forum\/t\/(.+)/, forum_routes.index);  // tags
 app.get('/forum/:id', forum_routes.get_post);
+app.put('/forum/:id', forum_routes.update_post);
 app.get('/forum/:id/replies', forum_routes.get_replies);
 app.post('/forum', forum_routes.create_post);
 app.delete('/forum/:id', forum_routes.delete_post);

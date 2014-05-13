@@ -77,14 +77,15 @@ block content
               span.byline
                 a(href="/users/{{creator._id}}") {{creator.name}}
               time.created(datetime="{{isodate(created)}}") {{shortdate(created)}}
-              | &nbsp;
               | {{#tags}}
-              a(href="{{taglink(.)}}") {{.}}
+              | {{#.}}
+              a(href="{{taglink(.)}}")
+                i.fa.fa-link
+                | &nbsp;{{.}}
+              | {{/.}}
               | {{/tags}}
             .columns.small-3.text-right.creator
               permissionicons(permissions="{{permissions}}")
-              a(title="Slett innlegget" on-click="deletePost")
-                i.fa.fa-trash-o
 
         .content
           .row

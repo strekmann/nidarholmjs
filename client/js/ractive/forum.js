@@ -18,6 +18,16 @@ var Forum = Ractive.extend({
         return promise;
     },
 
+    updatePost: function (post) {
+        var url = window.location.href,
+            promise = $.ajax({
+                url: url,
+                type: 'put',
+                data: post
+            });
+        return promise;
+    },
+
     deletePost: function(post){
         var self = this,
             url = [this.restAPI, post._id],

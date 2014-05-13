@@ -83,6 +83,43 @@ module.exports.create_post = function (req, res, next) {
     });
 };
 
+module.exports.update_post = function (req, res, next) {
+    var title = req.body.title,
+        mdtext = req.body.mdtext,
+        tags = req.body.tags,
+        permissions = parse_web_permissions(req.body.permissions);
+
+    ForumPost.findById(req.params.id, function (err, post) {
+        if (post.creator === req.user || req.is_admin) {
+            post.title = title;
+            post.mdtext = mdtext;
+            post.tags = tags;
+            if (req.body.permissions) {
+                post.permissions = permissions;
+            }
+            post.modified = new Date();
+            post.save(function (err) {
+                if (err) {
+                    return next(err);
+                }
+                post.populate('creator', function (err, post) {
+                    Activity.findOneAndUpdate({content_type: 'forum', content_id: post._id},
+                                              {
+                                                  $set: {title: title, modified: post.modified, permissions: post.permissions},
+                                                  $push: {users: req.user}
+                                              },
+                                              function (err, activity) {
+                                                  res.json(200, post);
+                                              });
+                });
+            });
+        }
+        else {
+            res.json(403, 'Forbidden');
+        }
+    });
+};
+
 module.exports.delete_post = function (req, res, next) {
     var id = req.params.id;
 
