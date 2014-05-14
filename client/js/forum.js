@@ -121,6 +121,58 @@ module.exports.threadView = function(post, active_user){
         }, 1);
     });
 
+    forum.on('editReply', function (event){
+        var node = $(event.node);
+        var highlight = node.parents('.highlight');
+        var form = highlight.find('form');
+        var content = highlight.find('.content');
+
+        content.hide();
+        form.show();
+    });
+    forum.on('updateReply', function (event) {
+        event.original.preventDefault();
+        var reply = {
+            _id: event.context._id,
+            mdtext: $(event.node).find('.mdtext').val()
+        };
+        var promise = forum.updateReply(reply);
+        promise.then(function (data) {
+            $(event.node).siblings('.content').show();
+            $(event.node).hide();
+        }, function(xhr, status, err){
+            console.error(err);
+        });
+    });
+    forum.on('editComment', function (event){
+        var node = $(event.node);
+        var highlight = node.parents('.highlight');
+        var form = highlight.find('form');
+        var content = highlight.find('.content');
+
+        content.hide();
+        form.show();
+    });
+    forum.on('updateComment', function (event) {
+        event.original.preventDefault();
+        var replyid = this.data.post.replies[event.keypath.split('.')[2]]._id;
+        var comment = {
+            _id: event.context._id,
+            mdtext: $(event.node).find('.mdtext').val()
+        };
+        var promise = forum.updateComment(replyid, comment);
+        promise.then(function (data) {
+            $(event.node).siblings('.content').show();
+            $(event.node).hide();
+        }, function(xhr, status, err){
+            console.error(err);
+        });
+    });
+    forum.on('deleteComment', function(event){
+        var replyid = this.data.post.replies[event.keypath.split('.')[2]]._id;
+        forum.deleteComment(replyid, {_id: event.context._id});
+    });
+
     forum.on('checkAreaSize', checkAreaSize('6rem'));
     forum.on('checkLargeAreaSize', checkAreaSize('16rem'));
 

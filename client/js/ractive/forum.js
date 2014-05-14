@@ -54,6 +54,27 @@ var Forum = Ractive.extend({
         });
     },
 
+    updateReply: function (reply) {
+        var self = this,
+            url = [this.restAPI, this.data.post._id, 'replies', reply._id],
+            promise = $.ajax({
+                url: url.join("/"),
+                type: 'PUT',
+                data: reply
+            });
+
+        promise.then(function (data) {
+            var index = _.indexOf(_.pluck(self.data.post.replies, '_id'), reply._id);
+            if (index !== -1){
+                //self.data.post.replies[index].set('mdtext', data.mdtext);
+                self.set('post.replies.'+index+'.mdtext', data.mdtext);
+            }
+        }, function(xhr, status, err){
+            console.error(err);
+        });
+        return promise;
+    },
+
     deleteReply: function(reply){
         var self = this,
             url = [this.restAPI, this.data.post._id, 'replies', reply._id],
@@ -87,6 +108,30 @@ var Forum = Ractive.extend({
         }, function(xhr, status, err){
             console.error(err);
         });
+    },
+
+    updateComment: function (replyid, comment) {
+        var self = this,
+            url = [this.restAPI, this.data.post._id, 'replies', replyid, 'comments', comment._id],
+            promise = $.ajax({
+                url: url.join("/"),
+                type: 'PUT',
+                data: comment
+            });
+
+        promise.then(function (data) {
+            var replyIndex = _.indexOf(_.pluck(self.data.post.replies, '_id'), replyid);
+            if (replyIndex === -1 || !self.data.post.replies[replyIndex].comments) {
+                return;
+            }
+            var commentIndex = _.indexOf(_.pluck(self.data.post.replies[replyIndex].comments, '_id'), comment._id);
+            if (commentIndex !== -1){
+                self.set('post.replies.'+replyIndex+'.comments.'+commentIndex+'.mdtext', data.mdtext);
+            }
+        }, function(xhr, status, err){
+            console.error(err);
+        });
+        return promise;
     },
 
     deleteComment: function(replyid, comment){
@@ -124,7 +169,6 @@ var Forum = Ractive.extend({
 
         var self = this,
             url = _.union([this.restAPI], tags, this.data.tags);
-            console.log(url);
             promise = $.ajax({
                 url: url.join('/'),
                 type: 'GET',

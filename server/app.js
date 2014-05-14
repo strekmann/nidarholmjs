@@ -212,8 +212,10 @@ app.get('/forum/:id/replies', forum_routes.get_replies);
 app.post('/forum', forum_routes.create_post);
 app.delete('/forum/:id', forum_routes.delete_post);
 app.post('/forum/:postid/replies', forum_routes.create_reply);
+app.put('/forum/:postid/replies/:replyid', forum_routes.update_reply);
 app.delete('/forum/:postid/replies/:replyid', forum_routes.delete_reply);
 app.post('/forum/:postid/replies/:replyid/comments', forum_routes.create_comment);
+app.put('/forum/:postid/replies/:replyid/comments/:commentid', forum_routes.update_comment);
 app.delete('/forum/:postid/replies/:replyid/comments/:commentid', forum_routes.delete_comment);
 
 var organization_routes = require('./routes/organization');

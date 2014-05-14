@@ -197,6 +197,33 @@ module.exports.delete_reply = function (req, res, next) {
     });
 };
 
+module.exports.update_reply = function (req, res, next) {
+    var postid = req.params.postid,
+        replyid = req.params.replyid,
+        mdtext = req.body.mdtext;
+
+    ForumPost.findById(postid, function (err, post) {
+        if (err) {
+            return next(err);
+        }
+        var reply = post.replies.id(replyid);
+        if (reply === undefined) {
+            return next(new Error('Reply not found, could not edit reply'));
+        }
+        if (reply.creator === req.user || req.is_admin) {
+            reply.mdtext = mdtext;
+            post.save(function (err) {
+                if (err) {
+                    return next(err);
+                }
+                res.json(200, reply);
+            });
+        }
+        else {
+            res.json(403, 'Forbidden');
+        }
+    });
+};
 module.exports.get_replies = function (req, res, next) {
     ForumPost.findById(req.params.id, function (err, post) {
         if (err) {
@@ -233,6 +260,39 @@ module.exports.create_comment = function (req, res, next) {
             });
         } else {
             return next(new Error('Post not found, could not add comment'));
+        }
+    });
+};
+
+module.exports.update_comment = function (req, res, next) {
+    var postid = req.params.postid,
+        replyid = req.params.replyid,
+        commentid = req.params.commentid,
+        mdtext = req.body.mdtext;
+
+    ForumPost.findById(postid, function (err, post) {
+        if (err) {
+            return next(err);
+        }
+        var reply = post.replies.id(replyid);
+        if (reply === undefined) {
+            return next(new Error('Reply not found, could not edit comment'));
+        }
+        var comment = reply.comments.id(commentid);
+        if (reply === undefined) {
+            return next(new Error('Comment not found, could not edit comment'));
+        }
+        if (comment.creator === req.user || req.is_admin) {
+            comment.mdtext = mdtext;
+            post.save(function (err) {
+                if (err) {
+                    return next(err);
+                }
+                res.json(200, comment);
+            });
+        }
+        else {
+            res.json(403, 'Forbidden');
         }
     });
 };

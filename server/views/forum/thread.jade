@@ -87,10 +87,16 @@ block content
               .meta
                 span.byline Av 
                   a(href="/users/{{.creator.username}}") {{.creator.name}}
-                time.created(datetime="{{isodate(created)}}") {{shortdate(created)}}
+                time.created(datetime="{{isodate(created)}}") {{shortdate(.created)}}
                 a.right(on-click="deleteReply")
                   i.fa.fa-trash-o
-              .content {{{marked(mdtext)}}}
+                a.right(title="Endre" on-click="editReply")
+                  i.fa.fa-edit
+              .content {{{marked(.mdtext)}}}
+              form.hide(on-submit="updateReply")
+                textarea.mdtext {{{.mdtext}}}
+                button.tiny(type="submit") Lagre
+                button.tiny.secondary(type="reset" on-click="resetReply") Avbryt
 
             | {{#comments}}
             .row
@@ -105,10 +111,16 @@ block content
                   .meta
                     span.byline Av 
                       a(href="/users/{{.creator.username}}") {{.creator.name}}
-                    time.created(datetime="{{isodate(created)}}") {{shortdate(created)}}
+                    time.created(datetime="{{isodate(created)}}") {{shortdate(.created)}}
                     a.right(on-click="deleteComment")
                       i.fa.fa-trash-o
-                  .content {{{marked(mdtext)}}}
+                    a.right(title="Endre" on-click="editComment")
+                      i.fa.fa-edit
+                  .content {{{marked(.mdtext)}}}
+                  form.hide(on-submit="updateComment")
+                    textarea.mdtext {{{.mdtext}}}
+                    button.tiny(type="submit") Lagre
+                    button.tiny.secondary(type="reset" on-click="resetComment") Avbryt
             | {{/comments}}
             .row
               | {{#active_user.profile_picture_path}}
