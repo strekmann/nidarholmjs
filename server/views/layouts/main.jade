@@ -36,10 +36,11 @@ html(lang=lang dir=lang_dir)
     link(rel="shortcut icon" href="/img/favicon.png")
 
   body
-    a(id="logobtn" href="/")
     .contain-to-grid
       nav.top-bar(data-topbar)
         ul.title-area
+          li.logo
+            a(id="logobtn" href="/")
           li.name
             h1
               a(href="/") nidarholm
@@ -49,12 +50,22 @@ html(lang=lang dir=lang_dir)
 
         section.top-bar-section
           ul.right
+            if active_user && is_admin
+              li
+                a(href="/users")
+                  i.fa.fa-user(title="Brukere")
+              li
+                a(href="/groups")
+                  i.fa.fa-users(title="Grupper")
             li
-              a(href="/projects") Prosjekter
+              a(href="/events")
+                i.fa.fa-calendar-o(title="Kalender")
             li
-              a(href="/members") Medlemmer
+              a(href="/forum")
+                i.fa.fa-comments-o(title="Forum")
             li
-              a(href="#") Om nidarholm
+              a(href="/files")
+                i.fa.fa-download(title="Files")
             if active_user
               li
                 a#topbar-username(href="/users/"+active_user.username)
@@ -66,6 +77,13 @@ html(lang=lang dir=lang_dir)
               li
                 a.login(href="/login") Logg inn
 
+          ul.left
+            li
+              a(href="/projects") Prosjekter
+            li
+              a(href="/members") Medlemmer
+            li
+              a(href="/contact") Kontakt
     .row
       .large-12.columns
         #flash
@@ -91,23 +109,6 @@ html(lang=lang dir=lang_dir)
     block footer
       .row
         .columns
-          dl#submenu.sub-nav
-            dt Undersider:
-            dd
-              a(href="/projects") Prosjekter
-            dd
-              a(href="/events") Aktiviteter
-            dd
-              a(href="/forum") Forum
-            dd
-              a(href="/files") Filer
-            dd
-              a(href="/members") Medlemmer
-            if active_user && is_admin
-              dd
-                a(href="/users") Brukere
-              dd
-                a(href="/groups") Grupper
 
           footer.dtborder
             .row
