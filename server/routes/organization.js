@@ -2,6 +2,7 @@ var Q = require("q"),
     _ = require('underscore'),
     async = require('async'),
     slug = require('slug'),
+    marked = require('marked'),
     mongoose = require('mongoose'),
     shortid = require('short-mongo-id'),
     countries = require('country-list/country/cldr/nb/country'),
@@ -453,4 +454,54 @@ module.exports.set_profile_picture = function (req, res, next) {
             });
         });
     });
+};
+module.exports.contacts = function (req, res, next) {
+    req.organization.populate('contact_groups', function (err, organization) {
+        organization.populate({path: 'contact_groups.members.user', model: 'User'}, function (err, organization) {
+            if (err) {
+                next(new Error(err));
+            }
+            res.render('organization/contact', {organization: organization});
+        });
+    });
+};
+
+module.exports.edit_organization = function (req, res, next) {
+    if (req.is_admin) {
+        res.render('organization/edit_organization', {organization: req.organization});
+    }
+    else {
+        res.send(403, 'Forbidden');
+    }
+};
+
+module.exports.update_organization = function (req, res, next) {
+    if (req.is_admin) {
+        var contact_text = req.body.contact_text,
+            visitor_address = req.body.visitor_address,
+            mail_address = req.body.mail_address,
+            postcode = req.body.postcode,
+            city = req.body.city,
+            email = req.body.email,
+            organization_number = req.body.organization_number,
+            public_bank_account = req.body.public_bank_account;
+
+        var org = req.organization;
+
+        org.contact_text = contact_text;
+        org.visitor_address = visitor_address;
+        org.mail_address = mail_address;
+        org.postcode = postcode;
+        org.city = city;
+        org.email = email;
+        org.organization_number = organization_number;
+        org.public_bank_account = req.body.public_bank_account;
+
+        org.save(function (err) {
+            res.redirect('/contact');
+        });
+    }
+    else {
+        res.send(403, 'Forbidden');
+    }
 };

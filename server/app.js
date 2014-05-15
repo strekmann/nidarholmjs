@@ -244,6 +244,9 @@ app.delete('/groups/:groupid/users/:username', organization_routes.group_remove_
 app.post('/organization', organization_routes.add_instrument_group);
 app.delete('/organization/:id', organization_routes.remove_instrument_group);
 app.post('/organization/order', organization_routes.order_instrument_groups);
+app.get('/contact', organization_routes.contacts);
+app.get('/organization/edit', organization_routes.edit_organization);
+app.post('/organization/edit', organization_routes.update_organization);
 
 var file_routes = require('./routes/files');
 app.get('/files', file_routes.index);

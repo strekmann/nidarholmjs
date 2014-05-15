@@ -53,8 +53,17 @@ var UserSchema = new mongoose.Schema({
 var OrganizationSchema = new mongoose.Schema({
     _id: {type: String, lowercase: true, trim: true, required: true, unique: true},
     instrument_groups: [{type: String, ref: 'Group'}],
-    administration_group: {type: String, ref: 'Group'},
+    contact_groups: [{type: String, ref: 'Group'}], // contacts page
+    administration_group: {type: String, ref: 'Group'}, // temporary. privileges will be split later
     member_group: {type: String, ref: 'Group'},
+    contact_text: {type: String, trim: true},
+    visitor_address: {type: String, trim: true},
+    mail_address: {type: String, trim: true},
+    postcode: {type: String, trim: true},
+    city: {type: String, trim: true},
+    email: {type: String, trim: true},
+    organization_number: {type: String, trim: true},
+    public_bank_account: {type: String, trim: true}
 });
 
 var ActivitySchema = new mongoose.Schema({
