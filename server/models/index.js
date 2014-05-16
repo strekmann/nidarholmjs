@@ -5,7 +5,13 @@ var GroupSchema = new mongoose.Schema({
     _id: {type: String, unique: true, required: true},
     name: {type: String, trim: true, required: true},
     organization: {type: String, ref: 'Organization'},
-    members: [{user: {type: String, ref: 'User'}, role: {type: String, trim: true}}],
+    members: [{
+        user: {type: String, ref: 'User'},
+        role: {
+            title: {type: String, trim: true},
+            email: {type: String, trim: true}
+        }
+    }],
     group_email: {type: String, lowercase: true, trim: true},
     group_leader_email: {type: String, lowercase: true, trim: true},
     old_id: {type: Number}

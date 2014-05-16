@@ -7,7 +7,7 @@ module.exports.editUserView = function () {
             $.ajax({
                 url: url,
                 success: function (data) {
-                    $('#city').val(data.city);
+                    $('#city').val(data);
                 }
             });
         }
