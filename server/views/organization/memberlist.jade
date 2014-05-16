@@ -32,8 +32,8 @@ block content
                     = member.user.name
                   .medium-2.columns
                     = member.user.instrument
-                    if member.role
-                      = member.role
+                    if member.role && member.role.title
+                      = member.role.title
                     else
                       | &nbsp;
                   if active_user && is_member
