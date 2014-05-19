@@ -277,8 +277,16 @@ nav.top-bar {
 }
 
 .entry img {
-    margin: rem-calc(15px);
-    margin-right: 0;
+    margin: rem-calc(5px) 0 rem-calc(5px) rem-calc(15px);
+    width: 33%;
+    float: right;
+}
+@media #{$small-only} {
+    .entry img {
+        width: 100%;
+        float: none;
+        margin: rem-calc(5px) 0;
+    }
 }
 
 #submenu {
