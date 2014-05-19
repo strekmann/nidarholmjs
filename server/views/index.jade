@@ -27,48 +27,49 @@ block content
                     = shortdate(project.end)
 
 
-      .large-9.columns.large-pull-3.entry
+      .large-9.columns.large-pull-3
         if active_user
           #activities
 
         else
-          h1 Magiske Toner - en Disneykonsert
-          .text
-            p
-              img(src="http://nidarholm.no/files/get/5164/5" style="float:right")
-            p.
-              Musikkforeningen Nidarholm  inviterer til en magisk aften på Rosenborg skole under ledelse av Stian E. Svendsen.</p>
-            p.
-              Ensemblet vil denne kvelden spille musikk fra Disney, med blant annet Natt på Bloksberg fra Fantasia, filmmusikken til Pirates of the Car~
-            p.
-              Til denne konserten er vi gjestet av Åsvang og Eberg Skolekorps som spiller filmmusikk fra Star Wars, Limelight, Indiana Jones og Blues B~
-            p.
-              Dette blir en konsert med gamle Disney-klassikere, nyere filmmusikk og kostymer – en konsert som passer for hele familien!</p>
-            p.
-              Billetter kan kjøpes på forhånd <a href="https://nidarholm.hoopla.no/sales/magiske_toner/">fra denne linken</a> eller fra korpsets medlem~
-            p.
-              Velkommen til konsert på Rosenborg skole, <strong>lørdag 9. november kl 17</strong>!</p>
+          .entry
+            h1 Magiske Toner - en Disneykonsert
+            .text
+              p
+                img(src="http://nidarholm.no/files/get/5164/5" style="float:right")
+              p.
+                Musikkforeningen Nidarholm  inviterer til en magisk aften på Rosenborg skole under ledelse av Stian E. Svendsen.</p>
+              p.
+                Ensemblet vil denne kvelden spille musikk fra Disney, med blant annet Natt på Bloksberg fra Fantasia, filmmusikken til Pirates of the Car~
+              p.
+                Til denne konserten er vi gjestet av Åsvang og Eberg Skolekorps som spiller filmmusikk fra Star Wars, Limelight, Indiana Jones og Blues B~
+              p.
+                Dette blir en konsert med gamle Disney-klassikere, nyere filmmusikk og kostymer – en konsert som passer for hele familien!</p>
+              p.
+                Billetter kan kjøpes på forhånd <a href="https://nidarholm.hoopla.no/sales/magiske_toner/">fra denne linken</a> eller fra korpsets medlem~
+              p.
+                Velkommen til konsert på Rosenborg skole, <strong>lørdag 9. november kl 17</strong>!</p>
 
-          #chosen
-              h1 Testing chosen
+            #chosen
+                h1 Testing chosen
 
-              form
-                  select.chosen-permissions(name="permissions" data-placeholder="Velg rettigheter" multiple)
-                      optgroup(label="Alle")
-                          option(value="p") Verden
-                      optgroup(label="Grupper")
-                          option(value="g-11") Medlemmer
-                          option(value="g-12") Styret
-                          option(value="g-13") Info
-                          option(value="g-14") Valgkomite
-                          option(value="g-15") Treblås
-                          option(value="g-16") Fagott
-                      optgroup(label="Personer")
-                          option(value="u-21") Sigurd
-                          option(value="u-22") Jørgen
-                  button Send
+                form
+                    select.chosen-permissions(name="permissions" data-placeholder="Velg rettigheter" multiple)
+                        optgroup(label="Alle")
+                            option(value="p") Verden
+                        optgroup(label="Grupper")
+                            option(value="g-11") Medlemmer
+                            option(value="g-12") Styret
+                            option(value="g-13") Info
+                            option(value="g-14") Valgkomite
+                            option(value="g-15") Treblås
+                            option(value="g-16") Fagott
+                        optgroup(label="Personer")
+                            option(value="u-21") Sigurd
+                            option(value="u-22") Jørgen
+                    button Send
 
-          #ractive
+            #ractive
 
   script#tmpl-test(type="text/ractive")
     input(placeholder="ractive" value="{{text}}")
@@ -76,32 +77,33 @@ block content
       What she said, {{text}}
 
   script#activity-template(type="text/ractive")
-    .columns
-      ul
-        | {{#activities}}
-        li
-          h2
-            | {{#content_type == "upload"}}
-            a(href='/files/{{content_id}}')
-              | {{title}} ({{content_type}})
-            | {{/content_type}}
-            | {{#content_type == "forum"}}
-            a(href='/forum/{{content_id}}')
-              | {{title}} ({{content_type}})
-            | {{/content_type}}
-          .row
-            .small-5.medium-4.columns
-              | {{ago(modified)}}
-            .small-7.medium-8.columns.contributors
-              | {{#users}}
-              | {{#profile_picture_path}}
-              img(src="{{profile_picture_path}}" alt="{{name}}" title="{{name}}")
-              | {{/profile_picture_path}}
-              | {{^profile_picture_path}}
-              img(src="/img/user.svg" alt="{{name}}" title="{{name}}")
-              | {{/profile_picture_path}}
-              | {{/users}}
-        | {{/activities}}
+    .row
+      .columns
+        ul
+          | {{#activities}}
+          li
+            h2
+              | {{#content_type == "upload"}}
+              a(href='/files/{{content_id}}')
+                | {{title}} ({{content_type}})
+              | {{/content_type}}
+              | {{#content_type == "forum"}}
+              a(href='/forum/{{content_id}}')
+                | {{title}} ({{content_type}})
+              | {{/content_type}}
+            .row
+              .small-5.medium-4.columns
+                | {{ago(modified)}}
+              .small-7.medium-8.columns.contributors
+                | {{#users}}
+                | {{#profile_picture_path}}
+                img(src="{{profile_picture_path}}" alt="{{name}}" title="{{name}}")
+                | {{/profile_picture_path}}
+                | {{^profile_picture_path}}
+                img(src="/img/user.svg" alt="{{name}}" title="{{name}}")
+                | {{/profile_picture_path}}
+                | {{/users}}
+          | {{/activities}}
 
 block javascript
   script
