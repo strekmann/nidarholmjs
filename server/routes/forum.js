@@ -169,7 +169,7 @@ module.exports.create_reply = function (req, res, next) {
             if (err) {
                 return next(err);
             }
-            Activity.findOneAndUpdate({content_type: 'forum', content_id: post._id}, {$push: {users: req.user}, $set: {modified: new Date()}}, function (err, activity) {});
+            Activity.update({content_type: 'forum', content_id: post._id}, {$push: {users: req.user}, $set: {modified: new Date()}}, function () {});
             reply.populate('creator', 'username name profile_picture_path', function (err, reply) {
                 res.json(200, reply);
             });
@@ -253,8 +253,11 @@ module.exports.create_comment = function (req, res, next) {
                 if (err) {
                     return next(err);
                 }
-                Activity.findOneAndUpdate({content_type: 'forum', content_id: post._id}, {$push: {users: req.user}, $set: {modified: new Date()}}, function (err, activity) {});
+                Activity.update({content_type: 'forum', content_id: post._id}, {$push: {users: req.user}, $set: {modified: new Date()}}, function () {});
                 comment.populate('creator', 'username name profile_picture_path', function (err, comment) {
+                    if (err) {
+                        return next(err);
+                    }
                     res.json(200, comment);
                 });
             });
