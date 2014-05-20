@@ -154,7 +154,7 @@ var generate_thumbnail_for_image = function (hex, filepath, mimetype) {
                     if (err) { callback(err); }
                     else {
                         var thumbnail_path = path.join(directory, hex);
-                        var command = 'convert ' + filepath + ' -resize 200x200^ -gravity center -extent 200x200 -strip -auto-orient ' + thumbnail_path;
+                        var command = 'convert ' + filepath + ' -resize 220x220^ -gravity center -extent 220x220 -strip -auto-orient ' + thumbnail_path;
                         exec(command, function(err, stdout, stderr) {
                             if (err) {
                                 console.error(err, stderr);
