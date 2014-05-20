@@ -6,6 +6,8 @@ var moment = require('moment'),
     path = require('path'),
     mkdirp = require('mkdirp'),
     crypto = require('crypto'),
+    exec = require('child_process').exec,
+    async = require('async'),
     mongoose = require('mongoose'),
     shortid = require('short-mongo-id'),
     request = require('superagent'),
@@ -120,10 +122,69 @@ module.exports.parse_web_permissions = function (permissions, callback) {
     return perm;
 };
 
+var generate_thumbnail_for_image = function (hex, filepath, mimetype) {
+    var promise = new mongoose.Promise();
+
+    if (mimetype.match(/^image\/(png|jpeg|gif)/)) {
+        async.parallel({
+            normal: function (callback) {
+                // generate "normal" sized image: 600px wide
+                var directory = path.join(config.files.picture_prefix, hex.substr(0,2), hex.substr(2,2));
+                mkdirp(directory, function (err) {
+                    if (err) { callback(err); }
+                    else {
+                        var normal_path = path.join(directory, hex);
+                        var command = 'convert ' + filepath + ' -resize 600x -auto-orient ' + normal_path;
+                        exec(command, function(err, stdout, stderr) {
+                            if (err) {
+                                console.error(err, stderr);
+                                callback(err);
+                            }
+                            else {
+                                callback();
+                            }
+                        });
+                    }
+                });
+            },
+            thumbnail: function (callback) {
+                // generate thumbnail
+                var directory = path.join(config.files.thumbnail_prefix, hex.substr(0,2), hex.substr(2,2));
+                mkdirp(directory, function (err) {
+                    if (err) { callback(err); }
+                    else {
+                        var thumbnail_path = path.join(directory, hex);
+                        var command = 'convert ' + filepath + ' -resize 200x200^ -gravity center -extent 200x200 -strip -auto-orient ' + thumbnail_path;
+                        exec(command, function(err, stdout, stderr) {
+                            if (err) {
+                                console.error(err, stderr);
+                                callback(err);
+                            }
+                            else {
+                                callback();
+                            }
+                        });
+                    }
+                });
+            }
+        }, function (err) {
+            if (err) {
+                promise.error(err);
+            }
+            else {
+                promise.fulfill();
+            }
+        });
+    } else {
+        promise.fulfill();
+    }
+    return promise;
+};
+
 module.exports.upload_file = function (tmp_path, filename, user, param_options, callback) {
     var magic = new Magic(mmm.MAGIC_MIME_TYPE),
         options = _.extend({
-            prefix: config.files.path_prefix,
+            prefix: config.files.raw_prefix,
             permissions: {public: false, groups: [], users: []},
             tags: [],
             do_delete: true,
@@ -169,22 +230,26 @@ module.exports.upload_file = function (tmp_path, filename, user, param_options, 
                                 fs.unlinkSync(tmp_path);
                             }
 
-                            // save to database
-                            var file = new File();
-                            file._id = shortid();
-                            file.hash = hex;
-                            file.filename = filename;
-                            file.mimetype = mimetype;
-                            file.creator = user;
-                            if (options.permissions) {
-                                file.permissions = options.permissions;
-                            }
-                            if (options.tags) {
-                                _.each(options.tags, function (tag) {
-                                    file.tags.addToSet(tag.trim().toLowerCase());
+                            generate_thumbnail_for_image(hex, file_path, mimetype).then(function () {
+                                // save to database
+                                var file = new File();
+                                file._id = shortid();
+                                file.hash = hex;
+                                file.filename = filename;
+                                file.mimetype = mimetype;
+                                file.creator = user;
+                                if (options.permissions) {
+                                    file.permissions = options.permissions;
+                                }
+                                if (options.tags) {
+                                    _.each(options.tags, function (tag) {
+                                        file.tags.addToSet(tag.trim().toLowerCase());
+                                    });
+                                }
+                                file.save(function (err) {
+                                    callback(err, file);
                                 });
-                            }
-                            file.save(function (err) {
+                            }, function (err) {
                                 callback(err, file);
                             });
                         });

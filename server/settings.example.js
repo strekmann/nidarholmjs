@@ -20,9 +20,9 @@ module.exports = {
     locales: ['en'],
     defaultLocale: 'en',
     files: {
-        url_prefix: '/files',
-        raw_file_prefix: '/files/raw',
-        path_prefix: 'uploaded_files'
+        raw_prefix: 'uploaded_files/raw',
+        picture_prefix: 'uploaded_files/pictures',
+        thumbnail_prefix: 'uploaded_files/thumbnails'
     },
     organization: 'nidarholm',
     profile_picture_tag: 'profilbilde'

@@ -1,5 +1,6 @@
 var _ = require('underscore'),
     path = require('path'),
+    fs = require('fs'),
     mongoose = require('mongoose'),
     util = require('../lib/util'),
     config = require('../settings'),
@@ -46,7 +47,6 @@ module.exports.upload = function (req, res) {
         tmp_path = req.files.file.path,
         user = req.user,
         options = {
-            prefix: config.files.path_prefix,
             permissions: util.parse_web_permissions(req.body.permissions),
             tags: req.body.tags
         };
@@ -116,9 +116,47 @@ module.exports.show_file = function (req, res) {
     });
 };
 
+module.exports.normal_file = function (req, res) {
+    var filepath = req.params.path,
+        filename = req.params.filename,
+        fullpath = path.join(config.files.picture_prefix, filepath.substr(0,2), filepath.substr(2,2), filepath);
+
+    fs.exists(fullpath, function (exists) {
+        if (exists) {
+            res.sendfile(fullpath);
+        }
+        else {
+            res.send(404, 'Not found');
+        }
+    });
+};
+
 module.exports.raw_file = function (req, res) {
     var filepath = req.params.path,
-        filename = req.params.filename;
+        filename = req.params.filename,
+        fullpath = path.join(config.files.raw_prefix, filepath.substr(0,2), filepath.substr(2,2), filepath);
 
-    res.sendfile(path.join(config.files.path_prefix, filepath.substr(0,2), filepath.substr(2,2), filepath));
+    fs.exists(fullpath, function (exists) {
+        if (exists) {
+            res.sendfile(fullpath);
+        }
+        else {
+            res.send(404, 'Not found');
+        }
+    });
+};
+
+module.exports.thumbnail_file = function (req, res) {
+    var filepath = req.params.path,
+        filename = req.params.filename,
+        fullpath = path.join(config.files.thumbnail_prefix, filepath.substr(0,2), filepath.substr(2,2), filepath);
+
+    fs.exists(fullpath, function (exists) {
+        if (exists) {
+            res.sendfile(fullpath);
+        }
+        else {
+            res.send(404, 'Not found');
+        }
+    });
 };

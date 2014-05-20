@@ -251,10 +251,17 @@ module.exports.project_delete_post = function (req, res, next) {
 };
 
 module.exports.project_create_file = function (req, res, next) {
-    var id = req.params.id;
+    var id = req.params.id,
+        filepath = req.files.file.path,
+        filename = req.files.file.originalname,
+        user = req.user,
+        options = {
+            permissions: project.permissions,
+            tags: [project._id]
+        };
 
     Project.findById(id, function (err, project) {
-        upload_file(req.files.file.path, req.files.file.originalname, config.files.path_prefix, req.user, project.permissions, [project._id], function (err, file) {
+        upload_file(filepath, filename, user, options, function (err, file) {
             if (err) { throw err; }
             res.json(200, file);
         });

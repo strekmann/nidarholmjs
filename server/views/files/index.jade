@@ -19,7 +19,7 @@ block content
           .row
             .columns.small-2
               if file.is_image && file.path
-                img(src=file.path)
+                img(src=file.thumbnail_path)
             .file.columns.small-10
               a(href="/files/" + file.id)
                 h2= file.filename

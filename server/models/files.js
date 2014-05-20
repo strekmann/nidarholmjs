@@ -28,7 +28,19 @@ FileSchema.virtual('is_image').get(function () {
 
 FileSchema.virtual('path').get(function () {
     if (this.hash && this.filename) { // useful until implementation stabilizes
-        return path.join(config.files.url_prefix, this.hash, this.filename);
+        return path.join('/files', this.hash, this.filename);
+    }
+});
+
+FileSchema.virtual('picture_path').get(function () {
+    if (this.hash && this.filename) { // useful until implementation stabilizes
+        return path.join('/files/picture', this.hash, this.filename);
+    }
+});
+
+FileSchema.virtual('thumbnail_path').get(function () {
+    if (this.hash && this.filename) { // useful until implementation stabilizes
+        return path.join('/files/thumbnail', this.hash, this.filename);
     }
 });
 

@@ -40,7 +40,7 @@ client.connect(function(err) {
                         User.findById('nidarholm.' + avatar.user_id, function (err, user) {
                             if (err) { callback(err); }
                             user.profile_picture = file._id;
-                            user.profile_picture_path = file.path;
+                            user.profile_picture_path = file.thumbnail_path;
                             user.save(function (err) {
                                 callback(err);
                             });
