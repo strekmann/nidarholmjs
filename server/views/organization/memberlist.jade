@@ -24,7 +24,10 @@ block content
             .row
               .columns
                 h2
-                  = group.name
+                  if is_admin
+                    a(href="/groups/"+group.id)= group.name
+                  else
+                    = group.name
             for member in group.members
               if member && member.user
                 .member.row
