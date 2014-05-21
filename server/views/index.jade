@@ -8,7 +8,7 @@ block content
           ul#next-events.small-block-grid-4.large-block-grid-1
             for event in events
               li
-                a.event
+                a.event(href="/events/"+event.id)
                   = moment(event.start).format('Do MMMM')
                   br
                   = event.title
