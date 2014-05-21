@@ -9,8 +9,8 @@ var pg = require('pg'),
     User = require('../server/models').User;
 
 mongoose.connect('mongodb://localhost/nidarholm');
-var client = new pg.Client("postgres://nidarholm@localhost/nidarholm"),
-    root_path = '/home/sigurdga/nidarholm.data/';
+var client = new pg.Client(config.convert.pg),
+    root_path = config.convert.path_avatars;
 client.connect(function(err) {
   if(err) {
     return console.error('could not connect to postgres', err);
@@ -35,6 +35,9 @@ client.connect(function(err) {
                 }, function (err, file) {
                     if (err && err.message !== "File already exists") {
                         callback(err);
+                    }
+                    if (!file) {
+                        console.log("no file", p, basename);
                     }
                     if (avatar.primary) {
                         User.findById('nidarholm.' + avatar.user_id, function (err, user) {
