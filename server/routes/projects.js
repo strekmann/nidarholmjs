@@ -49,35 +49,40 @@ module.exports.index = function (req, res, next) {
 };
 
 module.exports.create_project = function (req, res, next) {
-    var title = req.body.title,
-        tag = req.body.tag || req.body.title,
-        permissions = util.parse_web_permissions(req.body.permissions),
-        private_mdtext = req.body.private_mdtext,
-        public_mdtext = req.body.public_mdtext,
-        start = req.body.start,
-        end = req.body.end;
+    if (!req.is_member) {
+        res.send(403, 'Forbidden');
+    }
+    else {
+        var title = req.body.title,
+            tag = req.body.tag || req.body.title,
+            permissions = util.parse_web_permissions(req.body.permissions),
+            private_mdtext = req.body.private_mdtext,
+            public_mdtext = req.body.public_mdtext,
+            start = req.body.start,
+            end = req.body.end;
 
-    var project = new Project();
-    project.title = title;
-    project._id = uslug(tag);
-    project.private_mdtext = private_mdtext;
-    project.public_mdtext = public_mdtext;
-    project.start = start;
-    project.end = end;
-    project.permissions = permissions;
-    project.creator = req.user;
+        var project = new Project();
+        project.title = title;
+        project._id = uslug(tag);
+        project.private_mdtext = private_mdtext;
+        project.public_mdtext = public_mdtext;
+        project.start = start;
+        project.end = end;
+        project.permissions = permissions;
+        project.creator = req.user;
 
-    project.save(function (err) {
-        if (err) { return next(err); }
-        res.format({
-            json: function () {
-                res.json(200, project);
-            },
-            html: function () {
-                res.redirect('/projects/' + project._id);
-            }
+        project.save(function (err) {
+            if (err) { return next(err); }
+            res.format({
+                json: function () {
+                    res.json(200, project);
+                },
+                html: function () {
+                    res.redirect('/projects/' + project._id);
+                }
+            });
         });
-    });
+    }
 };
 
 module.exports.delete_project = function (req, res, next) {
@@ -92,64 +97,81 @@ module.exports.delete_project = function (req, res, next) {
 module.exports.project = function (req, res, next) {
     var id = req.params.id;
 
-    Project.findById(id).lean().exec(function (err, project) {
+    Project.findById(id)
+    .or([
+        {creator: req.user._id},
+        {'permissions.public': true},
+        {'permissions.users': req.user._id},
+        {'permissions.groups': { $in: req.user.groups }}
+    ])
+    .lean().exec(function (err, project) {
         if (err) { return next(err); }
-        Event.find({tags: project._id}).populate('creator', 'username name').exec(function (err, events) {
-            //project = project.toObject();
-            project.events = events;
-            ForumPost.find({tags: project._id}).populate('creator', 'username name').exec(function (err, posts) {
-                project.posts = posts;
-                File.find({tags: project._id}).populate('creator', 'username name').exec(function (err, files) {
-                    project.files = files;
-                    res.format({
-                        json: function () {
-                            res.json(200, project);
-                        },
-                        html: function () {
-                            res.render('projects/project', {
-                                project: project
-                            });
-                        }
+        if (!project) {
+            res.send(404, 'Not found');
+        }
+        else {
+            Event.find({tags: project._id}).populate('creator', 'username name').exec(function (err, events) {
+                //project = project.toObject();
+                project.events = events;
+                ForumPost.find({tags: project._id}).populate('creator', 'username name').exec(function (err, posts) {
+                    project.posts = posts;
+                    File.find({tags: project._id}).populate('creator', 'username name').exec(function (err, files) {
+                        project.files = files;
+                        res.format({
+                            json: function () {
+                                res.json(200, project);
+                            },
+                            html: function () {
+                                res.render('projects/project', {
+                                    project: project
+                                });
+                            }
+                        });
                     });
                 });
             });
-        });
+        }
     });
 };
 
 module.exports.project_create_event = function (req, res, next) {
-    var id = req.params.id,
-        title = req.body.title,
-        location = req.body.location,
-        start = req.body.start,
-        end = req.body.end,
-        mdtext = req.body.mdtext;
+    if (!req.is_member) {
+        res.send(404, 'Forbidden');
+    }
+    else {
+        var id = req.params.id,
+            title = req.body.title,
+            location = req.body.location,
+            start = req.body.start,
+            end = req.body.end,
+            mdtext = req.body.mdtext;
 
-    Project.findById(id, function (err, project) {
-        if (err) { return next(err); }
-
-        var event = new Event();
-        event.tags = [project._id];
-        event.title = title;
-        event.location = location;
-        event.start = start;
-        event.end = end;
-        event.mdtext = mdtext;
-        event.creator = req.user;
-
-        event.save(function (err) {
+        Project.findById(id, function (err, project) {
             if (err) { return next(err); }
-            res.format({
-                json: function () {
-                    res.json(200, event);
-                },
-                html: function () {
-                    req.flash('success', 'Aktiviteten ble lagret');
-                    res.redirect('/projects/' + project._id);
-                }
+
+            var event = new Event();
+            event.tags = [project._id];
+            event.title = title;
+            event.location = location;
+            event.start = start;
+            event.end = end;
+            event.mdtext = mdtext;
+            event.creator = req.user;
+
+            event.save(function (err) {
+                if (err) { return next(err); }
+                res.format({
+                    json: function () {
+                        res.json(200, event);
+                    },
+                    html: function () {
+                        req.flash('success', 'Aktiviteten ble lagret');
+                        res.redirect('/projects/' + project._id);
+                    }
+                });
             });
         });
-    });
+    }
 };
 
 // TODO: Only hide. Or remove project tag. Or ask.
@@ -199,15 +221,26 @@ module.exports.events = function (req, res, next) {
 };
 
 module.exports.event = function (req, res, next) {
-    Event.findById(req.params.id, function (err, event) {
+    Event.findById(req.params.id)
+    .or([
+        {creator: req.user._id},
+        {'permissions.public': true},
+        {'permissions.users': req.user._id},
+        {'permissions.groups': { $in: req.user.groups }}
+    ]).exec(function (err, event) {
         if (err) {
             return next(err);
         }
-        res.format({
-            html: function () {
-                res.render('projects/event', {event: event});
-            }
-        });
+        if (!event) {
+            res.send(404, 'Not found');
+        }
+        else {
+            res.format({
+                html: function () {
+                    res.render('projects/event', {event: event});
+                }
+            });
+        }
     });
 };
 

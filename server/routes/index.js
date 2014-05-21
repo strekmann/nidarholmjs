@@ -9,7 +9,6 @@ var crypto = require('crypto'),
 module.exports.index = function(req, res) {
     var query;
     if (req.user) {  // we know the user
-        console.log(req.user._id);
         query = Activity.find().or([
             {'permissions.public': true},
             {'permissions.users': req.user._id},
