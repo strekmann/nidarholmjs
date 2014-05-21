@@ -70,7 +70,6 @@ module.exports = function(grunt) {
                     'bower_components/moment/moment.js',
                     'bower_components/moment/min/langs.js',
                     'bower_components/marked/lib/marked.js',
-                    'bower_components/dropzone/downloads/dropzone.js',
                     'bower_components/ractive/ractive.js',
                     'bower_components/ractive-events-tap/ractive-events-tap.js',
                     'bower_components/ractive-decorators-sortable/Ractive-decorators-sortable.js',
@@ -82,7 +81,8 @@ module.exports = function(grunt) {
                     'bower_components/unorm/lib/unorm.js',
                     'bower_components/uslug/lib/uslug.js',
                     'tmp/js/chosen.js',
-                    'client/vendor/js/*.js'
+                    'client/vendor/js/*.js',
+                    'bower_components/dropzone/downloads/dropzone.js'
                 ],
                 dest: 'public/js/vendor.js'
             }
