@@ -43,37 +43,42 @@ module.exports.index = function (req, res) {
 };
 
 module.exports.upload = function (req, res) {
-    var filename = req.files.file.originalname,
-        tmp_path = req.files.file.path,
-        user = req.user,
-        options = {
-            permissions: util.parse_web_permissions(req.body.permissions),
-            tags: req.body.tags
-        };
+    if (!req.is_member) {
+        res.send(403, "Forbidden");
+    }
+    else {
+        var filename = req.files.file.originalname,
+            tmp_path = req.files.file.path,
+            user = req.user,
+            options = {
+                permissions: util.parse_web_permissions(req.body.permissions),
+                tags: req.body.tags
+            };
 
-    util.upload_file(tmp_path, filename, user, options, function (err, file) {
-        if (err) { throw err; }
+        util.upload_file(tmp_path, filename, user, options, function (err, file) {
+            if (err) { throw err; }
 
-        var activity = new Activity();
-        activity.content_type = 'upload';
-        activity.content_id = file._id;
-        activity.title = file.filename;
-        activity.users.push(req.user);
-        activity.permissions = file.permissions;
-        activity.save(function (err) {});
+            var activity = new Activity();
+            activity.content_type = 'upload';
+            activity.content_id = file._id;
+            activity.title = file.filename;
+            activity.users.push(req.user);
+            activity.permissions = file.permissions;
+            activity.save(function (err) {});
 
-        res.format({
-            json: function () {
-                file.populate('creator', 'username name', function (err, file) {
-                    if (err) { throw err; }
-                    res.json(200, file);
-                });
-            },
-            html: function () {
-                res.redirect("/files");
-            }
+            res.format({
+                json: function () {
+                    file.populate('creator', 'username name', function (err, file) {
+                        if (err) { throw err; }
+                        res.json(200, file);
+                    });
+                },
+                html: function () {
+                    res.redirect("/files");
+                }
+            });
         });
-    });
+    }
 };
 
 module.exports.update = function (req, res) {
@@ -111,8 +116,18 @@ module.exports.delete_file = function (req, res, next) {
 };
 
 module.exports.show_file = function (req, res) {
-    File.findById(req.params.id, function (err, file) {
-        res.render('files/show_file', {file: file});
+    File.findById(req.params.id).or([
+        {creator: req.user._id},
+        {'permissions.public': true},
+        {'permissions.users': req.user._id},
+        {'permissions.groups': { $in: req.user.groups }}
+    ]).exec(function (err, file) {
+        if (!file) {
+            res.send(404, 'Not found');
+        }
+        else {
+            res.render('files/show_file', {file: file});
+        }
     });
 };
 

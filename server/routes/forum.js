@@ -57,30 +57,35 @@ module.exports.index = function (req, res, next) {
 };
 
 module.exports.create_post = function (req, res, next) {
-    var post = new ForumPost();
-    post._id = shortid();
-    post.title = req.body.title;
-    post.creator = req.user;
-    post.mdtext = req.body.mdtext;
-    post.permissions = parse_web_permissions(req.body.permissions);
-    post.save(function (err) {
-        if (err) {
-            return next(err);
-        }
-        var activity = new Activity();
-        activity.content_type = 'forum';
-        activity.content_id = post._id;
-        activity.title = post.title;
-        activity.users.push(req.user);
-        activity.permissions = post.permissions;
-        activity.save(function (err) {});
-        if (err) {
-            return next(err);
-        }
-        post.populate('creator', function (err, post) {
-            res.json(200, post);
+    if (!req.is_member) {
+        res.json(403, 'Forbidden');
+    }
+    else {
+        var post = new ForumPost();
+        post._id = shortid();
+        post.title = req.body.title;
+        post.creator = req.user;
+        post.mdtext = req.body.mdtext;
+        post.permissions = parse_web_permissions(req.body.permissions);
+        post.save(function (err) {
+            if (err) {
+                return next(err);
+            }
+            var activity = new Activity();
+            activity.content_type = 'forum';
+            activity.content_id = post._id;
+            activity.title = post.title;
+            activity.users.push(req.user);
+            activity.permissions = post.permissions;
+            activity.save(function (err) {});
+            if (err) {
+                return next(err);
+            }
+            post.populate('creator', function (err, post) {
+                res.json(200, post);
+            });
         });
-    });
+    }
 };
 
 module.exports.update_post = function (req, res, next) {
@@ -125,55 +130,84 @@ module.exports.delete_post = function (req, res, next) {
 
     ForumPost.findByIdAndRemove(id, function (err, post) {
         if (err) { return next(err); }
-        Activity.findOneAndRemove({content_type: 'forum', content_id: post._id}, function (err, activity) {});
-        res.json(200, post);
+        if (post.creator === req.user || req.is_admin) {
+            Activity.findOneAndRemove({content_type: 'forum', content_id: post._id}, function (err, activity) {});
+            res.json(200, post);
+        }
+        else {
+            res.json(403, 'Forbidden');
+        }
     });
 };
 
 module.exports.get_post = function (req, res, next) {
 
-    ForumPost.findById(req.params.id).populate('creator').populate('replies.creator', 'username name profile_picture_path').populate('replies.comments.creator', 'username name profile_picture_path').exec(function (err, post) {
+    ForumPost.findById(req.params.id)
+    .or([
+        {creator: req.user._id},
+        {'permissions.public': true},
+        {'permissions.users': req.user._id},
+        {'permissions.groups': { $in: req.user.groups }}
+    ])
+    .populate('creator').populate('replies.creator', 'username name profile_picture_path').populate('replies.comments.creator', 'username name profile_picture_path').exec(function (err, post) {
         if (err) {
             return next(err);
         }
 
-        post.replies.reverse();
+        if (!post) {
+            res.send(404, 'Not found');
+        }
+        else {
+            post.replies.reverse();
 
-        res.format({
-            json: function(){
-                res.json(200, post);
-            },
+            res.format({
+                json: function(){
+                    res.json(200, post);
+                },
 
-            html: function(){
-                res.render('forum/thread', {
-                    post: post
-                });
-            }
-        });
+                html: function(){
+                    res.render('forum/thread', {
+                        post: post
+                    });
+                }
+            });
+        }
     });
 };
 
 module.exports.create_reply = function (req, res, next) {
     var postid = req.params.postid;
 
-    ForumPost.findById(postid, function (err, post) {
+    ForumPost.findById(postid)
+    .or([
+        {creator: req.user._id},
+        {'permissions.public': true},
+        {'permissions.users': req.user._id},
+        {'permissions.groups': { $in: req.user.groups }}
+    ])
+    .exec(function (err, post) {
         if (err) {
             return next(err);
         }
-        var reply = new ForumReply();
-        reply.mdtext = req.body.mdtext;
-        reply.creator = req.user;
+        if (!post) {
+            res.json(404, 'Not found');
+        }
+        else {
+            var reply = new ForumReply();
+            reply.mdtext = req.body.mdtext;
+            reply.creator = req.user;
 
-        post.replies.push(reply);
-        post.save(function (err) {
-            if (err) {
-                return next(err);
-            }
-            Activity.update({content_type: 'forum', content_id: post._id}, {$push: {users: req.user}, $set: {modified: new Date()}}, function () {});
-            reply.populate('creator', 'username name profile_picture_path', function (err, reply) {
-                res.json(200, reply);
+            post.replies.push(reply);
+            post.save(function (err) {
+                if (err) {
+                    return next(err);
+                }
+                Activity.update({content_type: 'forum', content_id: post._id}, {$push: {users: req.user}, $set: {modified: new Date()}}, function () {});
+                reply.populate('creator', 'username name profile_picture_path', function (err, reply) {
+                    res.json(200, reply);
+                });
             });
-        });
+        }
     });
 };
 
@@ -225,7 +259,14 @@ module.exports.update_reply = function (req, res, next) {
     });
 };
 module.exports.get_replies = function (req, res, next) {
-    ForumPost.findById(req.params.id, function (err, post) {
+    ForumPost.findById(req.params.id)
+    .or([
+        {creator: req.user._id},
+        {'permissions.public': true},
+        {'permissions.users': req.user._id},
+        {'permissions.groups': { $in: req.user.groups }}
+    ])
+    .exec(function (err, post) {
         if (err) {
             return next(err);
         }
