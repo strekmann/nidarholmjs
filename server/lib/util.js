@@ -181,26 +181,18 @@ var generate_thumbnail_for_image = function (hex, filepath, mimetype) {
     return promise;
 };
 
-module.exports.upload_file = function (tmp_path, filename, user, param_options, callback) {
+var save_file = function (tmp_path, prefix, do_delete) {
     var magic = new Magic(mmm.MAGIC_MIME_TYPE),
-        options = _.extend({
-            prefix: config.files.raw_prefix,
-            permissions: {public: false, groups: [], users: []},
-            tags: [],
-            do_delete: true,
-            do_create_duplicates_in_database: true
-        }, param_options),
-        prefix = options.prefix;
+        promise = new mongoose.Promise();
 
     magic.detectFile(tmp_path, function(err, mimetype) {
-        if (err) { throw err; }
+        if (err) { promise.error(err); }
 
         var hash = crypto.createHash('sha1');
         var stream = fs.createReadStream(tmp_path);
         stream.on('data', function (data) {
             hash.update(data);
         });
-
         stream.on('end', function () {
             var hex = hash.digest('hex');
 
@@ -213,11 +205,13 @@ module.exports.upload_file = function (tmp_path, filename, user, param_options, 
             var file_path = path.join(directory, hex);
 
             fs.exists(file_path, function (exists) {
-                if (!exists || options.do_create_duplicates_in_database) {
+                if (exists) {
+                    promise.fulfill(hex, mimetype);
+                }
+                else {
 
-                    // make sure directories exists
                     mkdirp(directory, function (err) {
-                        if (err) { throw err; }
+                        if (err) { promise.error(err); }
 
                         // move file (or copy + unlink)
                         // fs.rename does not work from tmp to other partition
@@ -226,44 +220,59 @@ module.exports.upload_file = function (tmp_path, filename, user, param_options, 
 
                         is.pipe(os);
                         is.on('end',function() {
-                            if (options.do_delete) {
+                            if (do_delete) {
                                 fs.unlinkSync(tmp_path);
                             }
 
                             generate_thumbnail_for_image(hex, file_path, mimetype).then(function () {
-                                // save to database
-                                var file = new File();
-                                file._id = shortid();
-                                file.hash = hex;
-                                file.filename = filename;
-                                file.mimetype = mimetype;
-                                file.creator = user;
-                                if (options.permissions) {
-                                    file.permissions = options.permissions;
-                                }
-                                if (options.tags) {
-                                    _.each(options.tags, function (tag) {
-                                        file.tags.addToSet(tag.trim().toLowerCase());
-                                    });
-                                }
-                                file.save(function (err) {
-                                    callback(err, file);
-                                });
-                            }, function (err) {
-                                callback(err, file);
+                                promise.fulfill(hex, mimetype);
                             });
                         });
                     });
-                } else {
-                    if (!options.do_create_duplicates_in_database) {
-                        File.findOne({filename: filename, hash: hex}, function (err, file) {
-                            callback(err, file);
-                        });
-                    } else {
-                        callback(new Error('File already exists'), null);
-                    }
                 }
             });
+        });
+    });
+    return promise;
+};
+
+module.exports.upload_file = function (tmp_path, filename, user, param_options, callback) {
+    var options = _.extend({
+            prefix: config.files.raw_prefix,
+            permissions: {public: false, groups: [], users: []},
+            tags: [],
+            do_delete: true,
+            do_create_duplicates_in_database: true
+        }, param_options);
+
+    save_file(tmp_path, options.prefix, options.do_delete).then(function (hex, mimetype) {
+        File.findOne({filename: filename, hash: hex}, function (err, file) {
+            if (err) {
+                callback(err);
+            }
+            if (!file || options.do_create_duplicates_in_database) {
+                // save to database
+                file = new File();
+                file._id = shortid();
+                file.hash = hex;
+                file.filename = filename;
+                file.mimetype = mimetype;
+                file.creator = user;
+                if (options.permissions) {
+                    file.permissions = options.permissions;
+                }
+                if (options.tags) {
+                    _.each(options.tags, function (tag) {
+                        file.tags.addToSet(tag.trim().toLowerCase());
+                    });
+                }
+                file.save(function (err) {
+                    callback(err, file);
+                });
+            }
+            else {
+                callback(null, file);
+            }
         });
     });
 };
