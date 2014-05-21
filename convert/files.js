@@ -6,6 +6,7 @@ var pg = require('pg'),
     path = require('path'),
     util = require('../server/lib/util'),
     config = require('../server/settings'),
+    Group = require('../server/models').Group,
     User = require('../server/models').User;
 
 mongoose.connect('mongodb://localhost/nidarholm');
@@ -16,11 +17,11 @@ var get_permissions = function (groupid) {
     var promise = new mongoose.Promise();
 
     var permissions = {public: false, groups: [], users: []};
-    if (!post.group_id) {
+    if (!groupid) {
         permissions.public = true;
         promise.fulfill(permissions);
     } else {
-        Group.findOne({old_id: post.group_id}, function (err, group) {
+        Group.findOne({old_id: groupid}, function (err, group) {
             if (err) { promise.error(err);}
             permissions.groups.push(group._id);
             promise.fulfill(permissions);
@@ -38,14 +39,14 @@ client.connect(function(err) {
             return console.error('error running query', err);
         }
 
-        async.each(result.rows, function (file, callback) {
+        async.eachLimit(result.rows, 256, function (file, callback) {
             var original_path = path.join(root_path, file.file);
             var exists = fs.existsSync(original_path);
             var basename = path.basename(file.file);
 
             if (exists) {
-                get_permissions().then(function (permissions) {
-                    util.upload_file(original_path, filename, 'nidarholm.' + file.user_id,
+                get_permissions(file.group_id).then(function (permissions) {
+                    util.upload_file(original_path, file.filename, 'nidarholm.' + file.user_id,
                                      {
                                          tags: util.tagify(file.tags),
                                          permissions: permissions,
@@ -59,7 +60,8 @@ client.connect(function(err) {
                                      });
                 });
             } else {
-                callback(new Error("File not found at", original_path));
+                console.error("File not found at " + original_path + ": " + file.filename);
+                callback();
             }
         }, function (err) {
             if (err) {
