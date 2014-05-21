@@ -12,7 +12,7 @@ var pg = require('pg'),
     ForumComment = require('../server/models/forum').ForumComment;
 
 mongoose.connect('mongodb://localhost/nidarholm');
-var client = new pg.Client("postgres://nidarholm@localhost/nidarholm");
+var client = new pg.Client(config.convert.pg);
 
 var log = new (winston.Logger)({
     transports: [

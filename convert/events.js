@@ -10,7 +10,7 @@ var pg = require('pg'),
     Event = require('../server/models/projects').Event;
 
 mongoose.connect('mongodb://localhost/nidarholm');
-var client = new pg.Client("postgres://nidarholm@localhost/nidarholm");
+var client = new pg.Client(config.convert.pg);
 
 var log = new (winston.Logger)({
     transports: [

@@ -7,7 +7,7 @@ var pg = require('pg'),
     User = require('../server/models').User;
 
 mongoose.connect('mongodb://localhost/nidarholm');
-var client = new pg.Client("postgres://nidarholm@localhost/nidarholm");
+var client = new pg.Client(config.convert.pg);
 
 var postcode_cache = {};
 var promise_city = function (postcode) {

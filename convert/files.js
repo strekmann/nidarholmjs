@@ -9,8 +9,8 @@ var pg = require('pg'),
     User = require('../server/models').User;
 
 mongoose.connect('mongodb://localhost/nidarholm');
-var client = new pg.Client("postgres://nidarholm@localhost/nidarholm"),
-    root_path = '/home/sigurdga/originals/';
+var client = new pg.Client(config.convert.pg),
+    root_path = config.convert.path_files;
 
 var get_permissions = function (groupid) {
     var promise = new mongoose.Promise();

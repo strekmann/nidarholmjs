@@ -8,7 +8,7 @@ var pg = require('pg'),
     Group = require('../server/models').Group;
 
 mongoose.connect('mongodb://localhost/nidarholm');
-var client = new pg.Client("postgres://nidarholm@localhost/nidarholm");
+var client = new pg.Client(config.convert.pg);
 client.connect(function(err) {
   if(err) {
     return console.error('could not connect to postgres', err);
