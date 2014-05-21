@@ -20,7 +20,7 @@ module.exports = {
     locales: ['en'],
     defaultLocale: 'en',
     files: {
-        raw_prefix: 'uploaded_files/raw',
+        raw_prefix: 'uploaded_files',
         picture_prefix: 'uploaded_files/pictures',
         thumbnail_prefix: 'uploaded_files/thumbnails'
     },
