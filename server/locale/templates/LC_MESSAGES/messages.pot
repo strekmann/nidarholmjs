@@ -6,10 +6,11 @@ msgstr ""
 "Language: \n"
 "MIME-Version: 1.0\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2014-05-08 12:57+0000\n"
+"POT-Creation-Date: 2014-05-21 14:11+0000\n"
 "Content-Type: text/plain;\n"
 
 #: server/routes/index.js:81
+#: server/routes/index.js:123
 msgid "Username already taken"
 msgstr ""
 
