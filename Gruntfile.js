@@ -64,7 +64,7 @@ module.exports = function(grunt) {
             vendor: {
                 src: [
                     'bower_components/underscore/underscore.js',
-                    'bower_components/foundation/js/vendor/jquery.js',
+                    'bower_components/jquery/dist/jquery.js',
                     //'bower_components/foundation/js/vendor/fastclick.js',
                     'bower_components/foundation/js/foundation.js',
                     'bower_components/moment/moment.js',
@@ -92,7 +92,7 @@ module.exports = function(grunt) {
                 expand: true,
                 flatten: true,
                 filter: 'isFile',
-                src: ['bower_components/foundation/js/vendor/modernizr.js'],
+                src: ['bower_components/modernizr/modernizr.js'],
                 dest: 'public/js/'
             },
             font: {
