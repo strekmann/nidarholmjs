@@ -145,6 +145,9 @@ module.exports.upcomingView = function (events) {
             marked: function (mdtext) {
                 return marked(mdtext);
             },
+            ago: function (date) {
+                return moment(date).fromNow();
+            },
             daterange: function (start, end) {
                 var startm, endm;
                 if (end) {
