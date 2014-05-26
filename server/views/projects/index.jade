@@ -68,8 +68,13 @@ block content
     .project(data-id="{{_id}}")
       h1
         a(href="/projects/{{_id}}") {{title}}
-      p {{{daterange(start, end)}}}
-      {{{marked(private_mdtext)}}}
+      .meta
+        .row
+          .columns.small-9
+            {{{daterange(start, end)}}}
+      .content
+        .row
+          .columns {{{marked(private_mdtext)}}}
     // {{/project}}
 
 block javascript

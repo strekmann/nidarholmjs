@@ -5,11 +5,20 @@ block content
     .row
       .medium-8.columns
         h1= project.title
-        = project.start
-        = project.end
-        p.
-        = project.private_mdtext
-        = project.public_mdtext
+        .meta
+          .row
+            .columns
+              = project.start
+              = project.end
+        .content
+          if project.private_mdtext
+            .row
+              .columns
+                != marked(project.private_mdtext)
+          if project.public_mdtext
+            .row
+              .columns
+                != marked(project.public_mdtext)
 
         #forum
           for post in project.posts

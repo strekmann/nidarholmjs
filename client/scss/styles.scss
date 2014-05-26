@@ -518,6 +518,45 @@ nav.top-bar {
         }
     }
 }
+#projects,
+#project {
+    .meta {
+        border-top: 1px solid $hr-border-color;
+        padding-top: rem-calc(2px);
+        font-size: rem-calc(12px);
+        font-family: $serif-font;
+        margin-bottom: 1em;
+
+        a {
+            color: $body-font-color;
+            text-transform: uppercase;
+        }
+
+        i.fa {
+            margin-left: 0.5em;
+            //color: $hr-border-color;
+            transition: color 300ms;
+
+            &:hover {
+                color: $body-font-color;
+                transition: color 300ms;
+            }
+        }
+    }
+    .content {
+        font-family: $serif-font;
+        line-height: 1.4;
+
+        h1 {
+            font-family: $body-font-family;
+            font-style: normal;
+            font-size: $h1-font-size - rem-calc(16px);
+        }
+        h2 { font-size: $h2-font-size - rem-calc(12px); }
+        h3 { font-size: $h3-font-size - rem-calc(5px); }
+        h4 { font-size: $h4-font-size - rem-calc(3px); }
+    }
+}
 #events {
     .meta {
         border-top: 1px solid $hr-border-color;
