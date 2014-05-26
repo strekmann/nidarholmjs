@@ -112,8 +112,11 @@ block content
                 | {{{daterange(start, end)}}}
             .columns.small-3.text-right
               permissionicons(permissions="{{permissions}}")
-        | {{{marked(private_mdtext)}}}
-        | {{{marked(public_mdtext)}}}
+        .content
+          .row
+            .columns
+              | {{{marked(private_mdtext)}}}
+              | {{{marked(public_mdtext)}}}
 
         #forum
           | {{#posts}}
@@ -184,9 +187,9 @@ block content
     .event
       h3 {{title}}
       .meta
-        | {{shortdate(start)}} {{shortdate(end)}}
-        a.deleteevent(on-click="deleteEvent" href="/projects/{{../../_id}}/events/{{_id}}")
-          i.fa.fa-trash-o
+        | {{{daterange(start, end)}}}
+      .content
+        | {{{marked(mdtext)}}}
     // {{/event}}
 
     // {{>file}}

@@ -1,9 +1,9 @@
-var ProjectList = require('./ractive/project');
+var Project = require('./ractive/project');
 
 module.exports.projectListView = function (projects) {
     var internal_editor;
 
-    var projectlist = new ProjectList({
+    var projectlist = new Project({
         el: '#projects',
         template: '#template',
         data: {
