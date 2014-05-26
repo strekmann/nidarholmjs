@@ -30,11 +30,11 @@ var Project = Ractive.extend({
             if (start && end) {
                 startm = moment(start);
                 endm = moment(end);
-                startd = moment.utc(startm).startOf('day');
-                endd = moment.utc(endm).startOf('day');
+                startd = moment(start).startOf('day');
+                endd = moment(end).startOf('day');
                 if (startm.isSame(endm, 'day')) {
                     // same day
-                    if (moment.utc(startm).isSame(startd, 'second') && moment.utc(endm).isSame(endd, 'second')) {
+                    if (moment.utc(startm).isSame(startd, 'second') && moment(endm).isSame(endd, 'second')) {
                         return '<time class="start" datetime="' + startm.format() + '">' + startm.format('LL') + '</time>';
                     }
                     else {
@@ -43,7 +43,7 @@ var Project = Ractive.extend({
                 }
                 else {
                     // different days
-                    if (moment.utc(startm).isSame(startd, 'second') && moment.utc(endm).isSame(endd, 'second')) {
+                    if (startm.isSame(startd, 'second') && endm.isSame(endd, 'second')) {
                         return '<time class="start" datetime="' + startm.format() + '">' + startm.format('LL') + '</time> – <time class="end" datetime="' + endm.format() + '">' + endm.format('LL') + '</time>';
                     }
                     else {
