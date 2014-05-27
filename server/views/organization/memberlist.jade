@@ -41,7 +41,9 @@ block content
                       | &nbsp;
                   if active_user && is_member
                     .medium-2.columns
-                      = member.user.phone
+                      if member.user.phone
+                        a(href='tel:'+member.user.phone)
+                          = phoneformat(member.user.phone)
                     .medium-4.columns
                       a(href="mailto:" + member.user.email)
                         = member.user.email

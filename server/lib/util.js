@@ -281,3 +281,21 @@ module.exports.prettyhost = function (url) {
     url = url.replace(/^https?:\/\/(?:www\.)?/, '');
     return url;
 };
+
+module.exports.phoneformat = function (number) {
+    var original = number;
+    number = number.replace(/^\+47/).trim();
+    if (number.length === 8) {
+        // let's say it's a norwegian number
+        if (number.match(/^(?:4|9)/)) {
+            // mobile xxx xx xxx
+            return number.substr(0, 3) + " " + number.substr(3, 2) + " " + number.substr(5, 3);
+        }
+        else {
+            return number.substr(0, 2) + " " + number.substr(2, 2) + " " + number.substr(4 ,2) + " " + number.substr(6, 2);
+        }
+    }
+    else {
+        return original;
+    }
+};

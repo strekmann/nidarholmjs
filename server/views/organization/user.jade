@@ -147,9 +147,10 @@ block content
 
         | {{#phone}}
         p.phone
-          i.fa.fa-phone
-          | &nbsp;
-          | {{phoneformat(phone)}}
+          a(href="tel:{{phone}}")
+            i.fa.fa-phone
+            | &nbsp;
+            | {{phoneformat(phone)}}
         | {{/phone}}
 
         .address

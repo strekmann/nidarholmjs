@@ -60,6 +60,7 @@ app.configure(function(){
         res.locals.longdate = util.longdate;
         res.locals.ago = util.ago;
         res.locals.prettyhost = util.prettyhost;
+        res.locals.phoneformat = util.phoneformat;
         next();
     });
 
