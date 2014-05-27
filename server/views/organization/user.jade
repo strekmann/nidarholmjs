@@ -200,27 +200,30 @@ block content
           | {{#groups}}
           li.group
             a(href="/groups/{{_id}}") {{name}}
-            a.removegroup(on-click="removeGroup" href="/users/{{../../username}}/groups/{{_id}}")
-              i.fa.fa-times
+            if is_admin
+              a.removegroup(on-click="removegroup" href="/users/{{../../username}}/groups/{{_id}}")
+                | &nbsp;
+                i.fa.fa-times
           | {{/groups}}
 
-        #addgroup
-          //button.new_group.small
-            i.fa.fa-plus
-          form(on-submit="addGroup" method="POST" action="/users/{{username}}/groups")
-            .row
-              .columns
-                h3 Legg til i grupper
-            .row
-              .columns
-                label(for='group') Finn gruppe
-                select#group
-                  for group in groups
-                    option(value=group.id)= group.name
-            .row
-              .columns
-                //button.reset.secondary(type='reset') Avbryt
-                button.tiny Legg til
+        if is_admin
+          #addgroup
+            //button.new_group.small
+              i.fa.fa-plus
+            form(on-submit="addGroup" method="POST" action="/users/{{username}}/groups")
+              .row
+                .columns
+                  h3 Legg til i grupper
+              .row
+                .columns
+                  label(for='group') Finn gruppe
+                  select#group
+                    for group in groups
+                      option(value=group.id)= group.name
+              .row
+                .columns
+                  //button.reset.secondary(type='reset') Avbryt
+                  button.tiny Legg til
     | {{/user}}
 
 block javascript
