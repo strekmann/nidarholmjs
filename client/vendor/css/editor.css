@@ -68,7 +68,7 @@ you can use the generic selector below, but it's slower:
 	content: "\f046";
 }
 .icon-fullscreen:before {
-	content: "\f047";
+	content: "\f0b2";
 }
 .icon-question:before {
 	content: "\f059";
@@ -382,10 +382,12 @@ div.CodeMirror span.CodeMirror-nonmatchingbracket {color: #f22;}
   text-indent: -10px;
   margin: 0 6px;
 }
+/*
 .editor-toolbar a.icon-fullscreen {
   position: absolute;
   right: 0;
 }
+*/
 .editor-statusbar {
   /*border-top: 1px solid #ece9e9;
   padding: 8px 10px;*/

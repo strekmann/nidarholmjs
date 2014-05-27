@@ -41,12 +41,8 @@ block content
             input#title(name="title" type="text")
         .row
           .columns
-            label(for="mdtext-ace") Innhold
-            #mdtext
-          .columns.show-for-large-up
-            label(for="mdpreview") Forhåndsvisning
-            #mdpreview
-              | {{{marked(mdpreview)}}}
+            label(for="mdtext") Innhold
+            textarea#mdtext(name="mdtext")
         .row
           .columns
             label(for="permissions") Rettigheter

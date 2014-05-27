@@ -15,6 +15,12 @@ var checkAreaSize = function(openSize) {
     };
 };
 
+var setup_editor = function (element_id) {
+    var editor = new Editor($(element_id));
+    editor.render();
+    return editor;
+};
+
 module.exports.threadView = function(post, active_user){
     var forum = new Forum({
         el: '#forum',
@@ -180,7 +186,7 @@ module.exports.threadView = function(post, active_user){
 };
 
 module.exports.forumView = function (posts) {
-    var ace_edit,
+    var md_editor,
         forum = new Forum({
             el: '#forum',
             template: '#template',
@@ -195,7 +201,7 @@ module.exports.forumView = function (posts) {
         var node = $(event.node),
             post = {
                 title: node.find('#title').val(),
-                mdtext: ace_edit.getSession().getValue(),
+                mdtext: node.find('#mdtext').val(),
                 permissions: node.find('#permissions').val()
             };
 
@@ -232,19 +238,7 @@ module.exports.forumView = function (posts) {
         setTimeout(function(){
             if (forum.get('expanded')){
                 $('.chosen-permissions').chosen({width: '100%'});
-                ace_edit = ace.edit('mdtext');
-                ace_edit.setTheme('ace/theme/tomorrow');
-                ace_edit.getSession().setMode('ace/mode/markdown');
-                ace_edit.getSession().setUseWrapMode(true);
-
-                $('#mdtext textarea').attr('id', 'mdtext-ace');
-
-                ace_edit.on('change', function(e){
-                    // only update ractive data if preview is visible
-                    if($('#mdpreview').is(':visible')){
-                        forum.set('mdpreview', ace_edit.getValue());
-                    }
-                });
+                md_editor = setup_editor('#mdtext');
             }
         }, 1);
     });

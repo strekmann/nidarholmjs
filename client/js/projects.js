@@ -1,5 +1,11 @@
 var Project = require('./ractive/project');
 
+var setup_editor = function (element_id) {
+    var editor = new Editor($(element_id));
+    editor.render();
+    return editor;
+};
+
 module.exports.projectListView = function (projects) {
     var internal_editor;
 
@@ -21,8 +27,7 @@ module.exports.projectListView = function (projects) {
         this.toggle('expanded');
         setTimeout(function(){
             if (projectlist.get('expanded')) {
-                internal_editor = new Editor($('#private_mdtext'));
-                internal_editor.render();
+                internal_editor = setup_editor('#private_mdtext');
             }
         }, 1);
     });
