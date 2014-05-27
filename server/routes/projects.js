@@ -110,7 +110,7 @@ module.exports.project = function (req, res, next) {
             res.send(404, 'Not found');
         }
         else {
-            Event.find({tags: project._id}).populate('creator', 'username name').exec(function (err, events) {
+            Event.find({tags: project._id}).populate('creator', 'username name').sort('start').exec(function (err, events) {
                 //project = project.toObject();
                 project.events = events;
                 ForumPost.find({tags: project._id}).populate('creator', 'username name').exec(function (err, posts) {

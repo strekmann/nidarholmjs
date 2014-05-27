@@ -58,12 +58,8 @@ block content
             .event
               h3= event.title
               .meta
-                | Av 
-                = event.creator.name
                 = shortdate(event.start)
                 = shortdate(event.end)
-                a.deleteevent(href="/projects/" + project._id + "/events/" + event._id)
-                  i.fa.fa-trash-o
 
         form(action="/projects/" + project._id + "/events" method="post")
           h2 Legg til aktivitet
@@ -185,11 +181,10 @@ block content
 
     // {{>event}}
     .event
-      h3 {{title}}
+      h3
+        a(href="/events/{{_id}}") {{title}}
       .meta
         | {{{daterange(start, end)}}}
-      .content
-        | {{{marked(mdtext)}}}
     // {{/event}}
 
     // {{>file}}
