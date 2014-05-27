@@ -25,7 +25,8 @@ module.exports = {
         thumbnail_prefix: 'uploaded_files/thumbnails'
     },
     organization: 'nidarholm',
-    profile_picture_tag: 'profilbilde'
+    profile_picture_tag: 'profilbilde',
+    news_tag: 'nyheter'
 };
 
 /* secret gen: cat /dev/urandom| base64 | fold -w 64 */

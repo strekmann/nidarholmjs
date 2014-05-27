@@ -1,6 +1,8 @@
 var crypto = require('crypto'),
     moment = require('moment'),
+    config = require('../settings'),
     User = require('../models').User,
+    ForumPost = require('../models/forum').ForumPost,
     Activity = require('../models').Activity,
     Project = require('../models/projects').Project,
     Event = require('../models/projects').Event;
@@ -80,13 +82,22 @@ module.exports.index = function(req, res) {
             .sort('end')
             .limit(2);
             query.exec(function (err, projects) {
-                res.format({
-                    html: function () {
-                        res.render('index', {
-                            projects: projects,
-                            events: events
-                        });
-                    }
+                ForumPost
+                .find({'permissions.public': true, 'tags': config.news_tag})
+                .sort('-created')
+                .limit(5)
+                .populate('creator', 'name username')
+                .exec(function (err, posts) {
+                    res.format({
+                        html: function () {
+                            res.render('index', {
+                                news_tag: config.news_tag,
+                                posts: posts,
+                                projects: projects,
+                                events: events
+                            });
+                        }
+                    });
                 });
             });
         });
