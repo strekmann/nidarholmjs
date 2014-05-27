@@ -565,17 +565,22 @@ module.exports.edit_organization = function (req, res, next) {
 
 module.exports.update_organization = function (req, res, next) {
     if (req.is_admin) {
-        var contact_text = req.body.contact_text,
+        var name = req.body.name,
+            contact_text = req.body.contact_text,
             visitor_address = req.body.visitor_address,
             mail_address = req.body.mail_address,
             postcode = req.body.postcode,
             city = req.body.city,
             email = req.body.email,
             organization_number = req.body.organization_number,
-            public_bank_account = req.body.public_bank_account;
+            public_bank_account = req.body.public_bank_account,
+            map_url = req.body.map_url,
+            facebook = req.body.facebook,
+            twitter = req.body.twitter;
 
         var org = req.organization;
 
+        org.name = name;
         org.contact_text = contact_text;
         org.visitor_address = visitor_address;
         org.mail_address = mail_address;
@@ -584,6 +589,9 @@ module.exports.update_organization = function (req, res, next) {
         org.email = email;
         org.organization_number = organization_number;
         org.public_bank_account = req.body.public_bank_account;
+        org.map_url = map_url;
+        org.social_media.facebook = facebook;
+        org.social_media.twitter = twitter;
 
         org.save(function (err) {
             res.redirect('/contact');

@@ -59,6 +59,7 @@ app.configure(function(){
         res.locals.shortdate = util.shortdate;
         res.locals.longdate = util.longdate;
         res.locals.ago = util.ago;
+        res.locals.prettyhost = util.prettyhost;
         next();
     });
 

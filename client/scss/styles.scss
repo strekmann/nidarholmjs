@@ -224,6 +224,11 @@ footer {
         padding-top: rem-calc(7px);
         text-align: center;
     }
+
+    p {
+        display: inline;
+        font-size: inherit;
+    }
 }
 
 #flash {
@@ -597,5 +602,11 @@ span.permissions {
 
     .private {
         color: $alert-color;
+    }
+}
+
+#contact {
+    figure {
+        margin: 0;
     }
 }

@@ -276,3 +276,8 @@ module.exports.upload_file = function (tmp_path, filename, user, param_options, 
         });
     });
 };
+
+module.exports.prettyhost = function (url) {
+    url = url.replace(/^https?:\/\/(?:www\.)?/, '');
+    return url;
+};

@@ -147,11 +147,16 @@ html(lang=lang dir=lang_dir)
                 i.fa.fa-envelope-o
                 != organization.encoded_email
                 br
-                i.fa.fa-facebook
-                | facebook.com/nidarholm
-                br
-                i.fa.fa-twitter
-                | twitter.com/nidarholm
+                if organization.social_media.facebook
+                  a(href=organization.social_media.facebook)
+                    i.fa.fa-facebook
+                    = prettyhost(organization.social_media.facebook)
+                  br
+                if organization.social_media.twitter
+                  a(href=organization.social_media.twitter)
+                    i.fa.fa-twitter
+                    = prettyhost(organization.social_media.twitter)
+                  br
             .row
               .columns
                 .bystrekmann

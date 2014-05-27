@@ -1,7 +1,7 @@
 extends ../layouts/main
 
 block content
-  section#contacts
+  section#contact
     .row
       .columns.medium-3
         if is_admin
@@ -13,16 +13,12 @@ block content
         .row
           .columns
             h5 Epost
-        .row
-          .columns
-            != organization.encoded_email
+            .email!= marked('<'+organization.email+'>')
 
         if organization.visitor_address
           .row
             .columns
               h5 Besøksadresse
-          .row
-            .columns
               p= organization.visitor_address
 
         if organization.mail_address
@@ -30,34 +26,32 @@ block content
             .columns
               h5 Postadresse
               p
-                .address= organization.mail_address
-                .location
-                  = organization.postcode
-                  | &nbsp;&nbsp;
-                  = organization.city
+                = organization.mail_address
+                br
+                = organization.postcode
+                | &nbsp;&nbsp;
+                = organization.city
 
         if organization.organization_number
           .row
             .columns
               h5 Organisasjonsnummer
-          .row
-            .columns
               p= organization.organization_number
 
         if organization.public_bank_account
           .row
             .columns
               h5 Kontonummer
-          .row
-            .columns
               p= organization.public_bank_account
 
       .columns.medium-9
         if organization.contact_text
           .row
             .columns
-              | <iframe width='100%' height='500px' frameBorder='0' src='http://a.tiles.mapbox.com/v3/sigurdga.i8ia1eio/attribution,zoompan,zoomwheel.html'></iframe>
-              != organization.contact_text
+              figure
+                iframe(width='100%' height='500px' frameBorder='0' src=organization.map_url)
+                figcaption
+                  != organization.contact_text
 
     .row
       .columns

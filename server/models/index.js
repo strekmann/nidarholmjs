@@ -71,7 +71,16 @@ var OrganizationSchema = new mongoose.Schema({
     city: {type: String, trim: true},
     email: {type: String, trim: true},
     organization_number: {type: String, trim: true},
-    public_bank_account: {type: String, trim: true}
+    public_bank_account: {type: String, trim: true},
+    map_url: {type: String, trim: true},
+    social_media: {
+        website: {type: String},
+        blog: {type: String},
+        google: {type: String},
+        twitter: {type: String},
+        facebook: {type: String},
+        instagram: {type: String}
+    }
 });
 
 OrganizationSchema.virtual('encoded_email').get(function () {

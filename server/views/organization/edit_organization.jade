@@ -9,6 +9,10 @@ block content
         form(method="post")
           .row
             .columns
+              label(for"name") Organisasjonens navn
+              input#name(type="text" name="name" value=organization.name)
+          .row
+            .columns
               label(for"email") Epost
               input#email(type="text" name="email" value=organization.email)
           .row
@@ -38,6 +42,21 @@ block content
             .columns
               label(for="public_bank_account") Kontonummer
               input#public_bank_account(type="text" name="public_bank_account" value=organization.public_bank_account)
+
+          .row
+            .columns
+              label(for="map_url") Kart-URL
+              input#map_url(type="text" name="map_url" value=organization.map_url)
+
+          .row
+            .columns
+              label(for="facebook") Facebook-URL
+              input#facebook(type="text" name="facebook" value=organization.social_media.facebook)
+
+          .row
+            .columns
+              label(for="twitter") Twitter-URL
+              input#twitter(type="text" name="twitter" value=organization.social_media.twitter)
 
           .row
             .columns
