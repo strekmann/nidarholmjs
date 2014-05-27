@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2014-05-21 14:11+0000\n"
+"POT-Creation-Date: 2014-05-27 06:52+0000\n"
 "PO-Revision-Date: 2014-01-31 09:59+0000\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: none\n"
@@ -17,11 +17,61 @@ msgstr "Brukernavnet er allerede i bruk"
 
 #: server/views/login.jade:10
 msgid "Logg inn"
-msgstr ""
+msgstr "DEPRECATED"
 
-#: server/views/login.jade:13
+#: server/views/login.jade:13 server/views/login.jade:14
+#: server/views/login.jade:40 server/views/login.jade:41
 msgid "Username"
+msgstr "Brukernavn"
+
+#: server/views/login.jade:10 server/views/login.jade:21
+msgid "Log in"
+msgstr "Logg inn"
+
+#: server/views/login.jade:17 server/views/login.jade:18
+#: server/views/login.jade:45 server/views/login.jade:46
+#: server/views/login.jade:51
+msgid "Password"
+msgstr "Passord"
+
+#: server/views/login.jade:25
+msgid "OR"
+msgstr "ELLER"
+
+#: server/views/login.jade:32 server/views/login.jade:55
+msgid "Register"
+msgstr "Registrer deg"
+
+#: server/views/login.jade:35
+msgid "Name"
+msgstr "Navn"
+
+#: server/views/login.jade:36
+msgid "Full name"
+msgstr "Fullt navn"
+
+#: server/views/login.jade:37
+msgid "Name is required"
+msgstr "Navn er obligatorisk"
+
+#: server/views/login.jade:42
+msgid "Username is required and must be unique"
+msgstr "Brukernavn er obligatorisk og må være unikt"
+
+#: server/views/login.jade:47
+msgid ""
+"Passwords must be at least 8 letters long and include at least one digit and "
+"one uppercase letter"
 msgstr ""
+"Passord må være på minst åtte tegn og inneholde minst ett tall og en stor bokstav"
+
+#: server/views/login.jade:50
+msgid "Confirm password"
+msgstr "Bekreft passord"
+
+#: server/views/login.jade:52
+msgid "Must be the same as the one above"
+msgstr "Må være det samme som over"
 
 #~ msgid "Returning user: Log in"
 #~ msgstr "Logg inn om du har brukernavn fra før"
