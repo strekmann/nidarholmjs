@@ -22,15 +22,16 @@ block content
         h1
           a(href="/events/{{_id}}") {{title}}
           .right
-            small {{ago(start)}}
+            small
+              | {{#location}}
+              | {{location}}
+              | {{/location}}
+              | {{ago(start)}}
         .meta
           .row
             .columns.small-9
               span.byline
                 | {{{daterange(start, end)}}}
-                | {{#location}}
-                | {{location}}
-                | {{/location}}
               | {{#tags}}
               a(href="{{taglink(.)}}") {{.}}
               | {{/tags}}
