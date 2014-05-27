@@ -1,5 +1,6 @@
 var mongoose = require('mongoose'),
-    config = require('../settings');
+    config = require('../settings'),
+    marked = require('marked');
 
 var GroupSchema = new mongoose.Schema({
     _id: {type: String, unique: true, required: true},
@@ -58,6 +59,7 @@ var UserSchema = new mongoose.Schema({
 
 var OrganizationSchema = new mongoose.Schema({
     _id: {type: String, lowercase: true, trim: true, required: true, unique: true},
+    name: {type: String},
     instrument_groups: [{type: String, ref: 'Group'}],
     contact_groups: [{type: String, ref: 'Group'}], // contacts page
     administration_group: {type: String, ref: 'Group'}, // temporary. privileges will be split later
@@ -70,6 +72,14 @@ var OrganizationSchema = new mongoose.Schema({
     email: {type: String, trim: true},
     organization_number: {type: String, trim: true},
     public_bank_account: {type: String, trim: true}
+});
+
+OrganizationSchema.virtual('encoded_email').get(function () {
+    return marked('<'+this.email+'>');
+});
+
+OrganizationSchema.set('toJSON', {
+    virtuals: true
 });
 
 var ActivitySchema = new mongoose.Schema({

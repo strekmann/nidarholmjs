@@ -15,7 +15,7 @@ block content
             h5 Epost
         .row
           .columns
-            != marked('<'+organization.email+'>')
+            != organization.encoded_email
 
         if organization.visitor_address
           .row

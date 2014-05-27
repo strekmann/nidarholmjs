@@ -130,18 +130,22 @@ html(lang=lang dir=lang_dir)
           footer.dtborder
             .row
               .medium-4.columns
-                | Musikkforeningen Nidarholm
+                = organization.name
                 br
-                | Postboks 1881 Lade
+                = organization.mail_address
                 br
-                | 7440 Trondheim
+                = organization.postcode
+                | &nbsp;&nbsp;
+                = organization.city
               .medium-4.columns
-                | Bank: 4240 07 10036
+                | Bank: 
+                = organization.public_bank_account
                 br
-                | Org: 971 558 105
+                | Org: 
+                = organization.organization_number
               .medium-4.columns
                 i.fa.fa-envelope-o
-                | post@nidarholm.no
+                != organization.encoded_email
                 br
                 i.fa.fa-facebook
                 | facebook.com/nidarholm
