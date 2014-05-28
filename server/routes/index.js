@@ -71,7 +71,7 @@ module.exports.index = function(req, res) {
         query = Event.find({'permissions.public': true})
         .where({start: {$gt: moment().startOf('day')}})
         .sort('start')
-        .limit(4);
+        .limit(20);
         query.exec(function (err, events) {
             query = Project.find({'permissions.public': true})
             .or([

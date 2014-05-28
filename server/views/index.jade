@@ -5,7 +5,7 @@ block content
     .row
       .columns.large-3.large-push-9
         if events
-          ul#next-events.small-block-grid-4.large-block-grid-1
+          ul#next-events.show-for-large-up.large-block-grid-1
             for event in events
               li
                 a.event(href="/events/"+event.id)
@@ -13,8 +13,15 @@ block content
                   br
                   = event.title
 
-          #more-events
-            a(href="/aktiviteter") Flere aktiviteter
+          #eventwrapper.hide-for-large-up
+            #eventscroller
+              ul#next-events
+                for event in events
+                  li
+                    a.event(href="/events/"+event.id)
+                      = moment(event.start).format('Do MMMM')
+                      br
+                      = event.title
 
         if projects
           ul#next-projects.small-block-grid-1
@@ -91,3 +98,4 @@ block javascript
     | );
 
     | $('.chosen-permissions').chosen();
+    | var eventscroll = new IScroll('#eventwrapper', { eventPassthrough: true, scrollX: true, scrollY: false, mouseWheel: true });

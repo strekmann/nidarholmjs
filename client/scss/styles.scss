@@ -254,6 +254,34 @@ nav.top-bar {
     }
 }
 
+#eventwrapper {
+    height: 100px;
+    width: 100%;
+    overflow: hidden;
+    position: relative;
+
+    #eventscroller {
+        position: absolute;
+        height: 80px;
+        width: 2400px;
+        transform: translateZ(0);
+
+        ul {
+            list-style: none;
+            width: 100%;
+            padding: 0;
+            margin: 0;
+
+            li {
+                height: 80px;
+                width: 120px;
+                float: left;
+                margin: 2px 18px 18px 2px;
+            }
+        }
+    }
+}
+
 #next-events,
 #next-projects {
     a.project,
@@ -327,14 +355,6 @@ nav.top-bar {
         }
     }
 
-    #next-events {
-        margin-top: 2em;
-    }
-
-    #more-events {
-        display: block;
-        text-align: center;
-    }
 }
 
 #forum,

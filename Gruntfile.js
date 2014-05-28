@@ -80,6 +80,7 @@ module.exports = function(grunt) {
                     'bower_components/ace-builds/src-noconflict/mode-markdown.js',
                     'bower_components/unorm/lib/unorm.js',
                     'bower_components/uslug/lib/uslug.js',
+                    'bower_components/iscroll/build/iscroll.js',
                     'tmp/js/chosen.js',
                     'client/vendor/js/*.js',
                     'bower_components/dropzone/downloads/dropzone.js'
