@@ -5,7 +5,7 @@
     "underscore": "",
     "moment": "",
     "font-awesome": "",
-    "ractive": "",
+    "ractive": "sigurdga/ractive#e5648b83da",
     "ractive-events-tap": "",
     "chosen": "",
     "marked": "",
