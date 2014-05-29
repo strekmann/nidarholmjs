@@ -9,14 +9,6 @@ module.exports.fileListView = function (files, active_user, active_organization)
             active_organization: active_organization,
             gotall: false,
             page: 0,
-            path: function (file) {
-                return '/files/' + file.hash + '/' + file.filename;
-            },
-            is_image: function (file) {
-                if(file.mimetype.match(/^image\/(png|jpeg|gif)/)) {
-                    return true;
-                }
-            },
             shortdate: function (date) {
                 return moment(date).format("ll");
             }

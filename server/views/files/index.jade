@@ -60,8 +60,8 @@ block content
         | {{#files}}
         .row(intro-outro="slide")
           .small-2.columns
-            | {{#is_image(.)}}
-            img(src="{{path(.)}}")
+            | {{#is_image}}
+            img(src="{{thumbnail_path}}")
             | {{/is_image}}
           .small-10.columns
             .file(outro="fade")
