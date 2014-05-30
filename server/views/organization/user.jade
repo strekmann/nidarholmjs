@@ -105,7 +105,7 @@ block content
             | {{#files}}
             li(intro="fade" class="{{ is_active_image(_id) ? 'active' : '' }}")
               a(href="/users/{{username}}/pictures/{{_id}}" on-click="setProfilePicture")
-                img.th(src="{{path}}")
+                img.th(src="{{thumbnail_path}}")
             | {{/files}}
         | {{/user}}
       a.close-reveal-modal
