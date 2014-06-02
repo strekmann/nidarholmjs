@@ -19,8 +19,11 @@ var Project = Ractive.extend({
             if (!length) {
                 length = 15;
             }
-            if(filename.length > length + 3) {
-                return filename.slice(0, length) + "…" + filename.split('.').pop();
+            var x = filename.split("."),
+                extension = x.pop(),
+                basename = x.join(".");
+            if(basename.length > length + 3) {
+                return basename.slice(0, length) + "…" + extension;
             }
             else {
                 return filename;
