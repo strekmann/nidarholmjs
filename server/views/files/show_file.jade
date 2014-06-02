@@ -4,15 +4,24 @@ block content
   section#file
 
     .row
-      .medium-8.columns
+      .columns
         h1= file.filename
-        p= file.path
-        p= file.tags
-        p= file.caption
-        p= file.mimetype
-        p= file.permissions
-        p= file.creator
-
-      if file.is_image
-        .medium-4.columns
+        p
+          .right
+            each tag in file.tags
+              a(href="/files/t/"+tag)
+                i.fa.fa-tag
+                | &nbsp;
+                = tag
+            | &nbsp;
+            = file.mimetype
+          a(href="/users/"+file.creator.username)= file.creator.name
+          | &nbsp;
+          = file.shortdate
+        if file.is_image
           img(src=file.picture_path)
+        else
+          a.button(href=file.path) Last ned
+        p= file.caption
+
+        p= file.permissions

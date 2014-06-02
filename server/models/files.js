@@ -1,4 +1,5 @@
 var mongoose = require('mongoose'),
+    moment = require('moment'),
     schema = require('../models').schema,
     _ = require('underscore'),
     path = require('path'),
@@ -42,6 +43,10 @@ FileSchema.virtual('thumbnail_path').get(function () {
     if (this.hash && this.filename) { // useful until implementation stabilizes
         return path.join('/files/thumbnail', this.hash, this.filename);
     }
+});
+
+FileSchema.virtual('shortdate').get(function () {
+    return moment(this.created).format('LL');
 });
 
 FileSchema.set('toJSON', {

@@ -121,7 +121,7 @@ module.exports.show_file = function (req, res) {
         {'permissions.public': true},
         {'permissions.users': req.user._id},
         {'permissions.groups': { $in: req.user.groups }}
-    ]).exec(function (err, file) {
+    ]).populate('creator', 'name username').exec(function (err, file) {
         if (!file) {
             res.send(404, 'Not found');
         }
