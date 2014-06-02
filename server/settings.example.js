@@ -21,8 +21,9 @@ module.exports = {
     defaultLocale: 'en',
     files: {
         raw_prefix: 'uploaded_files',
-        picture_prefix: 'uploaded_files/pictures',
-        thumbnail_prefix: 'uploaded_files/thumbnails'
+        normal_prefix: 'uploaded_files/normal',
+        large_prefix: 'uploaded_files/large',
+        thumbnail_prefix: 'uploaded_files/thumbnail'
     },
     organization: 'nidarholm',
     profile_picture_tag: 'profilbilde',

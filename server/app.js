@@ -256,8 +256,9 @@ app.post('/files/upload', file_routes.upload);
 app.put('/files/:id', file_routes.update);
 app.delete('/files/:id', file_routes.delete_file);
 app.get('/files/:id', file_routes.show_file);
-app.get('/files/thumbnail/:path/:filename', file_routes.thumbnail_file);
-app.get('/files/picture/:path/:filename', file_routes.normal_file);
+app.get('/files/th/:path/:filename', file_routes.thumbnail_file);
+app.get('/files/n/:path/:filename', file_routes.normal_file);
+app.get('/files/l/:path/:filename', file_routes.large_file);
 app.get('/files/:path/:filename', file_routes.raw_file);
 
 var project_routes = require('./routes/projects');

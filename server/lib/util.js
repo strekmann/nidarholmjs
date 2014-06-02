@@ -127,9 +127,29 @@ var generate_thumbnail_for_image = function (hex, filepath, mimetype) {
 
     if (mimetype.match(/^image\/(png|jpeg|gif)/)) {
         async.parallel({
+            large: function (callback) {
+                // generate "large" sized image: 1024x640 max
+                var directory = path.join(config.files.large_prefix, hex.substr(0,2), hex.substr(2,2));
+                mkdirp(directory, function (err) {
+                    if (err) { callback(err); }
+                    else {
+                        var large_path = path.join(directory, hex);
+                        var command = 'convert ' + filepath + ' -resize 1024x640\\> -auto-orient ' + large_path;
+                        exec(command, function(err, stdout, stderr) {
+                            if (err) {
+                                console.error(err, stderr);
+                                callback(err);
+                            }
+                            else {
+                                callback();
+                            }
+                        });
+                    }
+                });
+            },
             normal: function (callback) {
                 // generate "normal" sized image: 600px wide
-                var directory = path.join(config.files.picture_prefix, hex.substr(0,2), hex.substr(2,2));
+                var directory = path.join(config.files.normal_prefix, hex.substr(0,2), hex.substr(2,2));
                 mkdirp(directory, function (err) {
                     if (err) { callback(err); }
                     else {

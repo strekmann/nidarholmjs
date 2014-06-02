@@ -131,10 +131,40 @@ module.exports.show_file = function (req, res) {
     });
 };
 
+module.exports.thumbnail_file = function (req, res) {
+    var filepath = req.params.path,
+        filename = req.params.filename,
+        fullpath = path.join(config.files.thumbnail_prefix, filepath.substr(0,2), filepath.substr(2,2), filepath);
+
+    fs.exists(fullpath, function (exists) {
+        if (exists) {
+            res.sendfile(fullpath);
+        }
+        else {
+            res.send(404, 'Not found');
+        }
+    });
+};
+
 module.exports.normal_file = function (req, res) {
     var filepath = req.params.path,
         filename = req.params.filename,
-        fullpath = path.join(config.files.picture_prefix, filepath.substr(0,2), filepath.substr(2,2), filepath);
+        fullpath = path.join(config.files.normal_prefix, filepath.substr(0,2), filepath.substr(2,2), filepath);
+
+    fs.exists(fullpath, function (exists) {
+        if (exists) {
+            res.sendfile(fullpath);
+        }
+        else {
+            res.send(404, 'Not found');
+        }
+    });
+};
+
+module.exports.large_file = function (req, res) {
+    var filepath = req.params.path,
+        filename = req.params.filename,
+        fullpath = path.join(config.files.large_prefix, filepath.substr(0,2), filepath.substr(2,2), filepath);
 
     fs.exists(fullpath, function (exists) {
         if (exists) {
@@ -150,21 +180,6 @@ module.exports.raw_file = function (req, res) {
     var filepath = req.params.path,
         filename = req.params.filename,
         fullpath = path.join(config.files.raw_prefix, filepath.substr(0,2), filepath.substr(2,2), filepath);
-
-    fs.exists(fullpath, function (exists) {
-        if (exists) {
-            res.sendfile(fullpath);
-        }
-        else {
-            res.send(404, 'Not found');
-        }
-    });
-};
-
-module.exports.thumbnail_file = function (req, res) {
-    var filepath = req.params.path,
-        filename = req.params.filename,
-        fullpath = path.join(config.files.thumbnail_prefix, filepath.substr(0,2), filepath.substr(2,2), filepath);
 
     fs.exists(fullpath, function (exists) {
         if (exists) {

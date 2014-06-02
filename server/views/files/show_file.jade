@@ -19,7 +19,7 @@ block content
           | &nbsp;
           = file.shortdate
         if file.is_image
-          img(src=file.picture_path)
+          img#image(src=file.large_path)
         else
           a.button(href=file.path) Last ned
         p= file.caption

@@ -33,15 +33,21 @@ FileSchema.virtual('path').get(function () {
     }
 });
 
-FileSchema.virtual('picture_path').get(function () {
+FileSchema.virtual('large_path').get(function () {
     if (this.hash && this.filename) { // useful until implementation stabilizes
-        return path.join('/files/picture', this.hash, this.filename);
+        return path.join('/files/l', this.hash, this.filename);
+    }
+});
+
+FileSchema.virtual('normal_path').get(function () {
+    if (this.hash && this.filename) { // useful until implementation stabilizes
+        return path.join('/files/n', this.hash, this.filename);
     }
 });
 
 FileSchema.virtual('thumbnail_path').get(function () {
     if (this.hash && this.filename) { // useful until implementation stabilizes
-        return path.join('/files/thumbnail', this.hash, this.filename);
+        return path.join('/files/th', this.hash, this.filename);
     }
 });
 
