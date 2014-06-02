@@ -52,7 +52,7 @@ module.exports.upload = function (req, res) {
             user = req.user,
             options = {
                 permissions: util.parse_web_permissions(req.body.permissions),
-                tags: req.body.tags
+                tags: req.body.tags.split(",")
             };
 
         util.upload_file(tmp_path, filename, user, options, function (err, file) {
