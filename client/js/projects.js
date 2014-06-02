@@ -138,6 +138,21 @@ module.exports.projectView = function (project_obj) {
         });
     });
 
+    var uploadzone = new Dropzone("#upload", {
+      //acceptedFiles: 'image/*',
+      previewTemplate: '<span></span>',
+      clickable: '#add_file'
+    });
+
+    uploadzone.on("success", function (frontend_file, backend_file) {
+        if (backend_file.is_image) {
+            project.get('project.images').push(backend_file);
+        }
+        else {
+            project.get('project.non_images').push(backend_file);
+        }
+    });
+
     return project;
 };
 

@@ -56,7 +56,7 @@ module.exports = function(grunt) {
             css: {
                 src: [
                     'client/vendor/css/**/*.css',
-                    'bower_components/dropzone/downloads/css/dropzone.css',
+                    //'bower_components/dropzone/downloads/css/dropzone.css',
                     'tmp/css/styles.css'
                 ],
                 dest: 'public/css/site.css'

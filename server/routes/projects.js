@@ -1,5 +1,6 @@
 var uslug = require('uslug'),
     moment = require('moment'),
+    _ = require('underscore'),
     util = require('../lib/util'),
     upload_file = util.upload_file,
     config = require('../settings'),
@@ -115,7 +116,17 @@ module.exports.project = function (req, res, next) {
                 project.events = events;
                 ForumPost.find({tags: project._id}).populate('creator', 'username name').exec(function (err, posts) {
                     project.posts = posts;
+                    project.images = [];
+                    project.non_images = [];
                     File.find({tags: project._id}).populate('creator', 'username name').exec(function (err, files) {
+                        _.each(files, function (file) {
+                            if (file.is_image) {
+                                project.images.push(file);
+                            }
+                            else {
+                                project.non_images.push(file);
+                            }
+                        });
                         project.files = files;
                         res.format({
                             json: function () {
@@ -287,13 +298,13 @@ module.exports.project_create_file = function (req, res, next) {
     var id = req.params.id,
         filepath = req.files.file.path,
         filename = req.files.file.originalname,
-        user = req.user,
-        options = {
+        user = req.user;
+
+    Project.findById(id, function (err, project) {
+        var options = {
             permissions: project.permissions,
             tags: [project._id]
         };
-
-    Project.findById(id, function (err, project) {
         upload_file(filepath, filename, user, options, function (err, file) {
             if (err) { throw err; }
             res.json(200, file);

@@ -15,6 +15,17 @@ var Project = Ractive.extend({
         marked: function(text){
             return marked(text);
         },
+        shorten: function(filename, length) {
+            if (!length) {
+                length = 15;
+            }
+            if(filename.length > length + 3) {
+                return filename.slice(0, length) + "…" + filename.split('.').pop();
+            }
+            else {
+                return filename;
+            }
+        },
         shortdate: function(date){
             if (date) {
                 return moment(date).format('ll');

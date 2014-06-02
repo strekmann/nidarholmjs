@@ -20,6 +20,27 @@ block content
               .columns
                 != marked(project.public_mdtext)
 
+        #files
+          noscript
+            form.dropzone(method="post" action="/projects/" + project._id + "/files" enctype="multipart/form-data")
+              .fallback
+                input(type="file" name="file")
+                button Send
+              for file in project.files
+                div.outer.file(data-id=file._id)
+                  div.meta
+                    strong= file.filename
+                    = file.created
+                    if file.permissions.public
+                      i.fa.fa-globe
+                    else if 'medlemmer' in file.permissions.groups
+                      i.fa.fa-users
+                    else if !file.permissions.public && file.permissions.groups.length === 0 && file.permissions.users.length === 0
+                      i.fa.fa-user
+                    a.edit(href='#')
+                      i.fa.fa-edit
+                    i.fa.fa-trash-o
+
         #forum
           for post in project.posts
             article
@@ -75,26 +96,6 @@ block content
           textarea.mdtext(name="mdtext")
           button Legg til aktivitet
 
-        #files
-          form.dropzone(method="post" action="/projects/" + project._id + "/files" enctype="multipart/form-data")
-            .fallback
-              input(type="file" name="file")
-              button Send
-            for file in project.files
-              div.outer.file(data-id=file._id)
-                div.meta
-                  strong= file.filename
-                  = file.created
-                  if file.permissions.public
-                    i.fa.fa-globe
-                  else if 'medlemmer' in file.permissions.groups
-                    i.fa.fa-users
-                  else if !file.permissions.public && file.permissions.groups.length === 0 && file.permissions.users.length === 0
-                    i.fa.fa-user
-                  a.edit(href='#')
-                    i.fa.fa-edit
-                  i.fa.fa-trash-o
-
 
   script#template(type="text/ractive")
     | {{#project}}
@@ -113,6 +114,23 @@ block content
             .columns
               | {{{marked(private_mdtext)}}}
               | {{{marked(public_mdtext)}}}
+
+        #files
+          form#upload(on-submit="createFile" action="/projects/{{_id}}/files")
+            .fallback
+              input(type="file" name="file" multiple)
+              button Send
+            #uploaded
+              ul.small-block-grid-3.large-block-grid-4
+                | {{#images}}
+                |   {{>image}}
+                | {{/images}}
+              ul.small-block-grid-1.medium-block-grid-2.large-block-grid-3
+                | {{#non_images}}
+                |   {{>non_image}}
+                | {{/non_images}}
+                li
+                  a#add_file.button.tiny Legg til fil
 
         #forum
           | {{#posts}}
@@ -147,15 +165,6 @@ block content
             textarea#event_mdtext(name="mdtext")
             button Legg til aktivitet
 
-        #files
-          form.dropzone(on-submit="createFile" action="/projects/{{_id}}/files")
-            .fallback
-              input(type="file" name="file" multiple)
-              button Send
-            | {{#files}}
-            |   {{>file}}
-            | {{/files}}
-
 
     | {{/project}}
 
@@ -187,9 +196,15 @@ block content
         | {{{daterange(start, end)}}}
     // {{/event}}
 
-    // {{>file}}
-    <div class="dz-preview dz-file-preview dz-processing dz-success">  <div class="dz-details">    <div class="dz-filename"><span data-dz-name="">{{filename}}</span></div>    <div class="dz-size" data-dz-size=""></div>  <img data-dz-thumbnail="" alt="{{filename}}" src="{{path}}">  <img data-dz-thumbnail="">  </div>  <div class="dz-error-mark"><span>✘</span></div>  </div>
-    // {{/file}}
+    // {{>image}}
+    li
+      a(href="/files/{{_id}}")
+        img.th(src="{{thumbnail_path}}" alt="{{filename}}")
+    // {{/image}}
+    // {{>non_image}}
+    li
+      a.button.tiny.secondary(href="/files/{{_id}}") {{shorten(filename)}}
+    // {{/non_image}}
 
 block javascript
   script

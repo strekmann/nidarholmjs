@@ -580,6 +580,16 @@ nav.top-bar {
         h3 { font-size: $h3-font-size - rem-calc(5px); }
         h4 { font-size: $h4-font-size - rem-calc(3px); }
     }
+
+    #uploaded {
+        background-color: scale-color($secondary-color, $lightness: 50%);
+        li a {
+            margin-bottom: 0;
+            &.button {
+                width: 100%;
+            }
+        }
+    }
 }
 #events {
     .meta {
