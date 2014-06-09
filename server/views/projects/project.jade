@@ -52,7 +52,7 @@ block content
                     .columns.small-9
                       span.byline
                         a(href="/users/" + post.creator._id)= post.creator.name
-                      time.created(datetime=isodatetime(post.created))= shortdate(post.created)
+                      time.created(datetime=isodate(post.created))= shortdate(post.created)
                     .columns.small-3.text-right.creator
                       i.fa.fa-globe(title="Tilgjengelig for alle")
                       i.fa.fa-users(title="Tilgjengelig for alle medlemmer")
@@ -161,6 +161,32 @@ block content
               | {{{marked(public_mdtext)}}}
         {{/project}}
 
+        #forum
+          | {{#postExpanded}}
+          form(on-submit="createPost" action="/projects/{{project._id}}/forum" method="post" data-abide)
+            h2 Legg til innlegg
+            label Tittel
+            input#post_title(name="title" type="text" required)
+            label Innhold
+            textarea#post_mdtext(name="mdtext" required)
+            button Lagre innlegg
+          | {{/postExpanded}}
+
+          | {{^postExpanded}}
+          if active_user
+            .row
+              .columns.text-right
+                a.button.tiny(on-click="togglePost")
+                  i.fa.fa-file-o
+                  | &nbsp;
+                  | Nytt innlegg
+          | {{/postExpanded}}
+
+          | {{#posts}}
+          |   {{>post}}
+          | {{/posts}}
+        | {{/expanded}}
+
         #files
           form#upload(on-submit="createFile" action="/projects/{{project._id}}/files")
             #uploaded
@@ -175,27 +201,10 @@ block content
                 li
                   a#add_file.button.tiny Legg til fil
 
-        #forum
-          | {{#posts}}
-          |   {{>post}}
-          | {{/posts}}
-
-          form(on-submit="createPost" action="/projects/{{project._id}}/forum" method="post" data-abide)
-            h2 Legg til innlegg
-            label Tittel
-            input#post_title(name="title" type="text" required)
-            label Innhold
-            textarea#post_mdtext(name="mdtext" required)
-            button Lagre innlegg
-        | {{/expanded}}
-
       .medium-4.columns
         | {{^expanded}}
         #events
-          | {{#events}}
-          |   {{>event}}
-          | {{/events}}
-
+          | {{#eventExpanded}}
           form(on-submit="createEvent" action="/projects/{{project._id}}/events" method="post" data-abide)
             h2 Legg til aktivitet
             label Tittel
@@ -209,6 +218,20 @@ block content
             label Beskrivelse
             textarea#event_mdtext(name="mdtext")
             button Legg til aktivitet
+          | {{/eventExpanded}}
+          | {{^eventExpanded}}
+          if active_user
+            .row
+              .columns.text-right
+                a.button.tiny(on-click="toggleEvent")
+                  i.fa.fa-file-o
+                  | &nbsp;
+                  | Ny aktivitet
+          | {{/eventExpanded}}
+          | {{#events}}
+          |   {{>event}}
+          | {{/events}}
+
         | {{/expanded}}
 
     // {{>post}}

@@ -112,6 +112,22 @@ var Project = Ractive.extend({
             data: project
         });
     },
+    createPost: function (post, url) {
+        return $.ajax({
+            url: url,
+            type: 'POST',
+            dataType: 'json',
+            data: post
+        });
+    },
+    createEvent: function (event, url) {
+        return $.ajax({
+            url: url,
+            type: 'POST',
+            dataType: 'json',
+            data: event
+        });
+    },
     setup_uploadzone: function (element_id, clickable_element_id) {
         var project = this;
 
@@ -263,23 +279,23 @@ module.exports.projectDetailView = function (project_obj, events, posts, files) 
         });
     });
 
+    project.on('togglePost', function (event) {
+        this.toggle('postExpanded');
+    });
+
     project.on('createPost', function (event) {
         event.original.preventDefault();
         var node = $(event.node),
             post = {
                 title: node.find('#post_title').val(),
                 mdtext: node.find('#post_mdtext').val(),
-            },
-            promise = $.ajax({
-                url: event.node.action,
-                type: 'POST',
-                dataType: 'json',
-                data: post
-            });
+            };
 
-        promise.then(function (data) {
+        project.createPost(post, event.node.action)
+        .then(function (data) {
             flash.data.success.push(data.title + ' ble lagt til i forum');
-            project.data.project.posts.push(data);
+            project.get('posts').unshift(data);
+            project.fire('togglePost');
         }, function(xhr, status, err){
             console.error(err);
         });
@@ -301,6 +317,10 @@ module.exports.projectDetailView = function (project_obj, events, posts, files) 
         });
     });
 
+    project.on('toggleEvent', function (event) {
+        this.toggle('eventExpanded');
+    });
+
     project.on('createEvent', function (event) {
         event.original.preventDefault();
         var node = $(event.node),
@@ -310,17 +330,13 @@ module.exports.projectDetailView = function (project_obj, events, posts, files) 
                 start: node.find('#event_start').val(),
                 end: node.find('#event_end').val(),
                 md_text: node.find('#event_mdtext').val()
-            },
-            promise = $.ajax({
-                url: event.node.action,
-                type: 'POST',
-                dataType: 'json',
-                data: ev
-            });
+            };
 
-        promise.then(function (data) {
+        project.createEvent(ev, event.node.action)
+        .then(function (data) {
             flash.data.success.push(data.title + ' ble lagt til i kalenderen');
-            project.data.project.events.push(data);
+            project.get('events').unshift(data);
+            project.fire('toggleEvent');
         }, function(xhr, status, err){
             console.error(err);
         });

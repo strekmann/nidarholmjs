@@ -1,6 +1,7 @@
 var uslug = require('uslug'),
     moment = require('moment'),
     _ = require('underscore'),
+    shortid = require('short-mongo-id'),
     util = require('../lib/util'),
     upload_file = util.upload_file,
     config = require('../settings'),
@@ -149,7 +150,7 @@ module.exports.project = function (req, res, next) {
         }
         else {
             Event.find({tags: project.tag}).populate('creator', 'username name').sort('start').exec(function (err, events) {
-                ForumPost.find({tags: project.tag}).populate('creator', 'username name').exec(function (err, posts) {
+                ForumPost.find({tags: project.tag}).populate('creator', 'username name').sort('-created').exec(function (err, posts) {
                     var images = [];
                     var non_images = [];
                     File.find({tags: project.tag}).populate('creator', 'username name').exec(function (err, files) {
@@ -289,26 +290,37 @@ module.exports.project_create_post = function (req, res, next) {
         mdtext = req.body.mdtext;
 
     Project.findById(id, function (err, project) {
-        if (err) { return next(err); }
+        if (err) {
+            res.json(400, err);
+        }
         var post = new ForumPost();
+        post._id = shortid();
         post.title = title;
         post.mdtext = mdtext;
         post.permissions = project.permissions;
         post.creator = req.user;
-        post.tags.push(project._id);
+        post.tags = [project.tag];
         post.save(function (err) {
-            if (err) { return next(err); }
-            post.populate('creator', 'username name', function (err, post) {
-                if (err) { return next(err); }
-                res.format({
-                    html: function () {
-                        res.redirect('/projects/' + project._id);
-                    },
-                    json: function () {
-                        res.json(200, post);
+            if (err) {
+                res.json(400, err);
+            }
+            else {
+                post.populate('creator', 'username name', function (err, post) {
+                    if (err) {
+                        res.json(400, err);
+                    }
+                    else {
+                        res.format({
+                            html: function () {
+                                res.redirect('/projects/' + project._id);
+                            },
+                            json: function () {
+                                res.json(200, post);
+                            }
+                        });
                     }
                 });
-            });
+            }
         });
     });
 };
