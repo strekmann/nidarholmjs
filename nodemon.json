@@ -1,0 +1,13 @@
+{
+    "ignore": [
+        ".git/",
+        "bower_components/",
+        "client/",
+        "convert/",
+        "node_modules/",
+        "setup/",
+        "test/",
+        "tmp/",
+        "uploaded_files/"
+    ]
+}
