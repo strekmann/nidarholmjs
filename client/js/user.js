@@ -100,7 +100,7 @@ module.exports.userView = function (user, active_user) {
         var picture = $(event.node),
             upload = $('#upload'),
             promise = $.ajax({
-                url: '/users/sigurdga/pictures',
+                url: '/users/' + ractive.get('user').username + '/pictures',
                 type: 'GET',
                 dataType: 'json'
             });

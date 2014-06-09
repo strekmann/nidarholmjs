@@ -60,15 +60,17 @@ module.exports.create_project = function (req, res, next) {
             private_mdtext = req.body.private_mdtext,
             public_mdtext = req.body.public_mdtext,
             start = req.body.start,
-            end = req.body.end;
+            end = req.body.end,
+            year = moment(end).year();
 
         var project = new Project();
         project.title = title;
-        project._id = uslug(tag);
+        project.tag = uslug(tag);
         project.private_mdtext = private_mdtext;
         project.public_mdtext = public_mdtext;
         project.start = start;
         project.end = end;
+        project.year = year;
         project.permissions = permissions;
         project.creator = req.user;
 
@@ -86,6 +88,40 @@ module.exports.create_project = function (req, res, next) {
     }
 };
 
+module.exports.update_project = function (req, res, next) {
+    Project.findById(req.params.id, function (err, project) {
+        if (err) { return next(err); }
+
+        if (project.creator === req.user || req.is_admin) {
+            var title = req.body.title,
+                tag = req.body.tag,
+                permissions = util.parse_web_permissions(req.body.permissions),
+                private_mdtext = req.body.private_mdtext,
+                public_mdtext = req.body.public_mdtext,
+                start = req.body.start,
+                end = req.body.end,
+                year = moment(end).year();
+
+            project.title = title;
+            project.tag = tag;
+            project.private_mdtext = private_mdtext;
+            project.public_mdtext = public_mdtext;
+            project.start = start;
+            project.end = end;
+            project.year = year;
+            project.permissions = permissions;
+
+            project.save(function (err) {
+                if (err) { return next(err); }
+                res.json(200, project);
+            });
+        }
+        else {
+            res.json(403, 'Forbidden');
+        }
+    });
+};
+
 module.exports.delete_project = function (req, res, next) {
     var id = req.params.id;
 
@@ -96,9 +132,10 @@ module.exports.delete_project = function (req, res, next) {
 };
 
 module.exports.project = function (req, res, next) {
-    var id = req.params.id;
+    var year = req.params.year,
+        tag = req.params.tag;
 
-    Project.findById(id)
+    Project.findOne({year: year, tag: tag})
     .or([
         {creator: req.user._id},
         {'permissions.public': true},
@@ -111,30 +148,21 @@ module.exports.project = function (req, res, next) {
             res.send(404, 'Not found');
         }
         else {
-            Event.find({tags: project._id}).populate('creator', 'username name').sort('start').exec(function (err, events) {
-                //project = project.toObject();
-                project.events = events;
-                ForumPost.find({tags: project._id}).populate('creator', 'username name').exec(function (err, posts) {
-                    project.posts = posts;
-                    project.images = [];
-                    project.non_images = [];
-                    File.find({tags: project._id}).populate('creator', 'username name').exec(function (err, files) {
-                        _.each(files, function (file) {
-                            if (file.is_image) {
-                                project.images.push(file);
-                            }
-                            else {
-                                project.non_images.push(file);
-                            }
-                        });
-                        project.files = files;
+            Event.find({tags: project.tag}).populate('creator', 'username name').sort('start').exec(function (err, events) {
+                ForumPost.find({tags: project.tag}).populate('creator', 'username name').exec(function (err, posts) {
+                    var images = [];
+                    var non_images = [];
+                    File.find({tags: project.tag}).populate('creator', 'username name').exec(function (err, files) {
                         res.format({
                             json: function () {
                                 res.json(200, project);
                             },
                             html: function () {
                                 res.render('projects/project', {
-                                    project: project
+                                    project: project,
+                                    events: events,
+                                    posts: posts,
+                                    files: files
                                 });
                             }
                         });
@@ -161,7 +189,7 @@ module.exports.project_create_event = function (req, res, next) {
             if (err) { return next(err); }
 
             var event = new Event();
-            event.tags = [project._id];
+            event.tags = [project.tag];
             event.title = title;
             event.location = location;
             event.start = start;
@@ -303,7 +331,7 @@ module.exports.project_create_file = function (req, res, next) {
     Project.findById(id, function (err, project) {
         var options = {
             permissions: project.permissions,
-            tags: [project._id]
+            tags: [project.tag]
         };
         upload_file(filepath, filename, user, options, function (err, file) {
             if (err) { throw err; }

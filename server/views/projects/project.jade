@@ -26,7 +26,7 @@ block content
               .fallback
                 input(type="file" name="file")
                 button Send
-              for file in project.files
+              for file in files
                 div.outer.file(data-id=file._id)
                   div.meta
                     strong= file.filename
@@ -42,7 +42,7 @@ block content
                     i.fa.fa-trash-o
 
         #forum
-          for post in project.posts
+          for post in posts
             article
               header
                 h1
@@ -52,7 +52,7 @@ block content
                     .columns.small-9
                       span.byline
                         a(href="/users/" + post.creator._id)= post.creator.name
-                      time.created(datetime=isodate(post.created))= shortdate(post.created)
+                      time.created(datetime=isodatetime(post.created))= shortdate(post.created)
                     .columns.small-3.text-right.creator
                       i.fa.fa-globe(title="Tilgjengelig for alle")
                       i.fa.fa-users(title="Tilgjengelig for alle medlemmer")
@@ -75,7 +75,7 @@ block content
 
       .medium-4.columns
         #events
-          for event in project.events
+          for event in events
             .event
               h3= event.title
               .meta
@@ -98,9 +98,54 @@ block content
 
 
   script#template(type="text/ractive")
-    | {{#project}}
     .row
       .medium-8.columns
+        | {{#expanded}}
+        form(action="/projects/{{project._id}}" method="put" intro-outro='slide' on-submit="updateProject")
+          .row
+            .columns
+              label(for="title") Tittel
+              input#title(name="title" type="text" value="{{project.title}}")
+          .row
+            .columns
+              label(for="tag")
+                abbr(title="Alle innlegg, aktiviteter, o.l som merkes med denne merkelappen blir vist på prosjektsiden. Merkelappen vil også bli en del av prosjektsidens adresse.") Merkelapp (Kan ikke endres setter at innlegg, aktiviteter eller filer har blitt lagt til prosjektet)
+              input#tag(name="tag" type="text" value="{{project.tag}}")
+          .row
+            .columns
+              label(for="private_mdtext") Intern beskrivelse
+              textarea#private_mdtext(name="private_mdtext") {{project.private_mdtext}}
+          .row
+            .columns
+              label(for="public_mdtext") Ekstern beskrivelse
+              textarea#public_mdtext(name="public_mdtext") {{project.public_mdtext}}
+          .row
+            .columns
+              label(for="start") Prosjektstart
+              input#start(name="start" type="date" value="{{isodate(project.start)}}")
+          .row
+            .columns
+              label(for="end") Prosjektslutt
+              input#end(name="end" type="date" value="{{isodate(project.end)}}")
+          .row
+            .columns
+              label(for="permissions") Rettigheter
+              select#permissions.chosen-permissions(name="permissions" multiple data-placeholder="Velg prosjektgruppe")
+                +permission_options(active_user.groups, active_user.friends)
+          button.small Lagre
+          button.small.secondary(type="reset" on-click="toggleEdit") Avbryt
+        | {{/expanded}}
+
+        | {{^expanded}}
+        if active_user
+          .row
+            .columns.text-right
+              a.button.tiny(on-click="toggleEdit")
+                i.fa.fa-file-o
+                | &nbsp;
+                | Rediger prosjekt
+
+        {{#project}}
         h1 {{title}}
         .meta
           .row
@@ -114,12 +159,10 @@ block content
             .columns
               | {{{marked(private_mdtext)}}}
               | {{{marked(public_mdtext)}}}
+        {{/project}}
 
         #files
-          form#upload(on-submit="createFile" action="/projects/{{_id}}/files")
-            .fallback
-              input(type="file" name="file" multiple)
-              button Send
+          form#upload(on-submit="createFile" action="/projects/{{project._id}}/files")
             #uploaded
               ul.small-block-grid-3.large-block-grid-4
                 | {{#images}}
@@ -137,21 +180,23 @@ block content
           |   {{>post}}
           | {{/posts}}
 
-          form(on-submit="createPost" action="/projects/{{_id}}/forum" method="post" data-abide)
+          form(on-submit="createPost" action="/projects/{{project._id}}/forum" method="post" data-abide)
             h2 Legg til innlegg
             label Tittel
             input#post_title(name="title" type="text" required)
             label Innhold
             textarea#post_mdtext(name="mdtext" required)
             button Lagre innlegg
+        | {{/expanded}}
 
       .medium-4.columns
+        | {{^expanded}}
         #events
           | {{#events}}
           |   {{>event}}
           | {{/events}}
 
-          form(on-submit="createEvent" action="/projects/{{_id}}/events" method="post" data-abide)
+          form(on-submit="createEvent" action="/projects/{{project._id}}/events" method="post" data-abide)
             h2 Legg til aktivitet
             label Tittel
             input#event_title(name="title" type="text" required)
@@ -164,9 +209,7 @@ block content
             label Beskrivelse
             textarea#event_mdtext(name="mdtext")
             button Legg til aktivitet
-
-
-    | {{/project}}
+        | {{/expanded}}
 
     // {{>post}}
     article
@@ -178,7 +221,7 @@ block content
             .columns.small-9
               span.byline
                 a(href="/users/{{creator._id}}") {{creator.name}}
-              time.created(datetime="{{isodate(created)}}") {{shortdate(created)}}
+              time.created(datetime="{{isodatetime(created)}}") {{shortdate(created)}}
             .columns.small-3.text-right.creator
               a(href="/projects/{{../../_id}}/forum/{{_id}}" title="slett innlegget" on-click="deletePost")
                 i.fa.fa-trash-o
@@ -208,6 +251,12 @@ block content
 
 block javascript
   script
-    | require('s7n').projects.projectView(
+    | require('s7n').projects.projectDetailView(
     != JSON.stringify(project)
+    | ,
+    != JSON.stringify(events)
+    | ,
+    != JSON.stringify(posts)
+    | ,
+    != JSON.stringify(files)
     | );

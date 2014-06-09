@@ -37,13 +37,14 @@ var EventSchema = new mongoose.Schema({
 });
 
 var ProjectSchema = new mongoose.Schema({
-    _id: {type: String, lowercase: true, required: true, unique: true, trim: true},
-    //tag: {type: String, required: true},
+    //_id: {type: String, lowercase: true, required: true, unique: true, trim: true},
+    tag: {type: String, trim: true, required: true},
     title: {type: String, required: true},
     public_mdtext: {type: String},
     private_mdtext: {type: String},
     start: {type: Date},
     end: {type: Date, required: true},
+    year: {type: Number, required: true, index: true}, // end.year
     creator: {type: String, ref: 'User', required: true},
     created: {type: Date, default: Date.now},
     permissions: {

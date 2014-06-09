@@ -13,13 +13,15 @@ block content
     if active_user
       .row
         .columns.text-right
-          i.fa.fa-file-o
-          | &nbsp;
-          a(on-click="toggleNew") Nytt prosjekt
+          a.button.tiny(on-click="toggleNew")
+            i.fa.fa-file-o
+            | &nbsp;
+            | Nytt prosjekt
     | {{#expanded}}
     if active_user
-      form(action="/projects" method="post" intro-outro='slide')
+      form(action="/projects" method="post" intro-outro='slide' on-submit="createProject")
         h1 Nytt prosjekt
+        | {{#project}}
         .row
           .columns
             label(for="title") Tittel
@@ -40,11 +42,11 @@ block content
         .row
           .columns
             label(for="start") Prosjektstart
-            input#start(name="start" type="text")
+            input#start(name="start" type="date")
         .row
           .columns
             label(for="end") Prosjektslutt
-            input#end(name="end" type="text")
+            input#end(name="end" type="date")
         .row
           .columns
             label(for="permissions") Rettigheter
@@ -52,6 +54,7 @@ block content
               +permission_options(active_user.groups, active_user.friends)
         button.small Lagre
         button.small.secondary(type="reset" on-click="toggleNew") Avbryt
+        | {{/project}}
     | {{/expanded}}
 
     | {{#projects}}
@@ -67,7 +70,7 @@ block content
     // {{>project}}
     .project(data-id="{{_id}}")
       h1
-        a(href="/projects/{{_id}}") {{title}}
+        a(href="/{{year}}/{{tag}}") {{title}}
       .meta
         .row
           .columns.small-9
