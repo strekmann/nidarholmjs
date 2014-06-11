@@ -29,7 +29,8 @@ module.exports.index = function (req, res, next) {
     else {
         query = Project.find().or({'permissions.public': true});
     }
-    query.sort('-end')
+    query.where({end: {$gt: moment()}});
+    query.sort('end')
         .populate('creator', 'username name')
         .limit(20);
     if (req.query.page) {
@@ -39,14 +40,66 @@ module.exports.index = function (req, res, next) {
         if (err) {
             throw err;
         }
+
         res.format({
             html: function () {
-                res.render('projects/index', {projects: projects});
+                if (req.user) {
+                    query = Project.find().or([
+                        {creator: req.user},
+                        {'permissions.public': true},
+                        {'permissions.users': req.user._id},
+                        {'permissions.groups': { $in: req.user.groups }}
+                    ]);
+                }
+                else {
+                    query = Project.find().or({'permissions.public': true});
+                }
+                query.where({end: {$lt: moment()}, year: moment().year()});
+                query.sort('-end')
+                    .populate('creator', 'username name');
+
+                query.exec(function (err, previous_projects) {
+                    if (err) {
+                        throw err;
+                    }
+
+                    res.render('projects/index', {
+                        projects: projects,
+                        previous_projects: previous_projects
+                    });
+                });
             },
             json: function () {
                 res.json(200, projects);
             }
         });
+    });
+};
+
+module.exports.year = function (req, res, next) {
+    var year = req.params.year;
+
+    if (req.user) {
+        query = Project.find({year: year}).or([
+            {creator: req.user},
+            {'permissions.public': true},
+            {'permissions.users': req.user._id},
+            {'permissions.groups': { $in: req.user.groups }}
+        ]);
+    }
+    else {
+        query = Project.find().or({'permissions.public': true});
+    }
+    query.sort('-end')
+        .populate('creator', 'username name');
+
+    query.exec(function (err, projects) {
+        if (err) {
+            res.json(500, err);
+        }
+        else {
+            res.json(200, projects);
+        }
     });
 };
 

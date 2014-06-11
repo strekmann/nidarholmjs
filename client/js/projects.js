@@ -7,10 +7,12 @@ var Project = Ractive.extend({
 
     data: {
         projects: [],
+        previous_projects: [],
         events: [],
         posts: [],
         images: [],
         non_images: [],
+        year: moment().year(),
 
         marked: function(text){
             if (text) {
@@ -113,6 +115,16 @@ var Project = Ractive.extend({
             data: project
         });
     },
+    fetchProjects: function () {
+        this.subtract('year');
+
+        var year = this.get('year');
+
+        return $.ajax({
+            url: '/' + year + '/',
+            type: 'GET'
+        });
+    },
     createPost: function (post, url) {
         return $.ajax({
             url: url,
@@ -156,14 +168,17 @@ var setup_editor = function (element_id) {
     return editor;
 };
 
-module.exports.projectListView = function (projects) {
+module.exports.projectListView = function (projects, previous_projects) {
     var internal_editor, uploadzone;
 
     var projectlist = new Project({
         el: '#projects',
         template: '#template',
+        data: {
+            projects: projects,
+            previous_projects: previous_projects
+        }
     });
-    projectlist.set('projects', projects);
 
     projectlist.on('setSlug', function (event) {
         var node = $(event.node);
@@ -194,6 +209,17 @@ module.exports.projectListView = function (projects) {
             flash.data.success.push(data.title + " er opprettet");
         }, function (xhr, status, err) {
             flash.get('error').push(err);
+        });
+    });
+
+    projectlist.on('fetchProjects', function(event){
+        event.original.preventDefault();
+        projectlist.fetchProjects()
+        .then(function(data){
+            if (data.length === 0){
+                self.set('gotall', true);
+            }
+            projectlist.get('previous_projects').push.apply(projectlist.get('previous_projects'), data);
         });
     });
 };

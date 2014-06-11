@@ -56,10 +56,15 @@ block content
         button.small.secondary(type="reset" on-click="toggleNew") Avbryt
     | {{/expanded}}
 
+    h1 Kommende prosjekter
     | {{#projects}}
     |   {{>project}}
     | {{/projects}}
 
+    h1 Tidligere prosjekter
+    | {{#previous_projects}}
+    |   {{>project}}
+    | {{/previous_projects}}
     | {{^gotall}}
     .row
       .columns.text-center.dtborder
@@ -82,4 +87,6 @@ block javascript
   script
     | require('s7n').projects.projectListView(
     != JSON.stringify(projects)
+    | ,
+    != JSON.stringify(previous_projects)
     | );
