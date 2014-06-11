@@ -127,7 +127,7 @@ block content
           .row
             .columns
               label(for="permissions") Rettigheter
-              select#permissions.chosen-permissions(name="permissions" multiple data-placeholder="Velg prosjektgruppe")
+              select#permissions.chosen-permissions(name="permissions" multiple data-placeholder="Velg prosjektgruppe" value="{{project.permissions}}")
                 +permission_options(active_user.groups, active_user.friends)
           button.small Lagre
           button.small.secondary(type="reset" on-click="toggleEdit") Avbryt
@@ -165,7 +165,7 @@ block content
             label Tittel
             input#post_title(name="title" type="text" required value="{{post.title}}")
             label Innhold
-            textarea#post_mdtext(name="mdtext" required value="{{post.mdtext}}")
+            textarea#post_mdtext(name="mdtext" value="{{post.mdtext}}")
             button Lagre innlegg
           | {{/postExpanded}}
 

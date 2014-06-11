@@ -54,29 +54,36 @@ module.exports.create_project = function (req, res, next) {
     if (!req.is_member) {
         res.send(403, 'Forbidden');
     }
+    else if (!req.body.end) {
+        console.log(req.body);
+        res.json(400, 'Project end time is missing');
+    }
     else {
-        var title = req.body.title,
-            tag = req.body.tag || req.body.title,
-            permissions = util.parse_web_permissions(req.body.permissions),
-            private_mdtext = req.body.private_mdtext,
-            public_mdtext = req.body.public_mdtext,
-            start = moment(req.body.start),
-            end = moment(req.body.end),
-            year = end.year();
-
         var project = new Project();
-        project.title = title;
-        project.tag = uslug(tag);
-        project.private_mdtext = private_mdtext;
-        project.public_mdtext = public_mdtext;
-        project.start = start;
-        project.end = end;
-        project.year = year;
-        project.permissions = permissions;
+        project.title = req.body.title;
+        if (req.body.tag) {
+            project.tag = uslug(req.body.tag);
+        }
+        else {
+            project.tag = uslug(req.body.title);
+        }
+        project.private_mdtext = req.body.private_mdtext;
+        project.public_mdtext = req.body.public_mdtext;
+        if (req.body.start) {
+            project.start = moment(req.body.start);
+        }
+        if (req.body.end) {
+            var end = moment(req.body.end);
+            project.end = end;
+            project.year = end.year();
+        }
+        project.permissions = util.parse_web_permissions(req.body.permissions);
         project.creator = req.user;
 
         project.save(function (err) {
-            if (err) { return next(err); }
+            if (err) {
+                res.json(400, err);
+            }
             res.format({
                 json: function () {
                     res.json(200, project);

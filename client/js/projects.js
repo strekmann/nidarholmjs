@@ -159,7 +159,6 @@ var setup_editor = function (element_id) {
 module.exports.projectListView = function (projects) {
     var internal_editor, uploadzone;
 
-    var flash = require('s7n').flash;
     var projectlist = new Project({
         el: '#projects',
         template: '#template',
@@ -175,7 +174,6 @@ module.exports.projectListView = function (projects) {
         this.toggle('expanded');
         setTimeout(function(){
             if (projectlist.get('expanded')) {
-                projectlist.set('project.permissions', ['p']);
                 internal_editor = setup_editor('#private_mdtext');
                 $('.chosen-permissions').chosen({width: '100%'});
             }
@@ -226,7 +224,9 @@ module.exports.projectDetailView = function (project_obj, events, posts, files) 
                 non_images: non_images
             }
         }),
-        internal_editor;
+        internal_editor,
+        post_editor,
+        event_editor;
 
     project.on('toggleEdit', function (event) {
         this.toggle('expanded');
@@ -235,9 +235,9 @@ module.exports.projectDetailView = function (project_obj, events, posts, files) 
                 internal_editor = setup_editor('#private_mdtext');
                 $('.chosen-permissions').chosen({width: '100%'});
             }
-            else {
+            /*else {
                 project.setup_uploadzone('#upload', '#add_file');
-            }
+            }*/
         }, 1);
     });
 
@@ -245,6 +245,8 @@ module.exports.projectDetailView = function (project_obj, events, posts, files) 
         event.original.preventDefault();
         internal_editor.codemirror.save(); //toTextArea();
         event.context.project.private_mdtext = $('#private_mdtext').val();
+        event.context.project.permissions = $('#permissions').val();
+
         project.updateProject(event.context.project)
         .then(function(data) {
             // ok
@@ -257,15 +259,23 @@ module.exports.projectDetailView = function (project_obj, events, posts, files) 
 
     project.on('togglePost', function (event) {
         this.toggle('postExpanded');
+        setTimeout(function(){
+            if (project.get('postExpanded')) {
+                post_editor = setup_editor('#post_mdtext');
+            }
+        }, 1);
     });
 
     project.on('createPost', function (event) {
         event.original.preventDefault();
+        post_editor.codemirror.save(); //toTextArea();
+        event.context.post.mdtext = $('#post_mdtext').val();
 
         project.createPost(event.context.post, event.node.action)
         .then(function (data) {
             flash.data.success.push(data.title + ' ble lagt til i forum');
             project.get('posts').unshift(data);
+            project.set('post', {});
             project.fire('togglePost');
         }, function(xhr, status, err){
             console.error(err);
@@ -301,6 +311,7 @@ module.exports.projectDetailView = function (project_obj, events, posts, files) 
         .then(function (data) {
             flash.data.success.push(data.title + ' ble lagt til i kalenderen');
             project.get('events').unshift(data);
+            project.set('event', {});
             project.fire('toggleEvent');
         }, function(xhr, status, err){
             console.error(err);
