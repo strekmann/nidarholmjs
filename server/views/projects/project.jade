@@ -209,9 +209,9 @@ block content
             label Sted
             input#event_location(name="location" type="text" value="{{event.location}}")
             label Start
-            input#event_start(name="start" type="text" required value="{{event.start}}")
+            input#event_start(name="start" type="datetime" required value="{{event.start}}")
             label Slutt
-            input#event_end(name="end" type="text" value="{{event.end}}")
+            input#event_end(name="end" type="datetime" value="{{event.end}}")
             label Beskrivelse
             textarea#event_mdtext(name="mdtext" value="{{event.mdtext}}")
             button Legg til aktivitet
