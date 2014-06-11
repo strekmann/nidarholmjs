@@ -7,6 +7,7 @@ var pg = require('pg'),
     shortid = require('short-mongo-id'),
     User = require('../server/models').User,
     Group = require('../server/models').Group,
+    File = require('../server/models/files').File,
     ForumPost = require('../server/models/forum').ForumPost;
 
 mongoose.connect('mongodb://localhost/nidarholm');
@@ -17,6 +18,39 @@ var log = new (winston.Logger)({
         new (winston.transports.Console)({level: process.env.DEBUG ? 'debug' : 'info'})
     ]
 });
+
+var replacer = function (match, description, path) {
+    console.log(match);
+    var old_id = path.split("/").shift();
+    File.findOne({old_id: old_id}, function (err, file) {
+        if (err) {
+            throw err;
+        }
+        if (file) {
+            if (!description) {
+                description = file.filename;
+            }
+            var newstring = "[![" + description + "](/files/n/" + file.hash + "/" + file.filename + ")](/files/" + file._id + ")";
+            console.log(newstring);
+            return newstring;
+        }
+        else {
+            console.log("replaced by nothing");
+            return "replaced by nothing";
+        }
+    });
+};
+
+var convert_temporary_markdown_syntax = function (string) {
+    var newstring = string.replace(/\!\[(.*?)\]\[(\d+(?:\/\d+)?)\]/g, replacer);
+    if (newstring.match(/\!\[/)) {
+        console.log(newstring);
+    }
+    if (newstring.match("replaced by nothing")) {
+        console.log("we have replaced");
+    }
+    return newstring;
+};
 
 client.connect(function(err) {
     if(err) {
@@ -38,7 +72,7 @@ client.connect(function(err) {
                     creator: 'nidarholm.' + post.user_id,
                     original_slug: post.slug,
                     tags: ['nyheter'],
-                    mdtext: post.content
+                    mdtext: convert_temporary_markdown_syntax(post.content)
                 };
                 if (!post.group_id) {
                     _.extend(new_post, {permissions: {public: true, groups: [], users: []}});
