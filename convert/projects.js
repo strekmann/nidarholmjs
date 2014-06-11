@@ -1,5 +1,6 @@
 var pg = require('pg'),
     mongoose = require('mongoose'),
+    moment = require('moment'),
     _ = require('underscore'),
     async = require('async'),
     winston = require('winston'),
@@ -55,7 +56,8 @@ client.connect(function(err) {
                 modified: p.updated,
                 creator: 'nidarholm.' + p.user_id,
                 private_mdtext: p.content,
-                start: p.start
+                start: p.start,
+                year: moment(p.end).year()
             };
             if (p.name) {
                 tag = tagify(p.name)[0];
@@ -70,7 +72,7 @@ client.connect(function(err) {
                         return 'nidarholm.' + project_user.user_id;
                     });
 
-                    Project.update({end: p.end, _id: tag}, new_project, {upsert: true}, function (err, project) {
+                    Project.update({end: p.end, tag: tag}, new_project, {upsert: true}, function (err, project) {
 
                         console.log(err, project);
                         callback(err);
