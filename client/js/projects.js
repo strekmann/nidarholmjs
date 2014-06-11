@@ -302,10 +302,18 @@ module.exports.projectDetailView = function (project_obj, events, posts, files) 
 
     project.on('toggleEvent', function (event) {
         this.toggle('eventExpanded');
+        setTimeout(function(){
+            if (project.get('eventExpanded')) {
+                $('#event_start').fdatetimepicker({language: 'nb', weekStart: 1, format: 'yyyy-mm-dd hh:ii'});
+                $('#event_end').fdatetimepicker({language: 'nb', weekStart: 1, format: 'yyyy-mm-dd hh:ii'});
+            }
+        }, 1);
     });
 
     project.on('createEvent', function (event) {
         event.original.preventDefault();
+        event.context.event.start = $('#event_start').val();
+        event.context.event.end = $('#event_end').val();
 
         project.createEvent(event.context.event, event.node.action)
         .then(function (data) {
