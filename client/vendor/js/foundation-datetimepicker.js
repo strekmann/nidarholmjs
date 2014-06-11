@@ -112,7 +112,7 @@
 		if (this.isRTL){
 			this.picker.addClass('datetimepicker-rtl');
 			this.picker.find('.prev i, .next i')
-						.toggleClass('icon-chevron-left icon-chevron-right');
+						.toggleClass('fa-chevron-left fa-chevron-right');
 		}
 		$(document).on('mousedown', function (e) {
 			// Clicked outside the datetimepicker, hide it
@@ -981,6 +981,14 @@
 			today: "Today"
 		}
 	};
+    $.fn.fdatetimepicker.dates['nb'] = {
+            days: ["Søndag", "Mandag", "Tirsdag", "Onsdag", "Torsdag", "Fredag", "Lørdag", "Søndag"],
+            daysShort: ["Søn", "Man", "Tir", "Ons", "Tor", "Fre", "Lør", "Søn"],
+            daysMin: ["Sø", "Ma", "Ti", "On", "To", "Fr", "Lø", "Sø"],
+            months: ["Januar", "Februar", "Mars", "April", "Mai", "Juni", "Juli", "August", "September", "Oktober", "November", "Desember"],
+            monthsShort: ["Jan", "Feb", "Mar", "Apr", "Mai", "Jun", "Jul", "Aug", "Sep", "Okt", "Nov", "Des"],
+            today: "I dag"
+    };
 
 	var DPGlobal = {
 		modes: [
@@ -1182,9 +1190,9 @@
 		},
 		headTemplate: '<thead>'+
 							'<tr>'+
-								'<th class="prev"><i class="icon-chevron-left"/></th>'+
+								'<th class="prev"><i class="fa fa-chevron-left"/></th>'+
 								'<th colspan="5" class="switch"></th>'+
-								'<th class="next"><i class="icon-chevron-right"/></th>'+
+								'<th class="next"><i class="fa fa-chevron-right"/></th>'+
 							'</tr>'+
 						'</thead>',
 		contTemplate: '<tbody><tr><td colspan="7"></td></tr></tbody>',
@@ -1226,7 +1234,7 @@
 									DPGlobal.footTemplate+
 								'</table>'+
 							'</div>'+
-							'<a class="button datetimepicker-close small alert right" style="width:auto;"><i class="icon-remove"></i></a>'+
+							'<a class="button datetimepicker-close small alert right" style="width:auto;"><i class="fa fa-times"></i></a>'+
 						'</div>';
 
 	$.fn.fdatetimepicker.DPGlobal = DPGlobal;
