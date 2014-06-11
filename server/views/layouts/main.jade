@@ -65,13 +65,6 @@ html(lang=lang dir=lang_dir)
               li.hide-for-small-only
                 a(href="/groups")
                   i.fa.fa-users(title="Grupper")
-            li
-              a(href="/events")
-                .hide-for-small-only
-                  i.fa.fa-calendar-o(title="Kalender")
-                .show-for-small-only
-                  i.fa.fa-calendar-o
-                  | &nbsp; Kalender
             if active_user
               li
                 a(href="/forum")
@@ -87,6 +80,14 @@ html(lang=lang dir=lang_dir)
                   .show-for-small-only
                     i.fa.fa-download
                     | &nbsp; Files
+            li
+              a(href="/events")
+                .hide-for-small-only
+                  i.fa.fa-calendar-o(title="Kalender")
+                .show-for-small-only
+                  i.fa.fa-calendar-o
+                  | &nbsp; Kalender
+            if active_user
               li
                 a#topbar-username(href="/users/"+active_user.username)
                   = active_user.username
