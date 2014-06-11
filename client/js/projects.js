@@ -31,6 +31,9 @@ var Project = Ractive.extend({
                 return filename;
             }
         },
+        ago: function (date) {
+            return moment(date).fromNow();
+        },
         shortdate: function(date){
             if (date) {
                 return moment(date).format('ll');
@@ -55,7 +58,7 @@ var Project = Ractive.extend({
                 endd = moment(end).startOf('day');
                 if (startm.isSame(endm, 'day')) {
                     // same day
-                    if (moment.utc(startm).isSame(startd, 'second') && moment(endm).isSame(endd, 'second')) {
+                    if (startm.isSame(startd) && endm.isSame(endd)) {
                         return '<time class="start" datetime="' + startm.format() + '">' + startm.format('LL') + '</time>';
                     }
                     else {
@@ -63,8 +66,7 @@ var Project = Ractive.extend({
                     }
                 }
                 else {
-                    // different days
-                    if (startm.isSame(startd, 'second') && endm.isSame(endd, 'second')) {
+                    if (startm.isSame(startd) && endm.isSame(endd)) {
                         return '<time class="start" datetime="' + startm.format() + '">' + startm.format('LL') + '</time> – <time class="end" datetime="' + endm.format() + '">' + endm.format('LL') + '</time>';
                     }
                     else {
@@ -75,8 +77,8 @@ var Project = Ractive.extend({
             else if (start) {
                 // only start
                 startm = moment(start);
-                startd = moment.utc(startm).startOf('day');
-                if (moment.utc(startm).isSame(startd, 'second')) {
+                startd = moment(startm).startOf('day');
+                if (startm.isSame(startd, 'second')) {
                     return '<time datetime="' + startm.format() + '">' + startm.format('LL') + '</time>';
                 }
                 else {
@@ -86,8 +88,8 @@ var Project = Ractive.extend({
             else if (end) {
                 // only end
                 endm = moment(end);
-                endd = moment.utc(endm).startOf('day');
-                if (moment.utc(endm).isSame(endd, 'second')) {
+                endd = moment(endm).startOf('day');
+                if (endm.isSame(endd, 'second')) {
                     return '<time datetime="' + endm.format() + '">' + endm.format('LL') + '</time>';
                 }
                 else {
@@ -347,35 +349,11 @@ module.exports.projectDetailView = function (project_obj, events, posts, files) 
 };
 
 module.exports.upcomingView = function (events) {
-    var event_list = new Ractive({
+    var event_list = new Project({
         el: '#events',
         template: '#template',
         data: {
-            events: events,
-            marked: function (mdtext) {
-                return marked(mdtext);
-            },
-            ago: function (date) {
-                return moment(date).fromNow();
-            },
-            daterange: function (start, end) {
-                var startm, endm;
-                if (end) {
-                    startm = moment(start);
-                    endm = moment(end);
-                    if (startm.isSame(endm, 'day')) {
-                        // same day
-                        return '<time class="start" datetime="' + startm.format() + '">' + startm.format('LLL') + '</time> – <time class="end" datetime="' + endm.format() + '">' + endm.format('LT') + '</time>';
-                    }
-                    else {
-                        // different days
-                        return '<time class="start" datetime="' + startm.format() + '">' + startm.format('LLL') + '</time> – <time class="end" datetime="' + endm.format() + '">' + endm.format('LLL') + '</time>';
-                    }
-                } else {
-                    startm = moment(start);
-                    return '<time datetime="' + startm.format() + '">' + startm.format('LLL') + '</time>';
-                }
-            }
+            events: events
         }
     });
 };

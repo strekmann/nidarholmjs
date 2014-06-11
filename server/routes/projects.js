@@ -60,9 +60,9 @@ module.exports.create_project = function (req, res, next) {
             permissions = util.parse_web_permissions(req.body.permissions),
             private_mdtext = req.body.private_mdtext,
             public_mdtext = req.body.public_mdtext,
-            start = req.body.start,
-            end = req.body.end,
-            year = moment(end).year();
+            start = moment(req.body.start),
+            end = moment(req.body.end),
+            year = end.year();
 
         var project = new Project();
         project.title = title;
