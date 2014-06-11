@@ -39,7 +39,6 @@ block content
                       i.fa.fa-user
                     a.edit(href='#')
                       i.fa.fa-edit
-                    i.fa.fa-trash-o
 
         #forum
           for post in posts
@@ -57,8 +56,6 @@ block content
                       i.fa.fa-globe(title="Tilgjengelig for alle")
                       i.fa.fa-users(title="Tilgjengelig for alle medlemmer")
                       i.fa.fa-user(title="Tilgjengelig bare for deg")
-                      a.deletepost(title="Slett innlegget")
-                        i.fa.fa-trash-o
 
                 .content
                   .row
@@ -145,7 +142,7 @@ block content
                 | &nbsp;
                 | Rediger prosjekt
 
-        {{#project}}
+        | {{#project}}
         h1 {{title}}
         .meta
           .row
@@ -159,16 +156,16 @@ block content
             .columns
               | {{{marked(private_mdtext)}}}
               | {{{marked(public_mdtext)}}}
-        {{/project}}
+        | {{/project}}
 
         #forum
           | {{#postExpanded}}
           form(on-submit="createPost" action="/projects/{{project._id}}/forum" method="post" data-abide)
             h2 Legg til innlegg
             label Tittel
-            input#post_title(name="title" type="text" required)
+            input#post_title(name="title" type="text" required value="{{post.title}}")
             label Innhold
-            textarea#post_mdtext(name="mdtext" required)
+            textarea#post_mdtext(name="mdtext" required value="{{post.mdtext}}")
             button Lagre innlegg
           | {{/postExpanded}}
 
@@ -208,15 +205,15 @@ block content
           form(on-submit="createEvent" action="/projects/{{project._id}}/events" method="post" data-abide)
             h2 Legg til aktivitet
             label Tittel
-            input#event_title(name="title" type="text" required)
+            input#event_title(name="title" type="text" required value="{{event.title}}")
             label Sted
-            input#event_location(name="location" type="text")
+            input#event_location(name="location" type="text" value="{{event.location}}")
             label Start
-            input#event_start(name="start" type="text" required)
+            input#event_start(name="start" type="text" required value="{{event.start}}")
             label Slutt
-            input#event_end(name="end" type="text")
+            input#event_end(name="end" type="text" value="{{event.end}}")
             label Beskrivelse
-            textarea#event_mdtext(name="mdtext")
+            textarea#event_mdtext(name="mdtext" value="{{event.mdtext}}")
             button Legg til aktivitet
           | {{/eventExpanded}}
           | {{^eventExpanded}}
@@ -246,8 +243,6 @@ block content
                 a(href="/users/{{creator._id}}") {{creator.name}}
               time.created(datetime="{{isodatetime(created)}}") {{shortdate(created)}}
             .columns.small-3.text-right.creator
-              a(href="/projects/{{../../_id}}/forum/{{_id}}" title="slett innlegget" on-click="deletePost")
-                i.fa.fa-trash-o
 
         .content
           .row

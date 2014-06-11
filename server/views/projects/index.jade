@@ -9,6 +9,7 @@ block content
             h1
               a(href="/projects/" + project._id)= project.title
             p= project.end
+
   script#template(type="text/ractive")
     if active_user
       .row
@@ -19,42 +20,40 @@ block content
             | Nytt prosjekt
     | {{#expanded}}
     if active_user
-      form(action="/projects" method="post" intro-outro='slide' on-submit="createProject")
+      form(action="/projects" method="post" intro-outro='slide' on-submit="createProject" data-abide)
         h1 Nytt prosjekt
-        | {{#project}}
         .row
           .columns
             label(for="title") Tittel
-            input#title(on-keyup="setSlug" name="title" type="text")
+            input#title(on-keyup="setSlug" name="title" type="text" value="{{project.title}}" required)
         .row
           .columns
             label(for="tag")
               abbr(title="Alle innlegg, aktiviteter, o.l som merkes med denne merkelappen blir vist på prosjektsiden. Merkelappen vil også bli en del av prosjektsidens adresse.") Merkelapp (Kan ikke endres setter at innlegg, aktiviteter eller filer har blitt lagt til prosjektet)
-            input#tag(name="tag" type="text" value="{{slug}}")
+            input#tag(name="tag" type="text" value="{{project.slug}}")
         .row
           .columns
             label(for="private_mdtext") Intern beskrivelse
-            textarea#private_mdtext(name="private_mdtext")
+            textarea#private_mdtext(name="private_mdtext" value="{{project.private_mdtext}}")
         .row
           .columns
             label(for="public_mdtext") Ekstern beskrivelse
-            textarea#public_mdtext(name="public_mdtext")
+            textarea#public_mdtext(name="public_mdtext" value="{{project.public_mdtext}}")
         .row
           .columns
             label(for="start") Prosjektstart
-            input#start(name="start" type="date")
+            input#start(name="start" type="date" value="{{project.start}}")
         .row
           .columns
             label(for="end") Prosjektslutt
-            input#end(name="end" type="date")
+            input#end(name="end" type="date" value="{{project.end}}" required)
         .row
           .columns
             label(for="permissions") Rettigheter
-            select#permissions.chosen-permissions(name="permissions" multiple data-placeholder="Velg prosjektgruppe")
+            select#permissions.chosen-permissions(name="permissions" multiple data-placeholder="Velg prosjektgruppe" value="{{project.permissions}}")
               +permission_options(active_user.groups, active_user.friends)
         button.small Lagre
         button.small.secondary(type="reset" on-click="toggleNew") Avbryt
-        | {{/project}}
     | {{/expanded}}
 
     | {{#projects}}
@@ -75,6 +74,8 @@ block content
         .row
           .columns.small-9
             | {{{daterange(start, end)}}}
+          .columns.small-3.text-right
+            permissionicons(permissions="{{permissions}}")
     // {{/project}}
 
 block javascript

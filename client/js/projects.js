@@ -6,7 +6,6 @@ var Project = Ractive.extend({
     },
 
     data: {
-        project: {},
         projects: [],
         events: [],
         posts: [],
@@ -167,42 +166,35 @@ module.exports.projectListView = function (projects) {
 
     projectlist.on('setSlug', function (event) {
         var node = $(event.node);
-        projectlist.set('slug', uslug(node.val()));
+        projectlist.set('project.slug', uslug(node.val()));
     });
 
     projectlist.on('toggleNew', function (event) {
         this.toggle('expanded');
         setTimeout(function(){
             if (projectlist.get('expanded')) {
+                projectlist.set('project.permissions', ['p']);
                 internal_editor = setup_editor('#private_mdtext');
                 $('.chosen-permissions').chosen({width: '100%'});
+                $('#permissions').chosen().change(function (event, data, more) {
+                    console.log(event, data, more);
+                });
             }
         }, 1);
     });
 
     projectlist.on('createProject', function (event) {
         event.original.preventDefault();
+        internal_editor.codemirror.save();
+        event.context.project.private_mdtext = $('#private_mdtext').val();
+        event.context.project.permissions = $('#permissions').val();
 
-        var node = $(event.node),
-            project = {
-                title: node.find('#title').val(),
-                tag: node.find('#tag').val(),
-                permissions: node.find('#permissions').val(),
-                private_mdtext: internal_editor.codemirror.display.lineDiv.innerText,
-                public_mdtext: node.find('#public_mdtext').val(),
-                start: node.find('#start').val(),
-                end: node.find('#end').val()
-            };
-
-        console.log(node.find('#permissions').val());
-
-        projectlist.createProject(project)
+        projectlist.createProject(event.context.project)
         .then(function (data) {
             projectlist.toggle('expanded');
             projectlist.get('projects').unshift(data);
-            projectlist.set('slug', '');
             projectlist.set('project', {});
-            flash.get('info').push(project.title + " er opprettet");
+            flash.data.success.push(data.title + " er opprettet");
         }, function (xhr, status, err) {
             flash.get('error').push(err);
         });
@@ -285,13 +277,8 @@ module.exports.projectDetailView = function (project_obj, events, posts, files) 
 
     project.on('createPost', function (event) {
         event.original.preventDefault();
-        var node = $(event.node),
-            post = {
-                title: node.find('#post_title').val(),
-                mdtext: node.find('#post_mdtext').val(),
-            };
 
-        project.createPost(post, event.node.action)
+        project.createPost(event.context.post, event.node.action)
         .then(function (data) {
             flash.data.success.push(data.title + ' ble lagt til i forum');
             project.get('posts').unshift(data);
@@ -301,6 +288,7 @@ module.exports.projectDetailView = function (project_obj, events, posts, files) 
         });
     });
 
+    /*
     project.on('deletePost', function (event) {
         event.original.preventDefault();
         var promise = $.ajax({
@@ -316,6 +304,7 @@ module.exports.projectDetailView = function (project_obj, events, posts, files) 
             console.error(err);
         });
     });
+    */
 
     project.on('toggleEvent', function (event) {
         this.toggle('eventExpanded');
@@ -323,16 +312,8 @@ module.exports.projectDetailView = function (project_obj, events, posts, files) 
 
     project.on('createEvent', function (event) {
         event.original.preventDefault();
-        var node = $(event.node),
-            ev = {
-                title: node.find('#event_title').val(),
-                location: node.find('#event_location').val(),
-                start: node.find('#event_start').val(),
-                end: node.find('#event_end').val(),
-                md_text: node.find('#event_mdtext').val()
-            };
 
-        project.createEvent(ev, event.node.action)
+        project.createEvent(event.context.event, event.node.action)
         .then(function (data) {
             flash.data.success.push(data.title + ' ble lagt til i kalenderen');
             project.get('events').unshift(data);
@@ -342,6 +323,7 @@ module.exports.projectDetailView = function (project_obj, events, posts, files) 
         });
     });
 
+    /*
     project.on('deleteEvent', function (event) {
         event.original.preventDefault();
         var promise = $.ajax({
@@ -357,6 +339,7 @@ module.exports.projectDetailView = function (project_obj, events, posts, files) 
             console.error(err);
         });
     });
+    */
 
     project.setup_uploadzone('#upload', '#add_file');
 
