@@ -62,14 +62,6 @@ block content
                     .columns
                       != marked(post.mdtext)
 
-        form(action="/projects/" + project._id + "/forum" method="post")
-          h2 Legg til innlegg
-          label Tittel
-          input.title(name="title" type="text")
-          label Innhold
-          textarea.mdtext(name="mdtext")
-          button Lagre innlegg
-
       .medium-4.columns
         #events
           for event in events
@@ -78,21 +70,6 @@ block content
               .meta
                 = shortdate(event.start)
                 = shortdate(event.end)
-
-        form(action="/projects/" + project._id + "/events" method="post")
-          h2 Legg til aktivitet
-          label Tittel
-          input.title(name="title" type="text")
-          label Sted
-          input.location(name="location" type="text")
-          label Start
-          input.start(name="start" type="text")
-          label Slutt
-          input.end(name="end" type="text")
-          label Beskrivelse
-          textarea.mdtext(name="mdtext")
-          button Legg til aktivitet
-
 
   script#template(type="text/ractive")
     .row
@@ -111,11 +88,11 @@ block content
           .row
             .columns
               label(for="private_mdtext") Intern beskrivelse
-              textarea#private_mdtext(name="private_mdtext") {{project.private_mdtext}}
+              textarea#private_mdtext(name="private_mdtext" value="{{project.private_mdtext}}")
           .row
             .columns
               label(for="public_mdtext") Ekstern beskrivelse
-              textarea#public_mdtext(name="public_mdtext") {{project.public_mdtext}}
+              textarea#public_mdtext(name="public_mdtext" value="{{project.public_mdtext}}")
           .row
             .columns
               label(for="start") Prosjektstart
@@ -155,7 +132,10 @@ block content
           .row
             .columns
               | {{{marked(private_mdtext)}}}
+              | {{#public_mdtext}}
+              h2 Ekstern prosjektbeskrivelse
               | {{{marked(public_mdtext)}}}
+              | {{/public_mdtext}}
         | {{/project}}
 
         #forum
