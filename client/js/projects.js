@@ -178,9 +178,6 @@ module.exports.projectListView = function (projects) {
                 projectlist.set('project.permissions', ['p']);
                 internal_editor = setup_editor('#private_mdtext');
                 $('.chosen-permissions').chosen({width: '100%'});
-                $('#permissions').chosen().change(function (event, data, more) {
-                    console.log(event, data, more);
-                });
             }
         }, 1);
     });
@@ -199,21 +196,6 @@ module.exports.projectListView = function (projects) {
             flash.data.success.push(data.title + " er opprettet");
         }, function (xhr, status, err) {
             flash.get('error').push(err);
-        });
-    });
-
-    $('#projects').on('click', '.deleteproject', function (event) {
-        event.preventDefault();
-        var project = $(this).parents('.project');
-        var id = project.attr('data-id');
-        $.ajax({
-            url: '/projects/' + id,
-            type: 'delete',
-            dataType: 'json',
-            success: function (data) {
-                flash.data.success.push(data);
-                project.remove();
-            }
         });
     });
 };
