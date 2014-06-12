@@ -4,6 +4,7 @@ var pg = require('pg'),
     async = require('async'),
     winston = require('winston'),
     config = require('../server/settings'),
+    convert_temporary_markdown_syntax = require('./lib').convert_temporary_markdown_syntax,
     User = require('../server/models').User,
     Group = require('../server/models').Group,
     ForumPost = require('../server/models/forum').ForumPost,
@@ -42,126 +43,128 @@ client.connect(function(err) {
                     callback();
                 }
                 else {
-                    //log.debug("parent: "+ parent);
-                    log.debug(key);
-                    if (!post.parent_id) {
-                        log.debug("no parent_id: this is a reply");
-                        var reply = {
-                            created: post.submit_date,
-                            creator: 'nidarholm.' + post.user_id,
-                            mdtext: post.content,
-                            original_id: post.id,
-                        };
-                        if (post.is_removed) {
-                            reply.removed_by = 'nidarholm.1';
-                        }
-
-                        // check if parent has this reply
-                        ForumPost.findOne({'replies.original_id': post.id}, function (err, forumpost) {
-                            if (err) {
-                                callback(err);
+                    convert_temporary_markdown_syntax(post.content, function (err, new_content) {
+                        //log.debug("parent: "+ parent);
+                        log.debug(key);
+                        if (!post.parent_id) {
+                            log.debug("no parent_id: this is a reply");
+                            var reply = {
+                                created: post.submit_date,
+                                creator: 'nidarholm.' + post.user_id,
+                                mdtext: new_content,
+                                original_id: post.id,
+                            };
+                            if (post.is_removed) {
+                                reply.removed_by = 'nidarholm.1';
                             }
-                            else {
-                                if (forumpost) {
-                                    ForumPost.update({'replies.original_id': post.id}, {$set: {'replies.$': reply}}, function (err, updated) {
-                                        log.debug("updated reply", post.id);
-                                        callback(err);
-                                    });
-                                } else {
-                                    parent.replies.push(reply);
-                                    parent.save(function (err) {
-                                        log.debug("added new reply ", post.id);
-                                        callback(err);
-                                    });
+
+                            // check if parent has this reply
+                            ForumPost.findOne({'replies.original_id': post.id}, function (err, forumpost) {
+                                if (err) {
+                                    callback(err);
                                 }
-                            }
-                        });
-                    } else {
-                        // this has a parent: it is a comment
-                        log.debug("is comment");
-                        var new_comment = new ForumComment();
-                        new_comment.created = post.submit_date;
-                        new_comment.creator = 'nidarholm.' + post.user_id;
-                        new_comment.mdtext = post.content;
-                        new_comment.original_id = post.id;
-                        new_comment.parent_id = post.parent_id;
-                        if (post.is_removed) {
-                            new_comment.removed_by = 'nidarholm.1';
-                        }
-
-                        ForumPost.findOne({'replies.original_id': post.parent_id}, {replies:{$elemMatch: {'original_id': post.parent_id}}}, function (err, has_reply) {
-
-                            if (has_reply) {
-                                //console.log("has reply"+post.id);
-                                var reply = has_reply.replies[0];
-
-                                // check if comment already exists:
-                                var comment_index;
-                                var comment = _.find(reply.comments, function (comment, i) {
-                                    if (comment.original_id === post.id) {
-                                        comment_index = i;
-                                        return true;
-                                    }
-                                });
-                                /*
-                                console.log(has_reply);
-                                console.log(comment);
-                                console.log(reply.comments);
-                                */
-
-                                if (comment) {
-                                    ForumPost.update({'replies.comments.original_id': post.id}, {$set: {'replies.$.comments.$': new_comment}}, function (err, updated) {
-                                        log.debug("update toplevel", post.id);
-                                        callback(err);
-                                    });
-                                    //parent.replies[0].comments[comment_index] = new_comment;
-                                } else {
-                                    ForumPost.update({'replies.original_id': post.parent_id}, {$push: {'replies.$.comments': new_comment}}, function (err, updated) {
-                                        log.debug("add toplevel", post.id);
-                                        callback(err);
-                                    });
-                                }
-                            } else {
-                                log.debug('not directly hanging on reply');
-                                // not directly under reply, use parent_id to find reply
-                                ForumPost.findOne({'replies.comments.original_id': post.parent_id}, {replies:{$elemMatch: {'comments.original_id': post.parent_id}}}, function (err, has_comment) {
-                                    if (has_comment) {
-                                        var reply = has_comment.replies[0];
-
-                                        // check if comment already exists:
-                                        var comment_index;
-                                        var comment = _.find(reply.comments, function (comment, i) {
-                                            if (comment.original_id === post.id) {
-                                                comment_index = i;
-                                                return true;
-                                            }
+                                else {
+                                    if (forumpost) {
+                                        ForumPost.update({'replies.original_id': post.id}, {$set: {'replies.$': reply}}, function (err, updated) {
+                                            log.debug("updated reply", post.id);
+                                            callback(err);
                                         });
-                                        /*console.log(has_comment);
-                                        console.log(comment);
-                                        console.log(reply.comments);
-                                        */
-
-                                        if (comment) {
-                                            ForumPost.update({'replies.comments.original_id': post.parent_id}, {$set: {'replies.$.comments.$': new_comment}}, function (err, updated) {
-                                                log.debug("update inner", post.id);
-                                                callback(err);
-                                            });
-                                            //parent.replies[0].comments[comment_index] = new_comment;
-                                        } else {
-                                            ForumPost.update({'replies.comments.original_id': post.parent_id}, {$push: {'replies.$.comments': new_comment}}, function (err, updated) {
-                                                log.debug("add inner", post.id);
-                                                callback(err);
-                                            });
-                                        }
+                                    } else {
+                                        parent.replies.push(reply);
+                                        parent.save(function (err) {
+                                            log.debug("added new reply ", post.id);
+                                            callback(err);
+                                        });
                                     }
-                                    else {
-                                        log.debug("not found", post);
-                                        callback("NOT FOUND");
-                                    }
-                                });
+                                }
+                            });
+                        } else {
+                            // this has a parent: it is a comment
+                            log.debug("is comment");
+                            var new_comment = new ForumComment();
+                            new_comment.created = post.submit_date;
+                            new_comment.creator = 'nidarholm.' + post.user_id;
+                            new_comment.mdtext = new_content;
+                            new_comment.original_id = post.id;
+                            new_comment.parent_id = post.parent_id;
+                            if (post.is_removed) {
+                                new_comment.removed_by = 'nidarholm.1';
                             }
-                        });
-                    }
+
+                            ForumPost.findOne({'replies.original_id': post.parent_id}, {replies:{$elemMatch: {'original_id': post.parent_id}}}, function (err, has_reply) {
+
+                                if (has_reply) {
+                                    //console.log("has reply"+post.id);
+                                    var reply = has_reply.replies[0];
+
+                                    // check if comment already exists:
+                                    var comment_index;
+                                    var comment = _.find(reply.comments, function (comment, i) {
+                                        if (comment.original_id === post.id) {
+                                            comment_index = i;
+                                            return true;
+                                        }
+                                    });
+                                    /*
+                                    console.log(has_reply);
+                                    console.log(comment);
+                                    console.log(reply.comments);
+                                    */
+
+                                    if (comment) {
+                                        ForumPost.update({'replies.comments.original_id': post.id}, {$set: {'replies.$.comments.$': new_comment}}, function (err, updated) {
+                                            log.debug("update toplevel", post.id);
+                                            callback(err);
+                                        });
+                                        //parent.replies[0].comments[comment_index] = new_comment;
+                                    } else {
+                                        ForumPost.update({'replies.original_id': post.parent_id}, {$push: {'replies.$.comments': new_comment}}, function (err, updated) {
+                                            log.debug("add toplevel", post.id);
+                                            callback(err);
+                                        });
+                                    }
+                                } else {
+                                    log.debug('not directly hanging on reply');
+                                    // not directly under reply, use parent_id to find reply
+                                    ForumPost.findOne({'replies.comments.original_id': post.parent_id}, {replies:{$elemMatch: {'comments.original_id': post.parent_id}}}, function (err, has_comment) {
+                                        if (has_comment) {
+                                            var reply = has_comment.replies[0];
+
+                                            // check if comment already exists:
+                                            var comment_index;
+                                            var comment = _.find(reply.comments, function (comment, i) {
+                                                if (comment.original_id === post.id) {
+                                                    comment_index = i;
+                                                    return true;
+                                                }
+                                            });
+                                            /*console.log(has_comment);
+                                            console.log(comment);
+                                            console.log(reply.comments);
+                                            */
+
+                                            if (comment) {
+                                                ForumPost.update({'replies.comments.original_id': post.parent_id}, {$set: {'replies.$.comments.$': new_comment}}, function (err, updated) {
+                                                    log.debug("update inner", post.id);
+                                                    callback(err);
+                                                });
+                                                //parent.replies[0].comments[comment_index] = new_comment;
+                                            } else {
+                                                ForumPost.update({'replies.comments.original_id': post.parent_id}, {$push: {'replies.$.comments': new_comment}}, function (err, updated) {
+                                                    log.debug("add inner", post.id);
+                                                    callback(err);
+                                                });
+                                            }
+                                        }
+                                        else {
+                                            log.debug("not found", post);
+                                            callback("NOT FOUND");
+                                        }
+                                    });
+                                }
+                            });
+                        }
+                    });
                 }
             });
         }, function (err) {

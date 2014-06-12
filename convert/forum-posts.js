@@ -6,6 +6,7 @@ var pg = require('pg'),
     config = require('../server/settings'),
     shortid = require('short-mongo-id'),
     tagify = require('../server/lib/util').tagify,
+    convert_temporary_markdown_syntax = require('./lib').convert_temporary_markdown_syntax,
     User = require('../server/models').User,
     Group = require('../server/models').Group,
     ForumPost = require('../server/models/forum').ForumPost,
@@ -30,37 +31,18 @@ client.connect(function(err) {
         }
 
         async.each(result.rows, function (post, callback) {
-            var new_post = {
-                title: post.title,
-                created: post.created_date,
-                modified: post.updated_date,
-                creator: 'nidarholm.' + post.user_id,
-                tags: tagify(post.tags),
-                original_slug: post.slug,
-                mdtext: post.content
-            };
-            if (!post.group_id) {
-                _.extend(new_post, {permissions: {public: true, groups: [], users: []}});
-                ForumPost.findOneAndUpdate({original_id: post.id}, new_post, function (err, newpost) {
-                    log.debug("toppinnlegg: ", post.id);
-
-                    if (!newpost) {
-                        _.extend(new_post, {_id: shortid(), original_id: post.id});
-                        ForumPost.create(new_post, function (err, newpost) {
-                            callback(err);
-                        });
-                    }
-                    else {
-                        if (err) {
-                            console.error(err, post, newpost);
-                        }
-
-                        callback(err);
-                    }
-                });
-            } else {
-                Group.findOne({old_id: post.group_id}, function (err, group) {
-                    _.extend(new_post, {permissions: {public: false, groups: [group.id], users: []}});
+            convert_temporary_markdown_syntax(post.content, function (err, new_content) {
+                var new_post = {
+                    title: post.title,
+                    created: post.created_date,
+                    modified: post.updated_date,
+                    creator: 'nidarholm.' + post.user_id,
+                    tags: tagify(post.tags),
+                    original_slug: post.slug,
+                    mdtext: new_content
+                };
+                if (!post.group_id) {
+                    _.extend(new_post, {permissions: {public: true, groups: [], users: []}});
                     ForumPost.findOneAndUpdate({original_id: post.id}, new_post, function (err, newpost) {
                         log.debug("toppinnlegg: ", post.id);
 
@@ -78,8 +60,29 @@ client.connect(function(err) {
                             callback(err);
                         }
                     });
-                });
-            }
+                } else {
+                    Group.findOne({old_id: post.group_id}, function (err, group) {
+                        _.extend(new_post, {permissions: {public: false, groups: [group.id], users: []}});
+                        ForumPost.findOneAndUpdate({original_id: post.id}, new_post, function (err, newpost) {
+                            log.debug("toppinnlegg: ", post.id);
+
+                            if (!newpost) {
+                                _.extend(new_post, {_id: shortid(), original_id: post.id});
+                                ForumPost.create(new_post, function (err, newpost) {
+                                    callback(err);
+                                });
+                            }
+                            else {
+                                if (err) {
+                                    console.error(err, post, newpost);
+                                }
+
+                                callback(err);
+                            }
+                        });
+                    });
+                }
+            });
         }, function (err) {
             if (err) {
                 log.error(err);
