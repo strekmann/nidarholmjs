@@ -93,11 +93,15 @@ OrganizationSchema.set('toJSON', {
 
 var ActivitySchema = new mongoose.Schema({
     content_type: {type: String, required: true},
-    content_id: {type: String, required: true},
+    content_ids: [{type: String}],
     title: {type: String, required: true},
-    mdtext: {type: String},
-    users: [{type: String, ref: 'User'}],
-    changes: [{type: Date}],
+    project: {type: String, ref: 'Project'},
+    tags: [{type: String}],
+    content: {}, //mixed
+    changes: [{
+        changed: {type: Date},
+        user: {type: String, ref: 'User'}
+    }],
     permissions: {
         groups: [{type: String, ref: 'Group'}],
         users: [{type: String, ref: 'User'}],

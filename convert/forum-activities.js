@@ -1,6 +1,7 @@
 var mongoose = require('mongoose'),
     _ = require('underscore'),
     async = require('async'),
+    marked = require('marked'),
     ForumPost = require('../server/models/forum').ForumPost,
     Activity = require('../server/models').Activity;
 
@@ -9,35 +10,57 @@ mongoose.connect('mongodb://localhost/nidarholm');
 ForumPost.find({}, function (err, posts) {
     async.each(posts, function (post, callback) {
 
-        var changes = [post.created];
-        var users = [post.creator];
+        var changes = [{user: post.creator, changed: post.created}];
         var modified = post.created;
 
         _.each(post.replies, function (reply) {
-            changes.push(reply.created);
-            users.push(reply.creator);
+            changes.push({changed: reply.created, user: reply.creator});
             modified = reply.created;
             _.each(reply.comments, function (comment) {
-                changes.push(comment.created);
-                users.push(comment.creator);
+                changes.push({changed: comment.created, user: comment.creator});
                 modified = comment.created;
             });
         });
 
         //console.log(users);
-        Activity.findOneAndUpdate({content_type: 'forum', content_id: post._id}, {
-            title: post.title,
-            users: users,
-            changes: changes,
-            permissions: {
+        Activity.findOne({content_type: 'forum', content_ids: post._id}, function (err, activity) {
+
+            if (!activity) {
+                activity = new Activity();
+                activity.content_type = 'forum';
+                activity.content_ids.push(post._id);
+            }
+            activity.title = post.title;
+            activity.changes = changes;
+            activity.permissions = {
                 users: post.permissions.users,
                 groups: post.permissions.groups,
                 public: post.permissions.public
-            },
-            modified: modified
-        }, {upsert: true}).exec(function (err, updated) {
-            //console.log(updated);
-            callback(err);
+            };
+            activity.modified = modified;
+            activity.tags = post.tags;
+
+            var text = marked(post.mdtext).replace(/(<([^>]+)>)/ig,"");
+
+            var snippet = text;
+            if (text.length > 500) {
+                snippet = text.slice(0, 500);
+
+                var last_space = snippet.lastIndexOf(" ");
+                snippet = text.slice(0, last_space);
+
+                if (snippet.length < text.length) {
+                    snippet += "…";
+                }
+            }
+            activity.content = {
+                snippet: snippet
+            };
+
+            activity.save(function (err) {
+                //console.log(activity);
+                callback(err);
+            });
         });
     }, function (err) {
         if (err) {

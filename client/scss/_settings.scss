@@ -57,6 +57,8 @@ $success-color: #7ca69e;
 $warning-color: #f2bf80;
 $info-color: scale-color($primary-color, $lightness: 94%);
 
+$grey-color: scale-color($body-font-color, $lightness: 50%);
+
 // We use these to make sure border radius matches unless we want it different.
 $global-radius: 0px;
 // $global-rounded: 1000px;

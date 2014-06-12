@@ -7,6 +7,12 @@ module.exports = {
                 activities: activities,
                 ago: function (date) {
                     return moment(date).from();
+                },
+                marked: function (text) {
+                    return marked(text);
+                },
+                last: function (array) {
+                    return array.slice(-1)[0];
                 }
             }
         });

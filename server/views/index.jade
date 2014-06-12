@@ -68,27 +68,48 @@ block content
         ul
           | {{#activities}}
           li
+            | {{#content_type == "upload"}}
             h2
-              | {{#content_type == "upload"}}
-              a(href='/files/{{content_id}}')
-                | {{title}} ({{content_type}})
-              | {{/content_type}}
-              | {{#content_type == "forum"}}
-              a(href='/forum/{{content_id}}')
-                | {{title}} ({{content_type}})
-              | {{/content_type}}
+              i.fa.fa-upload
+              | &nbsp;
+              a(href='/files/{{content_ids.0}}')
+                | {{title}}
+            | {{/content_type}}
+            | {{#content_type == "forum"}}
+            h2
+              i.fa.fa-comments-o
+              | &nbsp;
+              a(href='/forum/{{content_ids.0}}')
+                | {{title}}
             .row
-              .small-5.medium-4.columns
-                | {{ago(modified)}}
-              .small-7.medium-8.columns.contributors
-                | {{#users}}
-                | {{#profile_picture_path}}
-                img(src="{{profile_picture_path}}" alt="{{name}}" title="{{name}}")
-                | {{/profile_picture_path}}
-                | {{^profile_picture_path}}
+              .columns
+                | {{{marked(content.snippet)}}}
+            | {{/content_type}}
+            .row
+              .columns.contributors
+                | {{#changes}}
+                | {{#user.profile_picture_path}}
+                img(src="{{user.profile_picture_path}}" alt="{{name}}" title="{{name}}")
+                | {{/user.profile_picture_path}}
+                | {{^user.profile_picture_path}}
                 img(src="/img/user.svg" alt="{{name}}" title="{{name}}")
-                | {{/profile_picture_path}}
-                | {{/users}}
+                | {{/user.profile_picture_path}}
+                | {{/changes}}
+                .last
+                  | {{#changes.length > 1}}
+                  | &nbsp; {{ changes.length - 1 }} svar
+                  | {{/changes}}
+                  br
+                  | &nbsp; siste fra {{ last(changes).user.name }} {{ago(modified)}}
+            .row
+              .columns
+                | {{#tags}}
+                a(href="/forum/t/{{.}}")
+                  i.fa.fa-tag
+                  | &nbsp;{{.}}
+                | &nbsp;
+                | {{/tags}}
+
           | {{/activities}}
 
 block javascript
