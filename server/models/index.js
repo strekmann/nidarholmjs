@@ -60,6 +60,7 @@ var UserSchema = new mongoose.Schema({
 var OrganizationSchema = new mongoose.Schema({
     _id: {type: String, lowercase: true, trim: true, required: true, unique: true},
     name: {type: String},
+    domain: {type: String, trim: true},
     instrument_groups: [{type: String, ref: 'Group'}],
     contact_groups: [{type: String, ref: 'Group'}], // contacts page
     administration_group: {type: String, ref: 'Group'}, // temporary. privileges will be split later
@@ -80,7 +81,8 @@ var OrganizationSchema = new mongoose.Schema({
         twitter: {type: String},
         facebook: {type: String},
         instagram: {type: String}
-    }
+    },
+    description: {} // mixed hash of locale keys and values
 });
 
 OrganizationSchema.virtual('encoded_email').get(function () {

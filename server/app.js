@@ -71,11 +71,14 @@ app.configure(function(){
             if (organization) {
                 req.organization = organization;
                 res.locals.organization = organization;
+                res.locals.address = req.protocol + "://" + organization.domain;
+                res.locals.path = req.path;
                 next();
             } else {
                 get_member_group().then(function (group) {
                     organization = new Organization();
                     organization._id = 'nidarholm';
+                    organization.domain = 'nidarholm.no';
                     organization.instrument_groups = [];
                     organization.administration_group = group;
                     organization.member_group = group;
@@ -85,6 +88,8 @@ app.configure(function(){
                         group.save(function (err) {
                             req.organization = organization;
                             res.locals.organization = organization;
+                            res.locals.address = req.protocol + "://" + organization.domain;
+                            res.locals.path = req.path;
                             next();
                         });
                     });

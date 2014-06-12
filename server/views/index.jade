@@ -1,5 +1,35 @@
 extends layouts/main
 
+block meta
+  if !meta.title
+    title= organization.name
+    meta(name="og:title" content=organization.name)
+  else
+    title= meta.title
+    meta(name="og:title" content=meta.title)
+    meta(name="twitter:title" content=meta.title)
+
+  if meta.description
+    meta(name="description" content=meta.description)
+    meta(name="og:description" content=meta.description)
+    meta(name="twitter:description" content=meta.description)
+
+  if meta.image
+    meta(property="og:image" content=meta.image)
+    meta(property="twitter:image" content=meta.image)
+
+  if meta.type
+    meta(property="og:type" content=meta.type)
+
+  if meta.type == "website"
+    meta(property="twitter:card" content="summary")
+
+  meta(property="og:locale" content=locale)
+  meta(property="og:url" content=address + path)
+
+  if organization.social_media.twitter
+    meta(property="@" + organization.social_media.twitter)
+
 block content
   section#index
     .row

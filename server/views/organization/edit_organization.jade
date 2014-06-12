@@ -10,11 +10,15 @@ block content
           .row
             .columns
               label(for"name") Organisasjonens navn
-              input#name(type="text" name="name" value=organization.name)
+              input#name(type="text" name="name" value=organization.name required)
+          .row
+            .columns
+              label(for"domain") Domene
+              input#domain(type="text" name="domain" value=organization.domain required)
           .row
             .columns
               label(for"email") Epost
-              input#email(type="text" name="email" value=organization.email)
+              input#email(type="text" name="email" value=organization.email required)
           .row
             .columns
               label(for="organization_number") Organisasjonsnummer
@@ -62,6 +66,15 @@ block content
             .columns
               label(for="contact_text") Tekst
               textarea#contact_text(name="contact_text")= organization.contact_text
+
+          each locale in locales
+            .row
+              .columns
+                label(for="description_"+locale)
+                  | Beskrivelse på språk
+                  | &nbsp;
+                  = locale
+                textarea(id="description_"+locale name="description["+locale+"]")= organization.description[locale]
 
           .row
             .columns

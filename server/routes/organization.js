@@ -556,7 +556,10 @@ module.exports.contacts = function (req, res, next) {
 
 module.exports.edit_organization = function (req, res, next) {
     if (req.is_admin) {
-        res.render('organization/edit_organization', {organization: req.organization});
+        res.render('organization/edit_organization', {
+            organization: req.organization,
+            locales: config.languages
+        });
     }
     else {
         res.send(403, 'Forbidden');
@@ -566,6 +569,7 @@ module.exports.edit_organization = function (req, res, next) {
 module.exports.update_organization = function (req, res, next) {
     if (req.is_admin) {
         var name = req.body.name,
+            domain = req.body.domain,
             contact_text = req.body.contact_text,
             visitor_address = req.body.visitor_address,
             mail_address = req.body.mail_address,
@@ -576,11 +580,14 @@ module.exports.update_organization = function (req, res, next) {
             public_bank_account = req.body.public_bank_account,
             map_url = req.body.map_url,
             facebook = req.body.facebook,
-            twitter = req.body.twitter;
+            twitter = req.body.twitter,
+            description = req.body.description;
+
 
         var org = req.organization;
 
         org.name = name;
+        org.domain = domain;
         org.contact_text = contact_text;
         org.visitor_address = visitor_address;
         org.mail_address = mail_address;
@@ -593,7 +600,15 @@ module.exports.update_organization = function (req, res, next) {
         org.social_media.facebook = facebook;
         org.social_media.twitter = twitter;
 
+        // could probably take what we get, or should we check it?
+        _.each(config.languages, function (locale) {
+            org.description[locale] = description[locale];
+        });
+
+        org.markModified('description');
+
         org.save(function (err) {
+            if (err) { console.error(err); }
             res.redirect('/contact');
         });
     }

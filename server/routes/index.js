@@ -54,7 +54,13 @@ module.exports.index = function(req, res) {
                             res.render('index', {
                                 activities: activities,
                                 projects: projects,
-                                events: events
+                                events: events,
+                                meta: {
+                                    title: req.organization.name,
+                                    description: req.organization.description[req.lang],
+                                    image: null,
+                                    type: 'website'
+                                }
                             });
                         },
                         json: function () {
