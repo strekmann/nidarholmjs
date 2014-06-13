@@ -148,14 +148,14 @@ html(lang=lang dir=lang_dir)
                 != organization.encoded_email
                 br
                 if organization.social_media.facebook
-                  a(href=organization.social_media.facebook)
+                  a(href="https://facebook.com/"+organization.social_media.facebook)
                     i.fa.fa-facebook
-                    = prettyhost(organization.social_media.facebook)
+                    = organization.social_media.facebook
                   br
                 if organization.social_media.twitter
-                  a(href=organization.social_media.twitter)
+                  a(href="https://twitter.com/"+organization.social_media.twitter)
                     i.fa.fa-twitter
-                    = prettyhost(organization.social_media.twitter)
+                    = organization.social_media.twitter
                   br
             .row
               .columns

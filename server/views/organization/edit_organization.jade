@@ -54,13 +54,21 @@ block content
 
           .row
             .columns
-              label(for="facebook") Facebook-URL
-              input#facebook(type="text" name="facebook" value=organization.social_media.facebook)
+              label(for="facebook") Facebook-brukernavn (unik ID)
+              .row.collapse
+                .small-5.medium-3.large-2.columns
+                  span.prefix http://facebook.com/
+                .small-7.medium-9.large-10.columns
+                  input#facebook(type="text" name="facebook" value=organization.social_media.facebook)
 
           .row
             .columns
-              label(for="twitter") Twitter-URL
-              input#twitter(type="text" name="twitter" value=organization.social_media.twitter)
+              label(for="twitter") Twitter-brukernavn (unik ID)
+              .row.collapse
+                .small-5.medium-3.large-2.columns
+                  span.prefix http://twitter.com/
+                .small-7.medium-9.large-10.columns
+                  input#twitter(type="text" name="twitter" value=organization.social_media.twitter)
 
           .row
             .columns
