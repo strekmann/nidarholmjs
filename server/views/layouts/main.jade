@@ -25,7 +25,48 @@ html(lang=lang dir=lang_dir)
   head
     meta(charset="utf-8")
     meta(name="viewport" content="width=device-width, initial-scale=1.0")
-    block meta
+    if meta
+      if !meta.title
+        title= organization.name
+        meta(name="og:title" content=organization.name)
+      else
+        title= meta.title
+        meta(property="og:title" content=meta.title)
+        meta(name="twitter:title" content=meta.title)
+
+      if meta.description
+        meta(name="description" content=meta.description)
+        meta(property="og:description" content=meta.description)
+        meta(name="twitter:description" content=meta.description)
+
+      if meta.image
+        meta(property="og:image" content=address+meta.image)
+        meta(name="twitter:image" content=address+meta.image)
+      else
+        meta(property="og:image" content=address+"/img/logo.blue.transparent.png")
+        meta(name="twitter:image" content=address+"/img/logo.blue.transparent.png")
+
+      if meta.type
+        meta(property="og:type" content=meta.type)
+
+      if meta.type == "website"
+        meta(name="twitter:card" content="summary")
+
+      meta(property="og:locale" content=locale)
+      meta(property="og:url" content=address + path)
+      meta(name="twitter:url" content=address + path)
+
+      if organization.social_media.twitter
+        meta(name="twitter:site" content="@" + organization.social_media.twitter)
+        meta(name="twitter:domain" content=organization.domain)
+        if meta.author && meta.author.social_media && meta.author.social_media.twitter
+          meta(name="twitter:creator" content="@" + meta.author.social_media.twitter)
+        else
+          meta(name="twitter:creator" content="@" + organization.social_media.twitter)
+
+      if meta.author
+        meta(name="author" content=meta.author)
+
     link(href="/css/site.css" rel="stylesheet")
 
     //if lt IE 9
