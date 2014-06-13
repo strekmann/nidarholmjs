@@ -9,7 +9,13 @@ var crypto = require('crypto'),
 
 // core routes - base is /
 module.exports.index = function(req, res) {
-    var query;
+    var query,
+        meta = {
+            title: req.organization.name,
+            description: req.organization.description[req.lang],
+            image: null,
+            type: 'website'
+        };
     if (req.user) {  // we know the user
         query = Activity.find().or([
             {'permissions.public': true},
@@ -55,12 +61,7 @@ module.exports.index = function(req, res) {
                                 activities: activities,
                                 projects: projects,
                                 events: events,
-                                meta: {
-                                    title: req.organization.name,
-                                    description: req.organization.description[req.lang],
-                                    image: null,
-                                    type: 'website'
-                                }
+                                meta: meta
                             });
                         },
                         json: function () {
@@ -100,7 +101,8 @@ module.exports.index = function(req, res) {
                                 news_tag: config.news_tag,
                                 posts: posts,
                                 projects: projects,
-                                events: events
+                                events: events,
+                                meta: meta
                             });
                         }
                     });
