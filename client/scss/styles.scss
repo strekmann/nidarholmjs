@@ -651,3 +651,11 @@ span.permissions {
         margin: 0;
     }
 }
+
+.group {
+    .member {
+        .columns {
+            margin-bottom: rem-calc(5px);
+        }
+    }
+}

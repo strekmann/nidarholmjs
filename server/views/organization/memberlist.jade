@@ -21,18 +21,20 @@ block content
 
         for group in org.instrument_groups
           .group(data-id=group.id)
-            .row
-              .columns
-                h2
-                  if is_admin
-                    a(href="/groups/"+group.id)= group.name
-                  else
-                    = group.name
+            h2
+              if is_admin
+                a(href="/groups/"+group.id)= group.name
+              else
+                = group.name
             for member in group.members
               if member && member.user
                 .member.row
-                  a(href="/users/" + member.user.username).medium-4.columns
-                    = member.user.name
+                  if active_user && is_member
+                    a(href="/users/" + member.user.username).medium-4.columns
+                      = member.user.name
+                  else
+                    .columns.medium-4
+                      = member.user.name
                   .medium-2.columns
                     = member.user.instrument
                     if member.role && member.role.title
