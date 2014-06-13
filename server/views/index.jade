@@ -17,6 +17,9 @@ block meta
   if meta.image
     meta(property="og:image" content=meta.image)
     meta(property="twitter:image" content=meta.image)
+  else
+    meta(property="og:image" content="/img/logo.blue.transparent.png")
+    meta(property="twitter:image" content="/img/logo.blue.transparent.png")
 
   if meta.type
     meta(property="og:type" content=meta.type)
