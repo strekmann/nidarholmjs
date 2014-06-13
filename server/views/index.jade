@@ -71,17 +71,23 @@ block content
         | &nbsp;
         a(href='/files/{{content_ids.0}}')
           | {{title}}
+      | {{#content.images.length}}
       .row
         .columns
-          | {{#content.images}}
-          img(src="{{.}}" alt="")
-          | {{/content.images}}
-          | {{#content.non_images.length}}
+          ul.small-block-grid-5
+            | {{#content.images}}
+            li
+              img.th(src="{{.}}" alt="")
+            | {{/content.images}}
+      | {{/content.images.length}}
+      | {{#content.non_images.length}}
+      .row
+        .columns
           ul
             | {{#content.non_images}}
             li {{.}}
             | {{/content.non_images}}
-          | {{/content.non_images.length}}
+      | {{/content.non_images.length}}
       | {{/content_type}}
       | {{#content_type == "forum"}}
       h2
