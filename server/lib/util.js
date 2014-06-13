@@ -8,6 +8,7 @@ var moment = require('moment'),
     crypto = require('crypto'),
     exec = require('child_process').exec,
     async = require('async'),
+    marked = require('marked'),
     mongoose = require('mongoose'),
     shortid = require('short-mongo-id'),
     request = require('superagent'),
@@ -61,6 +62,23 @@ module.exports.tagify = function (tagstring) {
     return _.map(tagstring.split(","), function (tag) {
         return normalize(tag);
     });
+};
+
+module.exports.snippetify = function (text) {
+    var wanted_length = 500;
+    text = marked(text).replace(/(<([^>]+)>)/ig,"");
+    var snippet = text;
+    if (text.length > wanted_length) {
+        snippet = text.slice(0, wanted_length);
+
+        var last_space = snippet.lastIndexOf(" ");
+        snippet = text.slice(0, last_space);
+
+        if (snippet.length < text.length) {
+            snippet += "…";
+        }
+    }
+    return snippet;
 };
 
 // Fetch postcode from posten's service

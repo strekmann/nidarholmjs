@@ -2,6 +2,7 @@ var mongoose = require('mongoose'),
     _ = require('underscore'),
     async = require('async'),
     marked = require('marked'),
+    snippetify = require('../server/lib/util').snippetify,
     ForumPost = require('../server/models/forum').ForumPost,
     Activity = require('../server/models').Activity;
 
@@ -40,21 +41,8 @@ ForumPost.find({}, function (err, posts) {
             activity.modified = modified;
             activity.tags = post.tags;
 
-            var text = marked(post.mdtext).replace(/(<([^>]+)>)/ig,"");
-
-            var snippet = text;
-            if (text.length > 500) {
-                snippet = text.slice(0, 500);
-
-                var last_space = snippet.lastIndexOf(" ");
-                snippet = text.slice(0, last_space);
-
-                if (snippet.length < text.length) {
-                    snippet += "…";
-                }
-            }
             activity.content = {
-                snippet: snippet
+                snippet: snippetify(post.mdtext)
             };
 
             activity.save(function (err) {

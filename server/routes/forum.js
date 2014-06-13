@@ -1,6 +1,7 @@
 var _ = require('underscore'),
     shortid = require('short-mongo-id'),
     parse_web_permissions = require('../lib/util').parse_web_permissions,
+    snippetify = require('../lib/util').snippetify,
     ForumPost = require('../models/forum').ForumPost,
     ForumReply = require('../models/forum').ForumReply,
     ForumComment = require('../models/forum').ForumComment,
@@ -73,10 +74,16 @@ module.exports.create_post = function (req, res, next) {
             }
             var activity = new Activity();
             activity.content_type = 'forum';
-            activity.content_id = post._id;
+            activity.content_ids = [post._id];
             activity.title = post.title;
-            activity.users.push(req.user);
+            activity.changes = [{user: post.creator, changed: post.created}];
             activity.permissions = post.permissions;
+            activity.tags = post.tags;
+            activity.modified = post.created;
+            activity.content = {
+                snippet: snippetify(post.mdtext)
+            };
+
             activity.save(function (err) {});
             if (err) {
                 return next(err);

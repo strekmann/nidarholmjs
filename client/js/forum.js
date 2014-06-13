@@ -197,16 +197,12 @@ module.exports.forumView = function (posts) {
 
     forum.on('addPost', function (event) {
         event.original.preventDefault();
+        md_editor.codemirror.save();
+        event.context.post.title = $('#title').val(); // FIXME: should not be necessary
+        event.context.post.mdtext = $('#mdtext').val();
+        event.context.post.permissions = $('#permissions').val();
 
-        var node = $(event.node),
-            post = {
-                title: node.find('#title').val(),
-                mdtext: node.find('#mdtext').val(),
-                permissions: node.find('#permissions').val()
-            };
-
-        var promise = forum.addPost(post);
-
+        var promise = forum.addPost(event.context.post);
         promise.then(function (data) {
             forum.data.posts.unshift(data);
             forum.toggle('expanded');
