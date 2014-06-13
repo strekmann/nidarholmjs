@@ -24,6 +24,19 @@ module.exports.memberlist = function (req, res) {
             //options: {sort: {name: -1}} // does not work, cuts result set
         }, function (err) {
             if (err) { throw err; }
+            _.each(organization.instrument_groups, function (instrument_group) {
+                instrument_group.members.sort(function (a, b) {
+                    if (!a.user || !b.user) {
+                        return 0;
+                    }
+                    if (a.user.name > b.user.name) {
+                        return 1;
+                    } if (a.user.name < b.user.name) {
+                        return -1;
+                    }
+                    return 0;
+                });
+            });
             res.render('organization/memberlist', {org: organization});
         });
     });
