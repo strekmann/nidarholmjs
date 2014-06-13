@@ -7,32 +7,33 @@ block meta
       meta(name="og:title" content=organization.name)
     else
       title= meta.title
-      meta(name="og:title" content=meta.title)
+      meta(property="og:title" content=meta.title)
       meta(name="twitter:title" content=meta.title)
 
     if meta.description
       meta(name="description" content=meta.description)
-      meta(name="og:description" content=meta.description)
+      meta(property="og:description" content=meta.description)
       meta(name="twitter:description" content=meta.description)
 
     if meta.image
       meta(property="og:image" content=address+meta.image)
-      meta(property="twitter:image" content=address+meta.image)
+      meta(name="twitter:image" content=address+meta.image)
     else
       meta(property="og:image" content=address+"/img/logo.blue.transparent.png")
-      meta(property="twitter:image" content=address+"/img/logo.blue.transparent.png")
+      meta(name="twitter:image" content=address+"/img/logo.blue.transparent.png")
 
     if meta.type
       meta(property="og:type" content=meta.type)
 
     if meta.type == "website"
-      meta(property="twitter:card" content="summary")
+      meta(name="twitter:card" content="summary")
 
     meta(property="og:locale" content=locale)
     meta(property="og:url" content=address + path)
+    meta(name="twitter:url" content=address + path)
 
     if organization.social_media.twitter
-      meta(property="@" + organization.social_media.twitter)
+      meta(name="site" content="@" + organization.social_media.twitter)
 
     if meta.author
       meta(name="author" content=meta.author)
