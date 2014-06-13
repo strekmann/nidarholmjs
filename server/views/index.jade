@@ -36,7 +36,7 @@ block content
 
       .large-9.columns.large-pull-3
         if active_user
-          #activities
+          ul#activities
 
         else
           #news
@@ -63,54 +63,62 @@ block content
                     != marked(post.mdtext)
 
   script#activity-template(type="text/ractive")
-    .row
-      .columns
-        ul
-          | {{#activities}}
-          li
-            | {{#content_type == "upload"}}
-            h2
-              i.fa.fa-upload
-              | &nbsp;
-              a(href='/files/{{content_ids.0}}')
-                | {{title}}
-            | {{/content_type}}
-            | {{#content_type == "forum"}}
-            h2
-              i.fa.fa-comments-o
-              | &nbsp;
-              a(href='/forum/{{content_ids.0}}')
-                | {{title}}
-            .row
-              .columns
-                | {{{marked(content.snippet)}}}
-            | {{/content_type}}
-            .row
-              .columns.contributors
-                | {{#changes}}
-                | {{#user.profile_picture_path}}
-                img(src="{{user.profile_picture_path}}" alt="{{name}}" title="{{name}}")
-                | {{/user.profile_picture_path}}
-                | {{^user.profile_picture_path}}
-                img(src="/img/user.svg" alt="{{name}}" title="{{name}}")
-                | {{/user.profile_picture_path}}
-                | {{/changes}}
-                .last
-                  | {{#changes.length > 1}}
-                  | &nbsp; {{ changes.length - 1 }} svar
-                  | {{/changes}}
-                  br
-                  | &nbsp; siste fra {{ last(changes).user.name }} {{ago(modified)}}
-            .row
-              .columns
-                | {{#tags}}
-                a(href="/forum/t/{{.}}")
-                  i.fa.fa-tag
-                  | &nbsp;{{.}}
-                | &nbsp;
-                | {{/tags}}
+    | {{#activities}}
+    li
+      | {{#content_type == "upload"}}
+      h2
+        i.fa.fa-upload
+        | &nbsp;
+        a(href='/files/{{content_ids.0}}')
+          | {{title}}
+      .row
+        .columns
+          | {{#content.images}}
+          img(src="{{.}}" alt="")
+          | {{/content.images}}
+          | {{#content.non_images.length}}
+          ul
+            | {{#content.non_images}}
+            li {{.}}
+            | {{/content.non_images}}
+          | {{/content.non_images.length}}
+      | {{/content_type}}
+      | {{#content_type == "forum"}}
+      h2
+        i.fa.fa-comments-o
+        | &nbsp;
+        a(href='/forum/{{content_ids.0}}')
+          | {{title}}
+      .row
+        .columns
+          | {{{marked(content.snippet)}}}
+      | {{/content_type}}
+      .row
+        .columns.contributors
+          | {{#changes}}
+          | {{#user.profile_picture_path}}
+          img(src="{{user.profile_picture_path}}" alt="{{name}}" title="{{name}}")
+          | {{/user.profile_picture_path}}
+          | {{^user.profile_picture_path}}
+          img(src="/img/user.svg" alt="{{name}}" title="{{name}}")
+          | {{/user.profile_picture_path}}
+          | {{/changes}}
+          .last
+            | {{#changes.length > 1}}
+            | &nbsp; {{ changes.length - 1 }} svar
+            | {{/changes}}
+            br
+            | &nbsp; siste fra {{ last(changes).user.name }} {{ago(modified)}}
+      .row
+        .columns
+          | {{#tags}}
+          a(href="/forum/t/{{.}}")
+            i.fa.fa-tag
+            | &nbsp;{{.}}
+          | &nbsp;
+          | {{/tags}}
 
-          | {{/activities}}
+    | {{/activities}}
 
 block javascript
   script
