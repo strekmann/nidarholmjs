@@ -1,5 +1,6 @@
 var _ = require('underscore'),
     shortid = require('short-mongo-id'),
+    moment = require('moment'),
     parse_web_permissions = require('../lib/util').parse_web_permissions,
     snippetify = require('../lib/util').snippetify,
     ForumPost = require('../models/forum').ForumPost,
@@ -106,23 +107,27 @@ module.exports.update_post = function (req, res, next) {
             post.title = title;
             post.mdtext = mdtext;
             post.tags = tags;
-            if (req.body.permissions) {
-                post.permissions = permissions;
-            }
-            post.modified = new Date();
+            post.permissions = permissions;
+            post.modified = moment();
             post.save(function (err) {
                 if (err) {
+                    console.error("ERR", err);
                     return next(err);
                 }
                 post.populate('creator', function (err, post) {
-                    Activity.findOneAndUpdate({content_type: 'forum', content_id: post._id},
-                                              {
-                                                  $set: {title: title, modified: post.modified, permissions: post.permissions},
-                                                  $push: {users: req.user}
-                                              },
-                                              function (err, activity) {
-                                                  res.json(200, post);
-                                              });
+                    Activity.findOne({content_type: 'forum', content_ids: post._id}, function (err, activity) {
+                        activity.title = title;
+                        activity.modified = post.modified;
+                        activity.permissions = post.permissions;
+                        activity.tags = post.tags;
+                        activity.content = {
+                            snippet: snippetify(post.mdtext)
+                        };
+                        activity.changes.push({user: req.user, changed: post.modified});
+                        activity.save(function (err, activity) {
+                            res.json(200, post);
+                        });
+                    });
                 });
             });
         }
@@ -138,7 +143,7 @@ module.exports.delete_post = function (req, res, next) {
     ForumPost.findByIdAndRemove(id, function (err, post) {
         if (err) { return next(err); }
         if (post.creator === req.user || req.is_admin) {
-            Activity.findOneAndRemove({content_type: 'forum', content_id: post._id}, function (err, activity) {});
+            Activity.findOneAndRemove({content_type: 'forum', content_ids: post._id}, function (err, activity) {});
             res.json(200, post);
         }
         else {
@@ -209,7 +214,11 @@ module.exports.create_reply = function (req, res, next) {
                 if (err) {
                     return next(err);
                 }
-                Activity.update({content_type: 'forum', content_id: post._id}, {$push: {users: req.user}, $set: {modified: new Date()}}, function () {});
+                var modified = moment();
+                Activity.update({content_type: 'forum', content_ids: post._id}, {
+                    $push: {changes: {user: req.user, changed: modified}},
+                    $set: {modified: modified}
+                }, function () {});
                 reply.populate('creator', 'username name profile_picture_path', function (err, reply) {
                     res.json(200, reply);
                 });
@@ -301,7 +310,11 @@ module.exports.create_comment = function (req, res, next) {
                 if (err) {
                     return next(err);
                 }
-                Activity.update({content_type: 'forum', content_id: post._id}, {$push: {users: req.user}, $set: {modified: new Date()}}, function () {});
+                var modified = moment();
+                Activity.update({content_type: 'forum', content_ids: post._id}, {
+                    $push: {changes: {user: req.user, changed: modified}},
+                    $set: {modified: modified}
+                }, function () {});
                 comment.populate('creator', 'username name profile_picture_path', function (err, comment) {
                     if (err) {
                         return next(err);

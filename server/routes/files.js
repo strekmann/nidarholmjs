@@ -1,6 +1,7 @@
 var _ = require('underscore'),
     path = require('path'),
     fs = require('fs'),
+    moment= require('moment'),
     mongoose = require('mongoose'),
     util = require('../lib/util'),
     config = require('../settings'),
@@ -58,13 +59,54 @@ module.exports.upload = function (req, res) {
         util.upload_file(tmp_path, filename, user, options, function (err, file) {
             if (err) { throw err; }
 
-            var activity = new Activity();
-            activity.content_type = 'upload';
-            activity.content_id = file._id;
-            activity.title = file.filename;
-            activity.users.push(req.user);
-            activity.permissions = file.permissions;
-            activity.save(function (err) {});
+            Activity.findOne({content_type: 'upload', 'changes.user': file.creator, modified: {$gt: moment(file.created).subtract('hours', 1).toDate()}}, function (err, activity) {
+
+                if (!activity) {
+                    activity = new Activity();
+                    activity.content_type = 'upload';
+                }
+
+                activity.content_ids.push(file._id);
+                activity.title = file.filename;
+                activity.changes.push({user: req.user, changed: file.created});
+                activity.permissions = file.permissions;
+                activity.modified = file.created;
+
+                if (file.tags) {
+                    _.each(file.tags, function (tag) {
+                        activity.tags.addToSet(tag);
+                    });
+                }
+
+                if (!activity.content) {
+                    activity.content = {};
+                }
+
+                if (file.is_image) {
+                    if (!activity.content.images) {
+                        activity.content.images = [];
+                    }
+                    var image_already_there = _.find(activity.content.images, function (image) {
+                        return image.thumbnail_path === file.thumbnail_path;
+                    });
+                    if (!image_already_there) {
+                        activity.content.images.push({thumbnail_path: file.thumbnail_path, _id: file._id});
+                    }
+                }
+                else {
+                    if (!activity.content.non_images) {
+                        activity.content.non_images = [];
+                    }
+                    var already_there = _.find(activity.content.non_images, function (non_image) {
+                        return non_image.filename === file.filename;
+                    });
+                    if (!already_there) {
+                        activity.content.non_images.push({filename: file.filename, _id: file._id});
+                    }
+                }
+                activity.markModified('content');
+                activity.save(function (err) {});
+            });
 
             res.format({
                 json: function () {

@@ -77,7 +77,8 @@ block content
           ul.small-block-grid-5
             | {{#content.images}}
             li
-              img.th(src="{{.}}" alt="")
+              a(href="/files/{{._id}}")
+                img.th(src="{{.thumbnail_path}}" alt="")
             | {{/content.images}}
       | {{/content.images.length}}
       | {{#content.non_images.length}}
@@ -85,7 +86,8 @@ block content
         .columns
           ul
             | {{#content.non_images}}
-            li {{.}}
+            li
+              a(href="/files/{{._id}}") {{.filename}}
             | {{/content.non_images}}
       | {{/content.non_images.length}}
       | {{/content_type}}
@@ -118,10 +120,12 @@ block content
       .row
         .columns
           | {{#tags}}
+          | {{#.}}
           a(href="/forum/t/{{.}}")
             i.fa.fa-tag
             | &nbsp;{{.}}
           | &nbsp;
+          | {{/.}}
           | {{/tags}}
 
     | {{/activities}}

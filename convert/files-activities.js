@@ -45,22 +45,22 @@ File.find({}, function (err, files) {
                 if (!activity.content.images) {
                     activity.content.images = [];
                 }
-                var image_already_there = _.find(activity.content.images, function (path) {
-                    return path === file.thumbnail_path;
+                var image_already_there = _.find(activity.content.images, function (image) {
+                    return image.thumbnail_path === file.thumbnail_path;
                 });
                 if (!image_already_there) {
-                    activity.content.images.push(file.thumbnail_path);
+                    activity.content.images.push({thumbnail_path: file.thumbnail_path, _id: file._id});
                 }
             }
             else {
                 if (!activity.content.non_images) {
                     activity.content.non_images = [];
                 }
-                var already_there = _.find(activity.content.non_images, function (filename) {
-                    return filename === file.filename;
+                var already_there = _.find(activity.content.non_images, function (non_image) {
+                    return non_image.filename === file.filename;
                 });
                 if (!already_there) {
-                    activity.content.non_images.push(file.filename);
+                    activity.content.non_images.push({filename: file.filename, _id: file._id});
                 }
             }
             activity.markModified('content');
