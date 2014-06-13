@@ -16,11 +16,11 @@ block meta
       meta(name="twitter:description" content=meta.description)
 
     if meta.image
-      meta(property="og:image" content=meta.image)
-      meta(property="twitter:image" content=meta.image)
+      meta(property="og:image" content=address+meta.image)
+      meta(property="twitter:image" content=address+meta.image)
     else
-      meta(property="og:image" content="/img/logo.blue.transparent.png")
-      meta(property="twitter:image" content="/img/logo.blue.transparent.png")
+      meta(property="og:image" content=address+"/img/logo.blue.transparent.png")
+      meta(property="twitter:image" content=address+"/img/logo.blue.transparent.png")
 
     if meta.type
       meta(property="og:type" content=meta.type)
