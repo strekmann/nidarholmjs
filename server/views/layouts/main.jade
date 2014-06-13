@@ -144,17 +144,17 @@ html(lang=lang dir=lang_dir)
                 | Org: 
                 = organization.organization_number
               .medium-4.columns
-                i.fa.fa-envelope-o
+                i.fa.fa-fw.fa-envelope-o
                 != organization.encoded_email
                 br
                 if organization.social_media.facebook
                   a(href="https://facebook.com/"+organization.social_media.facebook)
-                    i.fa.fa-facebook
+                    i.fa.fa-fw.fa-facebook
                     = organization.social_media.facebook
                   br
                 if organization.social_media.twitter
                   a(href="https://twitter.com/"+organization.social_media.twitter)
-                    i.fa.fa-twitter
+                    i.fa.fa-fw.fa-twitter
                     = organization.social_media.twitter
                   br
             .row
