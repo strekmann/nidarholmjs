@@ -112,13 +112,11 @@ block content
 
         | {{^expanded}}
         if active_user
-          .row
-            .columns.text-right
-              a.button.tiny(on-click="toggleEdit")
-                i.fa.fa-file-o
-                | &nbsp;
-                | Rediger prosjekt
-
+          .right
+            a.button.tiny(on-click="toggleEdit")
+              i.fa.fa-edit
+              | &nbsp;
+              | Rediger prosjekt
         | {{#project}}
         h1 {{title}}
         .meta
@@ -151,12 +149,11 @@ block content
 
           | {{^postExpanded}}
           if active_user
-            .row
-              .columns.text-right
-                a.button.tiny(on-click="togglePost")
-                  i.fa.fa-file-o
-                  | &nbsp;
-                  | Nytt innlegg
+            .right
+              a.button.tiny(on-click="togglePost")
+                i.fa.fa-file-o
+                | &nbsp;
+                | Nytt innlegg
           | {{/postExpanded}}
 
           | {{#posts}}
@@ -198,12 +195,11 @@ block content
           | {{/eventExpanded}}
           | {{^eventExpanded}}
           if active_user
-            .row
-              .columns.text-right
-                a.button.tiny(on-click="toggleEvent")
-                  i.fa.fa-file-o
-                  | &nbsp;
-                  | Ny aktivitet
+            .right
+              a.button.tiny(on-click="toggleEvent")
+                i.fa.fa-file-o
+                | &nbsp;
+                | Ny
           | {{/eventExpanded}}
           | {{#events}}
           |   {{>event}}
@@ -214,7 +210,7 @@ block content
     // {{>post}}
     article
       header
-        h1
+        h2
           a(href="/forum/{{id}}") {{title}}
         .meta
           .row
@@ -235,6 +231,10 @@ block content
         a(href="/events/{{_id}}") {{title}}
       .meta
         | {{{daterange(start, end)}}}
+
+      | {{#.location}}
+      | {{.location}}
+      | {{/.location}}
     // {{/event}}
 
     // {{>image}}

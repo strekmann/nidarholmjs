@@ -6,9 +6,11 @@ var Project = Ractive.extend({
     },
 
     data: {
+        active_user: null,
         projects: [],
         previous_projects: [],
         events: [],
+        event: null,
         posts: [],
         images: [],
         non_images: [],
@@ -69,6 +71,11 @@ var Project = Ractive.extend({
                 return moment(date).format();
             }
         },
+        calendardatetime: function (date) {
+            if (date) {
+                return moment(date).format('YYYY-MM-DD HH:mm');
+            }
+        },
         daterange: function (start, end) {
             var startm, endm, startd, endd;
             if (start && end) {
@@ -116,6 +123,45 @@ var Project = Ractive.extend({
                     return '<time datetime="' + endm.format() + '">' + endm.format('LLL') + '</time>';
                 }
             }
+        },
+        permission_options: function () {
+            var active_user = this.get('active_user');
+            var selected_permissions = this.get('event.permissions');
+
+            // public
+            var retval = '<select id="permissions" class="chosen-permissions" name="permissions" multiple data-placeholder="Velg hvem som skal kunne se innlegget"><optgroup label="Alle">';
+            if (selected_permissions.public) {
+                retval += '<option value="p" selected>Verden</option>';
+            } else {
+                retval += '<option value="p">Verden</option>';
+            }
+            retval += '</optgroup>';
+
+            // groups
+            retval += '<optgroup label="Grupper">';
+            _.each(active_user.groups, function (group) {
+                if (_.contains(selected_permissions.groups, group._id)) {
+                    retval += '<option value="g-'+group._id+'" selected>' + group.name + '</option>';
+                } else {
+                    retval += '<option value="g-'+group._id+'">' + group.name + '</option>';
+                }
+            });
+            retval += '</optgroup>';
+
+            // friends
+            retval += '<optgroup label="Personer">';
+            _.each(active_user.friends, function (user) {
+                if (_.contains(selected_permissions.users, user._id)) {
+                    retval += '<option value="u-'+user._id+'" selected>';
+                } else {
+                    retval += '<option value="u-'+user._id+'">';
+                }
+            });
+            retval += '</optgroup>';
+            retval += '</select>';
+            console.log(retval);
+
+            return retval;
         }
     },
 
@@ -157,6 +203,20 @@ var Project = Ractive.extend({
             type: 'POST',
             dataType: 'json',
             data: event
+        });
+    },
+    updateEvent: function (event) {
+        return $.ajax({
+            type: 'PUT',
+            url: window.location.href,
+            data: {
+                title: event.title,
+                mdtext: event.mdtext,
+                start: event.start,
+                end: event.end,
+                permissions: event.permissions,
+                location: event.location
+            }
         });
     },
     setup_uploadzone: function (element_id, clickable_element_id) {
@@ -401,4 +461,48 @@ module.exports.upcomingView = function (events) {
             events: events
         }
     });
+};
+
+module.exports.eventView = function (event, active_user) {
+    var project = new Project({
+            el: '#event',
+            template: '#template',
+            data: {
+                event: event,
+                active_user: active_user
+            }
+        }),
+        editor;
+
+    project.on('toggleEdit', function (event) {
+        this.toggle('expanded');
+        setTimeout(function(){
+            if (project.get('expanded')) {
+                editor = setup_editor('#mdtext');
+                $('.chosen-permissions').chosen({width: '100%'});
+                $('#start').fdatetimepicker({language: 'nb', weekStart: 1, format: 'yyyy-mm-dd hh:ii', closeButton: false});
+                $('#end').fdatetimepicker({language: 'nb', weekStart: 1, format: 'yyyy-mm-dd hh:ii', closeButton: false});
+            }
+        }, 1);
+    });
+
+    project.on('updateEvent', function (event) {
+        event.original.preventDefault();
+        event.context.event.start = $('#start').val();
+        event.context.event.end = $('#end').val();
+        event.context.event.permissions = $('#permissions').val();
+        editor.codemirror.save();
+        event.context.event.mdtext = $('#mdtext').val();
+
+        project.updateEvent(event.context.event)
+        .then(function (data) {
+            project.fire('toggleEdit');
+            project.set('event', data);
+        }, function (xhr, status, err) {
+            console.error(err);
+            //project.get('error').push(err);
+        });
+    });
+
+    return project;
 };

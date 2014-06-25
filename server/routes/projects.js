@@ -321,6 +321,7 @@ module.exports.events = function (req, res, next) {
 };
 
 module.exports.event = function (req, res, next) {
+    // FIXME: better permission check
     Event.findById(req.params.id)
     .or([
         {creator: req.user._id},
@@ -338,6 +339,39 @@ module.exports.event = function (req, res, next) {
             res.format({
                 html: function () {
                     res.render('projects/event', {event: event});
+                }
+            });
+        }
+    });
+};
+
+module.exports.update_event = function (req, res, next) {
+    Event.findById(req.params.id)
+    .or([
+        {creator: req.user._id},
+        {'permissions.public': true},
+        {'permissions.users': req.user._id},
+        {'permissions.groups': { $in: req.user.groups }}
+    ]).exec(function (err, event) {
+        if (err) {
+            return next(err);
+        }
+        if (!event) {
+            res.send(400, 'Not found');
+        }
+        else {
+            event.title = req.body.title;
+            event.mdtext = req.body.mdtext;
+            event.permissions = util.parse_web_permissions(req.body.permissions);
+            event.start = req.body.start;
+            event.end = req.body.end;
+            event.location = req.body.location;
+            event.save(function (err) {
+                if (err) {
+                    res.json(400, err);
+                }
+                else {
+                    res.json(200, event);
                 }
             });
         }

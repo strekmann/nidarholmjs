@@ -5,10 +5,84 @@ block content
     .columns
       #event
         h1= event.title
+          small
+            | &nbsp;
+            = event.tags
         p= moment(event.start).format('LLL')
           if event.end
             | &nbsp;–&nbsp;
             = moment(event.end).format('LLL')
-        p= event.location
-        p= event.tags
+          if event.location
+            | &nbsp;
+            i.fa.fa-map-marker
+            | &nbsp;
+            = event.location
         p!= marked(event.mdtext)
+
+  script#template(type="text/ractive")
+    | {{^expanded}}
+    if is_admin
+      .right
+        button.tiny(on-click="toggleEdit")
+          i.fa.fa-edit
+          | &nbsp;
+          | Rediger
+    h1 {{event.title}}
+      small
+        | &nbsp
+        | {{event.tags}}
+
+    .meta
+      .row
+        .columns.small-9
+          | {{{daterange(event.start, event.end)}}}
+
+        .columns.small-3.text-right
+          if event.location
+            i.fa.fa-map-marker
+            | &nbsp;
+            | {{event.location}}
+          permissionicons(permissions="{{event.permissions}}")
+
+    .content
+      | {{{marked(event.mdtext)}}}
+    | {{/expanded}}
+    | {{#expanded}}
+    form(on-submit="updateEvent")
+      .row
+        .columns
+          label(for="title") Tittel
+          input#title(name="title" type="text" value="{{event.title}}" required)
+      .row
+        .columns
+          label(for="location") Sted
+          input#location(name="location" type="text" value="{{event.location}}")
+      .row
+        .columns
+          label(for="start") Start {{moment(event.start).toDate()}}
+          input#start(name="start" type="text" value="{{calendardatetime(event.start)}}" required)
+      .row
+        .columns
+          label(for="end") End
+          input#end(name="end" type="text" value="{{calendardatetime(event.end)}}")
+      .row
+        .columns
+          label(for="mdtext") Beskrivelse
+          textarea#mdtext(name="mdtext" value="{{event.mdtext}}")
+      .row
+        .columns
+          label(for="permissions") Rettigheter
+          | {{{permission_options()}}}
+      .row
+        .columns
+          button.small Oppdater
+          button.secondary.small(type="reset" on-click="toggleEdit") Avbryt
+    | {{/expanded}}
+
+block javascript
+  script
+    | require('s7n').projects.eventView(
+    != JSON.stringify(event)
+    |,
+    != JSON.stringify(active_user)
+    | );
