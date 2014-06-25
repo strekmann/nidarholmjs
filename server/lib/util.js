@@ -64,8 +64,10 @@ module.exports.tagify = function (tagstring) {
     });
 };
 
-module.exports.snippetify = function (text) {
-    var wanted_length = 500;
+module.exports.snippetify = function (text, wanted_length) {
+    if (!wanted_length) {
+        wanted_length = 500;
+    }
     text = marked(text).replace(/(<([^>]+)>)/ig,"");
     var snippet = text;
     if (text.length > wanted_length) {

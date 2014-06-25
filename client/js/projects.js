@@ -14,6 +14,24 @@ var Project = Ractive.extend({
         non_images: [],
         year: moment().year(),
 
+        snippify: function (text, wanted_length) {
+            if (!wanted_length) {
+                wanted_length = 500;
+            }
+            text = marked(text).replace(/(<([^>]+)>)/ig,"");
+            var snippet = text;
+            if (text.length > wanted_length) {
+                snippet = text.slice(0, wanted_length);
+
+                var last_space = snippet.lastIndexOf(" ");
+                snippet = text.slice(0, last_space);
+
+                if (snippet.length < text.length) {
+                    snippet += "…";
+                }
+            }
+            return snippet;
+        },
         marked: function(text){
             if (text) {
                 return marked(text);
