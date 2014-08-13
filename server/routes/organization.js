@@ -629,3 +629,61 @@ module.exports.update_organization = function (req, res, next) {
         res.send(403, 'Forbidden');
     }
 };
+
+//var aes = require('../lib/crypto');
+
+var translate = function (string) {
+    return string.replace('æ', 'a').replace('ø', 'o').replace('å', 'a').replace(/\s+/, '');
+};
+
+module.exports.encrypted_mailman_lists = function (req, res, next) {
+    if (!req.params.groups) {
+        res.send(400, 'Nothing to do');
+    }
+    else {
+        var secret = config.sessionSecret;
+        //var encoded_groups = req.params.groups;
+        var data = {
+            prefix: 'nidarholm-',
+            groups: ["Klarinett", "Fløyte"]
+        };
+        //aes.decode(secret, encoded_groups, function (data){
+            async.map(data.groups, function (group, callback) {
+                var listname = data.prefix + translate(group.toLowerCase());
+                Group.findOne({name: group})
+                    .populate('members.user', 'email groups')
+                        /*{
+                        path: 'members.user',
+                        select: 'email',
+                        match: {'groups': organization.member_group}
+                    }*/
+                    .exec(function (err, g) {
+                        if (err) {
+                            callback(err);
+                        }
+                        else {
+                            var emails = _.reduce(g.members, function (list, member) {
+                                if (member.user.email && _.find(member.user.groups, function (group) {
+                                    return group === req.organization.member_group._id;
+                                })) {
+                                    list.push(member.user.email);
+                                }
+                                return list;
+                            }, []);
+                            var mailinglist = {
+                                name: listname,
+                                emails : emails
+                            };
+                            callback(null, mailinglist);
+                        }
+                    });
+            }, function (err, lists) {
+                var mailinglists = {};
+                _.each(lists, function (list) {
+                    mailinglists[list.name] = list.emails;
+                });
+                res.json(mailinglists);
+            });
+        //});
+    }
+};
