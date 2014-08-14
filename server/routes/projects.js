@@ -445,3 +445,46 @@ module.exports.project_create_file = function (req, res, next) {
         });
     });
 };
+
+module.exports.ical_events = function (req, res, next) {
+    var icalendar = require('icalendar');
+
+    var query = Event.find({'permissions.public': true});
+    query = query
+        .where({start: {$gt: moment().subtract('years', 1).startOf('day')}})
+        .sort('start')
+        .populate('creator', 'username name');
+    query.exec(function (err, events) {
+        if (err) {
+            throw err;
+        }
+
+        var ical = new icalendar.iCalendar("2.0");
+        ical.addProperty('VERSION', '2.0');
+        ical.addProperty("PRODID", "-//Nidarholm//Aktivitetskalender//");
+        ical.addProperty("X-WR-CALNAME", "Nidarholmkalenderen");
+        ical.addProperty("METHOD", "PUBLISH");
+        ical.addProperty("CALSCALE", "GREGORIAN");
+        ical.addProperty("X-ORIGINAL", "http://nidarholm.no/events/");
+        _.each(events, function (e) {
+            var event = new icalendar.VEvent();
+            event.addProperty('UID', e.id);
+            if (e.modified) {
+                event.addProperty('DTSTAMP', e.modified);
+            } else {
+                event.addProperty('DTSTAMP', e.created);
+            }
+            event.setSummary(e.title);
+            event.setDate(e.start, e.end);
+            event.setDescription(e.mdtext.replace(/\r/g, ''));
+            event.setLocation(e.location);
+            event.addProperty('URL', 'http://nidarholm.no/events/' + e.id);
+            ical.addComponent(event);
+        });
+        res.setHeader('Filename', 'nidarholm.ics');
+        res.setHeader('Content-Disposition', 'attachment; filename=nidarholm.ics');
+        res.setHeader('Content-Type', 'text/calendar; charset=utf-8');
+        res.setHeader('Cache-Control', 'max-age=7200, private, must-revalidate');
+        res.send(ical.toString());
+    });
+};

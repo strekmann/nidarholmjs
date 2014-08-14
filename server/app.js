@@ -280,6 +280,7 @@ app.post('/projects/:id/forum', project_routes.project_create_post);
 app.delete('/projects/:project_id/forum/:post_id', project_routes.project_delete_post);
 app.post('/projects/:id/files', project_routes.project_create_file);
 app.get('/events', project_routes.events);
+app.get('/events/export', project_routes.ical_events);
 app.get('/events/:id', project_routes.event);
 app.put('/events/:id', project_routes.update_event);
 
