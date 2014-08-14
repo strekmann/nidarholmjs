@@ -254,6 +254,7 @@ app.post('/organization/order', organization_routes.order_instrument_groups);
 app.get('/contact', organization_routes.contacts);
 app.get('/organization/edit', organization_routes.edit_organization);
 app.post('/organization/edit', organization_routes.update_organization);
+app.get('/organization/updated_email_lists.json/:groups', organization_routes.encrypted_mailman_lists);
 
 var file_routes = require('./routes/files');
 app.get('/files', file_routes.index);

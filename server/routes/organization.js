@@ -630,7 +630,7 @@ module.exports.update_organization = function (req, res, next) {
     }
 };
 
-//var aes = require('../lib/crypto');
+var aes = require('../lib/crypto').aes;
 
 var translate = function (string) {
     return string.replace('æ', 'a').replace('ø', 'o').replace('å', 'a').replace(/\s+/, '');
@@ -642,12 +642,10 @@ module.exports.encrypted_mailman_lists = function (req, res, next) {
     }
     else {
         var secret = config.sessionSecret;
-        //var encoded_groups = req.params.groups;
-        var data = {
-            prefix: 'nidarholm-',
-            groups: ["Klarinett", "Fløyte"]
-        };
-        //aes.decode(secret, encoded_groups, function (data){
+        secret = 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa';
+        var encoded_groups = req.params.groups;
+        aes.decrypt(encoded_groups, secret, function (err, data){
+            data = JSON.parse(data);
             async.map(data.groups, function (group, callback) {
                 var listname = data.prefix + translate(group.toLowerCase());
                 Group.findOne({name: group})
@@ -682,8 +680,10 @@ module.exports.encrypted_mailman_lists = function (req, res, next) {
                 _.each(lists, function (list) {
                     mailinglists[list.name] = list.emails;
                 });
-                res.json(mailinglists);
+                aes.encrypt(JSON.stringify(mailinglists), secret, function (err, data) {
+                    res.send(data);
+                });
             });
-        //});
+        });
     }
 };
