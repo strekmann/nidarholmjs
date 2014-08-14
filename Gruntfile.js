@@ -56,7 +56,9 @@ module.exports = function(grunt) {
             css: {
                 src: [
                     'client/vendor/css/**/*.css',
-                    //'bower_components/dropzone/downloads/css/dropzone.css',
+                    'bower_components/pickadate/lib/themes/default.css',
+                    'bower_components/pickadate/lib/themes/default.date.css',
+                    'bower_components/pickadate/lib/themes/default.time.css',
                     'tmp/css/styles.css'
                 ],
                 dest: 'public/css/site.css'
@@ -75,6 +77,10 @@ module.exports = function(grunt) {
                     'bower_components/ractive-decorators-sortable/Ractive-decorators-sortable.js',
                     'bower_components/ractive-transitions-fade/ractive-transitions-fade.js',
                     'bower_components/ractive-transitions-slide/ractive-transitions-slide.js',
+                    'bower_components/pickadate/lib/picker.js',
+                    'bower_components/pickadate/lib/picker.date.js',
+                    'bower_components/pickadate/lib/picker.time.js',
+                    'bower_components/pickadate/lib/translations/nb_NO.js',
                     'bower_components/ace-builds/src-noconflict/ace.js',
                     'bower_components/ace-builds/src-noconflict/theme-tomorrow.js',
                     'bower_components/ace-builds/src-noconflict/mode-markdown.js',

@@ -58,13 +58,20 @@ block content
           label(for="location") Sted
           input#location(name="location" type="text" value="{{event.location}}")
       .row
-        .columns
-          label(for="start") Start {{moment(event.start).toDate()}}
-          input#start(name="start" type="text" value="{{calendardatetime(event.start)}}" required)
-      .row
-        .columns
-          label(for="end") End
-          input#end(name="end" type="text" value="{{calendardatetime(event.end)}}")
+        .columns.medium-6
+          label(for="startdate") Start
+          .row
+            .columns.small-6
+              input#startdate(name="startdate" type="text" value="{{startdate()}}" required)
+            .columns.small-6
+              input#starttime(name="starttime" type="text" value="{{starttime()}}")
+        .columns.medium-6
+          label(for="enddate") End
+          .row
+            .columns.small-6
+              input#enddate(name="enddate" type="text" value="{{enddate()}}")
+            .columns.small-6
+              input#endtime(name="endtime" type="text" value="{{endtime()}}")
       .row
         .columns
           label(for="mdtext") Beskrivelse

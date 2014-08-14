@@ -16,6 +16,31 @@ var Project = Ractive.extend({
         non_images: [],
         year: moment().year(),
 
+        startdate: function () {
+            var event = this.get('event');
+            if (event && event.start) {
+                return moment(event.start).format("YYYY-MM-DD");
+            }
+        },
+        starttime: function () {
+            var event = this.get('event');
+            if (event && event.start) {
+                return moment(event.start).format("HH:mm");
+            }
+        },
+        enddate: function () {
+            var event = this.get('event');
+            if (event && event.end) {
+                return moment(event.end).format("YYYY-MM-DD");
+            }
+        },
+        endtime: function () {
+            var event = this.get('event');
+            if (event && event.end) {
+                return moment(event.end).format("HH:mm");
+            }
+        },
+
         snippify: function (text, wanted_length) {
             if (!wanted_length) {
                 wanted_length = 500;
@@ -480,16 +505,28 @@ module.exports.eventView = function (event, active_user) {
             if (project.get('expanded')) {
                 editor = setup_editor('#mdtext');
                 $('.chosen-permissions').chosen({width: '100%'});
-                $('#start').fdatetimepicker({language: 'nb', weekStart: 1, format: 'yyyy-mm-dd hh:ii', closeButton: false});
-                $('#end').fdatetimepicker({language: 'nb', weekStart: 1, format: 'yyyy-mm-dd hh:ii', closeButton: false});
+                $('#startdate').pickadate({format: 'yyyy-mm-dd', formatSubmit: 'yyyy-mm-dd', onSet: function (context) {
+                    var old = moment(project.get('event.start'));
+                    project.set('event.start', moment(context.select).add("hours", old.hour()).add("minutes", old.minute()).toISOString());
+                }});
+                $('#starttime').pickatime({formatLabel: 'HH:i', format: 'HH:i', editable: true,  onSet: function (context) {
+                    var old = moment(project.get('event.start'));
+                    project.set('event.start', old.hour(0).minute(0).add("minutes", context.select).toISOString());
+                }});
+                $('#enddate').pickadate({format: 'yyyy-mm-dd', formatSubmit: 'yyyy-mm-dd', onSet: function (context) {
+                    var old = moment(project.get('event.end'));
+                    project.set('event.end', moment(context.select).add("hours", old.hour()).add("minutes", old.minute()).toISOString());
+                }});
+                $('#endtime').pickatime({formatLabel: 'HH:i', format: 'HH:i', editable: true,  onSet: function (context) {
+                    var old = moment(project.get('event.end'));
+                    project.set('event.end', old.hour(0).minute(0).add("minutes", context.select).toISOString());
+                }});
             }
         }, 1);
     });
 
     project.on('updateEvent', function (event) {
         event.original.preventDefault();
-        event.context.event.start = $('#start').val();
-        event.context.event.end = $('#end').val();
         event.context.event.permissions = $('#permissions').val();
         editor.codemirror.save();
         event.context.event.mdtext = $('#mdtext').val();
