@@ -253,26 +253,26 @@ block content
     article
       header
         h2
-          a(href="/forum/{{id}}") {{title}}
+          a(href="/forum/{{id}}") {{.title}}
         .meta
           .row
             .columns.small-9
               span.byline
-                a(href="/users/{{creator._id}}") {{creator.name}}
-              time.created(datetime="{{isodatetime(created)}}") {{shortdate(created)}}
+                a(href="/users/{{creator._id}}") {{.creator.name}}
+              time.created(datetime="{{isodatetime(.created)}}") {{shortdate(.created)}}
             .columns.small-3.text-right.creator
 
         .content
           .row
-            .columns {{{marked(mdtext)}}}
+            .columns {{{marked(.mdtext)}}}
     // {{/post}}
 
     // {{>event}}
     .event
       h3
-        a(href="/events/{{_id}}") {{title}}
+        a(href="/events/{{_id}}") {{.title}}
       .meta
-        | {{{daterange(start, end)}}}
+        | {{{daterange(.start, .end)}}}
 
       | {{#.location}}
       | {{.location}}
@@ -282,11 +282,11 @@ block content
     // {{>image}}
     li
       a(href="/files/{{_id}}")
-        img.th(src="{{thumbnail_path}}" alt="{{filename}}")
+        img.th(src="{{.thumbnail_path}}" alt="{{.filename}}")
     // {{/image}}
     // {{>non_image}}
     li
-      a.button.tiny.secondary(href="/files/{{_id}}") {{shorten(filename)}}
+      a.button.tiny.secondary(href="/files/{{._id}}") {{shorten(.filename)}}
     // {{/non_image}}
 
 block javascript
