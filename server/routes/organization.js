@@ -245,7 +245,7 @@ module.exports.users = function (req, res) {
         res.send(403, 'Forbidden');
     }
     else {
-        User.find(function (err, users) {
+        User.find().sort('name').exec(function (err, users) {
             res.render('organization/users', {users: users});
         });
     }
