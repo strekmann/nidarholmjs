@@ -382,6 +382,55 @@ module.exports.projectDetailView = function (project_obj, events, posts, files) 
         },
     });
 
+    var eventmodal = new Ractive({
+        el: '#event-modal',
+        template: '#event-modal-template',
+        data: {
+            startdate: function () {
+                var event = this.get('event');
+                if (event && event.start) {
+                    return moment(event.start).format("YYYY-MM-DD");
+                }
+            },
+            starttime: function () {
+                var event = this.get('event');
+                if (event && event.start) {
+                    return moment(event.start).format("HH:mm");
+                }
+            },
+            enddate: function () {
+                var event = this.get('event');
+                if (event && event.end) {
+                    return moment(event.end).format("YYYY-MM-DD");
+                }
+            },
+            endtime: function () {
+                var event = this.get('event');
+                if (event && event.end) {
+                    return moment(event.end).format("HH:mm");
+                }
+            }
+        }
+    });
+
+    eventmodal.on('close', function (event) {
+        event.original.preventDefault();
+        $('#event-modal').foundation('reveal', 'close');
+    });
+
+    eventmodal.on('create', function (event) {
+        event.original.preventDefault();
+        projects.createEvent(event.context.event, '/projects/' + projects.get('project._id') + '/events')
+        .then(function (data) {
+            flash.data.success.push(data.title + ' ble lagt til i kalenderen');
+            projects.get('events').unshift(data);
+            projects.set('event', {});
+            $('#event-modal').foundation('reveal', 'close');
+        }, function(err){
+            eventmodal.set('error', err.responseJSON.error);
+        });
+    });
+
     // Modal section
     projectmodal.on('close', function (event) {
         event.original.preventDefault();
@@ -419,6 +468,40 @@ module.exports.projectDetailView = function (project_obj, events, posts, files) 
         $('.chosen-permissions').chosen({width: '100%'});
         $('#startdate').pickadate({format: 'yyyy-mm-dd', formatSubmit: 'yyyy-mm-dd'});
         $('#enddate').pickadate({format: 'yyyy-mm-dd', formatSubmit: 'yyyy-mm-dd'});
+    });
+
+    projects.on('newEvent', function (event) {
+        eventmodal.set('event', {});
+        eventmodal.set('error', undefined);
+        $('#event-modal').foundation('reveal', 'open');
+        $('#event_startdate').pickadate({format: 'yyyy-mm-dd', formatSubmit: 'yyyy-mm-dd', onSet: function (context) {
+            var oldstart = eventmodal.get('event.start');
+            if (oldstart) {
+                var old = moment(oldstart);
+                eventmodal.set('event.start', moment(context.select).add("hours", old.hour()).add("minutes", old.minute()).toISOString());
+            }
+            else {
+                eventmodal.set('event.start', moment(context.select).hour(0).minute(0).toISOString());
+            }
+        }});
+        $('#event_starttime').pickatime({formatLabel: 'HH:i', format: 'HH:i', editable: true,  onSet: function (context) {
+            var old = moment(eventmodal.get('event.start'));
+            eventmodal.set('event.start', old.hour(0).minute(0).add("minutes", context.select).toISOString());
+        }});
+        $('#event_enddate').pickadate({format: 'yyyy-mm-dd', formatSubmit: 'yyyy-mm-dd', onSet: function (context) {
+            var oldend = eventmodal.get('event.end');
+            if (oldend) {
+                var old = moment(eventmodal.get('event.end'));
+                eventmodal.set('event.end', moment(context.select).add("hours", old.hour()).add("minutes", old.minute()).toISOString());
+            }
+            else {
+                eventmodal.set('event.end', moment(context.select).hour(0).minute(0).toISOString());
+            }
+        }});
+        $('#event_endtime').pickatime({formatLabel: 'HH:i', format: 'HH:i', editable: true,  onSet: function (context) {
+            var old = moment(eventmodal.get('event.end'));
+            eventmodal.set('event.end', old.hour(0).minute(0).add("minutes", context.select).toISOString());
+        }});
     });
 
     projects.on('togglePost', function (event) {
@@ -463,32 +546,6 @@ module.exports.projectDetailView = function (project_obj, events, posts, files) 
         });
     });
     */
-
-    projects.on('toggleEvent', function (event) {
-        this.toggle('eventExpanded');
-        setTimeout(function(){
-            if (projects.get('eventExpanded')) {
-                $('#event_start').fdatetimepicker({language: 'nb', weekStart: 1, format: 'yyyy-mm-dd hh:ii'});
-                $('#event_end').fdatetimepicker({language: 'nb', weekStart: 1, format: 'yyyy-mm-dd hh:ii'});
-            }
-        }, 1);
-    });
-
-    projects.on('createEvent', function (event) {
-        event.original.preventDefault();
-        event.context.event.start = $('#event_start').val();
-        event.context.event.end = $('#event_end').val();
-
-        projects.createEvent(event.context.event, event.node.action)
-        .then(function (data) {
-            flash.data.success.push(data.title + ' ble lagt til i kalenderen');
-            projects.get('events').unshift(data);
-            projects.set('event', {});
-            projects.fire('toggleEvent');
-        }, function(xhr, status, err){
-            console.error(err);
-        });
-    });
 
     /*
     projects.on('deleteEvent', function (event) {

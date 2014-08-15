@@ -2,7 +2,10 @@ extends ../layouts/main.jade
 
 block content
   #project-modal.reveal-modal(data-reveal)
-    a.close-revveal-modal &#215;
+    a.close-reveal-modal &#215;
+
+  #event-modal.reveal-modal(data-reveal)
+    a.close-reveal-modal &#215;
 
   #project
     .row
@@ -74,6 +77,50 @@ block content
                 = shortdate(event.start)
                 = shortdate(event.end)
 
+  script#event-modal-template(type="text/ractive")
+    .row
+      .columns
+        h2 Legg til aktivitet
+        | {{#error}}
+        .row
+          .columns
+            .alert-box.alert
+              | {{error}}
+        | {{/error}}
+        form(on-submit="create")
+          .row
+            .columns
+              label Tittel
+              input#event_title(name="title" type="text" value="{{.event.title}}" required)
+          .row
+            .columns
+              label Sted
+              input#event_location(name="location" type="text" value="{{.event.location}}")
+          .row
+            .columns.medium-6
+              label(for="startdate") Start
+              .row
+                .columns.small-6
+                  input#event_startdate(name="startdate" type="text" value="{{startdate()}}" required)
+                .columns.small-6
+                  input#event_starttime(name="starttime" type="text" value="{{starttime()}}")
+            .columns.medium-6
+              label(for="enddate") End
+              .row
+                .columns.small-6
+                  input#event_enddate(name="enddate" type="text" value="{{enddate()}}")
+                .columns.small-6
+                  input#event_endtime(name="endtime" type="text" value="{{endtime()}}")
+          .row
+            .columns
+              label Beskrivelse
+              textarea#event_mdtext(name="mdtext" value="{{.event.mdtext}}")
+          .row
+            .columns
+              button Lagre
+              button.secondary(on-click="close") Avbryt
+
+
   script#project-modal-template(type="text/ractive")
     | {{#error}}
     .row
@@ -84,6 +131,7 @@ block content
 
     .row
       .columns
+        h2 Rediger prosjekt
         form(on-submit="update")
           .row
             .columns
@@ -115,7 +163,6 @@ block content
   script#template(type="text/ractive")
     .row
       .medium-8.columns
-        | {{^expanded}}
         if active_user
           .right
             a.button.tiny(on-click="editProject")
@@ -164,7 +211,6 @@ block content
           | {{#posts}}
           |   {{>post}}
           | {{/posts}}
-        | {{/expanded}}
 
         #files
           form#upload(on-submit="createFile" action="/projects/{{project._id}}/files")
@@ -183,29 +229,12 @@ block content
       .medium-4.columns
         | {{^expanded}}
         #events
-          | {{#eventExpanded}}
-          form(on-submit="createEvent" action="/projects/{{project._id}}/events" method="post" data-abide)
-            h2 Legg til aktivitet
-            label Tittel
-            input#event_title(name="title" type="text" required value="{{event.title}}")
-            label Sted
-            input#event_location(name="location" type="text" value="{{event.location}}")
-            label Start
-            input#event_start(name="start" type="datetime" required value="{{event.start}}")
-            label Slutt
-            input#event_end(name="end" type="datetime" value="{{event.end}}")
-            label Beskrivelse
-            textarea#event_mdtext(name="mdtext" value="{{event.mdtext}}")
-            button Legg til aktivitet
-          | {{/eventExpanded}}
-          | {{^eventExpanded}}
           if active_user
             .right
-              a.button.tiny(on-click="toggleEvent")
+              a.button.tiny(on-click="newEvent")
                 i.fa.fa-file-o
                 | &nbsp;
                 | Ny
-          | {{/eventExpanded}}
           | {{#events}}
           |   {{>event}}
           | {{/events}}
