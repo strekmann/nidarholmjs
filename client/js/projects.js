@@ -405,7 +405,9 @@ module.exports.projectDetailView = function (project_obj, events, posts, files) 
     });
 
     $(document).on('opened.fndtn.reveal', '[data-reveal]', function () {
-        internal_editor = setup_editor('#private_mdtext');
+        if (!internal_editor) {
+            internal_editor = setup_editor('#private_mdtext');
+        }
     });
 
     // Project section
