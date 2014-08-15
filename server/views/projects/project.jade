@@ -271,13 +271,21 @@ block content
     .event
       h3
         a(href="/events/{{_id}}") {{.title}}
-      .meta
-        | {{{daterange(.start, .end)}}}
+      .toggler(on-click="toggleEvent")
+        .meta
+          | {{{daterange(.start, .end)}}}
 
-      | {{#.location}}
-      | {{.location}}
-      | {{/.location}}
-    // {{/event}}
+        | {{#.mdtext}}
+        .right
+          p …
+        | {{/.mdtext}}
+        | {{#.location}}
+        p {{.location}}
+        | {{/.location}}
+        | {{#.toggled}}
+        | {{{marked(.mdtext)}}}
+        | {{/.toggled}}
+      // {{/event}}
 
     // {{>image}}
     li

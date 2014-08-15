@@ -535,6 +535,10 @@ module.exports.projectDetailView = function (project_obj, events, posts, files) 
         }});
     });
 
+    projects.on('toggleEvent', function (event) {
+        projects.toggle(event.keypath + '.toggled');
+    });
+
     projects.on('newPost', function (event) {
         postmodal.set('post', {});
         postmodal.set('serror', undefined);
