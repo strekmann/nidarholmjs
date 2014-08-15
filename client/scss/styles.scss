@@ -237,8 +237,8 @@ footer {
     }
 }
 
-#flash {
-    margin: 2em 0 0 0;
+#flash .alert {
+    margin: rem-calc(12px) 0 0 0;
     .close {
         padding-top: 0;
     }

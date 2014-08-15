@@ -1,6 +1,9 @@
 extends ../layouts/main.jade
 
 block content
+  #project-modal.reveal-modal(data-reveal)
+    a.close-revveal-modal &#215;
+
   #project
     .row
       .medium-8.columns
@@ -71,49 +74,51 @@ block content
                 = shortdate(event.start)
                 = shortdate(event.end)
 
-  script#template(type="text/ractive")
+  script#project-modal-template(type="text/ractive")
+    | {{#error}}
     .row
-      .medium-8.columns
-        | {{#expanded}}
-        form(action="/projects/{{project._id}}" method="put" intro-outro='slide' on-submit="updateProject")
+      .columns
+        .alert-box.alert
+          | {{error}}
+    | {{/error}}
+
+    .row
+      .columns
+        form(on-submit="update")
           .row
             .columns
               label(for="title") Tittel
-              input#title(name="title" type="text" value="{{project.title}}")
-          .row
-            .columns
-              label(for="tag")
-                abbr(title="Alle innlegg, aktiviteter, o.l som merkes med denne merkelappen blir vist på prosjektsiden. Merkelappen vil også bli en del av prosjektsidens adresse.") Merkelapp (Kan ikke endres setter at innlegg, aktiviteter eller filer har blitt lagt til prosjektet)
-              input#tag(name="tag" type="text" value="{{project.tag}}")
+              input#title(name="title" type="text" value="{{.project.title}}")
           .row
             .columns
               label(for="private_mdtext") Intern beskrivelse
-              textarea#private_mdtext(name="private_mdtext" value="{{project.private_mdtext}}")
+              textarea#private_mdtext(name="private_mdtext" value="{{.project.private_mdtext}}")
           .row
             .columns
               label(for="public_mdtext") Ekstern beskrivelse
-              textarea#public_mdtext(name="public_mdtext" value="{{project.public_mdtext}}")
+              textarea#public_mdtext(name="public_mdtext" value="{{.project.public_mdtext}}")
           .row
-            .columns
-              label(for="start") Prosjektstart
-              input#start(name="start" type="date" value="{{isodate(project.start)}}")
-          .row
-            .columns
-              label(for="end") Prosjektslutt
-              input#end(name="end" type="date" value="{{isodate(project.end)}}")
+            .columns.medium-6
+              label(for="startdate") Prosjektstart
+              input#startdate(name="startdate" type="text" value="{{isodate(.project.start)}}")
+            .columns.medium-6
+              label(for="enddate") End
+              input#enddate(name="enddate" type="text" value="{{isodate(.project.end)}}")
           .row
             .columns
               label(for="permissions") Rettigheter
-              select#permissions.chosen-permissions(name="permissions" multiple data-placeholder="Velg prosjektgruppe" value="{{project.permissions}}")
+              select#permissions.chosen-permissions(name="permissions" multiple data-placeholder="Velg prosjektgruppe" value="{{dereference_permissions(.project.permissions)}}")
                 +permission_options(active_user.groups, active_user.friends)
           button.small Lagre
-          button.small.secondary(type="reset" on-click="toggleEdit") Avbryt
-        | {{/expanded}}
+          button.small.secondary(on-click="close") Avbryt
 
+  script#template(type="text/ractive")
+    .row
+      .medium-8.columns
         | {{^expanded}}
         if active_user
           .right
-            a.button.tiny(on-click="toggleEdit")
+            a.button.tiny(on-click="editProject")
               i.fa.fa-edit
               | &nbsp;
               | Rediger prosjekt

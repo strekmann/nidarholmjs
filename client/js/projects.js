@@ -341,7 +341,7 @@ module.exports.projectDetailView = function (project_obj, events, posts, files) 
         }
     });
 
-    var project = new Project({
+    var projects = new Project({
             el: '#project',
             template: '#template',
             restAPI: '/projects/' + project_obj._id,
@@ -357,62 +357,95 @@ module.exports.projectDetailView = function (project_obj, events, posts, files) 
         post_editor,
         event_editor;
 
-    project.on('toggleEdit', function (event) {
-        this.toggle('expanded');
-        setTimeout(function(){
-            if (project.get('expanded')) {
-                internal_editor = setup_editor('#private_mdtext');
-                $('.chosen-permissions').chosen({width: '100%'});
+    var projectmodal = new Ractive({
+        el: '#project-modal',
+        template: '#project-modal-template',
+        data: {
+            isodate: function(date){
+                if (date) {
+                    return moment(date).format("YYYY-MM-DD");
+                }
+            },
+            dereference_permissions: function (permissions) {
+                var ret = [];
+                _.each(permissions.groups, function (g) {
+                    ret.push("g-"+g);
+                });
+                _.each(permissions.users, function (u) {
+                    ret.push("u-"+u);
+                });
+                if (permissions.public) {
+                    ret.push("p");
+                }
+                return ret;
             }
-            /*else {
-                project.setup_uploadzone('#upload', '#add_file');
-            }*/
-        }, 1);
+        },
     });
 
-    project.on('updateProject', function (event) {
+    // Modal section
+    projectmodal.on('close', function (event) {
+        event.original.preventDefault();
+        $('#project-modal').foundation('reveal', 'close');
+    });
+
+    projectmodal.on('update', function (event) {
         event.original.preventDefault();
         internal_editor.codemirror.save(); //toTextArea();
         event.context.project.private_mdtext = $('#private_mdtext').val();
         event.context.project.permissions = $('#permissions').val();
 
-        project.updateProject(event.context.project)
+        projects.updateProject(event.context.project)
         .then(function(data) {
             // ok
-            project.set('project', data);
-            project.fire('toggleEdit');
+            projects.set('project', data);
+            $('#project-modal').foundation('reveal', 'close');
         }, function (xhr, status, err) {
             // error
         });
     });
 
-    project.on('togglePost', function (event) {
+    $(document).on('opened.fndtn.reveal', '[data-reveal]', function () {
+        internal_editor = setup_editor('#private_mdtext');
+    });
+
+    // Project section
+    projects.on('editProject', function (event) {
+        var project = _.clone(event.context.project);
+        projectmodal.set('project', project);
+        projectmodal.set('error', undefined);
+        $('#project-modal').foundation('reveal', 'open');
+        $('.chosen-permissions').chosen({width: '100%'});
+        $('#startdate').pickadate({format: 'yyyy-mm-dd', formatSubmit: 'yyyy-mm-dd'});
+        $('#enddate').pickadate({format: 'yyyy-mm-dd', formatSubmit: 'yyyy-mm-dd'});
+    });
+
+    projects.on('togglePost', function (event) {
         this.toggle('postExpanded');
         setTimeout(function(){
-            if (project.get('postExpanded')) {
+            if (projects.get('postExpanded')) {
                 post_editor = setup_editor('#post_mdtext');
             }
         }, 1);
     });
 
-    project.on('createPost', function (event) {
+    projects.on('createPost', function (event) {
         event.original.preventDefault();
         post_editor.codemirror.save(); //toTextArea();
         event.context.post.mdtext = $('#post_mdtext').val();
 
-        project.createPost(event.context.post, event.node.action)
+        projects.createPost(event.context.post, event.node.action)
         .then(function (data) {
             flash.data.success.push(data.title + ' ble lagt til i forum');
-            project.get('posts').unshift(data);
-            project.set('post', {});
-            project.fire('togglePost');
+            projects.get('posts').unshift(data);
+            projects.set('post', {});
+            projects.fire('togglePost');
         }, function(xhr, status, err){
             console.error(err);
         });
     });
 
     /*
-    project.on('deletePost', function (event) {
+    projects.on('deletePost', function (event) {
         event.original.preventDefault();
         var promise = $.ajax({
             url: event.node.href,
@@ -422,41 +455,41 @@ module.exports.projectDetailView = function (project_obj, events, posts, files) 
         promise.then(function (data) {
             flash.data.success.push(data.title + ' ble fjernet');
             var index = event.keypath.split('.').pop();
-            project.data.project.posts.splice(index, 1);
+            projects.data.project.posts.splice(index, 1);
         }, function(xhr, status, err){
             console.error(err);
         });
     });
     */
 
-    project.on('toggleEvent', function (event) {
+    projects.on('toggleEvent', function (event) {
         this.toggle('eventExpanded');
         setTimeout(function(){
-            if (project.get('eventExpanded')) {
+            if (projects.get('eventExpanded')) {
                 $('#event_start').fdatetimepicker({language: 'nb', weekStart: 1, format: 'yyyy-mm-dd hh:ii'});
                 $('#event_end').fdatetimepicker({language: 'nb', weekStart: 1, format: 'yyyy-mm-dd hh:ii'});
             }
         }, 1);
     });
 
-    project.on('createEvent', function (event) {
+    projects.on('createEvent', function (event) {
         event.original.preventDefault();
         event.context.event.start = $('#event_start').val();
         event.context.event.end = $('#event_end').val();
 
-        project.createEvent(event.context.event, event.node.action)
+        projects.createEvent(event.context.event, event.node.action)
         .then(function (data) {
             flash.data.success.push(data.title + ' ble lagt til i kalenderen');
-            project.get('events').unshift(data);
-            project.set('event', {});
-            project.fire('toggleEvent');
+            projects.get('events').unshift(data);
+            projects.set('event', {});
+            projects.fire('toggleEvent');
         }, function(xhr, status, err){
             console.error(err);
         });
     });
 
     /*
-    project.on('deleteEvent', function (event) {
+    projects.on('deleteEvent', function (event) {
         event.original.preventDefault();
         var promise = $.ajax({
             url: event.node.href,
@@ -466,16 +499,14 @@ module.exports.projectDetailView = function (project_obj, events, posts, files) 
         promise.then(function (data) {
             flash.data.success.push(data.title + ' ble fjernet fra kalenderen');
             var index = event.keypath.split('.').pop();
-            project.data.project.events.splice(index, 1);
+            projects.data.project.events.splice(index, 1);
         }, function(xhr, status, err){
             console.error(err);
         });
     });
     */
 
-    project.setup_uploadzone('#upload', '#add_file');
-
-    return project;
+    projects.setup_uploadzone('#upload', '#add_file');
 };
 
 module.exports.upcomingView = function (events) {
