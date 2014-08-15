@@ -37,6 +37,11 @@ module.exports.userView = function (user, active_user) {
             length: function (string) {
                 return string.length;
             },
+            marked: function (text) {
+                if (text) {
+                    return marked(text);
+                }
+            },
             phoneformat: function (number) {
                 var original = number;
                 number = number.replace(/^\+47/).trim();

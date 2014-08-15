@@ -3,20 +3,13 @@ extends ../layouts/main
 block content
   #user
     .row
-      .medium-3.columns.hide-for-small-only
-          a(href="#" on-click="changeProfilePicture")
-            if user.profile_picture_path
-              img#picture(src=user.profile_picture_path)
-            else
-              img#picture(src="/img/user.svg")
-
       .medium-9.columns
         if active_user && active_user.username == user.username
           .right
             a(href="/users/"+user.username+"/edit")
               i.fa.fa-edit(title="Rediger personalia")
 
-        h1= user.name 
+        h1= user.name
           small= user.instrument
 
         p= user.email
@@ -26,7 +19,7 @@ block content
         p
           = user.address
           br
-          = user.postcode 
+          = user.postcode
           = user.city
           br
           = user.country
@@ -47,44 +40,12 @@ block content
 
         p#username(data-username=user.username)= user.username
 
-      .medium-3.columns
-        if active_user && user.id==active_user.id || is_admin
-          a.button.tiny(href="/users/" + user.username + "/edit") Rediger brukerdata
-          a.button.tiny(href="/logout") Logg ut
-
-        h2 Grupper
-          if !user.groups || user.groups.length === 0
-            p Ingen grupper. Legg personen til i grupper ved å trykke knappen under.
-        #groups
-          ul
-            if user.groups
-              for group in user.groups
-                if group
-                  li.group(data-id=group.id)
-                    a(href="/groups/" + group._id)= group.name
-                    a.removegroup(href="#")
-                      i.fa.fa-times
-                else
-                  = group
-
-
-          #addgroup
-            //button.new_group.small
-              i.fa.fa-plus
-            form(on-submit="addGroup" method="POST" action="/users/" + user.username + "/groups")
-              .row
-                .columns
-                  h3 Legg til i grupper
-              .row
-                .columns
-                  label(for='group') Finn gruppe
-                  select#group
-                    for group in groups
-                      option(value=group.id)= group.name
-              .row
-                .columns
-                  //button.reset.secondary(type='reset') Avbryt
-                  button.tiny Legg til
+      .medium-3.columns.hide-for-small-only
+          a(href="#" on-click="changeProfilePicture")
+            if user.profile_picture_path
+              img#picture(src=user.profile_picture_path)
+            else
+              img#picture(src="/img/user.svg")
 
   script#usertemplate(type="text/ractive")
     #profile-pictures.reveal-modal(data-reveal)
@@ -108,20 +69,10 @@ block content
                 img.th(src="{{thumbnail_path}}")
             | {{/files}}
         | {{/user}}
-      a.close-reveal-modal
-        i.fa.fa-times-circle-o
+      a.close-reveal-modal &#215;
 
     | {{#user}}
     .row
-      .medium-3.columns.hide-for-small-only
-        a(href="/users/{{username}}/picture" on-click="changeProfilePicture")
-          | {{#profile_picture}}
-          img#picture(src="{{profile_picture_path}}")
-          | {{/profile_picture}}
-          | {{^profile_picture}}
-          img#picture(src="/img/user.svg")
-          | {{/profile_picture}}
-
       .medium-9.columns
         .right
           | {{#is_active_user}}
@@ -164,7 +115,9 @@ block content
 
         if is_admin
           p {{reskontro}}
-          | {{membership_history}}
+          hr
+          | {{{marked(.membership_history)}}}
+          hr
 
         p Brukernavn <code>{{username}}</code>, passordalgoritme: <code>{{algorithm}}</code>, krypteringsstyrke: <code>{{length(salt)}}</code>
         | {{#is_active}}
@@ -174,21 +127,16 @@ block content
         | Admin
         | {{/is_admin}}
 
+      .medium-3.columns.hide-for-small-only
+        a(href="/users/{{username}}/picture" on-click="changeProfilePicture")
+          | {{#profile_picture}}
+          img#picture(src="{{profile_picture_path}}")
+          | {{/profile_picture}}
+          | {{^profile_picture}}
+          img#picture(src="/img/user.svg")
+          | {{/profile_picture}}
+
     .row
-      .hide-for-small-only
-        .medium-3.columns
-          hr
-
-          | {{#born}}
-          p
-            | Bursdag {{bday(born)}}
-          | {{/born}}
-
-          | {{#joined}}
-          p
-            | Startet {{ago(joined)}} og har NMF-nummer {{nmf_id}}
-          | {{/joined}}
-
       .medium-9.columns
         hr
 
@@ -224,6 +172,21 @@ block content
                 .columns
                   //button.reset.secondary(type='reset') Avbryt
                   button.tiny Legg til
+
+      .hide-for-small-only
+        .medium-3.columns
+          hr
+
+          | {{#born}}
+          p
+            | Bursdag {{bday(born)}}
+          | {{/born}}
+
+          | {{#joined}}
+          p
+            | Startet {{ago(joined)}} og har NMF-nummer {{nmf_id}}
+          | {{/joined}}
+
     | {{/user}}
 
 block javascript
