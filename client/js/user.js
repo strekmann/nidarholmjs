@@ -153,6 +153,7 @@ module.exports.userView = function (user, active_user) {
         promise.then(function (file) {
             ractive.set('user.profile_picture', file._id);
             ractive.set('user.profile_picture_path', file.path);
+            $('#profile-pictures').foundation('reveal', 'close');
         });
     });
 };

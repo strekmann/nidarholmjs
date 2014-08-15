@@ -244,6 +244,10 @@ footer {
     }
 }
 
+.close-reveal-modal:hover {
+    text-decoration: none;
+}
+
 #logobtn {
        display: none;
 }
@@ -661,8 +665,4 @@ span.permissions {
             margin-bottom: rem-calc(5px);
         }
     }
-}
-
-.datetimepicker-close {
-    display: none;
 }
