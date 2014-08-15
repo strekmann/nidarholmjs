@@ -17,7 +17,8 @@ block content
             i.fa.fa-map-marker
             | &nbsp;
             = event.location
-        p!= marked(event.mdtext)
+        if event.mdtext
+          != marked(event.mdtext)
 
   script#template(type="text/ractive")
     | {{^expanded}}

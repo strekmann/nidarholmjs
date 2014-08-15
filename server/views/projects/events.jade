@@ -1,5 +1,9 @@
 extends ../layouts/main.jade
 
+block submenu
+  li
+    a.button.tiny(href="/events/public.ics") Eksporter til kalenderprogram
+
 block content
   .row
     .columns
@@ -13,7 +17,8 @@ block content
                 = moment(event.end).format('LLL')
             p= event.location
             p= event.tags
-            p!= marked(event.mdtext)
+            if event.mdtext
+              != marked(event.mdtext)
 
   script#template(type="text/ractive")
     | {{#events}}
