@@ -1,20 +1,20 @@
 moment.lang($('html').attr('lang'));
 
-var flash = function (messages, member_group) {
+var flash = function (messages, member_group_id) {
 
     var permissions_component = Ractive.extend({
         template: '#permissionstemplate',
         data: {
             // will not work everywhere if we set a default value
             // permissions: {public: false, groups: [], users: []},
-            member_group: member_group,
+            member_group_id: member_group_id,
             is_public: function (permissions) {
                 return permissions.public;
             },
             is_for_members: function (permissions) {
                 var self = this;
                 return _.find(permissions.groups, function (g) {
-                    return g === self.data.member_group._id;
+                    return g === self.data.member_group_id;
                 });
             },
             is_unpublished: function (permissions) {

@@ -252,7 +252,7 @@ html(lang=lang dir=lang_dir)
       | var flash = require('s7n').flash(
       != JSON.stringify(messages)
       | ,
-      != JSON.stringify(organization.member_group)
+      != JSON.stringify(organization.member_group._id)
       | );
 
     block javascript
