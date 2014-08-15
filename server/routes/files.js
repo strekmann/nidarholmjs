@@ -34,7 +34,7 @@ module.exports.index = function (req, res) {
         }
         res.format({
             html: function () {
-                res.render('files/index', {files: files});
+                res.render('files/index', {files: files, meta: {title: 'Filer'}});
             },
             json: function () {
                 res.json(200, files);
@@ -168,7 +168,7 @@ module.exports.show_file = function (req, res) {
             res.send(404, 'Not found');
         }
         else {
-            res.render('files/show_file', {file: file});
+            res.render('files/show_file', {file: file, meta: {title: file.filename}});
         }
     });
 };

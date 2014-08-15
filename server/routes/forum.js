@@ -51,7 +51,8 @@ module.exports.index = function (req, res, next) {
             },
             html: function () {
                 res.render('forum/index', {
-                    posts: posts
+                    posts: posts,
+                    meta: {title: "Forum"}
                 });
             }
         });
@@ -179,7 +180,8 @@ module.exports.get_post = function (req, res, next) {
 
                 html: function(){
                     res.render('forum/thread', {
-                        post: post
+                        post: post,
+                        meta: {title: post.title}
                     });
                 }
             });

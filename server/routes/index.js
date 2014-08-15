@@ -113,7 +113,7 @@ module.exports.index = function(req, res) {
 };
 
 module.exports.login = function(req, res){
-    res.render('login');
+    res.render('login', {meta: {title: 'Logg inn'}});
 };
 
 module.exports.logout = function(req, res){

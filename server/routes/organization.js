@@ -37,7 +37,7 @@ module.exports.memberlist = function (req, res) {
                     return 0;
                 });
             });
-            res.render('organization/memberlist', {org: organization});
+            res.render('organization/memberlist', {org: organization, meta: {title: 'Medlemmer'}});
         });
     });
 };
@@ -48,7 +48,7 @@ module.exports.add_user = function (req, res) {
     }
     else {
         Group.find({organization: 'nidarholm'}).exec(function (err, groups) {
-            res.render('organization/add_user', {groups: groups});
+            res.render('organization/add_user', {groups: groups, meta: {title: 'Legg til nytt korpsmedlem'}});
         });
     }
 };
@@ -127,7 +127,7 @@ module.exports.edit_user = function (req, res, next) {
             if (!user.country) {
                 user.country = "NO";
             }
-            res.render('organization/user_edit.jade', {user: user, countries: countries});
+            res.render('organization/user_edit.jade', {user: user, countries: countries, meta: {title: user.name}});
         }
         else {
             res.send(403, 'Forbidden');
@@ -246,7 +246,7 @@ module.exports.users = function (req, res) {
     }
     else {
         User.find().sort('name').exec(function (err, users) {
-            res.render('organization/users', {users: users});
+            res.render('organization/users', {users: users, meta: {title: 'Alle brukere'}});
         });
     }
 };
@@ -265,7 +265,7 @@ module.exports.user = function (req, res) {
             if (err) { throw err; }
             Group.find({organization: 'nidarholm'}, function (err, groups) {
                 if (err) { throw err; }
-                res.render('organization/user', {user: user, groups: groups});
+                res.render('organization/user', {user: user, groups: groups, meta: {title: user.name}});
             });
         });
     }
@@ -427,7 +427,8 @@ module.exports.groups = function (req, res, next) {
                 if (err) { next(err); }
                 res.render('organization/groups', {
                     groups: groups,
-                    igroups: organization.instrument_groups
+                    igroups: organization.instrument_groups,
+                    meta: {title: 'Grupper'}
                 });
             });
         });
@@ -444,7 +445,7 @@ module.exports.group = function (req, res, next){
             //.select('-members.user.password -members.user.salt') // does not work
             .exec(function (err, group) {
                 if (err) { next(err); }
-                res.render('organization/group', {group: group, users: users});
+                res.render('organization/group', {group: group, users: users, meta: {title: group.name}});
         });
     });
 };
@@ -567,7 +568,7 @@ module.exports.contacts = function (req, res, next) {
             if (err) {
                 next(new Error(err));
             }
-            res.render('organization/contact', {organization: organization});
+            res.render('organization/contact', {organization: organization, meta: {title: 'Kontakt'}});
         });
     });
 };
@@ -576,7 +577,8 @@ module.exports.edit_organization = function (req, res, next) {
     if (req.is_admin) {
         res.render('organization/edit_organization', {
             organization: req.organization,
-            locales: config.languages
+            locales: config.languages,
+            meta: {title: 'Rediger organisasjon'}
         });
     }
     else {

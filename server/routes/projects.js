@@ -65,7 +65,8 @@ module.exports.index = function (req, res, next) {
 
                     res.render('projects/index', {
                         projects: projects,
-                        previous_projects: previous_projects
+                        previous_projects: previous_projects,
+                        meta: {title: 'Prosjekter'}
                     });
                 });
             },
@@ -223,7 +224,8 @@ module.exports.project = function (req, res, next) {
                                     project: project,
                                     events: events,
                                     posts: posts,
-                                    files: files
+                                    files: files,
+                                    meta: {title: project.title}
                                 });
                             }
                         });
@@ -311,7 +313,7 @@ module.exports.events = function (req, res, next) {
         }
         res.format({
             html: function () {
-                res.render('projects/events', {events: events});
+                res.render('projects/events', {events: events, meta: {title: "Aktiviteter"}});
             },
             json: function () {
                 res.json(200, events);
@@ -338,7 +340,7 @@ module.exports.event = function (req, res, next) {
         else {
             res.format({
                 html: function () {
-                    res.render('projects/event', {event: event});
+                    res.render('projects/event', {event: event, meta: {title: event.title}});
                 }
             });
         }
