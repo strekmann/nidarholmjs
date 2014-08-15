@@ -7,6 +7,9 @@ block content
   #event-modal.reveal-modal(data-reveal)
     a.close-reveal-modal &#215;
 
+  #post-modal.reveal-modal(data-reveal)
+    a.close-reveal-modal &#215;
+
   #project
     .row
       .medium-8.columns
@@ -77,6 +80,45 @@ block content
                 = shortdate(event.start)
                 = shortdate(event.end)
 
+  script#project-modal-template(type="text/ractive")
+    | {{#error}}
+    .row
+      .columns
+        .alert-box.alert
+          | {{error}}
+    | {{/error}}
+
+    .row
+      .columns
+        h2 Rediger prosjekt
+        form(on-submit="update")
+          .row
+            .columns
+              label(for="title") Tittel
+              input#title(name="title" type="text" value="{{.project.title}}")
+          .row
+            .columns
+              label(for="private_mdtext") Intern beskrivelse
+              textarea#private_mdtext(name="private_mdtext" value="{{.project.private_mdtext}}")
+          .row
+            .columns
+              label(for="public_mdtext") Ekstern beskrivelse
+              textarea#public_mdtext(name="public_mdtext" value="{{.project.public_mdtext}}")
+          .row
+            .columns.medium-6
+              label(for="startdate") Prosjektstart
+              input#startdate(name="startdate" type="text" value="{{isodate(.project.start)}}")
+            .columns.medium-6
+              label(for="enddate") End
+              input#enddate(name="enddate" type="text" value="{{isodate(.project.end)}}")
+          .row
+            .columns
+              label(for="permissions") Rettigheter
+              select#permissions.chosen-permissions(name="permissions" multiple data-placeholder="Velg prosjektgruppe" value="{{dereference_permissions(.project.permissions)}}")
+                +permission_options(active_user.groups, active_user.friends)
+          button.small Lagre
+          button.small.secondary(on-click="close") Avbryt
+
   script#event-modal-template(type="text/ractive")
     .row
       .columns
@@ -120,45 +162,23 @@ block content
               button Lagre
               button.secondary(on-click="close") Avbryt
 
-
-  script#project-modal-template(type="text/ractive")
-    | {{#error}}
+  script#post-modal-template(type="text/ractive")
     .row
       .columns
-        .alert-box.alert
-          | {{error}}
-    | {{/error}}
-
-    .row
-      .columns
-        h2 Rediger prosjekt
-        form(on-submit="update")
+        h2 Nytt innlegg
+        form(on-submit="create")
           .row
             .columns
-              label(for="title") Tittel
-              input#title(name="title" type="text" value="{{.project.title}}")
+              label Tittel
+              input#post_title(name="title" type="text" required value="{{.post.title}}")
           .row
             .columns
-              label(for="private_mdtext") Intern beskrivelse
-              textarea#private_mdtext(name="private_mdtext" value="{{.project.private_mdtext}}")
+              label Innhold
+              textarea#post_mdtext(name="mdtext" value="{{.post.mdtext}}")
           .row
             .columns
-              label(for="public_mdtext") Ekstern beskrivelse
-              textarea#public_mdtext(name="public_mdtext" value="{{.project.public_mdtext}}")
-          .row
-            .columns.medium-6
-              label(for="startdate") Prosjektstart
-              input#startdate(name="startdate" type="text" value="{{isodate(.project.start)}}")
-            .columns.medium-6
-              label(for="enddate") End
-              input#enddate(name="enddate" type="text" value="{{isodate(.project.end)}}")
-          .row
-            .columns
-              label(for="permissions") Rettigheter
-              select#permissions.chosen-permissions(name="permissions" multiple data-placeholder="Velg prosjektgruppe" value="{{dereference_permissions(.project.permissions)}}")
-                +permission_options(active_user.groups, active_user.friends)
-          button.small Lagre
-          button.small.secondary(on-click="close") Avbryt
+              button Lagre
+              button.secondary(on-click="close") Avbryt
 
   script#template(type="text/ractive")
     .row
@@ -189,24 +209,12 @@ block content
         | {{/project}}
 
         #forum
-          | {{#postExpanded}}
-          form(on-submit="createPost" action="/projects/{{project._id}}/forum" method="post" data-abide)
-            h2 Legg til innlegg
-            label Tittel
-            input#post_title(name="title" type="text" required value="{{post.title}}")
-            label Innhold
-            textarea#post_mdtext(name="mdtext" value="{{post.mdtext}}")
-            button Lagre innlegg
-          | {{/postExpanded}}
-
-          | {{^postExpanded}}
           if active_user
             .right
-              a.button.tiny(on-click="togglePost")
+              a.button.tiny(on-click="newPost")
                 i.fa.fa-file-o
                 | &nbsp;
                 | Nytt innlegg
-          | {{/postExpanded}}
 
           | {{#posts}}
           |   {{>post}}

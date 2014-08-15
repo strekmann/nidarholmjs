@@ -266,9 +266,7 @@ var Project = Ractive.extend({
 });
 
 var setup_editor = function (element_id) {
-    var editor = new Editor($(element_id));
-    editor.render();
-    return editor;
+    return new Editor({element: $(element_id)[0]});
 };
 
 module.exports.projectListView = function (projects, previous_projects) {
@@ -353,7 +351,7 @@ module.exports.projectDetailView = function (project_obj, events, posts, files) 
                 non_images: non_images
             }
         }),
-        internal_editor,
+        project_internal_editor,
         post_editor,
         event_editor;
 
@@ -413,6 +411,34 @@ module.exports.projectDetailView = function (project_obj, events, posts, files) 
         }
     });
 
+    // Post modal section
+    var postmodal = new Ractive({
+        el: '#post-modal',
+        template: '#post-modal-template'
+    });
+
+    postmodal.on('close', function (event) {
+        event.original.preventDefault();
+        $('#event-modal').foundation('reveal', 'close');
+    });
+
+    postmodal.on('create', function (event) {
+        event.original.preventDefault();
+        post_editor.codemirror.save(); //toTextArea();
+        event.context.post.mdtext = $('#post_mdtext').val();
+
+        projects.createPost(event.context.post, '/projects/' + projects.get('project._id') + '/forum')
+        .then(function (data) {
+            flash.data.success.push(data.title + ' ble lagt til i forum');
+            projects.get('posts').unshift(data);
+            projects.set('post', {});
+            $('#post-modal').foundation('reveal', 'close');
+        }, function(xhr, status, err){
+            eventmodal.set('error', err.responseJSON.error);
+        });
+    });
+
+    // Event modal section
     eventmodal.on('close', function (event) {
         event.original.preventDefault();
         $('#event-modal').foundation('reveal', 'close');
@@ -431,7 +457,7 @@ module.exports.projectDetailView = function (project_obj, events, posts, files) 
         });
     });
 
-    // Modal section
+    // Project modal section
     projectmodal.on('close', function (event) {
         event.original.preventDefault();
         $('#project-modal').foundation('reveal', 'close');
@@ -439,7 +465,7 @@ module.exports.projectDetailView = function (project_obj, events, posts, files) 
 
     projectmodal.on('update', function (event) {
         event.original.preventDefault();
-        internal_editor.codemirror.save(); //toTextArea();
+        project_internal_editor.codemirror.save(); //toTextArea();
         event.context.project.private_mdtext = $('#private_mdtext').val();
         event.context.project.permissions = $('#permissions').val();
 
@@ -449,13 +475,18 @@ module.exports.projectDetailView = function (project_obj, events, posts, files) 
             projects.set('project', data);
             $('#project-modal').foundation('reveal', 'close');
         }, function (xhr, status, err) {
-            // error
+            eventmodal.set('error', err.responseJSON.error);
         });
     });
 
-    $(document).on('opened.fndtn.reveal', '[data-reveal]', function () {
-        if (!internal_editor) {
-            internal_editor = setup_editor('#private_mdtext');
+    $(document).on('opened.fndtn.reveal', '#project-modal[data-reveal]', function () {
+        if (!project_internal_editor) {
+            project_internal_editor = setup_editor('#private_mdtext');
+        }
+    });
+    $(document).on('opened.fndtn.reveal', '#post-modal[data-reveal]', function () {
+        if (!post_editor) {
+            post_editor = setup_editor('#post_mdtext');
         }
     });
 
@@ -504,29 +535,10 @@ module.exports.projectDetailView = function (project_obj, events, posts, files) 
         }});
     });
 
-    projects.on('togglePost', function (event) {
-        this.toggle('postExpanded');
-        setTimeout(function(){
-            if (projects.get('postExpanded')) {
-                post_editor = setup_editor('#post_mdtext');
-            }
-        }, 1);
-    });
-
-    projects.on('createPost', function (event) {
-        event.original.preventDefault();
-        post_editor.codemirror.save(); //toTextArea();
-        event.context.post.mdtext = $('#post_mdtext').val();
-
-        projects.createPost(event.context.post, event.node.action)
-        .then(function (data) {
-            flash.data.success.push(data.title + ' ble lagt til i forum');
-            projects.get('posts').unshift(data);
-            projects.set('post', {});
-            projects.fire('togglePost');
-        }, function(xhr, status, err){
-            console.error(err);
-        });
+    projects.on('newPost', function (event) {
+        postmodal.set('post', {});
+        postmodal.set('serror', undefined);
+        $('#post-modal').foundation('reveal', 'open');
     });
 
     /*
