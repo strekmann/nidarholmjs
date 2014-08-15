@@ -256,7 +256,12 @@ module.exports.user = function (req, res) {
         res.send(403, 'Forbidden');
     }
     else {
-        User.findOne({username: req.params.username}).populate({path: 'groups', model: 'Group'}).lean().exec(function (err, user) {
+        User
+        .findOne({username: req.params.username})
+        .select('-password')
+        .populate({path: 'groups', model: 'Group', select: 'name'})
+        .lean()
+        .exec(function (err, user) {
             if (err) { throw err; }
             Group.find({organization: 'nidarholm'}, function (err, groups) {
                 if (err) { throw err; }

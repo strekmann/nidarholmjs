@@ -100,7 +100,7 @@ app.configure(function(){
     // has to go after passport.session()
     app.use(function (req, res, next) {
         if (req.user) {
-            req.user.populate('groups', function (err, user) {
+            req.user.populate('groups', 'name organization', function (err, user) {
                 req.user = res.locals.active_user = user;
                 req.is_member = res.locals.is_member = _.some(req.organization.member_group.members, function (member) {
                     return member.user === req.user._id;
