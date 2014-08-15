@@ -1,19 +1,18 @@
 extends ../layouts/main
 
+block submenu
+  if is_admin
+    li
+      a(href="/users") Alle registrerte
+    li
+      a(href="/groups") Alle grupper
+    li
+      a(href="/members/new") Legg til medlem
+    li
+      a(href="/groups") Legg til gruppe
+
 block content
   section
-    if is_admin
-      div.row
-        div.columns
-          ul.right.side-nav
-            li
-              a(href="/users") Alle registrerte
-            li
-              a(href="/groups") Alle grupper
-            li
-              a(href="/members/new") Legg til medlem
-            li
-              a(href="/groups") Legg til gruppe
 
     div.row
       div.small-12.columns#memberlist

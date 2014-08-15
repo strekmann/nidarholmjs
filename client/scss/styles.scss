@@ -124,6 +124,12 @@ a:focus {
     text-decoration: underline;
 }
 
+#submenu {
+    position: absolute;
+    top: rem-calc(30px);
+    right: 0;
+}
+
 .ace_editor {
     border: rem-calc(2) solid $hr-border-color;
     min-height: 20rem;
@@ -320,10 +326,6 @@ nav.top-bar {
         float: none;
         margin: rem-calc(5px) 0;
     }
-}
-
-#submenu {
-    margin-top: 2rem;
 }
 
 @media #{$topbar-media-query} {
