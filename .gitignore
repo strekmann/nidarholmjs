@@ -1,9 +1,10 @@
 node_modules
-server/settings.js
-setup/mongo
+bower_components
+/server/settings.js
+/scripts/settings.json
+/setup/mongo
 .sass-cache
 tmp
-public
-bower_components
+/public
 /uploaded_files
 /setup/dump

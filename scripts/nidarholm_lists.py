@@ -6,7 +6,7 @@ import subprocess
 from Crypto.Cipher import AES
 from urllib2 import urlopen
 
-SECRET = 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa'
+
 BLOCK_SIZE = 16
 
 
@@ -34,16 +34,20 @@ def decrypt(edata, password):
 
 
 def request(groups):
+    with open('settings.json') as settings_file:
+        settings = json.load(settings_file)
+        password = settings['password']
+        server_address = settings['server_address']
+
     data = {'prefix': "nidarholm-", 'groups': groups}
     data = json.dumps(data)
-    encoded = encrypt(data, SECRET)
-    #url = ("http://localhost:3000/organization/updated_email_lists.json/" +
-    url = ("http://nidarholm.no/organization/updated_email_lists.json/" +
+    encoded = encrypt(data, password)
+    url = (server_address + "/organization/updated_email_lists.json/" +
            encoded)
 
     contents = urlopen(url).read()
 
-    decoded = decrypt(contents, SECRET)
+    decoded = decrypt(contents, password)
     data = json.loads(decoded)
 
     for listname, group in data.items():
