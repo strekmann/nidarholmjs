@@ -87,14 +87,19 @@ module.exports.snippetify = function (text, wanted_length) {
 module.exports.fetch_city = function (postcode, callback) {
     if (postcode && postcode.match(/\d{4}/)) {
         request
-            .get('http://adressesok.posten.no/api/v1/postal_codes.json?postal_code=' + postcode)
-            .end(function (error, result) {
+        .get('http://adressesok.posten.no/api/v1/postal_codes.json?postal_code=' + postcode)
+        .end(function (error, result) {
+            if (error) {
+                callback(error);
+            }
+            else {
                 var data = result.body;
                 if (data.status !== "ok") {
                     callback("notfound");
                 } else {
                     callback(null, data.postal_codes[0].city);
                 }
+            }
         });
     } else {
         callback("notvalid");

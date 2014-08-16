@@ -42,7 +42,7 @@ client.connect(function(err) {
       return console.error('error running query', err);
     }
 
-    async.each(result.rows, function (user, callback) {
+    async.eachSeries(result.rows, function (user, callback) {
         var promise = promise_city(user.postcode);
         var new_user = {
             name: user.first_name + ' ' + user.last_name,
@@ -77,6 +77,7 @@ client.connect(function(err) {
                 });
             }
             User.update({_id: 'nidarholm.' + user.user_id}, new_user, {upsert: true}, function (err, betauser) {
+                console.log(user.username);
                 callback(err);
             });
         });
