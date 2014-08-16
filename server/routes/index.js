@@ -1,4 +1,5 @@
-var crypto = require('crypto'),
+var _ = require('underscore'),
+    crypto = require('crypto'),
     moment = require('moment'),
     uuid = require('node-uuid'),
     nodemailer = require('nodemailer'),
