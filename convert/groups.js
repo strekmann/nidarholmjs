@@ -3,6 +3,7 @@ var pg = require('pg'),
     _ = require('underscore'),
     async = require('async'),
     toBase = require('short-mongo-id/lib/utils').toBase,
+    shortid = require('short-mongo-id'),
     config = require('../server/settings'),
     User = require('../server/models').User,
     Group = require('../server/models').Group;
@@ -31,7 +32,8 @@ client.connect(function(err) {
                 organization: 'nidarholm'
             };
 
-            Group.findOneAndUpdate({_id: toBase(group.id, 64), old_id: group.id}, g, {upsert: true}, function (err, updated) {
+            var id = shortid();
+            Group.findOneAndUpdate({_id: id, old_id: group.id}, g, {upsert: true}, function (err, updated) {
                 if (err) {
                     callback(err);
                 }
