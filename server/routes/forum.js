@@ -33,7 +33,7 @@ module.exports.index = function (req, res, next) {
         query = query.where({'permissions.public': true});
     }
     query = query.sort('-created')
-        .populate('creator', 'username name')
+        .populate('creator', 'username name profile_picture_path')
         .select('_id title created mdtext tags permissions creator');
 
     if (req.query.page) {
@@ -90,7 +90,7 @@ module.exports.create_post = function (req, res, next) {
             if (err) {
                 return next(err);
             }
-            post.populate('creator', function (err, post) {
+            post.populate('creator', 'username name profile_picture_path', function (err, post) {
                 res.json(200, post);
             });
         });
@@ -115,7 +115,7 @@ module.exports.update_post = function (req, res, next) {
                     console.error("ERR", err);
                     return next(err);
                 }
-                post.populate('creator', function (err, post) {
+                post.populate('creator', 'username name profile_picture_path', function (err, post) {
                     Activity.findOne({content_type: 'forum', content_ids: post._id}, function (err, activity) {
                         activity.title = title;
                         activity.modified = post.modified;
@@ -162,7 +162,9 @@ module.exports.get_post = function (req, res, next) {
         {'permissions.users': req.user._id},
         {'permissions.groups': { $in: req.user.groups }}
     ])
-    .populate('creator').populate('replies.creator', 'username name profile_picture_path').populate('replies.comments.creator', 'username name profile_picture_path').exec(function (err, post) {
+    .populate('creator', 'username name profile_picture_path')
+    .populate('replies.creator', 'username name profile_picture_path')
+    .populate('replies.comments.creator', 'username name profile_picture_path').exec(function (err, post) {
         if (err) {
             return next(err);
         }

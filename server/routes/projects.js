@@ -109,7 +109,6 @@ module.exports.create_project = function (req, res, next) {
         res.send(403, 'Forbidden');
     }
     else if (!req.body.end) {
-        console.log(req.body);
         res.json(400, 'Project end time is missing');
     }
     else {
@@ -285,7 +284,6 @@ module.exports.project_delete_event = function (req, res, next) {
     });
 };
 
-// TODO: Add ical format? How to find URL to it?
 module.exports.events = function (req, res, next) {
     var query;
     if (req.user) {
@@ -323,7 +321,6 @@ module.exports.events = function (req, res, next) {
 };
 
 module.exports.event = function (req, res, next) {
-    // FIXME: better permission check
     Event.findById(req.params.id)
     .or([
         {creator: req.user._id},

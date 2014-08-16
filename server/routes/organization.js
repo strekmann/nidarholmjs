@@ -15,7 +15,7 @@ var Q = require("q"),
     File = require('../models/files').File;
 
 module.exports.memberlist = function (req, res) {
-    req.organization.populate('instrument_groups', function (err, organization) {
+    req.organization.populate('instrument_groups', 'name members', function (err, organization) {
         if (err) { throw err; }
         User.populate(organization.instrument_groups, {
             path: 'members.user',
@@ -47,7 +47,10 @@ module.exports.add_user = function (req, res) {
         res.send(403, 'Forbidden');
     }
     else {
-        Group.find({organization: 'nidarholm'}).exec(function (err, groups) {
+        Group
+        .find({organization: req.organization._id})
+        .select('name')
+        .exec(function (err, groups) {
             res.render('organization/add_user', {groups: groups, meta: {title: 'Legg til nytt korpsmedlem'}});
         });
     }
@@ -58,7 +61,7 @@ module.exports.create_user = function (req, res, next) {
         res.send(403, 'Forbidden');
     }
     else {
-        Organization.findById('nidarholm').populate('member_group').exec(function (err, organization) {
+        Organization.findById(req.organization._id).populate('member_group').exec(function (err, organization) {
             if (err) { next(err); }
             if (!organization) {
                 next(new Error('Something is very wrong, nidarholm does not exist'));
@@ -121,7 +124,10 @@ module.exports.create_user = function (req, res, next) {
 module.exports.edit_user = function (req, res, next) {
     var username = req.params.username;
 
-    User.findOne({username: username}, function (err, user) {
+    User
+    .findOne({username: username})
+    .select('-password -algorithm -salt -friends')
+    .exec(function (err, user) {
         if (err) { next(err); }
         if (req.is_admin || req.user === user) {
             if (!user.country) {
@@ -180,13 +186,14 @@ module.exports.add_group = function (req, res) {
     }
     else {
         // dumb add group
+        var name = req.body.name;
 
-        var name = req.body.name,
-        organization = 'nidarholm';//req.body.organization;
-
-        Organization.findById(organization, function (err, org) {
+        Organization.findById(req.organization._id, function (err, org) {
             if (err) { throw err; }
-            Group.findOne({name: name, organization: org}, function (err, group) {
+            Group
+            .findOne({name: name, organization: org})
+            .select('name')
+            .exec(function (err, group) {
                 if (err) { throw err; }
                 if (!group) {
                     Group.create({_id: shortid(), name: name, organization: org}, function (err, group) {
@@ -245,7 +252,11 @@ module.exports.users = function (req, res) {
         res.send(403, 'Forbidden');
     }
     else {
-        User.find().sort('name').exec(function (err, users) {
+        User
+        .find()
+        .select('username name')
+        .sort('name')
+        .exec(function (err, users) {
             res.render('organization/users', {users: users, meta: {title: 'Alle brukere'}});
         });
     }
@@ -258,7 +269,7 @@ module.exports.user = function (req, res) {
     else {
         User
         .findOne({username: req.params.username})
-        .select('-password')
+        .select('-password -friends')
         .populate({path: 'groups', model: 'Group', select: 'name'})
         .lean()
         .exec(function (err, user) {
@@ -273,9 +284,14 @@ module.exports.user = function (req, res) {
 
 module.exports.user_pictures = function (req, res, next) {
     if (req.params.username === req.user.username || req.is_admin) {
-        User.findOne({username: req.params.username}, function (err, user) {
+        User
+        .findOne({username: req.params.username})
+        .select('_id')
+        .exec(function (err, user) {
             if (err) { throw err; }
-            File.find({creator: user._id, tags: config.profile_picture_tag}, function (err, files) {
+            File
+            .find({creator: user._id, tags: config.profile_picture_tag})
+            .exec(function (err, files) {
                 if (err) { throw err; }
                 files.reverse();
                 res.json(200, files);
@@ -325,7 +341,9 @@ module.exports.group_add_user = function (req, res, next) {
         var groupid = req.params.id,
             username = req.body.username;
 
-        User.findOne({username: username}, function (err, user) {
+        User.findOne({username: username})
+            .select('username name groups')
+            .exec(function (err, user) {
             if (err) { throw err; }
             Group.findById(groupid, function (err, group) {
                 if (err) { return next(err); }
@@ -341,7 +359,7 @@ module.exports.group_add_user = function (req, res, next) {
                         if (err) { throw err; }
                         group.members.push({user: user._id});
                         group.save(function (err) {
-                            res.json(200, user);
+                            res.json(200, _.omit(user, 'groups'));
                         });
                     });
                 }
@@ -418,12 +436,15 @@ module.exports.groups = function (req, res, next) {
         res.send(403);
     }
     else {
-        var name = req.body.name,
-            organization_id = 'nidarholm';//req.body.organization;
+        var name = req.body.name;
 
-        Organization.findById(organization_id).populate('instrument_groups').exec(function (err, organization) {
+        Organization.findById(req.organization._id)
+        .populate('instrument_groups', 'name')
+        .exec(function (err, organization) {
             if (err) { throw err; }
-            Group.find(function (err, groups) {
+            Group.find()
+            .select('name')
+            .exec(function (err, groups) {
                 if (err) { next(err); }
                 res.render('organization/groups', {
                     groups: groups,
@@ -436,16 +457,20 @@ module.exports.groups = function (req, res, next) {
 };
 
 module.exports.group = function (req, res, next){
+    // TODO: If more organizations, change the user selection
     var groupid = req.params.id;
 
     User.find().select('username name').lean().exec(function (err, users) {
         if (err) { next(err); }
         Group.findById(groupid)
-            .populate('members.user')
-            //.select('-members.user.password -members.user.salt') // does not work
+            .populate('members.user', 'name username')
             .exec(function (err, group) {
                 if (err) { next(err); }
-                res.render('organization/group', {group: group, users: users, meta: {title: group.name}});
+                res.render('organization/group', {
+                    group: group,
+                    users: users,
+                    meta: {title: group.name}
+                });
         });
     });
 };
@@ -503,7 +528,7 @@ module.exports.order_instrument_groups = function (req, res, next) {
             organization.instrument_groups = group_order;
             organization.save(function (err) {
                 if (err) { next(err); }
-                res.json(200);
+                res.json(200, {});
             });
         });
     }
@@ -563,13 +588,20 @@ module.exports.set_profile_picture = function (req, res, next) {
     }
 };
 module.exports.contacts = function (req, res, next) {
+    // TODO: Try to merge the two populate calls
+    // Does the following actually work?
     req.organization.populate('contact_groups', function (err, organization) {
-        organization.populate({path: 'contact_groups.members.user', model: 'User'}, function (err, organization) {
-            if (err) {
-                next(new Error(err));
-            }
-            res.render('organization/contact', {organization: organization, meta: {title: 'Kontakt'}});
-        });
+        organization.populate(
+            {path: 'contact_groups.members.user', model: 'User'},
+            function (err, organization) {
+                if (err) {
+                    next(new Error(err));
+                }
+                res.render('organization/contact', {
+                    organization: organization,
+                    meta: {title: 'Kontakt'}
+                });
+            });
     });
 };
 

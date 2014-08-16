@@ -75,7 +75,8 @@ module.exports.index = function(req, res) {
         });
     }
     else {
-        query = Event.find({'permissions.public': true})
+        query = Event
+        .find({'permissions.public': true})
         .where({start: {$gt: moment().startOf('day')}})
         .sort('start')
         .limit(20);
@@ -165,7 +166,7 @@ module.exports.register = function(req, res) {
                         user.algorithm = algorithm;
                         user.save(function (err) {
                             if (err) {
-                                console.log("Error saving user:", err);
+                                console.error("Error saving user:", err);
                             } else {
                                 // Log in newly registered user automatically
                                 req.logIn(user, function (err) {
