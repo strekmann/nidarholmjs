@@ -710,7 +710,7 @@ module.exports.encrypted_mailman_lists = function (req, res, next) {
                         }
                         else {
                             var emails = _.reduce(g.members, function (list, member) {
-                                if (member.user.email && _.find(member.user.groups, function (group) {
+                                if (member.user.email && member.user.in_list && _.find(member.user.groups, function (group) {
                                     return group === req.organization.member_group._id;
                                 })) {
                                     list.push(member.user.email);
