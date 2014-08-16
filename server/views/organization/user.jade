@@ -117,15 +117,6 @@ block content
           p {{reskontro}}
           hr
           | {{{marked(.membership_history)}}}
-          hr
-
-        p Brukernavn <code>{{username}}</code>, passordalgoritme: <code>{{algorithm}}</code>, krypteringsstyrke: <code>{{length(salt)}}</code>
-        | {{#is_active}}
-        | Aktiv
-        | {{/is_active}}
-        | {{#is_admin}}
-        | Admin
-        | {{/is_admin}}
 
       .medium-3.columns.hide-for-small-only
         a(href="/users/{{username}}/picture" on-click="changeProfilePicture")
@@ -172,6 +163,24 @@ block content
                 .columns
                   //button.reset.secondary(type='reset') Avbryt
                   button.tiny Legg til
+
+        p Brukernavn <code>{{username}}</code>, passordalgoritme: <code>{{algorithm}}</code>, krypteringsstyrke: <code>{{length(salt)}}</code>
+        | {{#is_active}}
+        | Aktiv brukerkonto
+        | {{/is_active}}
+        | {{^is_active}}
+        | Blokkert brukerkonto
+        | {{/is_active}}
+        | {{#is_admin}}
+        | — Admin
+        | {{/is_admin}}
+        | {{#in_list}}
+        | — I medlemslista
+        | {{/in_list}}
+        | {{#on_leave}}
+        | — Har permisjon
+        | {{/on_leave}}
+
 
       .hide-for-small-only
         .medium-3.columns

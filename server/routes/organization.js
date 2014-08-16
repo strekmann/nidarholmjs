@@ -169,6 +169,16 @@ module.exports.update_user = function (req, res, next) {
         if (req.body.membership_history) {
             changes.membership_history = req.body.membership_history;
         }
+        if (req.body.in_list) {
+            changes.in_list = true;
+        } else {
+            changes.in_list = false;
+        }
+        if (req.body.on_leave) {
+            changes.on_leave = true;
+        } else {
+            changes.on_leave = false;
+        }
 
         User.findByIdAndUpdate(id, changes, function (err, user) {
             if (err) { next(err); }

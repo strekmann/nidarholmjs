@@ -64,6 +64,16 @@ client.connect(function(err) {
                 website: user.personal_website
             }
         };
+        if (new_user.membership_status && new_user.membership_status < 4) {
+            new_user.in_list = true;
+        } else {
+            new_user.in_list = false;
+        }
+        if (new_user.membership_status && new_user.membership_status === 4) {
+            new_user.on_leave = true;
+        } else {
+            new_user.on_leave = false;
+        }
         promise.then(function(city) {
             if (city) {
                 new_user.city = city;

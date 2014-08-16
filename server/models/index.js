@@ -28,7 +28,7 @@ var UserSchema = new mongoose.Schema({
     salt: {type: String},
     groups: [{type: String, ref: 'Group'}],
     friends: [{type: String, ref: 'User'}],
-    is_active: {type: Boolean, 'default': true},
+    is_active: {type: Boolean, 'default': true}, // just for blocking users
     is_admin: {type: Boolean, 'default': false},
     created: {type: Date, required: true, 'default': Date.now},
     nmf_id: {type: String},
@@ -47,6 +47,9 @@ var UserSchema = new mongoose.Schema({
     profile_picture: {type: String, ref: 'File'},
     profile_picture_path: {type: String},
     membership_status: {type: Number},
+    // from membership_status
+    in_list: {type: Boolean, required: true, default: true},
+    on_leave: {type: Boolean, required: true, default: false},
     social_media: {
         website: {type: String},
         blog: {type: String},
