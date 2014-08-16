@@ -107,8 +107,8 @@ app.configure(function(){
     // has to go after passport.session()
     app.use(function (req, res, next) {
         if (req.user) {
-            req.user.populate('groups', '_id', function (err, user) {
-                // or do we need the name or organization of the groups?
+            req.user.populate('groups', 'name', function (err, user) {
+                // or do we need the name or organization of the groups? At least name
                 req.user = res.locals.active_user = user;
                 req.is_member = res.locals.is_member = _.some(req.organization.member_group.members, function (member) {
                     return member.user === req.user._id;
