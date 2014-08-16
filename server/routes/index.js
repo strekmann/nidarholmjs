@@ -15,10 +15,12 @@ module.exports.index = function(req, res) {
     var query,
         meta = {
             title: req.organization.name,
-            description: req.organization.description[req.lang],
             image: null,
             type: 'website'
         };
+        if (req.organization.description && _.has(req.organization.description, req.lang)) {
+            meta.description = req.organization.description[req.lang];
+        }
     if (req.user) {  // we know the user
         query = Activity.find().or([
             {'permissions.public': true},
