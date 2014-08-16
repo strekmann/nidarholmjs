@@ -124,10 +124,12 @@ a:focus {
     text-decoration: underline;
 }
 
-#submenu {
-    position: absolute;
-    top: rem-calc(30px);
-    right: 0;
+@media #{$medium-up} {
+    #submenu {
+        position: absolute;
+        top: rem-calc(30px);
+        right: 0;
+    }
 }
 
 .ace_editor {
