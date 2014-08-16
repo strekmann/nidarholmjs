@@ -27,7 +27,8 @@ client.connect(function(err) {
             var g = {
                 name: group.name,
                 old_id: group.id,
-                members: members
+                members: members,
+                organization: 'nidarholm'
             };
 
             Group.findOneAndUpdate({_id: toBase(group.id, 64), old_id: group.id}, g, {upsert: true}, function (err, updated) {
