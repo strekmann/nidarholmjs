@@ -285,6 +285,7 @@ app.delete('/projects/:project_id/forum/:post_id', project_routes.project_delete
 app.post('/projects/:id/files', project_routes.project_create_file);
 app.get('/events', project_routes.events);
 app.get('/events/public.ics', project_routes.ical_events);
+app.get('/events/export.ics', project_routes.ical_events);
 app.get('/events/:id', project_routes.event);
 app.put('/events/:id', project_routes.update_event);
 
