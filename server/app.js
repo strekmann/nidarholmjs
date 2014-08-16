@@ -72,6 +72,10 @@ app.configure(function(){
         .exec(function (err, organization) {
             if (err) { next(err); }
             if (organization) {
+                // is it a hack?
+                if (!organization.description) {
+                    organization.description = {};
+                }
                 req.organization = organization;
                 res.locals.organization = organization;
                 res.locals.address = req.protocol + "://" + organization.domain;
