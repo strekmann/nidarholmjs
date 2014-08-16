@@ -195,6 +195,9 @@ var core_routes = require('./routes/index');
 
 app.get('/', core_routes.index);
 
+app.get('/login/reset/:code', core_routes.forgotten_password);
+app.get('/login/reset', core_routes.forgotten_password);
+app.post('/login/reset', core_routes.reset_password);
 app.get('/login', core_routes.login);
 app.post('/login',
          app.passport.authenticate('local', {

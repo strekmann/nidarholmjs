@@ -2,6 +2,12 @@ var mongoose = require('mongoose'),
     config = require('../settings'),
     marked = require('marked');
 
+var PasswordCode = new mongoose.Schema({
+    _id: {type: String, unique: true, required: true}, //uuid
+    user: {type: String, required: true},
+    created: {type: Date, required: true, 'default': Date.now}
+});
+
 var GroupSchema = new mongoose.Schema({
     _id: {type: String, unique: true, required: true},
     name: {type: String, trim: true, required: true},
@@ -120,6 +126,7 @@ module.exports = {
         user: UserSchema,
         group: GroupSchema
     },
+    PasswordCode: mongoose.model('PasswordCode', PasswordCode),
     User: mongoose.model('User', UserSchema),
     Group: mongoose.model('Group', GroupSchema),
     Organization: mongoose.model('Organization', OrganizationSchema),

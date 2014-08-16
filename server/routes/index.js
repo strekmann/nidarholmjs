@@ -1,7 +1,10 @@
 var crypto = require('crypto'),
     moment = require('moment'),
+    uuid = require('node-uuid'),
+    nodemailer = require('nodemailer'),
     config = require('../settings'),
     User = require('../models').User,
+    PasswordCode = require('../models').PasswordCode,
     ForumPost = require('../models/forum').ForumPost,
     Activity = require('../models').Activity,
     Project = require('../models/projects').Project,
@@ -188,5 +191,107 @@ module.exports.register = function(req, res) {
     } else {
         req.flash('error', 'Information missing');
         res.redirect('/login');
+    }
+};
+
+module.exports.forgotten_password = function (req, res) { // GET
+    if (req.params.code) {
+        // step 3 code sent back to server. will verify code, login user and redirect to new password form
+        PasswordCode.findById(req.params.code, function (err, code) {
+            if (err) {
+                req.flash('error', err);
+                res.redirect('/login/reset');
+            }
+            if (!code || code.created < moment().subtract('hours', 1)) {
+                req.flash('error', 'Passordkoden er ugyldig. Du får prøve å lage en ny.');
+                res.redirect('/login/reset');
+            }
+            // Log in automatically
+            User.findById(code.user, function (err, user) {
+                if (err) {
+                    req.flash('error', 'Fant ikke brukeren');
+                    res.redirect('/login/reset');
+                }
+                else {
+                    req.logIn(user, function (err) {
+                        if(!err){
+                            res.redirect('/login/reset');
+                        } else {
+                            req.flash('error', 'Klarte ikke å logge deg inn');
+                            res.redirect('/login/reset');
+                        }
+                    });
+                }
+            });
+        });
+    } else {
+        // step 1 will present user with email password form
+        var error;
+        if (!config.auth.smtp.host) {
+            error = 'Dette vi ikke virke, da serveren ikke kan sende epost nå.';
+        }
+        res.render('auth/newpassword', {error: error});
+    }
+};
+
+module.exports.reset_password = function (req, res) { // POST
+    if (req.user) {
+        // Check if passwords are equal
+        var password1 = req.body.password1.trim();
+        var password2 = req.body.password2.trim();
+        if (password1 !== password2) {
+            req.flash('error', 'Passwords not equal');
+            res.redirect('/login/reset');
+        } else {
+            // Hash password and save password, salt and hashing algorithm
+            var algorithm = 'sha1';
+            var salt = crypto.randomBytes(128).toString('base64');
+            var hashedPassword = crypto.createHash(algorithm);
+            hashedPassword.update(salt);
+            hashedPassword.update(password1);
+
+            req.user.password = hashedPassword.digest('hex');
+            req.user.salt = salt;
+            req.user.algorithm = algorithm;
+            req.user.save(function (err) {
+                if (err) {
+                    console.error("Error saving user:", err);
+                } else {
+                    req.flash('info', 'Det nye passordet er tatt i bruk.');
+                    res.redirect('/');
+                }
+            });
+        }
+    } else {
+        if (req.body.email) {
+            User.findOne({email: req.body.email}, function (err, user) {
+                var code = new PasswordCode();
+                code._id = uuid.v4();
+                code.user = user._id;
+                code.save(function (err) {
+                    if (config.auth.smtp.host) {
+                        var transporter = nodemailer.createTransport(config.auth.smtp);
+                        var mail_options = {
+                            from: config.auth.smtp.noreply_address,
+                            to: user.name + '<' + user.email + '>',
+                            subject: 'Nullstill passord',
+                            text: 'Hei ' + user.name + '.\r\n\r\nNoen, forhåpentligvis du, har bedt om å nullstille passordet ditt. Hvis du ikke vil nullstille det, kan du se bort fra denne eposten. Hvis du vil nullstille passordet, kan du følge lenka under for å sette nytt passord:\r\n\r\n' + res.locals.address + '/login/reset/' + code._id,
+                        };
+                        transporter.sendMail(mail_options, function(error, info){
+                            if (error) {
+                                req.flash('error', 'Epost fungerte ikke');
+                                res.redirect('/login/reset');
+                            } else {
+                                res.render('auth/newpassword', {email: user.email, debug: info.response});
+                            }
+                        });
+                    }
+                });
+            });
+        }
+        else {
+            req.flash("Email not sent");
+            res.redirect('/login/reset');
+        }
     }
 };
