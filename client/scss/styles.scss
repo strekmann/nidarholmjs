@@ -538,12 +538,12 @@ nav.top-bar {
 #activities {
     list-style: none;
     margin-left: 0;
-    h2 {
-        font-size: 1.4rem;
-        margin-top: 1.4rem;
-    }
     p {
         margin-bottom: 0;
+    }
+    h1 {
+        margin-top: rem-calc(20px);
+        margin-bottom: rem-calc(5px);
     }
     .contributors {
         margin-top: 5px;

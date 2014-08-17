@@ -66,9 +66,8 @@ block content
     | {{#activities}}
     li
       | {{#content_type == "upload"}}
-      h2
-        i.fa.fa-upload
-        | &nbsp;
+      h1
+        i.fa.fa-upload.right
         a(href='/files/{{content_ids.0}}')
           | {{title}}
       | {{#content.images.length}}
@@ -92,9 +91,8 @@ block content
       | {{/content.non_images.length}}
       | {{/content_type}}
       | {{#content_type == "forum"}}
-      h2
-        i.fa.fa-comments-o
-        | &nbsp;
+      h1
+        i.fa.fa-comments-o.right
         a(href='/forum/{{content_ids.0}}')
           | {{title}}
       .row
