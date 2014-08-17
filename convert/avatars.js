@@ -20,7 +20,7 @@ client.connect(function(err) {
       return console.error('error running query', err);
     }
 
-    async.each(result.rows, function (avatar, callback) {
+    async.eachLimit(result.rows, 100, function (avatar, callback) {
         var p = path.join(root_path, avatar.avatar);
         var exists = fs.existsSync(p);
         var basename = path.basename(avatar.avatar);
