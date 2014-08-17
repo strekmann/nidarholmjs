@@ -282,7 +282,7 @@ var project_routes = require('./routes/projects');
 app.get('/projects', project_routes.index);
 app.post('/projects', project_routes.create_project);
 //app.get('/:year(\\d{4})', project_routes.year);
-//app.get('/:year(\\d{4})/:tag', project_routes.project);
+app.get('/:year(\\d{4})/:tag', project_routes.project);
 app.put('/projects/:id', project_routes.update_project);
 app.delete('/projects/:id', project_routes.delete_project);
 app.post('/projects/:id/events', project_routes.project_create_event);

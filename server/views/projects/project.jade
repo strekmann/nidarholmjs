@@ -12,73 +12,35 @@ block content
 
   #project
     .row
-      .medium-8.columns
+      .medium-6.columns
         h1= project.title
         .meta
           .row
             .columns
-              = project.start
-              = project.end
+              if project.start
+                = shortdate(project.start)
+                | – 
+              = shortdate(project.end)
         .content
-          if project.private_mdtext
-            .row
-              .columns
-                != marked(project.private_mdtext)
           if project.public_mdtext
             .row
               .columns
                 != marked(project.public_mdtext)
 
-        #files
-          noscript
-            form.dropzone(method="post" action="/projects/" + project._id + "/files" enctype="multipart/form-data")
-              .fallback
-                input(type="file" name="file")
-                button Send
-              for file in files
-                div.outer.file(data-id=file._id)
-                  div.meta
-                    strong= file.filename
-                    = file.created
-                    if file.permissions.public
-                      i.fa.fa-globe
-                    else if 'medlemmer' in file.permissions.groups
-                      i.fa.fa-users
-                    else if !file.permissions.public && file.permissions.groups.length === 0 && file.permissions.users.length === 0
-                      i.fa.fa-user
-                    a.edit(href='#')
-                      i.fa.fa-edit
-
-        #forum
-          for post in posts
-            article
-              header
-                h1
-                  a(href="/forum/" + post._id)= post.title
-                .meta
-                  .row
-                    .columns.small-9
-                      span.byline
-                        a(href="/users/" + post.creator._id)= post.creator.name
-                      time.created(datetime=isodate(post.created))= shortdate(post.created)
-                    .columns.small-3.text-right.creator
-                      i.fa.fa-globe(title="Tilgjengelig for alle")
-                      i.fa.fa-users(title="Tilgjengelig for alle medlemmer")
-                      i.fa.fa-user(title="Tilgjengelig bare for deg")
-
-                .content
-                  .row
-                    .columns
-                      != marked(post.mdtext)
-
-      .medium-4.columns
+      .medium-6.columns
         #events
           for event in events
             .event
               h3= event.title
+                if event.location
+                  small
+                    | , 
+                    = event.location
               .meta
-                = shortdate(event.start)
-                = shortdate(event.end)
+                = longdate(event.start)
+                if event.end
+                  | – 
+                  = longdate(event.end)
 
   script#project-modal-template(type="text/ractive")
     | {{#error}}

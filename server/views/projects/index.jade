@@ -8,7 +8,7 @@ block content
         for project in projects
           .project(data-id=project.id)
             h2
-              a(href="/projects/" + project._id)= project.title
+              a(href="/" + project.year + "/" + project.tag)= project.title
             .meta
               .row
                 .columns
@@ -23,7 +23,7 @@ block content
         for project in previous_projects
           .project(data-id=project.id)
             h2
-              a(href="/projects/" + project._id)= project.title
+              a(href="/" + project.year + "/" + project.tag)= project.title
             .meta
               .row
                 .columns
