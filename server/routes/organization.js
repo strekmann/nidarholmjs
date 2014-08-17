@@ -289,6 +289,9 @@ module.exports.user = function (req, res) {
         .lean()
         .exec(function (err, user) {
             if (err) { throw err; }
+            if (!user) {
+                res.render('404', {error: "Fant ikke personen"});
+            }
             Group.find({organization: 'nidarholm'}, function (err, groups) {
                 if (err) { throw err; }
                 res.render('organization/user', {user: user, groups: groups, meta: {title: user.name}});

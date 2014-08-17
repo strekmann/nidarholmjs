@@ -220,7 +220,7 @@ block content
           .row
             .columns.small-9
               span.byline
-                a(href="/users/{{creator._id}}") {{.creator.name}}
+                a(href="/users/{{creator.username}}") {{.creator.name}}
               time.created(datetime="{{isodatetime(.created)}}") {{shortdate(.created)}}
             .columns.small-3.text-right.creator
 

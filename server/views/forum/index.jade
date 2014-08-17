@@ -16,7 +16,7 @@ block content
                 .row
                   .columns.small-9
                     span.byline
-                      a(href="/users/" + post.creator._id)= post.creator.name
+                      a(href="/users/" + post.creator.username)= post.creator.name
                     time.created(datetime=post.created)= post.created
             .content
               .row
@@ -71,7 +71,7 @@ block content
           .row
             .columns.small-9
               span.byline
-                a(href="/users/{{creator._id}}") {{creator.name}}
+                a(href="/users/{{creator.username}}") {{creator.name}}
               time.created(datetime="{{isodate(created)}}") {{shortdate(created)}}
               | {{#tags}}
               | {{#.}}

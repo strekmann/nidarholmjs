@@ -52,7 +52,7 @@ block content
                     .row
                       .columns
                         span.byline
-                          a(href="/users/" + post.creator._id)= post.creator.name
+                          a(href="/users/" + post.creator.username)= post.creator.name
                         time.created(datetime=post.created)= shortdate(post.created)
                         for tag in post.tags
                           if tag != news_tag
