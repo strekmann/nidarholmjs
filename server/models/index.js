@@ -91,7 +91,8 @@ var OrganizationSchema = new mongoose.Schema({
         facebook: {type: String},
         instagram: {type: String}
     },
-    description: {} // mixed hash of locale keys and values
+    description: {}, // mixed hash of locale keys and values
+    tracking_code: {type: String}
 });
 
 OrganizationSchema.virtual('encoded_email').get(function () {

@@ -660,6 +660,7 @@ module.exports.update_organization = function (req, res, next) {
             facebook = req.body.facebook,
             twitter = req.body.twitter,
             description = req.body.description;
+            tracking_code = req.body.tracking_code;
 
 
         var org = req.organization;
@@ -677,6 +678,7 @@ module.exports.update_organization = function (req, res, next) {
         org.map_url = map_url;
         org.social_media.facebook = facebook;
         org.social_media.twitter = twitter;
+        org.tracking_code = tracking_code;
 
         // could probably take what we get, or should we check it?
         _.each(config.languages, function (locale) {

@@ -72,7 +72,7 @@ block content
 
           .row
             .columns
-              label(for="contact_text") Tekst
+              label(for="contact_text") Karttekst
               textarea#contact_text(name="contact_text")= organization.contact_text
 
           each locale in locales
@@ -83,6 +83,11 @@ block content
                   | &nbsp;
                   = locale
                 textarea(id="description_"+locale name="description["+locale+"]")= organization.description[locale]
+
+          .row
+            .columns
+              label(for="tracking_code") Sproringskode for Piwik eller andre sporingstjenester
+              textarea#tracking_code(name="tracking_code")= organization.tracking_code
 
           .row
             .columns
