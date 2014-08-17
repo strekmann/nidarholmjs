@@ -50,6 +50,7 @@ client.connect(function(err) {
                                      {
                                          tags: util.tagify(file.tags),
                                          permissions: permissions,
+                                         created: file.uploaded,
                                          do_delete: false,
                                          do_create_duplicates_in_database: false
                                      }, function (err, f) {
