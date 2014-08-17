@@ -4,21 +4,22 @@ block content
   .row
     .columns
       #projects
-        h1 Kommende prosjekter
-        for project in projects
-          .project(data-id=project.id)
-            h2
-              a(href="/" + project.year + "/" + project.tag)= project.title
-            .meta
-              .row
-                .columns
-                  if project.start
-                    = shortdate(project.start)
-                    | – 
-                  = shortdate(project.end)
+        if projects.length
+          h1 Kommende prosjekter
+          for project in projects
+            .project(data-id=project.id)
+              h2
+                a(href="/" + project.year + "/" + project.tag)= project.title
+              .meta
+                .row
+                  .columns
+                    if project.start
+                      = shortdate(project.start)
+                      | – 
+                    = shortdate(project.end)
 
-                  if project.mdtext
-                    != marked(project.public_mdtext)
+                    if project.mdtext
+                      != marked(project.public_mdtext)
         h1 Tidligere prosjekter
         for project in previous_projects
           .project(data-id=project.id)
@@ -82,10 +83,11 @@ block content
         button.small.secondary(type="reset" on-click="toggleNew") Avbryt
     | {{/expanded}}
 
-    h1 Kommende prosjekter
-    | {{#projects}}
-    |   {{>project}}
-    | {{/projects}}
+    if projects.length
+      h1 Kommende prosjekter
+      | {{#projects}}
+      |   {{>project}}
+      | {{/projects}}
 
     h1 Tidligere prosjekter
     | {{#previous_projects}}
