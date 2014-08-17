@@ -39,6 +39,9 @@ block content
           ul#activities
 
         else
+          if meta.description
+            != marked(meta.description)
+
           #news
             for post in posts
               article.post
