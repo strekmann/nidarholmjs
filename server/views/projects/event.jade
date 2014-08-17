@@ -95,5 +95,5 @@ block javascript
     | require('s7n').projects.eventView(
     != JSON.stringify(event)
     |,
-    != JSON.stringify(active_user)
+    != JSON.stringify(active_user) || "null"
     | );

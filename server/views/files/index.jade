@@ -96,7 +96,7 @@ block javascript
     | var ractive = require('s7n').files.fileListView(
     != JSON.stringify(files)
     | ,
-    != JSON.stringify(active_user)
+    != JSON.stringify(active_user) || "null"
     | ,
     != JSON.stringify(organization)
     | );
