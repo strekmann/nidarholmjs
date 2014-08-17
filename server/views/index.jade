@@ -9,7 +9,7 @@ block content
             for event in events
               li
                 a.event(href="/events/"+event.id)
-                  = moment(event.start).format('Do MMMM')
+                  b= moment(event.start).format('Do MMMM')
                   br
                   = event.title
 
@@ -19,7 +19,7 @@ block content
                 for event in events
                   li
                     a.event(href="/events/"+event.id)
-                      = moment(event.start).format('Do MMMM')
+                      b= moment(event.start).format('Do MMM')
                       br
                       = event.title
 
@@ -29,7 +29,7 @@ block content
               li
                 a.project(href="/projects/"+project._id)
                   p
-                    = project.title
+                    b= project.title
                     br
                     = shortdate(project.end)
 
