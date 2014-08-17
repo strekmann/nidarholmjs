@@ -4,11 +4,37 @@ block content
   .row
     .columns
       #projects
+        h1 Kommende prosjekter
         for project in projects
           .project(data-id=project.id)
-            h1
+            h2
               a(href="/projects/" + project._id)= project.title
-            p= project.end
+            .meta
+              .row
+                .columns
+                  if project.start
+                    = shortdate(project.start)
+                    | – 
+                  = shortdate(project.end)
+
+                  if project.mdtext
+                    != marked(project.public_mdtext)
+        h1 Tidligere prosjekter
+        for project in previous_projects
+          .project(data-id=project.id)
+            h2
+              a(href="/projects/" + project._id)= project.title
+            .meta
+              .row
+                .columns
+                  if project.start
+                    = shortdate(project.start)
+                    | – 
+                  = shortdate(project.end)
+
+                  if project.mdtext
+                    != marked(project.public_mdtext)
+
 
   script#template(type="text/ractive")
     if active_user

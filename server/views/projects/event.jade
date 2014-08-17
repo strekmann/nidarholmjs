@@ -30,19 +30,23 @@ block content
           | Rediger
     h1 {{event.title}}
       small
-        | &nbsp
-        | {{event.tags}}
+        | {{#location}}
+        | , {{location}}
+        | {{/location}}
+        | {{ago(start)}}
 
     .meta
       .row
         .columns.small-9
           | {{{daterange(event.start, event.end)}}}
-
+          | {{#tags}}
+          | {{#.}}
+          a(href="{{taglink(.)}}")
+            i.fa.fa-link
+            | &nbsp;{{.}}
+          | {{/.}}
+          | {{/tags}}
         .columns.small-3.text-right
-          if event.location
-            i.fa.fa-map-marker
-            | &nbsp;
-            | {{event.location}}
           permissionicons(permissions="{{event.permissions}}")
 
     .content

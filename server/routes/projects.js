@@ -31,11 +31,7 @@ module.exports.index = function (req, res, next) {
     }
     query.where({end: {$gt: moment()}});
     query.sort('end')
-        .populate('creator', 'username name')
-        .limit(20);
-    if (req.query.page) {
-        query = query.skip(20 * req.query.page);
-    }
+        .populate('creator', 'username name');
     query.exec(function (err, projects) {
         if (err) {
             throw err;
@@ -52,9 +48,8 @@ module.exports.index = function (req, res, next) {
                     ]);
                 }
                 else {
-                    query = Project.find().or({'permissions.public': true});
+                    query = Project.find({'permissions.public': true});
                 }
-                query.where({end: {$lt: moment()}, year: moment().year()});
                 query.sort('-end')
                     .populate('creator', 'username name');
 
@@ -77,6 +72,7 @@ module.exports.index = function (req, res, next) {
     });
 };
 
+/*
 module.exports.year = function (req, res, next) {
     var year = req.params.year;
 
@@ -103,6 +99,7 @@ module.exports.year = function (req, res, next) {
         }
     });
 };
+*/
 
 module.exports.create_project = function (req, res, next) {
     if (!req.is_member) {

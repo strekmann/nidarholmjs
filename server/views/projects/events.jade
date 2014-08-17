@@ -26,19 +26,23 @@ block content
       header
         h1
           a(href="/events/{{_id}}") {{title}}
-          .right
-            small
-              | {{#location}}
-              | {{location}}
-              | {{/location}}
-              | {{ago(start)}}
+          small
+            | , 
+            | {{#location}}
+            | {{location}}
+            | {{/location}}
+            | {{ago(start)}}
         .meta
           .row
             .columns.small-9
-              span.byline
-                | {{{daterange(start, end)}}}
+              | {{{daterange(start, end)}}}
               | {{#tags}}
-              a(href="{{taglink(.)}}") {{.}}
+              | {{#.}}
+              i.fa.fa-link
+              | &nbsp;
+              a(href="{{taglink(.)}}")
+                | {{.}}
+              | {{/.}}
               | {{/tags}}
             .columns.small-3.text-right
               permissionicons(permissions="{{permissions}}")
