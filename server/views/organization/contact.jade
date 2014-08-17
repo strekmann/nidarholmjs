@@ -12,19 +12,19 @@ block content
         h1 Kontakt
         .row
           .columns
-            h5 Epost
+            h3 Epost
             .email!= marked('<'+organization.email+'>')
 
         if organization.visitor_address
           .row
             .columns
-              h5 Besøksadresse
+              h3 Besøksadresse
               p= organization.visitor_address
 
         if organization.mail_address
           .row
             .columns
-              h5 Postadresse
+              h3 Postadresse
               p
                 = organization.name
                 br
@@ -37,13 +37,13 @@ block content
         if organization.organization_number
           .row
             .columns
-              h5 Organisasjonsnummer
+              h3 Organisasjonsnummer
               p= organization.organization_number
 
         if organization.public_bank_account
           .row
             .columns
-              h5 Kontonummer
+              h3 Kontonummer
               p= organization.public_bank_account
 
       .columns.medium-9
@@ -64,7 +64,7 @@ block content
           ul.large-block-grid-4.medium-block-grid-3.small-block-grid-1
             for member in group.members
               li.member
-                h5= member.user.name
+                h3= member.user.name
                   if member.role
                     br
                     small= member.role.title
