@@ -318,13 +318,18 @@ module.exports.events = function (req, res, next) {
 };
 
 module.exports.event = function (req, res, next) {
-    Event.findById(req.params.id)
-    .or([
-        {creator: req.user._id},
-        {'permissions.public': true},
-        {'permissions.users': req.user._id},
-        {'permissions.groups': { $in: req.user.groups }}
-    ]).exec(function (err, event) {
+    if (req.user) {
+        query = Event.findById(req.params.id).or([
+            {creator: req.user._id},
+            {'permissions.public': true},
+            {'permissions.users': req.user._id},
+            {'permissions.groups': { $in: req.user.groups }}
+        ]);
+    }
+    else {
+        query = Event.findById(req.params.id).where({'permissions.public': true});
+    }
+    query.exec(function (err, event) {
         if (err) {
             return next(err);
         }

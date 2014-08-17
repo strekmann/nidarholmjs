@@ -79,7 +79,9 @@ var Project = Ractive.extend({
             }
         },
         ago: function (date) {
-            return moment(date).fromNow();
+            if (date) {
+                return moment(date).fromNow();
+            }
         },
         shortdate: function(date){
             if (date) {

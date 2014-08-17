@@ -5,18 +5,17 @@ block content
     .columns
       #event
         h1= event.title
-          small
+          if event.location
+            small
+              | , 
+              = event.location
+        .meta
+          p= moment(event.start).format('LLL')
+            if event.end
+              | &nbsp;–&nbsp;
+              = moment(event.end).format('LLL')
             | &nbsp;
             = event.tags
-        p= moment(event.start).format('LLL')
-          if event.end
-            | &nbsp;–&nbsp;
-            = moment(event.end).format('LLL')
-          if event.location
-            | &nbsp;
-            i.fa.fa-map-marker
-            | &nbsp;
-            = event.location
         if event.mdtext
           != marked(event.mdtext)
 
@@ -33,7 +32,7 @@ block content
         | {{#location}}
         | , {{location}}
         | {{/location}}
-        | {{ago(start)}}
+        | &nbsp;{{ago(start)}}
 
     .meta
       .row
