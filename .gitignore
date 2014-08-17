@@ -6,5 +6,6 @@ bower_components
 .sass-cache
 tmp
 /public
+/backup
 /uploaded_files
 /setup/dump
