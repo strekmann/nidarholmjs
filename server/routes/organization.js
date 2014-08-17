@@ -481,6 +481,14 @@ module.exports.group = function (req, res, next){
             .populate('members.user', 'name username')
             .exec(function (err, group) {
                 if (err) { next(err); }
+                group.members.sort(function (a, b) { return a.user.name.localeCompare(b.user.name); });
+                // take away users from dropdown list that does not have a real name
+                users = _.filter(users, function (user) {
+                    return user.name.replace(/\W/,'').length;
+                });
+                users.sort(function(a, b) {
+                    return a.name.localeCompare(b.name);
+                });
                 res.render('organization/group', {
                     group: group,
                     users: users,
