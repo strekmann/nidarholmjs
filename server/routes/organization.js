@@ -25,6 +25,11 @@ module.exports.memberlist = function (req, res) {
         }, function (err) {
             if (err) { throw err; }
             _.each(organization.instrument_groups, function (instrument_group) {
+                // filter to only show member objects with users, ie the ones we populated
+                instrument_group.members = _.filter(instrument_group.members, function (member) {
+                    return member.user;
+                });
+                // sort remaining users by name
                 instrument_group.members.sort(function (a, b) {
                     if (!a.user || !b.user) {
                         return 0;
