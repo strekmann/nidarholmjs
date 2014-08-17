@@ -20,7 +20,7 @@ module.exports.memberlist = function (req, res) {
         User.populate(organization.instrument_groups, {
             path: 'members.user',
             select: 'username name phone email instrument groups',
-            match: {'groups': organization.member_group}
+            match: {'groups': organization.member_group, 'in_list': true, 'on_leave': false}
             //options: {sort: {name: -1}} // does not work, cuts result set
         }, function (err) {
             if (err) { throw err; }
