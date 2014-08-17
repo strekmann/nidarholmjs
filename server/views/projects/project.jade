@@ -245,7 +245,8 @@ block content
         p {{.location}}
         | {{/.location}}
         | {{#.toggled}}
-        | {{{marked(.mdtext)}}}
+        .content(intro-outro="slide")
+          | {{{marked(.mdtext)}}}
         | {{/.toggled}}
       // {{/event}}
 
