@@ -698,7 +698,7 @@ module.exports.encrypted_mailman_lists = function (req, res, next) {
             async.map(data.groups, function (group, callback) {
                 var listname = data.prefix + translate(group.toLowerCase());
                 Group.findOne({name: group})
-                    .populate('members.user', 'email groups')
+                    .populate('members.user', 'email groups in_list on_leave')
                         /*{
                         path: 'members.user',
                         select: 'email',
