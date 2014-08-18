@@ -385,6 +385,7 @@ module.exports.update_event = function (req, res, next) {
             event.title = req.body.title;
             event.mdtext = req.body.mdtext;
             event.permissions = util.parse_web_permissions(req.body.permissions);
+            event.tags = req.body.tags;
             event.start = req.body.start;
             event.end = req.body.end;
             event.location = req.body.location;

@@ -29,22 +29,22 @@ block content
           | Rediger
     h1 {{event.title}}
       small
-        | {{#location}}
-        | , {{location}}
-        | {{/location}}
+        | {{#event.location}}
+        | , {{event.location}}
+        | {{/event.location}}
         | &nbsp;{{ago(event.start)}}
 
     .meta
       .row
         .columns.small-9
           | {{{daterange(event.start, event.end)}}}
-          | {{#tags}}
+          | {{#event.tags}}
           | {{#.}}
           a(href="{{taglink(.)}}")
             i.fa.fa-link
             | &nbsp;{{.}}
           | {{/.}}
-          | {{/tags}}
+          | {{/event.tags}}
         .columns.small-3.text-right
           permissionicons(permissions="{{event.permissions}}")
 
@@ -68,18 +68,23 @@ block content
             .columns.small-6
               input#startdate(name="startdate" type="text" value="{{startdate()}}" required)
             .columns.small-6
-              input#starttime(name="starttime" type="text" value="{{starttime()}}")
+              input#starttime(name="starttime" type="text" value="{{starttime()}}" placeholder="00:00")
         .columns.medium-6
-          label(for="enddate") End
+          label(for="enddate") Slutt
+            small Valgfri
           .row
             .columns.small-6
               input#enddate(name="enddate" type="text" value="{{enddate()}}")
             .columns.small-6
-              input#endtime(name="endtime" type="text" value="{{endtime()}}")
+              input#endtime(name="endtime" type="text" value="{{endtime()}}" placeholder="00:00")
       .row
         .columns
           label(for="mdtext") Beskrivelse
           textarea#mdtext(name="mdtext" value="{{event.mdtext}}")
+      .row
+        .columns
+          label(for="tags") Merkelapper
+          input#tags(name="tags" type="text" value="{{event.tags}}")
       .row
         .columns
           label(for="permissions") Rettigheter

@@ -242,14 +242,7 @@ var Project = Ractive.extend({
         return $.ajax({
             type: 'PUT',
             url: window.location.href,
-            data: {
-                title: event.title,
-                mdtext: event.mdtext,
-                start: event.start,
-                end: event.end,
-                permissions: event.permissions,
-                location: event.location
-            }
+            data: _.pick(event, 'title', 'mdtext', 'start', 'end', 'permissions', 'location', 'tags')
         });
     },
     setup_uploadzone: function (element_id, clickable_element_id) {
@@ -654,15 +647,17 @@ module.exports.eventView = function (event, active_user) {
                     var old = moment(project.get('event.end'));
                     project.set('event.end', old.hour(0).minute(0).add("minutes", context.select).toISOString());
                 }});
+                require('s7n').tagify();
             }
         }, 1);
     });
 
     project.on('updateEvent', function (event) {
         event.original.preventDefault();
-        event.context.event.permissions = $('#permissions').val();
         editor.codemirror.save();
         event.context.event.mdtext = $('#mdtext').val();
+        event.context.event.permissions = $('#permissions').val();
+        event.context.event.tags = $('#tags').select2('val');
 
         project.updateEvent(event.context.event)
         .then(function (data) {
