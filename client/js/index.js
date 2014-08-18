@@ -48,6 +48,46 @@ var flash = function (messages, member_group_id) {
     return ractive;
 };
 
+var tagify = function () {
+    $('#tags').select2({
+        width: '100%',
+        tags: $('#tags').val().split(', '),
+        tokenSeparators: [",", " "],
+        minimumInputLength: 2,
+        initSelection: function (element, callback) {
+            var data = [];
+            $(element.val().split(", ")).each(function () {
+                data.push({id: this, text: this});
+            });
+            callback(data);
+        },
+        createSearchChoice: function(term, data) {
+            if ($(data).filter(function() {
+                return this.text.localeCompare(term) === 0;
+            }).length === 0) {
+                return {
+                    id: term,
+                    text: term
+                };
+            }
+        },
+        ajax: {
+            url: "/tags",
+            dataType: "json",
+            quietMillis: 100,
+            data: function (term, page) {
+                return {
+                    q: term
+                };
+            },
+            results: function (data, page) {
+                return {results: _.map(data.tags, function(tag) {
+                    return {id: tag, text: tag};
+                })};
+            }
+        }
+    });
+};
 
 module.exports = {
     base: require('./base'),
@@ -57,5 +97,7 @@ module.exports = {
     user: require('./user'),
     projects: require('./projects'),
     files: require('./files'),
-    flash: flash
+    flash: flash,
+    tagify: tagify
 };
+

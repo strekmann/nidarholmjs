@@ -69,6 +69,7 @@ module.exports.create_post = function (req, res, next) {
         post.title = req.body.title;
         post.creator = req.user;
         post.mdtext = req.body.mdtext;
+        post.tags = req.body.tags;
         post.permissions = parse_web_permissions(req.body.permissions);
         post.save(function (err) {
             if (err) {
@@ -117,17 +118,22 @@ module.exports.update_post = function (req, res, next) {
                 }
                 post.populate('creator', 'username name profile_picture_path', function (err, post) {
                     Activity.findOne({content_type: 'forum', content_ids: post._id}, function (err, activity) {
-                        activity.title = title;
-                        activity.modified = post.modified;
-                        activity.permissions = post.permissions;
-                        activity.tags = post.tags;
-                        activity.content = {
-                            snippet: snippetify(post.mdtext)
-                        };
-                        activity.changes.push({user: req.user, changed: post.modified});
-                        activity.save(function (err, activity) {
+                        if (activity) {
+                            activity.title = title;
+                            activity.modified = post.modified;
+                            activity.permissions = post.permissions;
+                            activity.tags = post.tags;
+                            activity.content = {
+                                snippet: snippetify(post.mdtext)
+                            };
+                            activity.changes.push({user: req.user, changed: post.modified});
+                            activity.save(function (err, activity) {
+                                res.json(200, post);
+                            });
+                        }
+                        else {
                             res.json(200, post);
-                        });
+                        }
                     });
                 });
             });

@@ -135,6 +135,26 @@ module.exports.google_callback = function(req, res){
     res.redirect(url);
 };
 
+module.exports.tagsearch = function (req, res) {
+    if (req.is_member) {
+        if (req.query.q) {
+            ForumPost.distinct('tags', function (err, tags) {
+                var pattern = RegExp('^' + req.query.q);
+                var matches = _.filter(tags, function (tag) {
+                    return tag.match(pattern);
+                });
+                res.json(200, {tags: matches});
+            });
+        }
+        else {
+            res.json(400, {});
+        }
+    }
+    else {
+        res.json(403, {});
+    }
+};
+
 module.exports.register = function(req, res) {
     // TODO: Use sanitizer
     if (req.body.name && req.body.desired_username && req.body.password1 && req.body.password2) {

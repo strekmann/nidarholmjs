@@ -59,6 +59,7 @@ module.exports = function(grunt) {
                     'bower_components/pickadate/lib/themes/default.css',
                     'bower_components/pickadate/lib/themes/default.date.css',
                     'bower_components/pickadate/lib/themes/default.time.css',
+                    'bower_components/select2/select2.css',
                     'tmp/css/styles.css'
                 ],
                 dest: 'public/css/site.css'
@@ -87,6 +88,7 @@ module.exports = function(grunt) {
                     'bower_components/unorm/lib/unorm.js',
                     'bower_components/uslug/lib/uslug.js',
                     'bower_components/iscroll/build/iscroll.js',
+                    'bower_components/select2/select2.js',
                     'tmp/js/chosen.js',
                     'client/vendor/js/*.js',
                     'bower_components/dropzone/downloads/dropzone.js'
@@ -131,6 +133,12 @@ module.exports = function(grunt) {
                 flatten: true,
                 src: ['bower_components/chosen/public/*.png'],
                 dest: 'public/img/'
+            },
+            select2: {
+                expand: true,
+                flatten: true,
+                src: ['bower_components/select2/*.png', 'bower_components/select2/*.gif'],
+                dest: 'public/css/' // FIXME: this is not css
             }
         },
         uglify: {

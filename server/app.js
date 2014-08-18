@@ -221,6 +221,8 @@ app.get('/logout', core_routes.logout);
 
 app.post('/register', core_routes.register);
 
+app.get('/tags', core_routes.tagsearch);
+
 var forum_routes = require('./routes/forum');
 app.get('/forum', forum_routes.index);
 app.get(/^\/forum\/t\/(.+)/, forum_routes.index);  // tags

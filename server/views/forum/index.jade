@@ -45,6 +45,10 @@ block content
             textarea#mdtext(name="mdtext" value="{{post.mdtext}}")
         .row
           .columns
+            label(for="tags") Merkelapper
+            input#tags(name="tags" type="text" value="{{post.tags}}")
+        .row
+          .columns
             label(for="permissions") Rettigheter
             select#permissions.chosen-permissions(name="permissions" multiple data-placeholder="Velg hvem som skal få se innlegget" value="{{post.permissions}}")
               +permission_options(active_user.groups, active_user.friends)

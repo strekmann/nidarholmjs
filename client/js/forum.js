@@ -103,7 +103,7 @@ module.exports.threadView = function(post, active_user){
         var post = {
             title: $('#title').val(),
             mdtext: $('#mdtext').val(),
-            tags: $('#tags').val(),
+            tags: $('#tags').select2('val'),
             permissions: $('#permissions').val()
         };
         var promise = forum.updatePost(post);
@@ -123,6 +123,7 @@ module.exports.threadView = function(post, active_user){
         setTimeout(function(){
             if (forum.get('is_editing')) {
                 $('.chosen-permissions').chosen({width: '100%'});
+                require('s7n').tagify();
             }
         }, 1);
     });
@@ -201,6 +202,7 @@ module.exports.forumView = function (posts) {
         event.context.post.title = $('#title').val(); // FIXME: should not be necessary
         event.context.post.mdtext = $('#mdtext').val();
         event.context.post.permissions = $('#permissions').val();
+        event.context.post.tags = $('#tags').select2('val');
 
         var promise = forum.addPost(event.context.post);
         promise.then(function (data) {
@@ -234,6 +236,7 @@ module.exports.forumView = function (posts) {
         setTimeout(function(){
             if (forum.get('expanded')){
                 $('.chosen-permissions').chosen({width: '100%'});
+                require('s7n').tagify();
                 md_editor = setup_editor('#mdtext');
             }
         }, 1);
