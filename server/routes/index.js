@@ -44,9 +44,8 @@ module.exports.index = function(req, res) {
                 {'permissions.users': req.user._id},
                 {'permissions.groups': { $in: req.user.groups }}
             ])
-            .where({start: {$gt: moment().startOf('day')}})
-            .sort('start')
-            .limit(20);
+            .where({start: {$gt: moment().startOf('day'), $lt: moment().add('months', 6).startOf('day')}})
+            .sort('start');
             query.exec(function (err, events) {
                 query = Project.find().or([
                     {'permissions.public': true},

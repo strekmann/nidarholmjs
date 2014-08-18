@@ -5,13 +5,16 @@ block content
     .row
       .columns.large-3.large-push-9
         if events
-          ul#next-events.show-for-large-up.large-block-grid-1
-            for event in events
-              li
-                a.event(href="/events/"+event.id)
-                  b= moment(event.start).format('Do MMMM')
-                  br
-                  = event.title
+          #next-events.show-for-large-up
+            ul.large-block-grid-1
+              for event in events
+                li
+                  a.event(href="/events/"+event.id)
+                    b= moment(event.start).format('Do MMMM')
+                    br
+                    = event.title
+            #more-events
+              a(href="/events") Full aktivitetsliste
 
           #eventwrapper.hide-for-large-up
             #eventscroller
