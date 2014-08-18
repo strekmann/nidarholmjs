@@ -2,6 +2,7 @@ module.exports.fileListView = function (files, active_user, active_organization)
     var ractive = new Ractive({
         el: '#files',
         template: '#template',
+        noIntro: true,
         data: {
             files: files,
             uploading_files: [],
@@ -68,4 +69,10 @@ module.exports.fileListView = function (files, active_user, active_organization)
         });
         ractive.data.files.unshift(backend_file);
     });
+
+    $('#drop').on('click', function (event) {
+        $('#upload').trigger('click');
+    });
+
+    require('s7n').tagify();
 };
