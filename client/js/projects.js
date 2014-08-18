@@ -208,12 +208,18 @@ var Project = Ractive.extend({
     },
     fetchProjects: function () {
         this.subtract('year');
-
         var year = this.get('year');
-
         return $.ajax({
             url: '/' + year + '/',
             type: 'GET'
+        });
+    },
+    fetchSeasonEvents: function () {
+        var season = this.get('season');
+        return $.ajax({
+            url: '/events?y=' + season,
+            type: 'GET',
+            dataType: 'json',
         });
     },
     createPost: function (post, url) {
@@ -591,8 +597,27 @@ module.exports.upcomingView = function (events) {
         el: '#events',
         template: '#template',
         data: {
-            events: events
-        }
+            events: events,
+            season: 1,
+            gotall: false
+        },
+    });
+
+    event_list.on('fetchMore', function (event) {
+        event.original.preventDefault();
+        var self = this;
+        event_list.fetchSeasonEvents()
+        .then(function (data) {
+            console.log(data);
+            if (!data.events.length) {
+                self.set('gotall', true);
+            }
+            else {
+                event_list.get('events').push.apply(event_list.get('events'), data.events); // merge arrays
+                //event_list.get('events').push(data.events); // to add one element
+            }
+            self.add('season');
+        });
     });
 };
 

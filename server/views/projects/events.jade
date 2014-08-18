@@ -52,6 +52,13 @@ block content
             | {{{marked(mdtext)}}}
     | {{/events}}
 
+    | {{#gotall}}
+    #end.alert-box.info(data-alert) Vi har ikke mer planlagt
+    | {{/gotall}}
+    | {{^gotall}}
+    a#fetchbutton.button(on-click="fetchMore") Hent neste sesong
+    | {{/gotall}}
+
 block javascript
   script
     | require('s7n').projects.upcomingView(

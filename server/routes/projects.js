@@ -282,6 +282,31 @@ module.exports.project_delete_event = function (req, res, next) {
 };
 
 module.exports.events = function (req, res, next) {
+
+    // Fetch up to one year at a time in the future
+    var y = req.query.y || 0,
+        now = moment(),
+        startyear,
+        endyear,
+        start,
+        end;
+
+    y = parseInt(y, 10);
+
+    if (now.month() > 6) {
+        startyear = now.year() + y;
+    } else {
+        startyear = now.year() + y + 1;
+    }
+    endyear = startyear + 1;
+
+    if (!y) {
+        start = moment().startOf('day');
+    } else {
+        start = moment().month(7).date(1).year(startyear).startOf('day');
+    }
+     end = moment().month(7).date(1).year(endyear).startOf('day');
+
     var query;
     if (req.user) {
         query = Event.find().or([
@@ -295,13 +320,9 @@ module.exports.events = function (req, res, next) {
         query = Event.find({'permissions.public': true});
     }
     query = query
-        .where({start: {$gt: moment().startOf('day')}})
+        .where({start: {$gt: start, $lt: end}})
         .sort('start')
-        .populate('creator', 'username name')
-        .limit(20);
-    if (req.query.page) {
-        query = query.skip(20 * req.query.page);
-    }
+        .populate('creator', 'username name');
     query.exec(function (err, events) {
         if (err) {
             throw err;
@@ -311,7 +332,7 @@ module.exports.events = function (req, res, next) {
                 res.render('projects/events', {events: events, meta: {title: "Aktiviteter"}});
             },
             json: function () {
-                res.json(200, events);
+                res.json(200, {events: events});
             }
         });
     });
