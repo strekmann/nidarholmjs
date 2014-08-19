@@ -1,4 +1,4 @@
-module.exports.fileListView = function (files, active_user, active_organization) {
+module.exports.fileListView = function (files, active_user) {
     var ractive = new Ractive({
         el: '#files',
         template: '#template',
@@ -7,7 +7,6 @@ module.exports.fileListView = function (files, active_user, active_organization)
             files: files,
             uploading_files: [],
             active_user: active_user,
-            active_organization: active_organization,
             gotall: false,
             page: 0,
             shortdate: function (date) {
