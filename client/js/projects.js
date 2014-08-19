@@ -508,10 +508,10 @@ module.exports.projectDetailView = function (project_obj, events, posts, files) 
         $('#project-modal').foundation('reveal', 'open');
         $('.chosen-permissions').chosen({width: '100%'});
         $('#startdate').pickadate({format: 'yyyy-mm-dd', formatSubmit: 'yyyy-mm-dd', onSet: function (context) {
-            project.set('project.start', moment(context.select).startOf('day').toISOString());
+            projectmodal.set('project.start', moment(context.select).startOf('day').toISOString());
         }});
         $('#enddate').pickadate({format: 'yyyy-mm-dd', formatSubmit: 'yyyy-mm-dd', onSet: function (context) {
-            project.set('project.end', moment(context.select).startOf('day').toISOString());
+            projectmodal.set('project.end', moment(context.select).startOf('day').toISOString());
         }});
     });
 
