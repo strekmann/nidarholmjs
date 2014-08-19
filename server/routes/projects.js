@@ -193,14 +193,19 @@ module.exports.project = function (req, res, next) {
     var year = req.params.year,
         tag = req.params.tag;
 
-    Project.findOne({year: year, tag: tag})
-    .or([
-        {creator: req.user._id},
-        {'permissions.public': true},
-        {'permissions.users': req.user._id},
-        {'permissions.groups': { $in: req.user.groups }}
-    ])
-    .lean().exec(function (err, project) {
+    var query = Project.findOne({year: year, tag: tag});
+    if (req.user) {
+        query = query.or([
+            {creator: req.user._id},
+            {'permissions.public': true},
+            {'permissions.users': req.user._id},
+            {'permissions.groups': { $in: req.user.groups }}
+        ]);
+    }
+    else {
+        query = query.where({'permissions.public': true});
+    }
+    query.lean().exec(function (err, project) {
         if (err) { return next(err); }
         if (!project) {
             res.send(404, 'Not found');

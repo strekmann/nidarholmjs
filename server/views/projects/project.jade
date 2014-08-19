@@ -43,104 +43,107 @@ block content
                   = longdate(event.end)
 
   script#project-modal-template(type="text/ractive")
-    | {{#error}}
-    .row
-      .columns
-        .alert-box.alert
-          | {{error}}
-    | {{/error}}
+    if active_user
+      | {{#error}}
+      .row
+        .columns
+          .alert-box.alert
+            | {{error}}
+      | {{/error}}
 
-    .row
-      .columns
-        h2 Rediger prosjekt
-        form(on-submit="update")
-          .row
-            .columns
-              label(for="title") Tittel
-              input#title(name="title" type="text" value="{{.project.title}}")
-          .row
-            .columns
-              label(for="private_mdtext") Intern beskrivelse
-              textarea#private_mdtext(name="private_mdtext" value="{{.project.private_mdtext}}")
-          .row
-            .columns
-              label(for="public_mdtext") Ekstern beskrivelse
-              textarea#public_mdtext(name="public_mdtext" value="{{.project.public_mdtext}}")
-          .row
-            .columns.medium-6
-              label(for="startdate") Prosjektstart
-              input#startdate(name="startdate" type="text" value="{{isodate(.project.start)}}")
-            .columns.medium-6
-              label(for="enddate") End
-              input#enddate(name="enddate" type="text" value="{{isodate(.project.end)}}")
-          .row
-            .columns
-              label(for="permissions") Rettigheter
-              select#permissions.chosen-permissions(name="permissions" multiple data-placeholder="Velg prosjektgruppe" value="{{dereference_permissions(.project.permissions)}}")
-                +permission_options(active_user.groups, active_user.friends)
-          button.small Lagre
-          button.small.secondary(on-click="close") Avbryt
+      .row
+        .columns
+          h2 Rediger prosjekt
+          form(on-submit="update")
+            .row
+              .columns
+                label(for="title") Tittel
+                input#title(name="title" type="text" value="{{.project.title}}")
+            .row
+              .columns
+                label(for="private_mdtext") Intern beskrivelse
+                textarea#private_mdtext(name="private_mdtext" value="{{.project.private_mdtext}}")
+            .row
+              .columns
+                label(for="public_mdtext") Ekstern beskrivelse
+                textarea#public_mdtext(name="public_mdtext" value="{{.project.public_mdtext}}")
+            .row
+              .columns.medium-6
+                label(for="startdate") Prosjektstart
+                input#startdate(name="startdate" type="text" value="{{isodate(.project.start)}}")
+              .columns.medium-6
+                label(for="enddate") End
+                input#enddate(name="enddate" type="text" value="{{isodate(.project.end)}}")
+            .row
+              .columns
+                label(for="permissions") Rettigheter
+                select#permissions.chosen-permissions(name="permissions" multiple data-placeholder="Velg prosjektgruppe" value="{{dereference_permissions(.project.permissions)}}")
+                  +permission_options(active_user.groups, active_user.friends)
+            button.small Lagre
+            button.small.secondary(on-click="close") Avbryt
 
   script#event-modal-template(type="text/ractive")
-    .row
-      .columns
-        h2 Legg til aktivitet
-        | {{#error}}
-        .row
-          .columns
-            .alert-box.alert
-              | {{error}}
-        | {{/error}}
-        form(on-submit="create")
+    if active_user
+      .row
+        .columns
+          h2 Legg til aktivitet
+          | {{#error}}
           .row
             .columns
-              label Tittel
-              input#event_title(name="title" type="text" value="{{.event.title}}" required)
-          .row
-            .columns
-              label Sted
-              input#event_location(name="location" type="text" value="{{.event.location}}")
-          .row
-            .columns.medium-6
-              label(for="startdate") Start
-              .row
-                .columns.small-6
-                  input#event_startdate(name="startdate" type="text" value="{{startdate()}}" required)
-                .columns.small-6
-                  input#event_starttime(name="starttime" type="text" value="{{starttime()}}")
-            .columns.medium-6
-              label(for="enddate") End
-              .row
-                .columns.small-6
-                  input#event_enddate(name="enddate" type="text" value="{{enddate()}}")
-                .columns.small-6
-                  input#event_endtime(name="endtime" type="text" value="{{endtime()}}")
-          .row
-            .columns
-              label Beskrivelse
-              textarea#event_mdtext(name="mdtext" value="{{.event.mdtext}}")
-          .row
-            .columns
-              button Lagre
-              button.secondary(on-click="close") Avbryt
+              .alert-box.alert
+                | {{error}}
+          | {{/error}}
+          form(on-submit="create")
+            .row
+              .columns
+                label Tittel
+                input#event_title(name="title" type="text" value="{{.event.title}}" required)
+            .row
+              .columns
+                label Sted
+                input#event_location(name="location" type="text" value="{{.event.location}}")
+            .row
+              .columns.medium-6
+                label(for="startdate") Start
+                .row
+                  .columns.small-6
+                    input#event_startdate(name="startdate" type="text" value="{{startdate()}}" required)
+                  .columns.small-6
+                    input#event_starttime(name="starttime" type="text" value="{{starttime()}}")
+              .columns.medium-6
+                label(for="enddate") End
+                .row
+                  .columns.small-6
+                    input#event_enddate(name="enddate" type="text" value="{{enddate()}}")
+                  .columns.small-6
+                    input#event_endtime(name="endtime" type="text" value="{{endtime()}}")
+            .row
+              .columns
+                label Beskrivelse
+                textarea#event_mdtext(name="mdtext" value="{{.event.mdtext}}")
+            .row
+              .columns
+                button Lagre
+                button.secondary(on-click="close") Avbryt
 
   script#post-modal-template(type="text/ractive")
-    .row
-      .columns
-        h2 Nytt innlegg
-        form(on-submit="create")
-          .row
-            .columns
-              label Tittel
-              input#post_title(name="title" type="text" required value="{{.post.title}}")
-          .row
-            .columns
-              label Innhold
-              textarea#post_mdtext(name="mdtext" value="{{.post.mdtext}}")
-          .row
-            .columns
-              button Lagre
-              button.secondary(on-click="close") Avbryt
+    if active_user
+      .row
+        .columns
+          h2 Nytt innlegg
+          form(on-submit="create")
+            .row
+              .columns
+                label Tittel
+                input#post_title(name="title" type="text" required value="{{.post.title}}")
+            .row
+              .columns
+                label Innhold
+                textarea#post_mdtext(name="mdtext" value="{{.post.mdtext}}")
+            .row
+              .columns
+                button Lagre
+                button.secondary(on-click="close") Avbryt
 
   script#template(type="text/ractive")
     .row
@@ -193,8 +196,9 @@ block content
                 | {{#non_images}}
                 |   {{>non_image}}
                 | {{/non_images}}
-                li
-                  a#add_file.button.tiny Legg til fil
+                if active_user
+                  li
+                    a#add_file.button.tiny Legg til fil
 
       .medium-4.columns
         | {{^expanded}}
