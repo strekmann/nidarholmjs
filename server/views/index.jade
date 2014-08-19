@@ -4,9 +4,20 @@ block content
   section#index
     .row
       .columns.large-3.large-push-9
-        if events
-          #next-events.show-for-large-up
-            ul.large-block-grid-1
+        .show-for-large-up
+          if projects
+            ul#next-projects.small-block-grid-1
+              for project in projects
+                li
+                  a.project(href="/" + project.year + "/" + project.tag)
+                    p
+                      b= project.title
+                      br
+                      = shortdate(project.end)
+            hr
+
+          if events
+            ul#next-events.small-block-grid-1
               for event in events
                 li
                   a.event(href="/events/"+event.id)
@@ -16,26 +27,15 @@ block content
             #more-events
               a(href="/events") Full aktivitetsliste
 
-          #eventwrapper.hide-for-large-up
-            #eventscroller
-              ul#next-events
-                for event in events
-                  li
-                    a.event(href="/events/"+event.id)
-                      b= moment(event.start).format('Do MMM')
-                      br
-                      = event.title
-
-        if projects
-          ul#next-projects.small-block-grid-1
-            for project in projects
-              li
-                a.project(href="/projects/"+project._id)
-                  p
-                    b= project.title
+        #eventwrapper.hide-for-large-up
+          #eventscroller
+            ul#next-events
+              for event in events
+                li
+                  a.event(href="/events/"+event.id)
+                    b= moment(event.start).format('Do MMM')
                     br
-                    = shortdate(project.end)
-
+                    = event.title
 
       .large-9.columns.large-pull-3
         if active_user

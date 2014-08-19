@@ -82,11 +82,12 @@ block content
         button.small.secondary(type="reset" on-click="toggleNew") Avbryt
     | {{/expanded}}
 
-    if projects.length
-      h1 Kommende prosjekter
-      | {{#projects}}
-      |   {{>project}}
-      | {{/projects}}
+    | {{#projects.length}}
+    h1 Kommende prosjekter
+    | {{#projects}}
+    |   {{>project}}
+    | {{/projects}}
+    | {{/projects.length}}
 
     h1 Tidligere prosjekter
     | {{#previous_projects}}
