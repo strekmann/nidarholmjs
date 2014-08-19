@@ -97,6 +97,12 @@ module.exports = function(grunt) {
             }
         },
         copy: {
+            favicon: {
+                expand: true,
+                flatten: true,
+                src: ['client/img/apple-touch-icon-precomposed.png', 'client/img/favicon.ico'],
+                dest: 'public/'
+            },
             js: {
                 expand: true,
                 flatten: true,
