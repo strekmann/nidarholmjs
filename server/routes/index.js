@@ -1,4 +1,5 @@
 var _ = require('underscore'),
+    async = require('async'),
     crypto = require('crypto'),
     moment = require('moment'),
     uuid = require('node-uuid'),
@@ -8,6 +9,7 @@ var _ = require('underscore'),
     PasswordCode = require('../models').PasswordCode,
     ForumPost = require('../models/forum').ForumPost,
     Activity = require('../models').Activity,
+    File = require('../models/files').File,
     Project = require('../models/projects').Project,
     Event = require('../models/projects').Event;
 
@@ -137,12 +139,44 @@ module.exports.google_callback = function(req, res){
 module.exports.tagsearch = function (req, res) {
     if (req.is_member) {
         if (req.query.q) {
-            ForumPost.distinct('tags', function (err, tags) {
-                var pattern = RegExp('^' + req.query.q);
-                var matches = _.filter(tags, function (tag) {
-                    return tag.match(pattern);
-                });
-                res.json(200, {tags: matches});
+            var pattern = RegExp('^' + req.query.q);
+            async.parallel({
+                project_tags: function (callback) {
+                    Project.find().select('tag').exec(function (err, projects) {
+                        var matches = _.reduce(projects, function (memo, project) {
+                            if (project.tag && project.tag.match(pattern)) {
+                                memo.push(project.tag);
+                            }
+                            return memo;
+                        }, []);
+                        callback(err, matches);
+                    });
+                },
+                forum_tags: function (callback) {
+                    ForumPost.distinct('tags', function (err, tags) {
+                        var matches = _.filter(tags, function (tag) {
+                            return tag.match(pattern);
+                        });
+                        callback(err, matches);
+                    });
+                },
+                files_tags: function (callback) {
+                    File.distinct('tags', function (err, tags) {
+                        var matches = _.filter(tags, function (tag) {
+                            return tag.match(pattern);
+                        });
+                        callback(err, matches);
+                    });
+                }
+            }, function (err, results) {
+                if (err) {
+                    console.error(err);
+                    res.json(500, err);
+                }
+                else {
+                    var tags = _.flatten(results);
+                    res.json(200, {tags: tags});
+                }
             });
         }
         else {
