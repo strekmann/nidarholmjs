@@ -7,49 +7,51 @@ block content
         form(method="post")
           .row
             .small-12.columns
-              h2= __('Log in')
+              h2 Logg inn
           .row
             .small-12.columns.float-labels
-              label(for="username")= __('Username')
-              input(type="text" placeholder=__('Username') id="username" name="username" required)
+              label(for="username") Brukernavn
+              input(type="text" placeholder="Username" id="username" name="username" required)
           .row
             .small-12.columns.float-labels
-              label(for="password")= __('Password')
-              input(type="password" placeholder=__('Password') id="password" name="password" required pattern="^\\S+")
+              label(for="password") Passord
+              input(type="password" placeholder="Password" id="password" name="password" required pattern="^\\S+")
           .row
             .small-12.columns
-              button.small(type="submit")= __('Log in')
+              button.small(type="submit") Logg inn
+              | &nbsp;
+              a(href="/login/reset") Nullstill passord
     .row
       .medium-6.medium-centered.columns.text-center
         | - 
-        = __('OR')
+        | ELLER
         |  -
     .row
       .medium-6.medium-centered.columns
         form(method="post" action="/register" data-abide)
           .row
             .small-12.columns
-              h2= __('Register')
+              h2 Registrer deg
           .row
             .small-12.columns.float-labels
-              label(for="name")= __('Name')
-              input(type="text" placeholder=__('Full name') id="name" name="name" required)
-              small.error= __('Name is required')
+              label(for="name") Navn
+              input(type="text" placeholder="Fullt navn" id="name" name="name" required)
+              small.error Navn er nødvendig
           .row
             .small-12.columns.float-labels
-              label(for="desired_username")= __('Username')
-              input(type="text" placeholder=__('Username') id="desired_username" name="desired_username" required)
-              small.error= __('Username is required and must be unique')
+              label(for="desired_username") Brukernavn
+              input(type="text" placeholder="Ønsket brukernavn" id="desired_username" name="desired_username" required)
+              small.error Brukernavn er nødvendig, og må være unikt
           .row
             .small-12.columns.float-labels
-              label(for="password1")= __('Password')
-              input(type="password" placeholder=__('Password') id="password1" name="password1" required)
-              small.error= __('Passwords must be at least 8 letters long and include at least one digit and one uppercase letter')
+              label(for="password1") Passord
+              input(type="password" placeholder="Passord" id="password1" name="password1" required)
+              small.error Passord må være minst åtte tegn langt, og inneholde tall og små og store bokstaver
           .row
             .small-12.columns.float-labels
-              label(for="password2")= __('Confirm password')
-              input(type="password" placeholder=__('Password') id="password2" name="password2" required data-equalto="password1")
-              small.error= __('Must be the same as the one above')
+              label(for="password2") Bekreft passord
+              input(type="password" placeholder="Passord" id="password2" name="password2" required data-equalto="password1")
+              small.error Må skrives likt som passordet over
           .row
             .small-12.columns
-              button.small(type="submit")= __('Register')
+              button.small(type="submit") Registrer deg
