@@ -48,16 +48,18 @@ var flash = function (messages, member_group_id) {
     return ractive;
 };
 
-var tagify = function () {
+var tagify = function (tags) {
     $('#tags').select2({
         width: '100%',
-        tags: $('#tags').val().split(', '),
+        tags: [],
         tokenSeparators: [",", " "],
         minimumInputLength: 2,
         initSelection: function (element, callback) {
             var data = [];
-            $(element.val().split(", ")).each(function () {
-                data.push({id: this, text: this});
+            $(element.val().split(",")).each(function () {
+                var self = this,
+                    tag = this.trim();
+                data.push({id: tag, text: tag});
             });
             callback(data);
         },
