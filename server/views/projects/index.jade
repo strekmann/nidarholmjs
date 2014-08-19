@@ -67,13 +67,12 @@ block content
             label(for="public_mdtext") Ekstern beskrivelse
             textarea#public_mdtext(name="public_mdtext" value="{{project.public_mdtext}}")
         .row
-          .columns
-            label(for="start") Prosjektstart
-            input#start(name="start" type="date" value="{{project.start}}")
-        .row
-          .columns
-            label(for="end") Prosjektslutt
-            input#end(name="end" type="date" value="{{project.end}}" required)
+          .columns.medium-6
+            label(for="startdate") Prosjektstart
+            input#startdate(name="startdate" type="text" value="{{isodate(.project.start)}}")
+          .columns.medium-6
+            label(for="enddate") Prosjektslutt
+            input#enddate(name="enddate" type="text" value="{{isodate(.project.end)}}")
         .row
           .columns
             label(for="permissions") Rettigheter

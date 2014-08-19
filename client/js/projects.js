@@ -120,6 +120,9 @@ var Project = Ractive.extend({
                     }
                 }
                 else {
+                    //console.log(startm, startd, startm.isSame(startd));
+                    //console.log(endm, endd, endm.isSame(endd));
+                    // saving dates should always set startOf('day') AND later wholeday
                     if (startm.isSame(startd) && endm.isSame(endd)) {
                         return '<time class="start" datetime="' + startm.format() + '">' + startm.format('LL') + '</time> – <time class="end" datetime="' + endm.format() + '">' + endm.format('LL') + '</time>';
                     }
@@ -186,7 +189,7 @@ var Project = Ractive.extend({
             });
             retval += '</optgroup>';
             retval += '</select>';
-            console.log(retval);
+            //console.log(retval);
 
             return retval;
         }
@@ -293,6 +296,12 @@ module.exports.projectListView = function (projects, previous_projects) {
             if (projectlist.get('expanded')) {
                 internal_editor = setup_editor('#private_mdtext');
                 $('.chosen-permissions').chosen({width: '100%'});
+                $('#startdate').pickadate({format: 'yyyy-mm-dd', formatSubmit: 'yyyy-mm-dd', onSet: function (context) {
+                    projectlist.set('project.start', moment(context.select).startOf('day').toISOString());
+                }});
+                $('#enddate').pickadate({format: 'yyyy-mm-dd', formatSubmit: 'yyyy-mm-dd', onSet: function (context) {
+                    projectlist.set('project.end', moment(context.select).startOf('day').toISOString());
+                }});
             }
         }, 1);
     });
@@ -498,8 +507,12 @@ module.exports.projectDetailView = function (project_obj, events, posts, files) 
         projectmodal.set('error', undefined);
         $('#project-modal').foundation('reveal', 'open');
         $('.chosen-permissions').chosen({width: '100%'});
-        $('#startdate').pickadate({format: 'yyyy-mm-dd', formatSubmit: 'yyyy-mm-dd'});
-        $('#enddate').pickadate({format: 'yyyy-mm-dd', formatSubmit: 'yyyy-mm-dd'});
+        $('#startdate').pickadate({format: 'yyyy-mm-dd', formatSubmit: 'yyyy-mm-dd', onSet: function (context) {
+            project.set('project.start', moment(context.select).startOf('day').toISOString());
+        }});
+        $('#enddate').pickadate({format: 'yyyy-mm-dd', formatSubmit: 'yyyy-mm-dd', onSet: function (context) {
+            project.set('project.end', moment(context.select).startOf('day').toISOString());
+        }});
     });
 
     projects.on('newEvent', function (event) {
