@@ -473,7 +473,7 @@ module.exports.projectDetailView = function (project_obj, events, posts, files) 
         $('#project-modal').foundation('reveal', 'close');
     });
 
-    projectmodal.on('update', function (event) {
+    projectmodal.on('updateProject', function (event) {
         event.original.preventDefault();
         project_internal_editor.codemirror.save(); //toTextArea();
         event.context.project.private_mdtext = $('#private_mdtext').val();
