@@ -262,23 +262,29 @@ module.exports.forgotten_password = function (req, res) { // GET
                 req.flash('error', 'Passordkoden er ugyldig. Du får prøve å lage en ny.');
                 res.redirect('/login/reset');
             }
-            // Log in automatically
-            User.findById(code.user, function (err, user) {
-                if (err) {
-                    req.flash('error', 'Fant ikke brukeren');
-                    res.redirect('/login/reset');
-                }
-                else {
-                    req.logIn(user, function (err) {
-                        if(!err){
-                            res.redirect('/login/reset');
-                        } else {
-                            req.flash('error', 'Klarte ikke å logge deg inn');
-                            res.redirect('/login/reset');
-                        }
-                    });
-                }
-            });
+            if (code) {
+                // Log in automatically
+                User.findById(code.user, function (err, user) {
+                    if (err) {
+                        req.flash('error', 'Fant ikke brukeren');
+                        res.redirect('/login/reset');
+                    }
+                    else {
+                        req.logIn(user, function (err) {
+                            if(!err){
+                                res.redirect('/login/reset');
+                            } else {
+                                req.flash('error', 'Klarte ikke å logge deg inn');
+                                res.redirect('/login/reset');
+                            }
+                        });
+                    }
+                });
+            }
+            else {
+                console.error("should really never get here, but didn't we?");
+                res.redirect('/login/reset');
+            }
         });
     } else {
         // step 1 will present user with email password form
@@ -331,7 +337,7 @@ module.exports.reset_password = function (req, res) { // POST
                             from: config.auth.smtp.noreply_address,
                             to: user.name + '<' + user.email + '>',
                             subject: 'Nullstill passord',
-                            text: 'Hei ' + user.name + '.\r\n\r\nNoen, forhåpentligvis du, har bedt om å nullstille passordet ditt. Hvis du ikke vil nullstille det, kan du se bort fra denne eposten. Hvis du vil nullstille passordet, kan du følge lenka under for å sette nytt passord:\r\n\r\n' + res.locals.address + '/login/reset/' + code._id,
+                            text: 'Hei ' + user.name + '.\r\n\r\nNoen, forhåpentligvis du, har bedt om å nullstille passordet ditt. Hvis du ikke vil nullstille det, kan du se bort fra denne eposten. Hvis du vil nullstille passordet, kan du følge lenka under for å sette nytt passord:\r\n\r\n' + res.locals.address + '/login/reset/' + code._id + '\r\n\r\nBrukernavnet ditt er: ' + user.username,
                         };
                         transporter.sendMail(mail_options, function(error, info){
                             if (error) {
