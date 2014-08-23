@@ -617,8 +617,11 @@ module.exports.contacts = function (req, res, next) {
     // TODO: Try to merge the two populate calls
     // Does the following actually work?
     req.organization.populate('contact_groups', function (err, organization) {
-        organization.populate(
-            {path: 'contact_groups.members.user', model: 'User'},
+        organization.populate({
+            path: 'contact_groups.members.user',
+            select: 'name username',
+            model: 'User'
+        },
             function (err, organization) {
                 if (err) {
                     next(new Error(err));
@@ -633,10 +636,21 @@ module.exports.contacts = function (req, res, next) {
 
 module.exports.edit_organization = function (req, res, next) {
     if (req.is_admin) {
-        res.render('organization/edit_organization', {
-            organization: req.organization,
-            locales: config.languages,
-            meta: {title: 'Rediger organisasjon'}
+        req.organization
+        .populate('musicscore_admins', 'name username')
+        .populate({
+            path: 'member_group.members.user',
+            select: 'name',
+            model: 'User'
+        }, function (err, org) {
+            var users = _.pluck(org.member_group.members, 'user');
+            users.sort(function (a, b) { return a.name.localeCompare(b.name); });
+            res.render('organization/edit_organization', {
+                organization: req.organization,
+                locales: config.languages,
+                users: users,
+                meta: {title: 'Rediger organisasjon'}
+            });
         });
     }
     else {
@@ -694,6 +708,35 @@ module.exports.update_organization = function (req, res, next) {
     }
     else {
         res.send(403, 'Forbidden');
+    }
+};
+
+module.exports.add_musicscore_admin = function (req, res, next) {
+    if (!req.is_admin) {
+        res.json(403, 'Forbidden');
+    } else {
+        req.organization.musicscore_admins.push(req.body.user);
+        req.organization.save(function (err) {
+            if (err) { return next(err); }
+            User.findById(req.body.user)
+            .select('username name')
+            .exec(function (err, user) {
+                if (err) { return next(err); }
+                res.json(user);
+            });
+        });
+    }
+};
+
+module.exports.remove_musicscore_admin = function (req, res, next) {
+    if (!req.is_admin) {
+        res.json(403, 'Forbidden');
+    } else {
+        req.organization.musicscore_admins.pull(req.body._id);
+        req.organization.save(function (err) {
+            if (err) { return next(err); }
+            res.json(200, {});
+        });
     }
 };
 

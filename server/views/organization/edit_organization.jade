@@ -93,6 +93,39 @@ block content
             .columns
               button.small(type="submit") Lagre
 
+          .row
+            .columns.medium-4
+              h2 Noteadministratorer
+
+              #musicscore-admins
+
+  script#musicscore-admins-template(type="text/ractive")
+    ul
+      | {{#musicscore_admins}}
+      li {{.name}}
+        | &nbsp;
+        a
+          i.fa.fa-times(on-click='removeMusicscoreAdmin')
+      | {{/musicscore_admins}}
+
+    form(on-submit="addMusicscoreAdmin")
+      .row
+        .columns
+          label(for="musicscore_admin_user")
+          select#musicscore_admin_user(value="{{newadmin}}")
+            | {{#users}}
+            option(value="{{._id}}") {{.name}}
+            | {{/users}}
+      .row
+        .columns
+          button.tiny Legg til som noteansvarlig
+
 block javascript
   script.
     require('s7n').organization.editOrganizationView();
+  script
+    | require('s7n').organization.addMusicscoreAdminView(
+    != JSON.stringify(organization)
+    | ,
+    != JSON.stringify(users)
+    | );

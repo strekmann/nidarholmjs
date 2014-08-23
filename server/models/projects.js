@@ -1,6 +1,18 @@
 var mongoose = require('mongoose'),
     schema = require('../models').schema;
 
+var PieceSchema = new mongoose.Schema({
+    _id: {type: String, required: true, unique: true},
+    title: {type: String, trim: true, required: true},
+    subtitle: {type: String, trim: true},
+    //part: {type: String, trim: true},
+    composers: [{type: String, trim: true}],
+    arrangers: [{type: String, trim: true}],
+    scores: [{type: String, ref: 'File'}],
+    created: {type: Date, default: Date.now},
+    creator: {type: String, ref: 'User', required: true}
+});
+
 var EventSchema = new mongoose.Schema({
     title: {type: String, trim: true, required: true},
     start: {type: Date, required: true},
@@ -47,6 +59,15 @@ var ProjectSchema = new mongoose.Schema({
     year: {type: Number, required: true, index: true}, // end.year
     creator: {type: String, ref: 'User', required: true},
     created: {type: Date, default: Date.now},
+    music: [{
+        piece: {type: String, ref: 'Piece'},
+        parts: {type: String, trim: true}, // parts played
+        // not in use
+        contributors: [{ // add a field for userid later?
+            name: {type: String},
+            role: {type: String}
+        }]
+    }],
     permissions: {
         groups: [{type: String, ref: 'Group'}],
         users: [{type: String, ref: 'User'}],
@@ -60,6 +81,7 @@ var ProjectSchema = new mongoose.Schema({
 });
 
 module.exports = {
+    Piece: mongoose.model('Piece', PieceSchema),
     Event: mongoose.model('Event', EventSchema),
     Project: mongoose.model('Project', ProjectSchema)
 };

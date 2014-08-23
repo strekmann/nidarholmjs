@@ -1,0 +1,35 @@
+extends ../layouts/main.jade
+
+block content
+  .row
+    .columns
+      section#piece
+        h1= piece.title
+
+  script#template(type="text/ractive")
+    .row
+      .columns
+        h1 {{.piece.title}}
+        - var is_local_admin = _.contains(organization.musicscore_admins, active_user._id)
+        if is_local_admin
+          h2 Last opp noter
+          | {{#groups}}
+          h3 {{.name}}
+          form.sigdrop.drop.dropzone(id="drop-{{._id}}" action="/music/{{piece._id}}/scores")
+            input(name="group" type="hidden" value="{{._id}}")
+            .fallback
+              input(name="file" type="file" multiple)
+          //
+            form.dropzone.drop(id="drop-{{._id}}" action="/music/{{piece._id}}/scores")
+              input(name="group" type="hidden" value="{{._id}}")
+              .fallback
+                input(name="file" type="file" multiple)
+          | {{/groups}}
+
+block javascript
+  script
+    | require('s7n').projects.piece(
+    != JSON.stringify(piece)
+    | ,
+    != JSON.stringify(groups)
+    | );

@@ -11,6 +11,8 @@ var Project = Ractive.extend({
         previous_projects: [],
         events: [],
         event: null,
+        pieces: [],
+        piece: {},
         posts: [],
         images: [],
         non_images: [],
@@ -248,6 +250,14 @@ var Project = Ractive.extend({
             data: _.pick(event, 'title', 'mdtext', 'start', 'end', 'permissions', 'location', 'tags')
         });
     },
+    createPiece: function (piece, project) {
+        piece.project = this.get('project._id');
+        return $.ajax({
+            type: 'POST',
+            url: '/music',
+            data: piece
+        });
+    },
     setup_uploadzone: function (element_id, clickable_element_id) {
         var project = this;
 
@@ -358,7 +368,8 @@ module.exports.projectDetailView = function (project_obj, events, posts, files) 
                 events: events,
                 posts: posts,
                 images: images,
-                non_images: non_images
+                non_images: non_images,
+                music: project_obj.music
             }
         }),
         project_internal_editor,
@@ -467,6 +478,30 @@ module.exports.projectDetailView = function (project_obj, events, posts, files) 
         });
     });
 
+    // Music modal section
+    var musicmodal = new Ractive({
+        el: '#music-modal',
+        template: '#music-modal-template'
+    });
+
+    musicmodal.on('close', function (event) {
+        event.original.preventDefault();
+        $('#music-modal').foundation('reveal', 'close');
+    });
+
+    musicmodal.on('createPiece', function (event) {
+        event.original.preventDefault();
+        projects.createPiece(event.context.piece)
+        .then(function (data) {
+            projects.get('music').unshift(data);
+            projects.set('piece', {});
+            $('#music-modal').foundation('reveal', 'close');
+        }, function(xhr, status, err){
+            console.log(xhr, status, err);
+            //eventmodal.set('error', err.responseJSON.error);
+        });
+    });
+
     // Project modal section
     projectmodal.on('close', function (event) {
         event.original.preventDefault();
@@ -557,6 +592,12 @@ module.exports.projectDetailView = function (project_obj, events, posts, files) 
         postmodal.set('post', {});
         postmodal.set('serror', undefined);
         $('#post-modal').foundation('reveal', 'open');
+    });
+
+    projects.on('newPiece', function (event) {
+        musicmodal.set('piece', {});
+        musicmodal.set('error', undefined);
+        $('#music-modal').foundation('reveal', 'open');
     });
 
     /*
@@ -681,6 +722,39 @@ module.exports.eventView = function (event, active_user) {
             //project.get('error').push(err);
         });
     });
+};
 
-    return project;
+module.exports.piece = function (p, g) {
+    var scores = {};
+    _.each(g, function (group) {
+        scores[group._id] = group.scores;
+    });
+    var piece = new Ractive({
+        el: '#piece',
+        template: '#template',
+        data: {
+            piece: p,
+            groups: g,
+            scores: scores
+        }
+    });
+
+    Dropzone.autoDiscover = false;
+    $('.sigdrop').each(function (count, el) {
+        var group = $(el).find('input[name=group]').val();
+        var id = '#' + $(el).attr('id');
+        var drop = new Dropzone(id, {
+            url: '/music/' + piece.get('piece._id') + '/scores'
+        });
+        var scores = piece.get('scores')[group];
+        _.each(scores, function (file) {
+            var mockfile = {
+                name: file.filename
+            };
+            drop.emit('addedfile', mockfile);
+            if (file.is_image) {
+                drop.emit('thumbnail', mockfile, file.thumbnail_path);
+            }
+        });
+    });
 };

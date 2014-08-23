@@ -52,6 +52,7 @@ app.configure(function(){
     // utils
     app.use(function (req, res, next) {
         moment.lang(req.lang); // has to be before the next functions
+        res.locals._ = _;
         res.locals.marked = marked;
         res.locals.moment = moment;
         res.locals.isodate = util.isodate;
@@ -268,6 +269,8 @@ app.get('/contact', organization_routes.contacts);
 app.get('/organization/edit', organization_routes.edit_organization);
 app.post('/organization/edit', organization_routes.update_organization);
 app.get('/organization/updated_email_lists.json/:groups', organization_routes.encrypted_mailman_lists);
+app.post('/organization/admin/musicscoreadmins', organization_routes.add_musicscore_admin);
+app.delete('/organization/admin/musicscoreadmins', organization_routes.remove_musicscore_admin);
 
 var file_routes = require('./routes/files');
 app.get('/files', file_routes.index);
@@ -297,6 +300,9 @@ app.get('/events/public.ics', project_routes.ical_events);
 app.get('/events/export.ics', project_routes.ical_events);
 app.get('/events/:id', project_routes.event);
 app.put('/events/:id', project_routes.update_event);
+app.post('/music', project_routes.create_piece);
+app.get('/music/:id', project_routes.piece);
+app.post('/music/:id/scores', project_routes.upload_score);
 
 var proxy_routes = require('./routes/proxy');
 app.get('/proxy/postcode/:postcode', proxy_routes.postcode);

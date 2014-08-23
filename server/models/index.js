@@ -73,6 +73,7 @@ var OrganizationSchema = new mongoose.Schema({
     instrument_groups: [{type: String, ref: 'Group'}],
     contact_groups: [{type: String, ref: 'Group'}], // contacts page
     administration_group: {type: String, ref: 'Group'}, // temporary. privileges will be split later
+    musicscore_admins: [{type: String, ref: 'User'}],
     member_group: {type: String, ref: 'Group'},
     contact_text: {type: String, trim: true},
     visitor_address: {type: String, trim: true},

@@ -10,6 +10,9 @@ block content
   #post-modal.reveal-modal(data-reveal)
     a.close-reveal-modal &#215;
 
+  #music-modal.reveal-modal(data-reveal)
+    a.close-reveal-modal
+
   #project
     .row
       .medium-6.columns
@@ -134,16 +137,48 @@ block content
           form(on-submit="create")
             .row
               .columns
-                label Tittel
+                label(for="post_title") Tittel
                 input#post_title(name="title" type="text" required value="{{.post.title}}")
             .row
               .columns
-                label Innhold
+                label(for="post_mdtext") Innhold
                 textarea#post_mdtext(name="mdtext" value="{{.post.mdtext}}")
             .row
               .columns
                 button Lagre
                 button.secondary(on-click="close") Avbryt
+
+  script#music-modal-template(type="text/ractive")
+    if active_user
+      .row
+        .columns
+          h2 Nytt stykke
+          form(on-submit="createPiece")
+            // TODO: Add completion form to fetch saved pieces
+            // Display newform only when no matches, and a click on add new
+            .row
+              .columns
+                label(for="piece_title") Tittel
+                input#piece_title(name="title" type="text" required value="{{.piece.title}}")
+            .row
+              .columns
+                label(for="piece_subtitle") Undertittel
+                input#piece_subtitle(name="subtitle" type="text" value="{{.piece.subtitle}}")
+            .row
+              .columns
+                label(for="piece_composers") Komponist(er)
+                  small Bruk komma som skilletegn når et er flere
+                input#piece_composers(name="composers" type="text" value="{{.piece.composers}}")
+            .row
+              .columns
+                label(for="piece_arrangers") Arrangør(er)
+                  small Bruk komma som skilletegn når et er flere
+                input#piece_arrangers(name="arrangers" type="text" value="{{.piece.arrangers}}")
+            .row
+              .columns
+                button Lagre
+                button.secondary(on-click="close") Avbryt
+
 
   script#template(type="text/ractive")
     .row
@@ -172,6 +207,22 @@ block content
               | {{{marked(public_mdtext)}}}
               | {{/public_mdtext}}
         | {{/project}}
+
+        #music
+          if is_member
+            .right
+              a.button.tiny(on-click="newPiece")
+                i.fa.fa-file-o
+                | &nbsp;
+                | Nytt stykke
+          | {{#music.length}}
+          h2 Repertoar
+          ul
+            | {{#music}}
+            li
+              a(href="/music/{{.piece._id}}") {{.piece.title}}
+            | {{/music}}
+          | {{/music.length}}
 
         #forum
           if active_user

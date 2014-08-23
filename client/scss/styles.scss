@@ -442,6 +442,14 @@ nav.top-bar {
         }
     }
 }
+#piece {
+    .drop {
+        padding: 2rem;
+        border: 4px dashed $hr-border-color;
+        margin-bottom: 1rem;
+        margin-top: 0.5rem;
+    }
+}
 #files {
     #drop {
         padding: 2rem;
@@ -680,3 +688,17 @@ span.permissions {
 .select2-search-choice-close {
     top: 7px;
 }
+
+.dropzone {
+    min-height: 100px;
+}
+.dropzone .dz-preview .dz-progress .dz-upload,
+.dropzone-previews .dz-preview .dz-progress .dz-upload,
+.dropzone .dz-default.dz-message,
+.dropzone .dz-preview .dz-error-mark,
+.dropzone-previews .dz-preview .dz-error-mark,
+.dropzone .dz-preview .dz-success-mark,
+.dropzone-previews .dz-preview .dz-success-mark {
+    background-image: none;
+}
+

@@ -7,6 +7,7 @@ var uslug = require('uslug'),
     config = require('../settings'),
     Project = require('../models/projects').Project,
     Event = require('../models/projects').Event,
+    Piece = require('../models/projects').Piece,
     File = require('../models/files').File,
     ForumPost = require('../models/forum').ForumPost;
 
@@ -206,6 +207,7 @@ module.exports.project = function (req, res, next) {
     else {
         query = query.where({'permissions.public': true});
     }
+    query = query.populate('music.piece');
     query.lean().exec(function (err, project) {
         if (err) { return next(err); }
         if (!project) {
@@ -239,8 +241,9 @@ module.exports.project = function (req, res, next) {
 };
 
 module.exports.project_create_event = function (req, res, next) {
+    console.log(req.body);
     if (!req.is_member) {
-        res.send(404, 'Forbidden');
+        res.send(403, 'Forbidden');
     }
     else {
         var id = req.params.id,
@@ -516,4 +519,102 @@ module.exports.ical_events = function (req, res, next) {
         res.setHeader('Cache-Control', 'max-age=7200, private, must-revalidate');
         res.send(ical.toString());
     });
+};
+
+module.exports.piece = function (req, res, next) {
+    Piece.findById(req.params.id)
+    .populate('scores')
+    .exec(function (err, piece) {
+        if (err) { return next(err); }
+        req.organization.populate('instrument_groups', 'name', function (err, organization) {
+            var groups = _.map(organization.instrument_groups, function (group) {
+                var g = group.toObject();
+                var scores = _.filter(piece.scores, function (score) {
+                    return _.contains(score.permissions.groups, group._id);
+                });
+                g.scores = scores;
+                return g;
+            });
+            //console.log(groups);
+            res.render('projects/piece', {piece: piece, groups: groups});
+        });
+    });
+};
+
+module.exports.create_piece = function (req, res, next) {
+    if (!req.is_member) {
+        res.send(403, 'Forbidden');
+    }
+    else {
+        var piece = new Piece();
+        piece._id = shortid();
+        piece.creator = req.user;
+        piece.title = req.body.title;
+        piece.subtitle = req.body.subtitle;
+        piece.composers = req.body.composers ? _.map(req.body.composers.split(","), function (composer) {
+            return composer.trim();
+        }) : [];
+        piece.arrangers = req.body.arrangers ? _.map(req.body.arrangers.split(","), function (arranger) {
+            return arranger.trim();
+        }) : [];
+        piece.save(function (err) {
+            if (err) { return next(err); }
+            if (req.body.project) {
+                Project.findById(req.body.project, function (err, project) {
+                    project.music.addToSet({piece: piece._id});
+                    project.save(function (err) {
+                        if (err) { return next(err); }
+                        var music = {
+                            piece: piece
+                        };
+                        res.status(200).json(music);
+                    });
+                });
+            }
+        });
+    }
+};
+
+module.exports.upload_score = function (req, res, next) {
+    if (!req.is_admin) {
+        res.status(403).send('Forbidden');
+    }
+    else {
+        var options = {
+            permissions: {
+                'public': false,
+                users: [],
+                groups: [req.body.group]
+            }
+        };
+
+        Piece.findById(req.params.id, function (err, piece) {
+            if (err) { return next(err); }
+
+            var filename = req.files.file.originalname,
+                tmp_path = req.files.file.path;
+
+            util.upload_file(tmp_path, filename, req.user, options, function (err, file) {
+                if (err) { return next(err); }
+
+                piece.scores.addToSet(file._id);
+                piece.save(function (err) {
+                    if (err) { return next(err); }
+
+                    res.format({
+                        json: function () {
+                            file.populate('creator', 'username name', function (err, file) {
+                                if (err) { throw err; }
+                                res.json(200, file);
+                            });
+                        },
+                        html: function () {
+                            res.redirect("/files");
+                        }
+                    });
+                });
+            });
+
+        });
+    }
 };

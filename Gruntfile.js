@@ -60,6 +60,7 @@ module.exports = function(grunt) {
                     'bower_components/pickadate/lib/themes/default.date.css',
                     'bower_components/pickadate/lib/themes/default.time.css',
                     'bower_components/select2/select2.css',
+                    'bower_components/dropzone/downloads/css/dropzone.css',
                     'tmp/css/styles.css'
                 ],
                 dest: 'public/css/site.css'
