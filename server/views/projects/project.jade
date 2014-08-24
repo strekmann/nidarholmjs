@@ -152,10 +152,18 @@ block content
     if active_user
       .row
         .columns
+          h2 Finn stykke
+          form(on-submit="addPiece")
+            .row
+              .columns
+                input#piece_id(name="piece_id" type="text" value="{{pieceselect}}")
+            .row
+              .columns
+                button Legg til
+                button.secondary(on-click="close") Avbryt
+
           h2 Nytt stykke
           form(on-submit="createPiece")
-            // TODO: Add completion form to fetch saved pieces
-            // Display newform only when no matches, and a click on add new
             .row
               .columns
                 label(for="piece_title") Tittel

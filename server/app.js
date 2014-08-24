@@ -295,12 +295,14 @@ app.delete('/projects/:project_id/events/:event_id', project_routes.project_dele
 app.post('/projects/:id/forum', project_routes.project_create_post);
 app.delete('/projects/:project_id/forum/:post_id', project_routes.project_delete_post);
 app.post('/projects/:id/files', project_routes.project_create_file);
+app.put('/projects/:project_id/music', project_routes.add_piece);
 app.delete('/projects/:project_id/music', project_routes.remove_piece);
 app.get('/events', project_routes.events);
 app.get('/events/public.ics', project_routes.ical_events);
 app.get('/events/export.ics', project_routes.ical_events);
 app.get('/events/:id', project_routes.event);
 app.put('/events/:id', project_routes.update_event);
+app.get('/music', project_routes.piecesearch);
 app.post('/music', project_routes.create_piece);
 app.get('/music/:id', project_routes.piece);
 app.post('/music/:id/scores', project_routes.upload_score);

@@ -241,7 +241,6 @@ module.exports.project = function (req, res, next) {
 };
 
 module.exports.project_create_event = function (req, res, next) {
-    console.log(req.body);
     if (!req.is_member) {
         res.send(403, 'Forbidden');
     }
@@ -489,6 +488,22 @@ module.exports.project_create_file = function (req, res, next) {
     }
 };
 
+module.exports.piecesearch = function (req, res, next) {
+    if (req.is_member) {
+        if (req.query.q) {
+            Piece.find({title: new RegExp('^'+req.query.q, "i")}).exec(function (err, pieces) {
+                res.json(200, {pieces: pieces});
+            });
+        }
+        else {
+            res.json(400, {});
+        }
+    }
+    else {
+        res.json(403, {});
+    }
+};
+
 module.exports.remove_piece = function (req, res, next) {
     if (!req.is_member) {
         res.json(403, 'Forbidden');
@@ -617,6 +632,29 @@ module.exports.create_piece = function (req, res, next) {
         });
     }
 };
+
+module.exports.add_piece = function (req, res, next) {
+    if (!req.is_member) {
+        res.send(403, 'Forbidden');
+    }
+    else {
+        Piece.findById(req.body._id, function (err, piece) {
+            if (err) { return next(err); }
+            Project.findById(req.params.project_id, function (err, project) {
+                if (err) { return next(err); }
+                project.music.addToSet({piece: piece._id});
+                project.save(function (err) {
+                    if (err) { return next(err); }
+                    var music = {
+                        piece: piece
+                    };
+                    res.status(200).json(music);
+                });
+            });
+        });
+    }
+};
+
 
 module.exports.upload_score = function (req, res, next) {
     if (!req.is_admin) {

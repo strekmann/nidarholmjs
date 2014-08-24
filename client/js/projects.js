@@ -287,6 +287,15 @@ var Project = Ractive.extend({
             data: _.pick(music, '_id')
         });
     },
+    addPiece: function (piece) {
+        var project = this.get('project');
+        return $.ajax({
+            type: 'PUT',
+            dataType: 'json',
+            url: '/projects/' + project._id + '/music',
+            data: piece
+        });
+    },
     setup_uploadzone: function (element_id, clickable_element_id) {
         var project = this;
 
@@ -520,6 +529,16 @@ module.exports.projectDetailView = function (project_obj, events, posts, files) 
         $('#music-modal').foundation('reveal', 'close');
     });
 
+    musicmodal.on('addPiece', function (event) {
+        event.original.preventDefault();
+        projects.addPiece(event.context.piece)
+        .then(function (data) {
+            projects.get('music').unshift(data);
+            projects.set('piece', {});
+            $('#music-modal').foundation('reveal', 'close');
+        });
+    });
+
     musicmodal.on('createPiece', function (event) {
         event.original.preventDefault();
         projects.createPiece(event.context.piece)
@@ -629,6 +648,28 @@ module.exports.projectDetailView = function (project_obj, events, posts, files) 
         musicmodal.set('piece', {});
         musicmodal.set('error', undefined);
         $('#music-modal').foundation('reveal', 'open');
+        $('#piece_id').select2({
+            width: '100%',
+            minimumInputLength: 2,
+            ajax: {
+                url: "/music",
+                dataType: "json",
+                quietMillis: 100,
+                data: function (term, page) {
+                    return {
+                        q: term
+                    };
+                },
+                results: function (data, page) {
+                    return {results: _.map(data.pieces, function (piece) {
+                        return {id: piece._id, text: piece.title};
+                    })};
+                }
+            }
+        });
+        $('#piece_id').on("change", function(e) {
+            musicmodal.set('.piece._id', e.val);
+        });
     });
 
     projects.on('askRemovePiece', function (event) {
