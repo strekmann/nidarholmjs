@@ -57,7 +57,7 @@ block content
           .columns
             label(for="tag")
               abbr(title="Alle innlegg, aktiviteter, o.l som merkes med denne merkelappen blir vist på prosjektsiden. Merkelappen vil også bli en del av prosjektsidens adresse.") Merkelapp (Kan ikke endres setter at innlegg, aktiviteter eller filer har blitt lagt til prosjektet)
-            input#tag(name="tag" type="text" value="{{project.slug}}")
+            input#tag(name="tag" type="text" value="{{project.tag}}")
         .row
           .columns
             label(for="private_mdtext") Intern beskrivelse

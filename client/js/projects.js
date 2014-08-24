@@ -326,7 +326,7 @@ module.exports.projectListView = function (projects, previous_projects) {
 
     projectlist.on('setSlug', function (event) {
         var node = $(event.node);
-        projectlist.set('project.slug', uslug(node.val()));
+        projectlist.set('project.tag', uslug(node.val()));
     });
 
     projectlist.on('toggleNew', function (event) {
