@@ -325,6 +325,8 @@ module.exports.projectListView = function (projects, previous_projects) {
     });
 
     projectlist.on('setSlug', function (event) {
+        // TODO: Keep state 'changed manually', use this when updating title.
+        // Should be checked on tag.blur.
         var node = $(event.node);
         projectlist.set('project.tag', uslug(node.val()));
     });
