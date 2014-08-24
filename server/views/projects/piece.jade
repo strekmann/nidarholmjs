@@ -25,6 +25,18 @@ block content
               .fallback
                 input(name="file" type="file" multiple)
           | {{/groups}}
+        else
+          h2 Last ned noter
+          for file in user_scores
+            .row
+              .columns.small-5.medium-3.large-2
+                a.button(href=file.path) Last ned
+              .columns.small-7.medium-9.large-10
+                h3
+                  a(href="/files/"+file._id)= file.filename
+                p= shortdate(file.created)
+
+
 
 block javascript
   script

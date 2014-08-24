@@ -536,7 +536,23 @@ module.exports.piece = function (req, res, next) {
                 return g;
             });
             //console.log(groups);
-            res.render('projects/piece', {piece: piece, groups: groups});
+            var user_scores = _.filter(piece.scores, function (file) {
+                if (file.permissions.public) {
+                    return true;
+                }
+                else if (_.contains(file.permissions.users)) {
+                    return true;
+                }
+                else {
+                    var allowed = false;
+                    allowed = _.each(file.permissions.groups, function (group) {
+                        return _.contains(req.user.groups, group);
+                    });
+                    return allowed;
+                }
+            });
+            //console.log(user_scores);
+            res.render('projects/piece', {piece: piece, groups: groups, user_scores: user_scores});
         });
     });
 };
