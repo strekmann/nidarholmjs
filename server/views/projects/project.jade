@@ -215,14 +215,38 @@ block content
                 i.fa.fa-file-o
                 | &nbsp;
                 | Nytt stykke
-          | {{#music.length}}
-          h2 Repertoar
-          ul
-            | {{#music}}
-            li
-              a(href="/music/{{.piece._id}}") {{.piece.title}}
-            | {{/music}}
-          | {{/music.length}}
+            | {{#music.length}}
+            h2 Repertoar
+            ul
+              | {{#music}}
+              li
+                a(href="/music/{{.piece._id}}")
+                  b {{.piece.title}}
+                  | {{#.piece.subtitle}}
+                  | {{.piece.subtitle}}
+                  | {{/.piece.subtitle}}
+                  | {{#.piece.composers.length || .piece.arrangers.length}}
+                  | (
+                  | {{#.piece.composers.length}}
+                  b {{.piece.composers}}
+                  | {{/.piece.composers.length}}
+                  | {{#.piece.composers.length && .piece.arrangers.length}}
+                  | , 
+                  | {{/.piece.composers.length && .piece.arrangers.length}}
+                  | {{#.piece.arrangers.length}}
+                  | {{.piece.arrangers}}
+                  | {{/.piece.arrangers.length}}
+                  | )
+                  | {{/.piece.composers.length || .piece.arrangers.length}}
+                a(on-click="askRemovePiece")
+                  i.fa.fa-times
+                | {{#.askRemove}}
+                | Fjern? 
+                a(on-click="removePiece")
+                  | Ja
+                | {{/.askRemove}}
+              | {{/music}}
+            | {{/music.length}}
 
         #forum
           if active_user

@@ -461,21 +461,48 @@ module.exports.project_delete_post = function (req, res, next) {
 };
 
 module.exports.project_create_file = function (req, res, next) {
-    var id = req.params.id,
-        filepath = req.files.file.path,
-        filename = req.files.file.originalname,
-        user = req.user;
-
-    Project.findById(id, function (err, project) {
-        var options = {
-            permissions: project.permissions,
-            tags: [project.tag]
-        };
-        upload_file(filepath, filename, user, options, function (err, file) {
+    if (!req.user) {
+        res.json(403, "Forbidden");
+    }
+    else {
+        Project.findById(req.params.id)
+        .or([
+            {creator: req.user._id},
+            {'permissions.public': true},
+            {'permissions.users': req.user._id},
+            {'permissions.groups': { $in: req.user.groups }}
+        ]).exec(function (err, project) {
             if (err) { throw err; }
-            res.json(200, file);
+            var filepath = req.files.file.path,
+                filename = req.files.file.originalname,
+                user = req.user;
+
+            var options = {
+                permissions: project.permissions,
+                tags: [project.tag]
+            };
+            upload_file(filepath, filename, user, options, function (err, file) {
+                if (err) { throw err; }
+                res.json(200, file);
+            });
         });
-    });
+    }
+};
+
+module.exports.remove_piece = function (req, res, next) {
+    if (!req.is_member) {
+        res.json(403, 'Forbidden');
+    }
+    else {
+        Project.findById(req.params.project_id, function (err, project) {
+            if (err) { return next(err); }
+            project.music.pull(req.body._id);
+            project.save(function (err) {
+                if (err) { return next(err); }
+                res.json(200, {});
+            });
+        });
+    }
 };
 
 module.exports.ical_events = function (req, res, next) {

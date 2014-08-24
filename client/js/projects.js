@@ -258,6 +258,15 @@ var Project = Ractive.extend({
             data: piece
         });
     },
+    removePiece: function (music) {
+        var project = this.get('project');
+        return $.ajax({
+            type: 'DELETE',
+            dataType: 'json',
+            url: '/projects/' + project._id + '/music',
+            data: _.pick(music, '_id')
+        });
+    },
     setup_uploadzone: function (element_id, clickable_element_id) {
         var project = this;
 
@@ -598,6 +607,20 @@ module.exports.projectDetailView = function (project_obj, events, posts, files) 
         musicmodal.set('piece', {});
         musicmodal.set('error', undefined);
         $('#music-modal').foundation('reveal', 'open');
+    });
+
+    projects.on('askRemovePiece', function (event) {
+        this.toggle(event.keypath + '.askRemove');
+    });
+
+    projects.on('removePiece', function (event) {
+        event.original.preventDefault();
+        var index = event.keypath.split(".").pop();
+
+        projects.removePiece(event.context)
+        .then(function (data) {
+            projects.get('music').splice(index, 1);
+        });
     });
 
     /*
