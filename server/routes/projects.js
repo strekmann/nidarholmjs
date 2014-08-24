@@ -108,7 +108,7 @@ module.exports.create_project = function (req, res, next) {
         res.send(403, 'Forbidden');
     }
     else if (!req.body.end) {
-        res.json(400, 'Project end time is missing');
+        res.json(400, {error: 'Project end time is missing'});
     }
     else {
         var project = new Project();

@@ -358,7 +358,7 @@ module.exports.projectListView = function (projects, previous_projects) {
             projectlist.set('project', {});
             flash.data.success.push(data.title + " er opprettet");
         }, function (xhr, status, err) {
-            flash.get('error').push(err);
+            flash.get('error').push(xhr.responseJSON.error);
         });
     });
 
