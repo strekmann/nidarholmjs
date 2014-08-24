@@ -221,23 +221,8 @@ block content
               | {{#music}}
               li
                 a(href="/music/{{.piece._id}}")
-                  b {{.piece.title}}
-                  | {{#.piece.subtitle}}
-                  | {{.piece.subtitle}}
-                  | {{/.piece.subtitle}}
-                  | {{#.piece.composers.length || .piece.arrangers.length}}
-                  | (
-                  | {{#.piece.composers.length}}
-                  b {{.piece.composers}}
-                  | {{/.piece.composers.length}}
-                  | {{#.piece.composers.length && .piece.arrangers.length}}
-                  | , 
-                  | {{/.piece.composers.length && .piece.arrangers.length}}
-                  | {{#.piece.arrangers.length}}
-                  | {{.piece.arrangers}}
-                  | {{/.piece.arrangers.length}}
-                  | )
-                  | {{/.piece.composers.length || .piece.arrangers.length}}
+                  | {{{pretty_piece(.piece)}}}
+                | &nbsp;
                 a(on-click="askRemovePiece")
                   i.fa.fa-times
                 | {{#.askRemove}}

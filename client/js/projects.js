@@ -194,6 +194,26 @@ var Project = Ractive.extend({
             //console.log(retval);
 
             return retval;
+        },
+        pretty_piece: function (piece) {
+            var res = "<b>" + piece.title + "</b>";
+            if (piece.subtitle) {
+                res += " " + piece.subtitle;
+            }
+            if (piece.composers.length || piece.arrangers.length) {
+                res += " (";
+                if (piece.composers.length) {
+                    res += "<b>" + piece.composers.join(", ") + "</b>";
+                }
+                if (piece.composers.length && piece.arrangers.length) {
+                    res += ", ";
+                }
+                if (piece.arrangers.length) {
+                    res += piece.arrangers.join(", ");
+                }
+                res += ")";
+            }
+            return res;
         }
     },
 
