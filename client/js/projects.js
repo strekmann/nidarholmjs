@@ -533,7 +533,7 @@ module.exports.projectDetailView = function (project_obj, events, posts, files) 
         event.original.preventDefault();
         projects.addPiece(event.context.piece)
         .then(function (data) {
-            projects.get('music').unshift(data);
+            projects.get('music').push(data);
             projects.set('piece', {});
             $('#music-modal').foundation('reveal', 'close');
         });

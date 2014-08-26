@@ -25,7 +25,9 @@ block content
               .fallback
                 input(name="file" type="file" multiple)
           | {{/groups}}
-        else
+          hr
+
+        if user_scores.length
           h2 Last ned noter
           for file in user_scores
             .row
