@@ -1,0 +1,27 @@
+extends ../layouts/main.jade
+
+block content
+  section#music
+
+  script#template(type="text/ractive")
+    .row
+      .columns
+        h1 Notearkivet
+        if is_member
+          form
+            .row
+              .columns
+                label(for="search") Søk
+                input#search(type="text" name="q" value=q placeholder="Tittel")
+          ul
+            | {{#pieces}}
+            li
+              a(href="/music/{{._id}}")
+                | {{{pretty_piece(.)}}}
+            | {{/pieces}}
+
+block javascript
+  script
+    | require('s7n').projects.musicView(
+    != JSON.stringify(pieces)
+    | );

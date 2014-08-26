@@ -488,15 +488,31 @@ module.exports.project_create_file = function (req, res, next) {
     }
 };
 
-module.exports.piecesearch = function (req, res, next) {
+module.exports.music = function (req, res, next) {
     if (req.is_member) {
         if (req.query.q) {
-            Piece.find({title: new RegExp('^'+req.query.q, "i")}).exec(function (err, pieces) {
-                res.json(200, {pieces: pieces});
+            Piece.find({title: new RegExp('^'+req.query.q, "i")}).sort('title').exec(function (err, pieces) {
+                res.format({
+                    html: function () {
+                        res.render('projects/music', {q: req.query.q, pieces: pieces});
+                    },
+                    json: function () {
+                        res.json(200, {pieces: pieces});
+                    }
+                });
             });
         }
         else {
-            res.json(400, {});
+            Piece.find().sort('title').exec(function (err, pieces) {
+                res.format({
+                    html: function () {
+                        res.render('projects/music', {pieces: pieces});
+                    },
+                    json: function () {
+                        res.json(200, {pieces: pieces});
+                    }
+                });
+            });
         }
     }
     else {

@@ -302,7 +302,7 @@ app.get('/events/public.ics', project_routes.ical_events);
 app.get('/events/export.ics', project_routes.ical_events);
 app.get('/events/:id', project_routes.event);
 app.put('/events/:id', project_routes.update_event);
-app.get('/music', project_routes.piecesearch);
+app.get('/music', project_routes.music);
 app.post('/music', project_routes.create_piece);
 app.get('/music/:id', project_routes.piece);
 app.post('/music/:id/scores', project_routes.upload_score);

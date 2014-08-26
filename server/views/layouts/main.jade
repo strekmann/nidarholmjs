@@ -93,9 +93,6 @@ html(lang=lang dir=lang_dir)
             ul.left
               li
                 a(href="/projects") Prosjekter
-              if active_user
-                li
-                  a(href="/forum") Forum
               li
                 a(href="/members") Medlemmer
               li
@@ -110,14 +107,6 @@ html(lang=lang dir=lang_dir)
                   li.hide-for-small-only
                     a(href="/groups")
                       i.fa.fa-users(title="Grupper")
-              if active_user
-                li
-                  a(href="/files")
-                    .hide-for-small-only
-                      i.fa.fa-upload(title="Filer")
-                    .show-for-small-only
-                      i.fa.fa-download
-                      | &nbsp; Filer
               li
                 a(href="/events")
                   .hide-for-small-only
@@ -125,6 +114,29 @@ html(lang=lang dir=lang_dir)
                   .show-for-small-only
                     i.fa.fa-calendar-o
                     | &nbsp; Kalender
+              if active_user
+                li
+                  a(href="/forum")
+                    .hide-for-small-only
+                      i.fa.fa-comments-o(title="Forum")
+                    .show-for-small-only
+                      i.fa.fa-comments-o
+                      | &nbsp; Forum
+                li
+                  a(href="/files")
+                    .hide-for-small-only
+                      i.fa.fa-upload(title="Filer")
+                    .show-for-small-only
+                      i.fa.fa-download
+                      | &nbsp; Filer
+              if is_member
+                li
+                  a(href="/music")
+                    .hide-for-small-only
+                      i.fa.fa-music(title="Notearkivet")
+                    .show-for-small-only
+                      i.fa.fa-music
+                      | &nbsp; Notearkivet
               if active_user
                 li
                   a#topbar-username(href="/users/"+active_user.username)

@@ -810,6 +810,16 @@ module.exports.eventView = function (event, active_user) {
     });
 };
 
+module.exports.musicView = function (p) {
+    var project = new Project({
+        el: '#music',
+        template: '#template',
+        data: {
+            pieces: p
+        }
+    });
+};
+
 module.exports.piece = function (p, g) {
     var scores = {};
     _.each(g, function (group) {
