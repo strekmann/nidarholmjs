@@ -598,13 +598,16 @@ module.exports.piece = function (req, res, next) {
                 if (file.permissions.public) {
                     return true;
                 }
-                else if (_.contains(file.permissions.users)) {
+                else if (_.contains(file.permissions.users, req.user._id)) {
                     return true;
                 }
                 else {
                     var allowed = false;
-                    allowed = _.each(file.permissions.groups, function (group) {
-                        return _.contains(req.user.groups, group);
+                    _.each(req.user.groups, function (group) {
+                        var g = group._id;
+                        if(_.contains(file.permissions.groups, g)) {
+                            allowed = true;
+                        }
                     });
                     return allowed;
                 }
