@@ -13,6 +13,14 @@ block content
           | {{#.piece.subtitle}}
           small {{.piece.subtitle}}
           | {{/.piece.subtitle}}
+          .right
+            small
+              | {{#.piece.composers.length}}
+              span {{.piece.composers.join(", ")}}
+              | {{/.piece.composers.length}}
+              | {{#.piece.arrangers.length}}
+              span ({{.piece.arrangers.join(", ")}})
+              | {{/.piece.arrangers.length}}
 
         .row
           .columns.medium-6
