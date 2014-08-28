@@ -493,7 +493,7 @@ module.exports.music = function (req, res, next) {
         Piece.find().sort('title').exec(function (err, pieces) {
             res.format({
                 html: function () {
-                    res.render('projects/music', {pieces: pieces});
+                    res.render('projects/music', {pieces: pieces, meta: {title: 'Notearkivet'}});
                 },
                 json: function () {
                     res.json(200, {pieces: pieces});

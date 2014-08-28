@@ -16,7 +16,7 @@ block content
           | {{#filtered.length}}
           ul
             | {{#filtered}}
-            li(intro-outro="slide")
+            li
               a(href="/music/{{._id}}")
                 span {{{pretty_piece(.)}}}
                 | {{#.scores.length}}
