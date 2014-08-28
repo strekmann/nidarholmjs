@@ -18,7 +18,11 @@ block content
             | {{#filtered}}
             li(intro-outro="slide")
               a(href="/music/{{._id}}")
-                | {{{pretty_piece(.)}}}
+                span {{{pretty_piece(.)}}}
+                | {{#.scores.length}}
+                .right
+                  span {{.scores.length}}
+                | {{/.scores.length}}
             | {{/filtered}}
           | {{/filtered.length}}
           | {{^filtered.length}}
