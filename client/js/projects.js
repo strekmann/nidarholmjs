@@ -1,3 +1,11 @@
+// from http://stackoverflow.com/questions/901115/how-can-i-get-query-string-values-in-javascript
+function getParameterByName(name) {
+    name = name.replace(/[\[]/, "\\[").replace(/[\]]/, "\\]");
+    var regex = new RegExp("[\\?&]" + name + "=([^&#]*)"),
+        results = regex.exec(location.search);
+    return results === null ? "" : decodeURIComponent(results[1].replace(/\+/g, " "));
+}
+
 var Project = Ractive.extend({
 
     // Will be called as soon as the instance has finished rendering.
@@ -810,13 +818,48 @@ module.exports.eventView = function (event, active_user) {
     });
 };
 
-module.exports.musicView = function (p) {
+module.exports.musicView = function (p, q) {
     var project = new Project({
         el: '#music',
         template: '#template',
         data: {
-            pieces: p
+            pieces: p,
+            filtered: [],
+            query: getParameterByName('q') || ""
         }
+    });
+
+    project.observe('query', function (query) {
+        var all = project.get('pieces'),
+            pattern = new RegExp(query, 'i');
+
+        var pieces = _.filter(all, function (piece) {
+            if (piece.title.match(pattern) || piece.subtitle && piece.subtitle.match(pattern)){
+                return true;
+            }
+            var composermatch = _.filter(piece.composers, function(composer) {
+                if (composer.match(pattern)) {
+                    return true;
+                }
+            });
+            if (composermatch.length) {
+                return true;
+            }
+            var arrangermatch = _.filter(piece.arrangers, function(arranger) {
+                if (arranger.match(pattern)) {
+                    return true;
+                }
+            });
+            if (arrangermatch.length) {
+                return true;
+            }
+        });
+        project.set('filtered', pieces);
+    });
+
+    project.on('ignoreSubmit', function (event) {
+        event.original.preventDefault();
+        $('#filter').blur();
     });
 };
 

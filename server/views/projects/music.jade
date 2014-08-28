@@ -8,17 +8,30 @@ block content
       .columns
         h1 Notearkivet
         if is_member
-          form
+          form(on-submit="ignoreSubmit")
             .row
               .columns
-                label(for="search") Søk
-                input#search(type="text" name="q" value=q placeholder="Tittel")
+                label(for="filter") Filter
+                input#filter(type="text" name="q" value="{{query}}")
+          | {{^query}}
           ul
             | {{#pieces}}
             li
               a(href="/music/{{._id}}")
                 | {{{pretty_piece(.)}}}
             | {{/pieces}}
+          | {{/query}}
+          | {{#filtered.length}}
+          ul
+            | {{#filtered}}
+            li
+              a(href="/music/{{._id}}")
+                | {{{pretty_piece(.)}}}
+            | {{/filtered}}
+          | {{/filtered.length}}
+          | {{^filtered.length}}
+          p Ingen treff
+          | {{/filtered.length}}
 
 block javascript
   script
