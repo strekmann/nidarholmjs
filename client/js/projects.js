@@ -833,28 +833,33 @@ module.exports.musicView = function (p, q) {
         var all = project.get('pieces'),
             pattern = new RegExp(query, 'i');
 
-        var pieces = _.filter(all, function (piece) {
-            if (piece.title.match(pattern) || piece.subtitle && piece.subtitle.match(pattern)){
-                return true;
-            }
-            var composermatch = _.filter(piece.composers, function(composer) {
-                if (composer.match(pattern)) {
+        if (query.length < 2) {
+            project.set('filtered', all);
+        }
+        else {
+            var pieces = _.filter(all, function (piece) {
+                if (piece.title.match(pattern) || piece.subtitle && piece.subtitle.match(pattern)){
+                    return true;
+                }
+                var composermatch = _.filter(piece.composers, function(composer) {
+                    if (composer.match(pattern)) {
+                        return true;
+                    }
+                });
+                if (composermatch.length) {
+                    return true;
+                }
+                var arrangermatch = _.filter(piece.arrangers, function(arranger) {
+                    if (arranger.match(pattern)) {
+                        return true;
+                    }
+                });
+                if (arrangermatch.length) {
                     return true;
                 }
             });
-            if (composermatch.length) {
-                return true;
-            }
-            var arrangermatch = _.filter(piece.arrangers, function(arranger) {
-                if (arranger.match(pattern)) {
-                    return true;
-                }
-            });
-            if (arrangermatch.length) {
-                return true;
-            }
-        });
-        project.set('filtered', pieces);
+            project.set('filtered', pieces);
+        }
     });
 
     project.on('ignoreSubmit', function (event) {

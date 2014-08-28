@@ -13,18 +13,10 @@ block content
               .columns
                 label(for="filter") Filter
                 input#filter(type="text" name="q" value="{{query}}")
-          | {{^query}}
-          ul
-            | {{#pieces}}
-            li
-              a(href="/music/{{._id}}")
-                | {{{pretty_piece(.)}}}
-            | {{/pieces}}
-          | {{/query}}
           | {{#filtered.length}}
           ul
             | {{#filtered}}
-            li
+            li(intro-outro="slide")
               a(href="/music/{{._id}}")
                 | {{{pretty_piece(.)}}}
             | {{/filtered}}
