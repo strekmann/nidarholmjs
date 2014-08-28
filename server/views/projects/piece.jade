@@ -10,6 +10,50 @@ block content
     .row
       .columns
         h1 {{.piece.title}}
+          | {{#.piece.subtitle}}
+          small {{.piece.subtitle}}
+          | {{/.piece.subtitle}}
+
+        .row
+          .columns.medium-6
+            p
+              | {{#.piece.publisher}}
+              span {{.piece.publisher}},
+              | {{/.piece.publisher}}
+              | {{#.piece.published}}
+              span {{.piece.published}},
+              | {{/.piece.published}}
+              | {{#.piece.genre}}
+              span {{.piece.genre}},
+              | {{/.piece.genre}}
+              | {{#.piece.band_setup}}
+              span {{.piece.band_setup}}
+              | {{/.piece.band_setup}}
+
+          .columns.medium-6
+            .right
+              p
+                | {{#.piece.archive_number}}
+                b {{.piece.archive_number}}:
+                | {{/.piece.archive_number}}
+                | {{#.piece.maintenance_status}}
+                span {{.piece.maintenance_status}},
+                | {{/.piece.maintenance_status}}
+                | {{#.piece.acquired}}
+                span {{.piece.acquired}}
+                | {{/.piece.acquired}}
+
+        if user_scores.length
+          h2 Last ned noter
+          for file in user_scores
+            .row
+              .columns.small-5.medium-3.large-2
+                a.button(href=file.path) Last ned
+              .columns.small-7.medium-9.large-10
+                h3
+                  a(href="/files/"+file._id)= file.filename
+                p= shortdate(file.created)
+
         - var is_local_admin = _.contains(organization.musicscore_admins, active_user._id)
         if is_local_admin
           h2 Last opp noter
@@ -25,19 +69,6 @@ block content
               .fallback
                 input(name="file" type="file" multiple)
           | {{/groups}}
-          hr
-
-        if user_scores.length
-          h2 Last ned noter
-          for file in user_scores
-            .row
-              .columns.small-5.medium-3.large-2
-                a.button(href=file.path) Last ned
-              .columns.small-7.medium-9.large-10
-                h3
-                  a(href="/files/"+file._id)= file.filename
-                p= shortdate(file.created)
-
 
 
 block javascript
