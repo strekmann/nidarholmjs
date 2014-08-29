@@ -831,34 +831,40 @@ module.exports.musicView = function (p, q) {
 
     project.observe('query', function (query) {
         var all = project.get('pieces'),
-            pattern = new RegExp(query, 'i');
+            words = query.split(" ");
 
         if (query.length < 2) {
             project.set('filtered', all);
         }
         else {
-            var pieces = _.filter(all, function (piece) {
-                if (piece.title.match(pattern) || piece.subtitle && piece.subtitle.match(pattern)){
-                    return true;
-                }
-                var composermatch = _.filter(piece.composers, function(composer) {
-                    if (composer.match(pattern)) {
+            var result_arrays = _.map(words, function (word) {
+                var pattern = new RegExp(word, 'i');
+
+                var pieces = _.filter(all, function (piece) {
+                    if (piece.title.match(pattern) || piece.subtitle && piece.subtitle.match(pattern)){
+                        return true;
+                    }
+                    var composermatch = _.filter(piece.composers, function(composer) {
+                        if (composer.match(pattern)) {
+                            return true;
+                        }
+                    });
+                    if (composermatch.length) {
+                        return true;
+                    }
+                    var arrangermatch = _.filter(piece.arrangers, function(arranger) {
+                        if (arranger.match(pattern)) {
+                            return true;
+                        }
+                    });
+                    if (arrangermatch.length) {
                         return true;
                     }
                 });
-                if (composermatch.length) {
-                    return true;
-                }
-                var arrangermatch = _.filter(piece.arrangers, function(arranger) {
-                    if (arranger.match(pattern)) {
-                        return true;
-                    }
-                });
-                if (arrangermatch.length) {
-                    return true;
-                }
+                return pieces;
             });
-            project.set('filtered', pieces);
+            var filtered = _.intersection.apply(_, result_arrays);
+            project.set('filtered', filtered);
         }
     });
 
