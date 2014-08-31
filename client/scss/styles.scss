@@ -536,7 +536,8 @@ nav.top-bar {
     }
 }
 
-#login {
+#login,
+#register {
     form {
         border: rem-calc(3px) solid $hr-border-color;
         margin: 1rem 0 ;

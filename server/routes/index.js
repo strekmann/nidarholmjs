@@ -4,6 +4,7 @@ var _ = require('underscore'),
     moment = require('moment'),
     uuid = require('node-uuid'),
     nodemailer = require('nodemailer'),
+    shortid = require('short-mongo-id'),
     config = require('../settings'),
     User = require('../models').User,
     PasswordCode = require('../models').PasswordCode,
@@ -136,6 +137,20 @@ module.exports.google_callback = function(req, res){
     res.redirect(url);
 };
 
+module.exports.check_email = function (req, res, next) {
+    User.findOne({email: req.body.email}, function (err, user) {
+        if (err) {
+            return next(err);
+        }
+        if (user) {
+            res.status(200).json({status: true});
+        }
+        else {
+            res.status(200).json({status: false});
+        }
+    });
+};
+
 module.exports.tagsearch = function (req, res) {
     if (req.is_member) {
         if (req.query.q) {
@@ -190,57 +205,45 @@ module.exports.tagsearch = function (req, res) {
 
 module.exports.register = function(req, res) {
     // TODO: Use sanitizer
-    if (req.body.name && req.body.desired_username && req.body.password1 && req.body.password2) {
-        var username = req.body.desired_username.toLowerCase();
-        if (!username) {
-            req.flash('error', 'Username missing');
+    if (req.body.email && req.body.name && req.body.password1 && req.body.password2) {
+        // Check if passwords are equal
+        var password1 = req.body.password1.trim();
+        var password2 = req.body.password2.trim();
+        if (password1 !== password2) {
+            req.flash('error', 'Passwords not equal');
             res.redirect('/login');
         } else {
-            // Check if user already exists
-            User.findOne({'username': username}).exec(function (err, otheruser) {
-                if (otheruser) {
-                    req.flash('error', req.gettext('Username already taken'));
-                    res.redirect('/login');
-                } else {
-                    // Check if passwords are equal
-                    var password1 = req.body.password1.trim();
-                    var password2 = req.body.password2.trim();
-                    if (password1 !== password2) {
-                        req.flash('error', 'Passwords not equal');
-                        res.redirect('/login');
-                    } else {
-                        // Hash password and save password, salt and hashing algorithm
-                        var algorithm = 'sha1';
-                        var salt = crypto.randomBytes(128).toString('base64');
-                        var hashedPassword = crypto.createHash(algorithm);
-                        hashedPassword.update(salt);
-                        hashedPassword.update(password1);
+            // Hash password and save password, salt and hashing algorithm
+            var algorithm = 'sha1';
+            var salt = crypto.randomBytes(128).toString('base64');
+            var hashedPassword = crypto.createHash(algorithm);
+            hashedPassword.update(salt);
+            hashedPassword.update(password1);
 
-                        var user = new User();
-                        user.name = req.body.name.trim();
-                        user.username = username;
-                        user._id = user.username;
-                        user.password = hashedPassword.digest('hex');
-                        user.salt = salt;
-                        user.algorithm = algorithm;
-                        user.save(function (err) {
-                            if (err) {
-                                console.error("Error saving user:", err);
-                            } else {
-                                // Log in newly registered user automatically
-                                req.logIn(user, function (err) {
-                                    if(!err){
-                                        // TODO: Since this is first login, redirect to account page
-                                        req.flash('info', 'You are now registered, and logged in.');
-                                        res.redirect('/');
-                                    } else {
-                                        req.flash('error', 'There was something wrong with your newly created user that prevented us from logging in for you. Please try to login yourself.');
-                                        res.redirect('/login');
-                                    }
-                                });
-                            }
-                        });
-                    }
+            var user = new User();
+            user.email = req.body.email.trim();
+            user.name = req.body.name.trim();
+            user.username = req.body.email.trim();
+            user._id = shortid();
+            user.password = hashedPassword.digest('hex');
+            user.salt = salt;
+            user.algorithm = algorithm;
+            user.save(function (err) {
+                if (err) {
+                    console.error("Error saving user:", err);
+                    return next(err);
+                } else {
+                    // Log in newly registered user automatically
+                    req.logIn(user, function (err) {
+                        if(!err){
+                            // TODO: Since this is first login, redirect to account page
+                            req.flash('info', 'You are now registered, and logged in.');
+                            res.redirect('/');
+                        } else {
+                            req.flash('error', 'There was something wrong with your newly created user that prevented us from logging in for you. Please try to login yourself.');
+                            res.redirect('/login');
+                        }
+                    });
                 }
             });
         }
@@ -340,12 +343,24 @@ module.exports.reset_password = function (req, res) { // POST
                             text: 'Hei ' + user.name + '.\r\n\r\nNoen, forhåpentligvis du, har bedt om å nullstille passordet ditt. Hvis du ikke vil nullstille det, kan du se bort fra denne eposten. Hvis du vil nullstille passordet, kan du følge lenka under for å sette nytt passord:\r\n\r\n' + res.locals.address + '/login/reset/' + code._id + '\r\n\r\nBrukernavnet ditt er: ' + user.username,
                         };
                         transporter.sendMail(mail_options, function(error, info){
-                            if (error) {
-                                req.flash('error', 'Epost fungerte ikke');
-                                res.redirect('/login/reset');
-                            } else {
-                                res.render('auth/newpassword', {email: user.email, debug: info.response});
-                            }
+                            res.format({
+                                html: function () {
+                                    if (error) {
+                                        req.flash('error', 'Epost fungerte ikke');
+                                        res.redirect('/login/reset');
+                                    } else {
+                                        res.render('auth/newpassword', {email: user.email, debug: info.response});
+                                    }
+                                },
+                                json: function () {
+                                    if (error) {
+                                        res.status(500).json({error: error});
+                                    }
+                                    else {
+                                        res.status(200).json({status: true});
+                                    }
+                                }
+                            });
                         });
                     }
                 });

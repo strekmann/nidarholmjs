@@ -210,6 +210,7 @@ app.post('/login',
              failureRedirect: '/login',
              failureFlash: true
          }));
+app.post('/login/check_email', core_routes.check_email);
 
 app.get('/auth/google', app.passport.authenticate('google', { scope: [
     'https://www.googleapis.com/auth/userinfo.profile',
