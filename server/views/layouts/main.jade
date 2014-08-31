@@ -68,7 +68,7 @@ html(lang=lang dir=lang_dir)
       if meta.author
         meta(name="author" content=meta.author)
 
-    link(href="/css/site.css" rel="stylesheet")
+    link(href="/css/site.css?"+stamp rel="stylesheet")
 
     //if lt IE 9
       script(src='http://html5shim.googlecode.com/svn/trunk/html5.js')
@@ -254,8 +254,8 @@ html(lang=lang dir=lang_dir)
         i.fa.fa-user.private.alert(title="Ikke publisert, bare jeg ser denne")
         | {{/is_unpublished}}
 
-    script(src="/js/vendor.js")
-    script(src="/js/site.js")
+    script(src="/js/vendor.js?"+stamp)
+    script(src="/js/site.js?"+stamp)
 
     script.
       $(document).foundation();

@@ -3,7 +3,8 @@ var app = require('./server/app'),
     http = require('http'),
     cluster = require('cluster'),
     numCPU = require('os').cpus().length / 2,
-    i = 0;
+    i = 0,
+    stamp = new Date().getTime();
 
 if (numCPU < 2) { numCPU = 2; }
 if (app.settings.env === 'development') { numCPU = 2; }
@@ -28,6 +29,7 @@ if (cluster.isMaster){
         app.conf.mongo.servers.join(','),
         {replSet: {rs_name: app.conf.mongo.replset}}
     );
+    app.stamp = stamp;
 
     // -- handle node exceptions
     process.on('uncaughtException', function(err){

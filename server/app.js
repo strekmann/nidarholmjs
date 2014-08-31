@@ -52,6 +52,7 @@ app.configure(function(){
     // utils
     app.use(function (req, res, next) {
         moment.lang(req.lang); // has to be before the next functions
+        res.locals.stamp = app.stamp;
         res.locals._ = _;
         res.locals.marked = marked;
         res.locals.moment = moment;
