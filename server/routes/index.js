@@ -138,7 +138,8 @@ module.exports.google_callback = function(req, res){
 };
 
 module.exports.check_email = function (req, res, next) {
-    User.findOne({email: req.body.email}, function (err, user) {
+    var pattern = new RegExp(req.body.email, 'i');
+    User.findOne({email: {$regex: pattern}}, function (err, user) {
         if (err) {
             return next(err);
         }
@@ -329,7 +330,8 @@ module.exports.reset_password = function (req, res) { // POST
         }
     } else {
         if (req.body.email) {
-            User.findOne({email: req.body.email}, function (err, user) {
+            var pattern = new RegExp(req.body.email, 'i');
+            User.findOne({email: {$regex: pattern}}, function (err, user) {
                 var code = new PasswordCode();
                 code._id = uuid.v4();
                 code.user = user._id;
