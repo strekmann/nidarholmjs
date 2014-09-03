@@ -874,7 +874,7 @@ module.exports.musicView = function (p, q) {
     });
 };
 
-module.exports.piece = function (p, g) {
+module.exports.piece = function (p, g, us) {
     var scores = {};
     _.each(g, function (group) {
         scores[group._id] = group.scores;
@@ -885,7 +885,8 @@ module.exports.piece = function (p, g) {
         data: {
             piece: p,
             groups: g,
-            scores: scores
+            scores: scores,
+            user_scores: us
         }
     });
 

@@ -6,6 +6,19 @@ block content
       section#piece
         h1= piece.title
 
+      section#extra
+
+        if user_scores.length
+          h2 Tredje utlisting (da skal det i alle fall gå)
+          for file in user_scores
+            .row
+              .columns.small-5.medium-3.large-2
+                a.button(href=file.path) Last ned
+              .columns.small-7.medium-9.large-10
+                h3
+                  a(href="/files/"+file._id)= file.filename
+                p= shortdate(file.created)
+
   script#template(type="text/ractive")
     .row
       .columns
@@ -62,6 +75,18 @@ block content
                   a(href="/files/"+file._id)= file.filename
                 p= shortdate(file.created)
 
+        | {{#if user_scores.length}}
+        h2 Annen utlisting
+        | {{# user_scores}}
+        .row
+          .columns.small-5.medium-3.large-2
+            a.button(href="{{.path}}") Last ned
+          .columns.small-7.medium-9.large-10
+            h3
+              a(href="/files/{{._id}}") {{.filename}}
+          | {{/ user_scores}}
+        | {{/if user_scores.length}}
+
         - var is_local_admin = _.contains(organization.musicscore_admins, active_user._id)
         if is_local_admin
           h2 Last opp noter
@@ -85,4 +110,6 @@ block javascript
     != JSON.stringify(piece)
     | ,
     != JSON.stringify(groups)
+    | ,
+    != JSON.stringify(user_scores)
     | );
