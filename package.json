@@ -30,7 +30,7 @@
     "marked": "0.3.x",
     "mkdirp": "0.3.x",
     "mmmagic": "^0.3.6",
-    "moment": "2.x",
+    "moment": "^2.8.1",
     "mongoose": "3.x",
     "multer": "0.0.x",
     "node-uuid": "^1.4.1",

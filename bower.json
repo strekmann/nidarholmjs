@@ -3,10 +3,9 @@
   "dependencies": {
     "foundation": "",
     "underscore": "",
-    "moment": "",
+    "moment": "~2.8.1",
     "font-awesome": "",
-    "ractive": "sigurdga/ractive#e5648b83da",
-    "ractive-events-tap": "",
+    "ractive": "",
     "chosen": "",
     "marked": "",
     "ractive-decorators-sortable": "ractivejs/ractive-decorators-sortable",
