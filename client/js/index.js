@@ -1,4 +1,4 @@
-moment.lang($('html').attr('lang'));
+moment.locale($('html').attr('lang'));
 
 var flash = function (messages, member_group_id) {
 
