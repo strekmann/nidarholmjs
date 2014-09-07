@@ -230,6 +230,10 @@ block content
               li
                 a(href="/music/{{.piece._id}}")
                   | {{{pretty_piece(.piece)}}}
+                  | {{#if .piece.scores}}
+                  |  
+                  i.fa.fa-music
+                  | {{/if}}
                 | &nbsp;
                 a(on-click="askRemovePiece")
                   i.fa.fa-times
