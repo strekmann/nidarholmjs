@@ -413,11 +413,11 @@ module.exports.projectDetailView = function (p, events, posts, files) {
         upcoming = [],
         finished = [];
 
-    if (p && now < moment(p.end)) {
+    if (p && moment(p.end) > now) {
         _.each(events, function (event) {
-            if (now < moment(event.start)) {
+            if (moment(event.start) > now) {
                 upcoming.push(event); //upcoming
-                if (now < moment(event.start).subtract(10, 'days')) {
+                if (moment(event.start) < now.add(10, 'days')) {
                     event.toggled = true;
                 }
             } else {
