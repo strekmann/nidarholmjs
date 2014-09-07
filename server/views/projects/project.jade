@@ -225,15 +225,14 @@ block content
                 | Nytt stykke
             | {{#music.length}}
             h2 Repertoar
-            ul
+            ul.fa-ul
               | {{#music}}
               li
+                | {{#if .piece.scores}}
+                i.fa.fa-li.fa-music
+                | {{/if}}
                 a(href="/music/{{.piece._id}}")
                   | {{{pretty_piece(.piece)}}}
-                  | {{#if .piece.scores}}
-                  |  
-                  i.fa.fa-music
-                  | {{/if}}
                 | &nbsp;
                 a(on-click="askRemovePiece")
                   i.fa.fa-times
