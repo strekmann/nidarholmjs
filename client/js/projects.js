@@ -415,9 +415,13 @@ module.exports.projectDetailView = function (p, events, posts, files) {
 
     if (p && moment(p.end) > now) {
         _.each(events, function (event) {
-            if (moment(event.start) > now) {
+            var start = moment(event.start);
+            if (start > now) {
                 upcoming.push(event); //upcoming
-                if (moment(event.start) < now.add(10, 'days')) {
+
+                // expand event info for events in the next 10 days
+                var limit = moment(event.start).add(10, 'days');
+                if (start < limit) {
                     event.toggled = true;
                 }
             } else {
