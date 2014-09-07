@@ -420,7 +420,7 @@ module.exports.projectDetailView = function (p, events, posts, files) {
                 upcoming.push(event); //upcoming
 
                 // expand event info for events in the next 10 days
-                var limit = moment(event.start).add(10, 'days');
+                var limit = moment().add(10, 'days');
                 if (start < limit) {
                     event.toggled = true;
                 }
