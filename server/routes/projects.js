@@ -30,7 +30,7 @@ module.exports.index = function (req, res, next) {
     else {
         query = Project.find().or({'permissions.public': true});
     }
-    query.where({end: {$gt: moment().endOf('day')}});
+    query.where({end: {$gt: moment().startOf('day')}});
     query.sort('end')
         .populate('creator', 'username name');
     query.exec(function (err, projects) {
@@ -51,7 +51,7 @@ module.exports.index = function (req, res, next) {
                 else {
                     query = Project.find({'permissions.public': true});
                 }
-                query.where({end: {$lt: moment().endOf('day')}});
+                query.where({end: {$lt: moment().startOf('day')}});
                 query.sort('-end')
                     .populate('creator', 'username name');
 
