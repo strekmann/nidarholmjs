@@ -328,7 +328,7 @@ module.exports.events = function (req, res, next) {
         query = Event.find({'permissions.public': true});
     }
     query = query
-        .where({start: {$gt: start, $lt: end}})
+        .where({start: {$gte: start, $lte: end}})
         .sort('start')
         .populate('creator', 'username name');
     query.exec(function (err, events) {
@@ -527,7 +527,7 @@ module.exports.ical_events = function (req, res, next) {
 
     var query = Event.find({'permissions.public': true});
     query = query
-        .where({start: {$gt: moment().subtract('years', 1).startOf('day')}})
+        .where({start: {$gte: moment().subtract('years', 1).startOf('day')}})
         .sort('start')
         .populate('creator', 'username name');
     query.exec(function (err, events) {

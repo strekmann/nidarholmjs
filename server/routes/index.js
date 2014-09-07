@@ -47,7 +47,7 @@ module.exports.index = function(req, res) {
                 {'permissions.users': req.user._id},
                 {'permissions.groups': { $in: req.user.groups }}
             ])
-            .where({start: {$gt: moment().startOf('day'), $lt: moment().add('months', 6).startOf('day')}})
+            .where({start: {$gte: moment().startOf('day'), $lte: moment().add('months', 6).startOf('day')}})
             .sort('start');
             query.exec(function (err, events) {
                 query = Project.find().or([
@@ -57,9 +57,9 @@ module.exports.index = function(req, res) {
                 ])
                 .or([
                     {start: null},
-                    {start: {$lt: moment().startOf('day')}}
+                    {start: {$lte: moment().startOf('day')}}
                 ])
-                .where({end: {$gt: moment().startOf('day')}})
+                .where({end: {$gte: moment().startOf('day')}})
                 .sort('end')
                 .limit(2);
                 query.exec(function (err, projects) {
@@ -85,16 +85,16 @@ module.exports.index = function(req, res) {
     else {
         query = Event
         .find({'permissions.public': true})
-        .where({start: {$gt: moment().startOf('day')}})
+        .where({start: {$gte: moment().startOf('day')}})
         .sort('start')
         .limit(8);
         query.exec(function (err, events) {
             query = Project.find({'permissions.public': true})
             .or([
                 {start: null},
-                {start: {$lt: moment().startOf('day')}}
+                {start: {$lte: moment().startOf('day')}}
             ])
-            .where({end: {$gt: moment().startOf('day')}})
+            .where({end: {$gte: moment().startOf('day')}})
             .sort('end')
             .limit(2);
             query.exec(function (err, projects) {
