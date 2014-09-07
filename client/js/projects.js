@@ -18,6 +18,7 @@ var Project = Ractive.extend({
         projects: [],
         previous_projects: [],
         events: [],
+        finished_events: [],
         event: null,
         pieces: [],
         piece: {},
@@ -393,7 +394,7 @@ module.exports.projectListView = function (projects, previous_projects) {
     });
 };
 
-module.exports.projectDetailView = function (project_obj, events, posts, files) {
+module.exports.projectDetailView = function (p, events, posts, files) {
 
     var images = [],
         non_images = [];
@@ -407,17 +408,39 @@ module.exports.projectDetailView = function (project_obj, events, posts, files) 
         }
     });
 
+    // separate events in upcoming and finished for project that has not finished
+    var now = moment(),
+        upcoming = [],
+        finished = [];
+
+    if (p && now < moment(p.end)) {
+        _.each(events, function (event) {
+            if (now < moment(event.start)) {
+                upcoming.push(event); //upcoming
+                if (now < moment(event.start).add(10, 'days')) {
+                    event.toggled = true;
+                }
+            } else {
+                finished.push(event); //finished
+            }
+        });
+    }
+    else {
+        upcoming = events;
+    }
+
     var projects = new Project({
             el: '#project',
             template: '#template',
-            restAPI: '/projects/' + project_obj._id,
+            restAPI: '/projects/' + p._id,
             data: {
-                project: project_obj,
-                events: events,
+                project: p,
+                events: upcoming,
+                finished_events: finished,
                 posts: posts,
                 images: images,
                 non_images: non_images,
-                music: project_obj.music
+                music: p.music
             }
         }),
         project_internal_editor,
@@ -606,6 +629,11 @@ module.exports.projectDetailView = function (project_obj, events, posts, files) 
         $('#enddate').pickadate({format: 'yyyy-mm-dd', formatSubmit: 'yyyy-mm-dd', onSet: function (context) {
             projectmodal.set('project.end', moment(context.select).startOf('day').toISOString());
         }});
+    });
+
+    projects.on('toggleFinishedEvents', function (event){
+        event.original.preventDefault();
+        projects.toggle('expanded_finished');
     });
 
     projects.on('newEvent', function (event) {

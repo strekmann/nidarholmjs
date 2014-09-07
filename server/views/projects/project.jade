@@ -272,7 +272,6 @@ block content
                     a#add_file.button.tiny Legg til fil
 
       .medium-4.columns
-        | {{^expanded}}
         #events
           if active_user
             .right
@@ -280,11 +279,22 @@ block content
                 i.fa.fa-calendar-o
                 | &nbsp;
                 | Ny
+          | {{#if expanded_finished}}
+          | {{#finished_events}}
+          |   {{>event}}
+          | {{/finished_events}}
+          a.button.secondary.tiny(on-click="toggleFinishedEvents")
+            i.fa.fa-angle-double-up
+            |  Skjul tidligere
+          | {{else}}
+          a.button.secondary.tiny(on-click="toggleFinishedEvents")
+            i.fa.fa-angle-double-up
+            |  Vis tidligere
+          | {{/if}}
           | {{#events}}
           |   {{>event}}
           | {{/events}}
 
-        | {{/expanded}}
 
     // {{>post}}
     article
