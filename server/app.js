@@ -5,8 +5,10 @@ var _           = require('underscore'),
     marked      = require('marked'),
     moment      = require('moment'),
     mongoose    = require('mongoose'),
+    uuid        = require('node-uuid'),
     settings    = require('./settings'),
     util        = require('./lib/util'),
+    RememberMeToken = require('./models').RememberMeToken,
     app         = require('libby')(express, settings);
 
 var User = require('./models/index').User,
@@ -48,6 +50,7 @@ app.configure(function(){
     // initialize passport
     app.use(app.passport.initialize());
     app.use(app.passport.session());
+    app.use(app.passport.authenticate('remember-me'));
 
     // utils
     app.use(function (req, res, next) {
@@ -207,10 +210,27 @@ app.post('/login/reset', core_routes.reset_password);
 app.get('/login', core_routes.login);
 app.post('/login',
          app.passport.authenticate('local', {
-             successRedirect: '/',
              failureRedirect: '/login',
              failureFlash: true
-         }));
+         }),
+         function(req, res, next) {
+             // Issue a remember me cookie if the option was checked
+             if (!req.body.remember_me) { return next(); }
+            var token = new RememberMeToken();
+            token._id = uuid.v4();
+            token.user = req.user._id;
+            token.save(function(err) {
+                if (err) { return done(err); }
+                res.cookie('remember_me', token, { path: '/', httpOnly: true, maxAge: 604800000 }); // 7 days
+                return next();
+            });
+         },
+         function(req, res){
+             var url = req.session.returnTo || '/';
+             delete req.session.returnTo;
+             res.redirect(url);
+         });
+
 app.post('/login/check_email', core_routes.check_email);
 
 app.get('/auth/google', app.passport.authenticate('google', { scope: [

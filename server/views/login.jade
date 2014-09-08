@@ -24,6 +24,10 @@ block content
               input(type="password" placeholder="Password" id="password" name="password" required pattern="^\\S+")
           .row
             .small-12.columns
+              input#remember_me(type="checkbox" name="remember_me" checked)
+              label(for="remember_me") Forbli pålogget
+          .row
+            .small-12.columns
               button.small(type="submit") Logg inn
               | &nbsp;
               a(href="/login/reset") Nullstill passord

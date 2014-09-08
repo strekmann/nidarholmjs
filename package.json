@@ -38,6 +38,7 @@
     "passport": "0.2.x",
     "passport-google-oauth": "0.1.x",
     "passport-local": "1.x",
+    "passport-remember-me": "0.0.x",
     "q": "1.0.x",
     "redis": "0.10.x",
     "short-mongo-id": "sigurdga/short-mongo-id",
