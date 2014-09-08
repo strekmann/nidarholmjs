@@ -8,6 +8,12 @@ var PasswordCode = new mongoose.Schema({
     created: {type: Date, required: true, 'default': Date.now}
 });
 
+var RememberMeToken = new mongoose.Schema({
+    _id: {type: String, unique: true, required: true}, //uuid
+    user: {type: String, required: true},
+    created: {type: Date, required: true, 'default': Date.now}
+});
+
 var GroupSchema = new mongoose.Schema({
     _id: {type: String, unique: true, required: true},
     name: {type: String, trim: true, required: true},
@@ -38,7 +44,9 @@ var UserSchema = new mongoose.Schema({
     is_admin: {type: Boolean, 'default': false},
     created: {type: Date, required: true, 'default': Date.now},
     nmf_id: {type: String},
-    //google_id: {type: String},
+    facebook_id: {type: String, unique: true, sparse: true},
+    google_id: {type: String, unique: true, sparse: true},
+    twitter_id: {type: String, unique: true, sparse: true},
     phone: {type: String},
     address: {type: String},
     postcode: {type: String},
@@ -129,6 +137,7 @@ module.exports = {
         group: GroupSchema
     },
     PasswordCode: mongoose.model('PasswordCode', PasswordCode),
+    RememberMeToken: mongoose.model('RememberMeToken', RememberMeToken),
     User: mongoose.model('User', UserSchema),
     Group: mongoose.model('Group', GroupSchema),
     Organization: mongoose.model('Organization', OrganizationSchema),

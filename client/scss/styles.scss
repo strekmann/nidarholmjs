@@ -124,6 +124,10 @@ a:focus {
     text-decoration: underline;
 }
 
+.success {
+    color: $success-color;
+}
+
 @media #{$medium-up} {
     #submenu {
         position: absolute;

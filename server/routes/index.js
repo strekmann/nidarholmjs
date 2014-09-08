@@ -128,13 +128,8 @@ module.exports.login = function(req, res){
 module.exports.logout = function(req, res){
     req.logout();
     req.session.destroy();
+    res.clearCookie('remember_me');
     res.redirect('/');
-};
-
-module.exports.google_callback = function(req, res){
-    var url = req.session.returnTo || '/';
-    delete req.session.returnTo;
-    res.redirect(url);
 };
 
 module.exports.check_email = function (req, res, next) {
