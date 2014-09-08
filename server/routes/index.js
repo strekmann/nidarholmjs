@@ -128,6 +128,7 @@ module.exports.login = function(req, res){
 module.exports.logout = function(req, res){
     req.logout();
     req.session.destroy();
+    res.clearCookie('remember_me');
     res.redirect('/');
 };
 
