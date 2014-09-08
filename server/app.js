@@ -5,10 +5,9 @@ var _           = require('underscore'),
     marked      = require('marked'),
     moment      = require('moment'),
     mongoose    = require('mongoose'),
-    uuid        = require('node-uuid'),
     settings    = require('./settings'),
     util        = require('./lib/util'),
-    RememberMeToken = require('./models').RememberMeToken,
+    persistentLogin = require('./lib/middleware').persistentLogin,
     app         = require('libby')(express, settings);
 
 var User = require('./models/index').User,
@@ -213,18 +212,7 @@ app.post('/login',
              failureRedirect: '/login',
              failureFlash: true
          }),
-         function(req, res, next) {
-             // Issue a remember me cookie if the option was checked
-             if (!req.body.remember_me) { return next(); }
-            var token = new RememberMeToken();
-            token._id = uuid.v4();
-            token.user = req.user._id;
-            token.save(function(err) {
-                if (err) { return done(err); }
-                res.cookie('remember_me', token, { path: '/', httpOnly: true, maxAge: 604800000 }); // 7 days
-                return next();
-            });
-         },
+         persistentLogin,
          function(req, res){
              var url = req.session.returnTo || '/';
              delete req.session.returnTo;
@@ -237,7 +225,7 @@ app.get('/auth/google', app.passport.authenticate('google', { scope: [
     'https://www.googleapis.com/auth/userinfo.profile',
 ]}));
 
-app.get('/auth/google/callback', app.passport.authenticate('google', { failureRedirect: '/login' }), function (req, res) {
+app.get('/auth/google/callback', app.passport.authenticate('google', { failureRedirect: '/login' }), persistentLogin, function (req, res) {
     var url = req.session.returnTo || '/';
     delete req.session.returnTo;
     res.redirect(url);
@@ -245,7 +233,7 @@ app.get('/auth/google/callback', app.passport.authenticate('google', { failureRe
 
 app.get('/auth/facebook', app.passport.authenticate('facebook'));
 
-app.get('/auth/facebook/callback', app.passport.authenticate('facebook', {failureRedirect: '/login'}), function (req, res) {
+app.get('/auth/facebook/callback', app.passport.authenticate('facebook', {failureRedirect: '/login'}), persistentLogin, function (req, res) {
     var url = req.session.returnTo || '/';
     delete req.session.returnTo;
     res.redirect(url);
@@ -253,7 +241,7 @@ app.get('/auth/facebook/callback', app.passport.authenticate('facebook', {failur
 
 app.get('/auth/twitter', app.passport.authenticate('twitter'));
 
-app.get('/auth/twitter/callback', app.passport.authenticate('twitter', {failureRedirect: '/login'}), function (req, res) {
+app.get('/auth/twitter/callback', app.passport.authenticate('twitter', {failureRedirect: '/login'}), persistentLogin, function (req, res) {
     var url = req.session.returnTo || '/';
     delete req.session.returnTo;
     res.redirect(url);
