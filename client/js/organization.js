@@ -42,13 +42,13 @@ var Admins = Ractive.extend({
     }
 });
 
-module.exports.addMusicscoreAdminView = function (o, u) {
+module.exports.addMusicscoreAdminView = function (ma, u) {
     var admins = new Admins({
         el: '#musicscore-admins',
         template: '#musicscore-admins-template',
         data: {
             users: u,
-            musicscore_admins: o.musicscore_admins
+            musicscore_admins: ma
         }
     });
 

@@ -125,7 +125,7 @@ block javascript
     require('s7n').organization.editOrganizationView();
   script
     | require('s7n').organization.addMusicscoreAdminView(
-    != JSON.stringify(organization)
+    != JSON.stringify(organization.musicscore_admins)
     | ,
     != JSON.stringify(users)
     | );
