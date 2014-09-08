@@ -5,7 +5,7 @@ block content
     .row
       .columns.large-3.large-push-9
         .show-for-large-up
-          if projects
+          if projects.length
             ul#next-projects.small-block-grid-1
               for project in projects
                 li
