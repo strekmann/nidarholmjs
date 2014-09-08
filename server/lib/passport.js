@@ -3,9 +3,12 @@ var User = require('../models').User,
     passport = require('passport'),
     crypto = require('crypto'),
     uuid = require('node-uuid'),
+    config = require('../settings'),
     LocalStrategy = require('passport-local').Strategy,
     RememberMeStrategy = require('passport-remember-me').Strategy,
-    GoogleStrategy = require('passport-google-oauth').OAuth2Strategy;
+    FacebookStrategy = require('passport-facebook').Strategy,
+    GoogleStrategy = require('passport-google-oauth').OAuth2Strategy,
+    TwitterStrategy = require('passport-twitter').Strategy;
 
 var fetchUser = function (user_id, callback) {
     User.findById(user_id, 'name username profile_picture_path groups friends', function(err, user){
@@ -64,6 +67,85 @@ module.exports = function(app){
             if (err) { return done(err); }
             return done(null, token._id);
         });
+    }));
+
+    passport.use(new FacebookStrategy({
+        clientID: config.auth.facebook.clientId,
+        clientSecret: config.auth.facebook.clientSecret,
+        callbackURL: config.auth.facebook.callbackURL,
+        enablePoof: false,
+        passReqToCallback: true
+    }, function (req, accessToken, refreshToken, profile, done) {
+        if (req.user) {
+            req.user.facebook_id = profile.id;
+            req.user.save(function (err, user) {
+                req.session.returnTo = '/users/' + req.user.username;
+                if (user) {
+                    req.flash('success', 'Du kan nå logge inn med Facebook-kontoen');
+                }
+                return done(err, user);
+            });
+        }
+        else {
+            User.findOne({facebook_id: profile.id}, function (err, user) {
+                if (!user) {
+                    req.flash('error', 'Facebook-konto er ikke koblet mot Nidarholm-konto. Dette kan gjøres fra brukersiden etter at du har logget inn.');
+                }
+                return done(err, user);
+            });
+        }
+    }));
+
+    passport.use(new GoogleStrategy({
+        clientID: config.auth.google.clientId,
+        clientSecret: config.auth.google.clientSecret,
+        callbackURL: config.auth.google.callbackURL,
+        passReqToCallback: true
+    }, function(req, accessToken, refreshToken, profile, done) {
+        if (req.user) {
+            req.user.google_id = profile.id;
+            req.user.save(function (err, user) {
+                req.session.returnTo = '/users/' + req.user.username;
+                if (user) {
+                    req.flash('success', 'Du kan nå logge inn med Google-kontoen');
+                }
+                return done(err, user);
+            });
+        }
+        else {
+            User.findOne({google_id: profile.id}, function (err, user) {
+                if (!user) {
+                    req.flash('error', 'Google-konto er ikke koblet mot Nidarholm-konto. Dette kan gjøres fra brukersiden etter at du har logget inn.');
+                }
+                return done(err, user);
+            });
+        }
+    }));
+
+    passport.use(new TwitterStrategy({
+        consumerKey: config.auth.twitter.clientId,
+        consumerSecret: config.auth.twitter.clientSecret,
+        callbackURL: config.auth.twitter.callbackURL,
+        passReqToCallback: true
+    }, function (req, token, tokenSecret, profile, done) {
+        if (req.user) {
+            req.user.twitter_id = profile.id;
+            req.user.save(function (err, user) {
+                req.session.returnTo = '/users/' + req.user.username;
+                if (user) {
+                    req.flash('success', 'Du kan nå logge inn med Twitter-kontoen');
+                }
+                return done(err, user);
+            });
+        }
+        else {
+            User.findOne({twitter_id: profile.id}, function (err, user) {
+                if (!user) {
+                    req.flash('error', 'Twitter-konto er ikke koblet mot Nidarholm-konto. Dette kan gjøres fra brukersiden etter at du har logget inn.');
+                }
+                return done(err, user);
+            });
+        }
     }));
 
     return passport;

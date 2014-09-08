@@ -132,12 +132,6 @@ module.exports.logout = function(req, res){
     res.redirect('/');
 };
 
-module.exports.google_callback = function(req, res){
-    var url = req.session.returnTo || '/';
-    delete req.session.returnTo;
-    res.redirect(url);
-};
-
 module.exports.check_email = function (req, res, next) {
     var pattern = new RegExp(req.body.email, 'i');
     User.findOne({email: {$regex: pattern}}, function (err, user) {

@@ -235,10 +235,29 @@ app.post('/login/check_email', core_routes.check_email);
 
 app.get('/auth/google', app.passport.authenticate('google', { scope: [
     'https://www.googleapis.com/auth/userinfo.profile',
-    'https://www.googleapis.com/auth/userinfo.email'
-]}), function(req, res){});
+]}));
 
-app.get('/auth/google/callback', app.passport.authenticate('google', { failureRedirect: '/login' }), core_routes.google_callback);
+app.get('/auth/google/callback', app.passport.authenticate('google', { failureRedirect: '/login' }), function (req, res) {
+    var url = req.session.returnTo || '/';
+    delete req.session.returnTo;
+    res.redirect(url);
+});
+
+app.get('/auth/facebook', app.passport.authenticate('facebook'));
+
+app.get('/auth/facebook/callback', app.passport.authenticate('facebook', {failureRedirect: '/login'}), function (req, res) {
+    var url = req.session.returnTo || '/';
+    delete req.session.returnTo;
+    res.redirect(url);
+});
+
+app.get('/auth/twitter', app.passport.authenticate('twitter'));
+
+app.get('/auth/twitter/callback', app.passport.authenticate('twitter', {failureRedirect: '/login'}), function (req, res) {
+    var url = req.session.returnTo || '/';
+    delete req.session.returnTo;
+    res.redirect(url);
+});
 
 app.get('/logout', core_routes.logout);
 

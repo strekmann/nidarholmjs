@@ -118,6 +118,37 @@ block content
           hr
           | {{{marked(.membership_history)}}}
 
+        if user._id === active_user._id
+          h2 Alternativ innlogging
+          if user.facebook_id
+            i.fa.fa-facebook-square.fa-2x.success
+          else
+            a.secondary(href="/auth/facebook")
+              i.fa.fa-facebook-square.fa-2x
+          | &emsp;
+          if user.google_id
+            i.fa.fa-google-plus-square.fa-2x.success
+          else
+            a.secondary(href="/auth/google")
+              i.fa.fa-google-plus-square.fa-2x
+          | &emsp;
+          if user.twitter_id
+            i.fa.fa-twitter-square.fa-2x.success
+          else
+            a.secondary(href="/auth/twitter")
+              i.fa.fa-twitter-square.fa-2x
+
+        if is_admin
+          p Har aktivert alternativ innlogging med 
+            if user.facebook_id
+              i.fa.fa-facebook-square
+            | &emsp;
+            if user.google_id
+              i.fa.fa-google-plus-square
+            | &emsp;
+            if user.twitter_id
+              i.fa.fa-twitter-square
+
       .medium-3.columns.hide-for-small-only
         a(href="/users/{{username}}/picture" on-click="changeProfilePicture")
           | {{#profile_picture}}
