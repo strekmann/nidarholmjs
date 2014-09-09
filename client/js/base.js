@@ -24,6 +24,23 @@ var Register = Ractive.extend({
 
 module.exports = {
     indexView: function(activities){
+
+        // add a user_images array of user images and counters
+        activities = _.map(activities, function (activity) {
+            activity.user_images = _.reduce(activity.changes, function (memo, change) {
+                var last = _.last(memo),
+                    id = change.user._id,
+                    image = change.user.profile_picture_path || '/img/user.png';
+                if (!last || last.id !== id) {
+                    memo.push({id: id, image: image, name: change.user.name, count: 1});
+                }
+                else {
+                    last.count += 1;
+                }
+                return memo;
+            }, []);
+            return activity;
+        });
         var ractive_activities = new Ractive({
             el: '#activities',
             template: '#activity-template',
@@ -40,6 +57,7 @@ module.exports = {
                 }
             }
         });
+
     },
 
     registerView: function () {

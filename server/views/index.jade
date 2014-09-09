@@ -110,17 +110,16 @@ block content
       | {{/content_type}}
       .row
         .columns.contributors
-          | {{#changes}}
-          | {{#user.profile_picture_path}}
-          img(src="{{user.profile_picture_path}}" alt="{{name}}" title="{{name}}")
-          | {{/user.profile_picture_path}}
-          | {{^user.profile_picture_path}}
-          img(src="/img/user.svg" alt="{{name}}" title="{{name}}")
-          | {{/user.profile_picture_path}}
-          | {{/changes}}
+          | {{#user_images}}
+          span.image
+            img(src="{{.image}}" alt="{{.name}}" title="{{.name}}")
+            | {{#if .count > 1}}
+            span {{.count}}
+            | {{/if}}
+          | {{/user_images}}
           .last
             | {{#changes.length > 1}}
-            | &nbsp; {{ changes.length - 1 }} svar
+            | &nbsp; {{ changes.length - 1 }} oppdateringer
             | {{/changes}}
             br
             | &nbsp; siste fra {{ last(changes).user.name }} {{ago(modified)}}
@@ -128,9 +127,15 @@ block content
         .columns
           | {{#tags}}
           | {{#.}}
+          | {{#if content_type === "forum"}}
           a(href="/forum/t/{{.}}")
             i.fa.fa-tag
             | &nbsp;{{.}}
+          | {{/if}}
+          | {{#if content_type === "upload"}}
+          i.fa.fa-tag
+          | &nbsp;{{.}}
+          | {{/if}}
           | &nbsp;
           | {{/.}}
           | {{/tags}}
