@@ -59,7 +59,12 @@ module.exports.upload = function (req, res) {
         util.upload_file(tmp_path, filename, user, options, function (err, file) {
             if (err) { throw err; }
 
-            Activity.findOne({content_type: 'upload', 'changes.user': file.creator, modified: {$gt: moment(file.created).subtract('hours', 1).toDate()}}, function (err, activity) {
+            Activity.findOne({
+                content_type: 'upload',
+                'changes.user': file.creator,
+                modified: {$gt: moment(file.created).subtract('minutes', 10).toDate()},
+                project: {$exists: false}
+            }, function (err, activity) {
 
                 if (!activity) {
                     activity = new Activity();

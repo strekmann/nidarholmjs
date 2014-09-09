@@ -5,11 +5,13 @@ var uslug = require('uslug'),
     util = require('../lib/util'),
     upload_file = util.upload_file,
     config = require('../settings'),
+    snippetify = require('../lib/util').snippetify,
     Project = require('../models/projects').Project,
     Event = require('../models/projects').Event,
     Piece = require('../models/projects').Piece,
     File = require('../models/files').File,
-    ForumPost = require('../models/forum').ForumPost;
+    ForumPost = require('../models/forum').ForumPost,
+    Activity = require('../models').Activity;
 
 // TODO: Create file util functions
 var fs = require('fs'),
@@ -426,26 +428,35 @@ module.exports.project_create_post = function (req, res, next) {
         post.creator = req.user;
         post.tags = [project.tag];
         post.save(function (err) {
-            if (err) {
-                res.json(400, err);
-            }
-            else {
-                post.populate('creator', 'username name', function (err, post) {
-                    if (err) {
-                        res.json(400, err);
-                    }
-                    else {
-                        res.format({
-                            html: function () {
-                                res.redirect('/projects/' + project._id);
-                            },
-                            json: function () {
-                                res.json(200, post);
-                            }
-                        });
-                    }
-                });
-            }
+            if (err) { return next(err); }
+            var activity = new Activity();
+            activity.content_type = 'forum';
+            activity.content_ids = [post._id];
+            activity.title = post.title;
+            activity.changes = [{user: post.creator, changed: post.created}];
+            activity.permissions = post.permissions;
+            activity.tags = post.tags;
+            activity.project = project._id;
+            activity.modified = post.created;
+            activity.content = {
+                snippet: snippetify(post.mdtext)
+            };
+            activity.save(function (err) {});
+            post.populate('creator', 'username name', function (err, post) {
+                if (err) {
+                    res.json(400, err);
+                }
+                else {
+                    res.format({
+                        html: function () {
+                            res.redirect('/projects/' + project._id);
+                        },
+                        json: function () {
+                            res.json(200, post);
+                        }
+                    });
+                }
+            });
         });
     });
 };
@@ -482,6 +493,61 @@ module.exports.project_create_file = function (req, res, next) {
             };
             upload_file(filepath, filename, user, options, function (err, file) {
                 if (err) { throw err; }
+                Activity.findOne({
+                    content_type: 'upload',
+                    'changes.user': file.creator,
+                    modified: {$gt: moment(file.created).subtract('minutes', 10).toDate()},
+                    project: project._id
+                }, function (err, activity) {
+
+                    if (!activity) {
+                        activity = new Activity();
+                        activity.content_type = 'upload';
+                    }
+
+                    activity.content_ids.push(file._id);
+                    activity.title = file.filename;
+                    activity.project = project._id;
+                    activity.changes.push({user: req.user, changed: file.created});
+                    activity.permissions = file.permissions;
+                    activity.modified = file.created;
+
+                    if (file.tags) {
+                        _.each(file.tags, function (tag) {
+                            activity.tags.addToSet(tag);
+                        });
+                    }
+
+                    if (!activity.content) {
+                        activity.content = {};
+                    }
+
+                    if (file.is_image) {
+                        if (!activity.content.images) {
+                            activity.content.images = [];
+                        }
+                        var image_already_there = _.find(activity.content.images, function (image) {
+                            return image.thumbnail_path === file.thumbnail_path;
+                        });
+                        if (!image_already_there) {
+                            activity.content.images.push({thumbnail_path: file.thumbnail_path, _id: file._id});
+                        }
+                    }
+                    else {
+                        if (!activity.content.non_images) {
+                            activity.content.non_images = [];
+                        }
+                        var already_there = _.find(activity.content.non_images, function (non_image) {
+                            return non_image.filename === file.filename;
+                        });
+                        if (!already_there) {
+                            activity.content.non_images.push({filename: file.filename, _id: file._id});
+                        }
+                    }
+                    activity.markModified('content');
+                    activity.save(function (err) {});
+                });
+
                 res.json(200, file);
             });
         });

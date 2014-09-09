@@ -61,7 +61,7 @@ module.exports.index = function (req, res, next) {
 
 module.exports.create_post = function (req, res, next) {
     if (!req.is_member) {
-        res.json(403, 'Forbidden');
+        res.status(403).json('Forbidden');
     }
     else {
         var post = new ForumPost();

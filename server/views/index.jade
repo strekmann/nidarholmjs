@@ -76,6 +76,9 @@ block content
         i.fa.fa-upload.right
         a(href='/files/{{content_ids.0}}')
           | {{title}}
+        small
+          |  
+          a(href="/{{.project.year}}/{{.project.tag}}") {{.project.title}}
       | {{#content.images.length}}
       .row
         .columns
