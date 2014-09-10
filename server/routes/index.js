@@ -49,7 +49,7 @@ module.exports.index = function(req, res) {
                 {'permissions.users': req.user._id},
                 {'permissions.groups': { $in: req.user.groups }}
             ])
-            .where({start: {$gte: moment().startOf('day'), $lte: moment().add('months', 6).startOf('day')}})
+            .where({start: {$gte: moment().startOf('day'), $lte: moment().add('months', 6).startOf('day').toDate()}})
             .sort('start');
             query.exec(function (err, events) {
                 query = Project.find().or([
@@ -59,9 +59,9 @@ module.exports.index = function(req, res) {
                 ])
                 .or([
                     {start: null},
-                    {start: {$lte: moment().startOf('day')}}
+                    {start: {$lte: moment().startOf('day').toDate()}}
                 ])
-                .where({end: {$gte: moment().startOf('day')}})
+                .where({end: {$gte: moment().startOf('day').toDate()}})
                 .sort('end')
                 .limit(2);
                 query
