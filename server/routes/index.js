@@ -101,9 +101,7 @@ module.exports.index = function(req, res) {
             .where({end: {$gte: moment().startOf('day')}})
             .sort('end')
             .limit(2);
-            query
-            .populate('creator', 'name username')
-            .exec(function (err, projects) {
+            query.lean().exec(function (err, projects) {
                 ForumPost
                 .find({'permissions.public': true, 'tags': config.news_tag})
                 .sort('-created')
@@ -112,6 +110,14 @@ module.exports.index = function(req, res) {
                 .exec(function (err, posts) {
                     res.format({
                         html: function () {
+                            _.each(projects, function (project) {
+                                project.concerts = [];
+                                _.each(events, function (event) {
+                                    if (_.contains(event.tags, project.tag) && _.contains(event.tags, 'konsert')) {
+                                        project.concerts.push(event);
+                                    }
+                                });
+                            });
                             res.render('index', {
                                 news_tag: config.news_tag,
                                 posts: posts,

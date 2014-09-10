@@ -51,14 +51,14 @@ block content
                 header
                   h1
                     a(href="/"+project.year+"/"+project.tag)= project.title
-                      |  
-                      small= shortdate(project.end)
                   .meta
                     .row
                       .columns
-                        span.byline
-                          a(href="/users/" + project.creator.username)= project.creator.name
-                        time.created(datetime=project.created)= shortdate(project.created)
+                        for concert in project.concerts
+                          time.start(datetime=concert.start)= longdate(concert.start)
+                          if concert.location
+                            span.location= concert.location
+
               .content
                 .row
                   .columns

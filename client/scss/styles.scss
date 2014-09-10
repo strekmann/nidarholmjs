@@ -388,6 +388,10 @@ nav.top-bar {
             font-weight: 300;
         }
 
+        .location {
+            font-weight: bold;
+        }
+
         i.fa {
             margin-left: 0.5em;
             //color: $hr-border-color;
@@ -415,7 +419,8 @@ nav.top-bar {
     }
 
     article {
-        span {
+        span,
+        time {
             margin-right: 1em; /* want some air since jade strips spaces */
         }
     }
