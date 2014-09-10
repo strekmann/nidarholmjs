@@ -6,18 +6,17 @@ block content
       #forum
 
   script#template(type="text/ractive")
-    | {{#post}}
     | {{#is_editing}}
     h1 Rediger innlegg
     form#edit_post
       .row
         .columns
           label(for="title") Tittel
-          input#title(type="text" name="title" value="{{title}}")
+          input#title(type="text" name="title" value="{{post.title}}")
       .row
         .columns
           label(for="mdtext") Innhold
-          textarea#mdtext(name="mdtext" on-focus-blur="checkLargeAreaSize") {{mdtext}}
+          textarea#mdtext(name="mdtext" on-focus-blur="checkLargeAreaSize") {{post.mdtext}}
       .row
         .columns
           label(for="permissions") Hvem skal kunne se innlegget
@@ -25,31 +24,28 @@ block content
       .row
         .columns
           label(for="tags") Merkelapper
-          input#tags(type="text" name="tags" value="{{tags}}")
+          input#tags(type="text" name="tags" value="{{post.tags}}")
       .row
         .columns
           button.small(type="submit" on-click="updatePost") Oppdater
           button.secondary.small(type="reset" on-click="toggleEdit") Avbryt
-    | {{/is_editing}}
-    | {{^is_editing}}
+    | {{else}}
     article#post
       header
-        h1 {{title}}
+        h1 {{post.title}}
         .meta
           .row
             .columns.small-9
               span.byline Av 
-                a(href="/users/{{creator.username}}") {{creator.name}}
-              time.created(datetime="{{isodate(created)}}") {{shortdate(created)}}
-              | {{#tags}}
-              | {{#.}}
+                a(href="/users/{{post.creator.username}}") {{post.creator.name}}
+              time.created(datetime="{{isodate(post.created)}}") {{shortdate(post.created)}}
+              | {{#post.tags}}
               a(href="{{taglink(.)}}")
                 i.fa.fa-tag
                 | &nbsp;{{.}}
-              | {{/.}}
-              | {{/tags}}
+              | {{/post.tags}}
             .columns.small-3.text-right.creator
-              permissionicons(permissions="{{permissions}}")
+              permissionicons(permissions="{{post.permissions}}")
               a(title="Rediger innlegget" on-click="toggleEdit")
                 i.fa.fa-edit
               a(title="Slett innlegget" on-click="deletePost")
@@ -57,36 +53,35 @@ block content
 
       .content
         .row
-          .columns {{{marked(mdtext)}}}
+          .columns {{{marked(post.mdtext)}}}
       | {{/is_editing}}
 
       section#replies.dtborder
         .row
-          | {{#active_user.profile_picture_path}}
+          | {{#if active_user.profile_picture_path}}
           img(src="{{active_user.profile_picture_path}}").columns.small-2
-          | {{/active_user.profile_picture_path}}
-          | {{^active_user.profile_picture_path}}
+          | {{else}}
           img(src="/img/user.svg").columns.small-2
-          | {{/active_user.profile_picture_path}}
+          | {{/if}}
           .columns.small-10
             form
               label(for="reply") Legg inn en kommentar:
               textarea(name="reply" id="reply" on-focus-blur="checkAreaSize")
               a.tiny.button.right(on-click="addReply") Send
 
-        | {{#replies}}
+        | {{#post.replies}}
         .row
-          | {{#.creator.profile_picture_path}}
+          | {{#if .creator.profile_picture_path}}
           img(src="{{.creator.profile_picture_path}}").columns.small-2
-          | {{/.creator.profile_picture_path}}
-          | {{^.creator.profile_picture_path}}
+          | {{else}}
           img(src="/img/user.svg").columns.small-2
-          | {{/.creator.profile_picture_path}}
+          | {{/if}}
           .columns.small-10
             .highlight
               .meta
                 span.byline Av 
                   a(href="/users/{{.creator.username}}") {{.creator.name}}
+                |  
                 time.created(datetime="{{isodate(created)}}") {{shortdate(.created)}}
                 a.right(on-click="deleteReply")
                   i.fa.fa-trash-o
@@ -100,17 +95,17 @@ block content
 
             | {{#comments}}
             .row
-              | {{#.creator.profile_picture_path}}
+              | {{#if .creator.profile_picture_path}}
               img(src="{{.creator.profile_picture_path}}").columns.small-2
-              | {{/.creator.profile_picture_path}}
-              | {{^.creator.profile_picture_path}}
+              | {{else}}
               img(src="/img/user.svg").columns.small-2
-              | {{/.creator.profile_picture_path}}
+              | {{/if}}
               .columns.small-10
                 .highlight
                   .meta
                     span.byline Av 
                       a(href="/users/{{.creator.username}}") {{.creator.name}}
+                    |  
                     time.created(datetime="{{isodate(created)}}") {{shortdate(.created)}}
                     a.right(on-click="deleteComment")
                       i.fa.fa-trash-o
@@ -123,19 +118,17 @@ block content
                     button.tiny.secondary(type="reset" on-click="resetComment") Avbryt
             | {{/comments}}
             .row
-              | {{#active_user.profile_picture_path}}
+              | {{#if active_user.profile_picture_path}}
               img(src="{{active_user.profile_picture_path}}").columns.small-2
-              | {{/active_user.profile_picture_path}}
-              | {{^active_user.profile_picture_path}}
+              | {{else}}
               img(src="/img/user.svg").columns.small-2
-              | {{/active_user.profile_picture_path}}
+              | {{/if}}
               .columns.small-10
                 form
                   label Svar:
                   textarea(name="comment" on-focus-blur="checkAreaSize")
                   a.tiny.button.right(on-click="addComment") Send
-        | {{/replies}}
-    | {{/post}}
+        | {{/post.replies}}
 
 block javascript
   script

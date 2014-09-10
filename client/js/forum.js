@@ -25,7 +25,6 @@ module.exports.threadView = function(post, active_user){
     var forum = new Forum({
         el: '#forum',
         template: '#template',
-        restAPI: '/forum',
         data: {
             post: post,
             active_user: active_user,

@@ -200,7 +200,7 @@ var Forum = Ractive.extend({
             return moment(date).format();
         },
         taglink: function(tag) {
-            var tagpath = this.restAPI + '/t/' + this.data.tags.join('/');
+            var tagpath = '/forum/t/' + this.data.tags.join('/');
             if (!_.contains(this.data.tags, tag)) {
                 tagpath += tag;
             }

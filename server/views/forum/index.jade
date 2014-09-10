@@ -78,11 +78,9 @@ block content
                 a(href="/users/{{creator.username}}") {{creator.name}}
               time.created(datetime="{{isodate(created)}}") {{shortdate(created)}}
               | {{#tags}}
-              | {{#.}}
               a(href="{{taglink(.)}}")
                 i.fa.fa-tag
                 | &nbsp;{{.}}
-              | {{/.}}
               | {{/tags}}
             .columns.small-3.text-right.creator
               permissionicons(permissions="{{permissions}}")
