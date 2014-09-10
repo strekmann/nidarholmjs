@@ -702,6 +702,16 @@ span.permissions {
     }
 }
 
+#internal-external-editor-chooser {
+    position: relative;
+    dl.sub-nav {
+        position: absolute;
+        top: 0;
+        right: 0;
+        z-index: 2;
+    }
+}
+
 .select2-container {
     margin: 0 0 1rem 0;
 }

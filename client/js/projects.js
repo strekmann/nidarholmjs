@@ -432,29 +432,17 @@ module.exports.projectDetailView = function (p, events, posts, files) {
     else {
         upcoming = events;
     }
-
-    var projects = new Project({
-            el: '#project',
-            template: '#template',
-            restAPI: '/projects/' + p._id,
-            data: {
-                project: p,
-                events: upcoming,
-                finished_events: finished,
-                posts: posts,
-                images: images,
-                non_images: non_images,
-                music: p.music
-            }
-        }),
-        project_internal_editor,
+    var project_internal_editor,
+        project_external_editor,
         post_editor,
         event_editor;
 
+    // Project modal section
     var projectmodal = new Ractive({
         el: '#project-modal',
         template: '#project-modal-template',
         data: {
+            description: 'internal',
             isodate: function(date){
                 if (date) {
                     return moment(date).format("YYYY-MM-DD");
@@ -473,9 +461,54 @@ module.exports.projectDetailView = function (p, events, posts, files) {
                 }
                 return ret;
             }
-        },
+        }
     });
 
+    projectmodal.on('close', function (event) {
+        event.original.preventDefault();
+        $('#project-modal').foundation('reveal', 'close');
+    });
+
+    projectmodal.on('updateProject', function (event) {
+        event.original.preventDefault();
+        if (project_internal_editor) {
+            event.context.project.private_mdtext = project_internal_editor.codemirror.getValue() || event.context.project.private_mdtext;
+        }
+        if (project_external_editor) {
+            event.context.project.public_mdtext = project_external_editor.codemirror.getValue() || event.context.project.public_mdtext;
+        }
+        console.log(event.context);
+        event.context.project.permissions = $('#permissions').val();
+
+        projects.updateProject(event.context.project)
+        .then(function(data) {
+            // ok
+            projects.set('project', data);
+            $('#project-modal').foundation('reveal', 'close');
+        }, function (xhr, status, err) {
+            eventmodal.set('error', err.responseJSON.error);
+        });
+    });
+
+    projectmodal.on('setInternal', function (event) {
+        event.original.preventDefault();
+        projectmodal.set('description', 'internal');
+        project_internal_editor = setup_editor('#private_mdtext');
+    });
+
+    projectmodal.on('setExternal', function (event) {
+        event.original.preventDefault();
+        projectmodal.set('description', 'external');
+        project_external_editor = setup_editor('#public_mdtext');
+    });
+
+    $(document).on('opened.fndtn.reveal', '#project-modal[data-reveal]', function () {
+        if (!project_internal_editor) {
+            project_internal_editor = setup_editor('#private_mdtext');
+        }
+    });
+
+    // Event modal section
     var eventmodal = new Ractive({
         el: '#event-modal',
         template: '#event-modal-template',
@@ -507,6 +540,24 @@ module.exports.projectDetailView = function (p, events, posts, files) {
         }
     });
 
+    eventmodal.on('close', function (event) {
+        event.original.preventDefault();
+        $('#event-modal').foundation('reveal', 'close');
+    });
+
+    eventmodal.on('create', function (event) {
+        event.original.preventDefault();
+        projects.createEvent(event.context.event, '/projects/' + projects.get('project._id') + '/events')
+        .then(function (data) {
+            flash.data.success.push(data.title + ' ble lagt til i kalenderen');
+            projects.get('events').unshift(data);
+            projects.set('event', {});
+            $('#event-modal').foundation('reveal', 'close');
+        }, function(err){
+            eventmodal.set('error', err.responseJSON.error);
+        });
+    });
+
     // Post modal section
     var postmodal = new Ractive({
         el: '#post-modal',
@@ -533,24 +584,10 @@ module.exports.projectDetailView = function (p, events, posts, files) {
             eventmodal.set('error', err.responseJSON.error);
         });
     });
-
-    // Event modal section
-    eventmodal.on('close', function (event) {
-        event.original.preventDefault();
-        $('#event-modal').foundation('reveal', 'close');
-    });
-
-    eventmodal.on('create', function (event) {
-        event.original.preventDefault();
-        projects.createEvent(event.context.event, '/projects/' + projects.get('project._id') + '/events')
-        .then(function (data) {
-            flash.data.success.push(data.title + ' ble lagt til i kalenderen');
-            projects.get('events').unshift(data);
-            projects.set('event', {});
-            $('#event-modal').foundation('reveal', 'close');
-        }, function(err){
-            eventmodal.set('error', err.responseJSON.error);
-        });
+    $(document).on('opened.fndtn.reveal', '#post-modal[data-reveal]', function () {
+        if (!post_editor) {
+            post_editor = setup_editor('#post_mdtext');
+        }
     });
 
     // Music modal section
@@ -587,40 +624,23 @@ module.exports.projectDetailView = function (p, events, posts, files) {
         });
     });
 
-    // Project modal section
-    projectmodal.on('close', function (event) {
-        event.original.preventDefault();
-        $('#project-modal').foundation('reveal', 'close');
-    });
-
-    projectmodal.on('updateProject', function (event) {
-        event.original.preventDefault();
-        project_internal_editor.codemirror.save(); //toTextArea();
-        event.context.project.private_mdtext = $('#private_mdtext').val();
-        event.context.project.permissions = $('#permissions').val();
-
-        projects.updateProject(event.context.project)
-        .then(function(data) {
-            // ok
-            projects.set('project', data);
-            $('#project-modal').foundation('reveal', 'close');
-        }, function (xhr, status, err) {
-            eventmodal.set('error', err.responseJSON.error);
-        });
-    });
-
-    $(document).on('opened.fndtn.reveal', '#project-modal[data-reveal]', function () {
-        if (!project_internal_editor) {
-            project_internal_editor = setup_editor('#private_mdtext');
-        }
-    });
-    $(document).on('opened.fndtn.reveal', '#post-modal[data-reveal]', function () {
-        if (!post_editor) {
-            post_editor = setup_editor('#post_mdtext');
-        }
-    });
-
     // Project section
+    var projects = new Project({
+            el: '#project',
+            template: '#template',
+            restAPI: '/projects/' + p._id,
+            data: {
+                project: p,
+                events: upcoming,
+                finished_events: finished,
+                posts: posts,
+                images: images,
+                non_images: non_images,
+                music: p.music,
+                description: 'internal'
+            }
+        });
+
     projects.on('editProject', function (event) {
         var project = _.clone(event.context.project);
         projectmodal.set('project', project);
@@ -633,6 +653,16 @@ module.exports.projectDetailView = function (p, events, posts, files) {
         $('#enddate').pickadate({format: 'yyyy-mm-dd', formatSubmit: 'yyyy-mm-dd', onSet: function (context) {
             projectmodal.set('project.end', moment(context.select).startOf('day').toISOString());
         }});
+    });
+
+    projects.on('setInternal', function (event) {
+        event.original.preventDefault();
+        projects.set('description', 'internal');
+    });
+
+    projects.on('setExternal', function (event) {
+        event.original.preventDefault();
+        projects.set('description', 'external');
     });
 
     projects.on('toggleFinishedEvents', function (event){
