@@ -64,7 +64,9 @@ module.exports.index = function(req, res) {
                 .where({end: {$gte: moment().startOf('day')}})
                 .sort('end')
                 .limit(2);
-                query.exec(function (err, projects) {
+                query
+                .populate('creator', 'name username')
+                .exec(function (err, projects) {
                     res.format({
                         html: function () {
                             res.render('index', {
@@ -99,7 +101,9 @@ module.exports.index = function(req, res) {
             .where({end: {$gte: moment().startOf('day')}})
             .sort('end')
             .limit(2);
-            query.exec(function (err, projects) {
+            query
+            .populate('creator', 'name username')
+            .exec(function (err, projects) {
                 ForumPost
                 .find({'permissions.public': true, 'tags': config.news_tag})
                 .sort('-created')

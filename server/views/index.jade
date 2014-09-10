@@ -5,7 +5,7 @@ block content
     .row
       .columns.large-3.large-push-9
         .show-for-large-up
-          if projects.length
+          if active_user && projects.length
             ul#next-projects.small-block-grid-1
               for project in projects
                 li
@@ -44,6 +44,25 @@ block content
         else
           if meta.description
             != marked(meta.description)
+
+          #projects
+            for project in projects
+              article.project
+                header
+                  h1
+                    a(href="/"+project.year+"/"+project.tag)= project.title
+                      |  
+                      small= shortdate(project.end)
+                  .meta
+                    .row
+                      .columns
+                        span.byline
+                          a(href="/users/" + project.creator.username)= project.creator.name
+                        time.created(datetime=project.created)= shortdate(project.created)
+              .content
+                .row
+                  .columns
+                    != marked(project.public_mdtext)
 
           #news
             for post in posts
