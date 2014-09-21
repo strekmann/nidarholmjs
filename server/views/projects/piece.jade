@@ -79,6 +79,19 @@ block content
                 input(name="file" type="file" multiple)
           | {{/groups}}
 
+          h2 Last ned noter
+          | {{#groups}}
+          h3 {{.name}}
+          | {{#.scores}}
+          .row
+            .columns.small-5.medium-3.large-2
+              a.button(href="{{.path}}") Last ned
+            .columns.small-7.medium-9.large-10
+              h3
+                a(href="/files/{{._id}}") {{.filename}}
+          | {{/.scores}}
+          | {{/groups}}
+
 
 block javascript
   script
