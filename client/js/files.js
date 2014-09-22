@@ -20,7 +20,7 @@ var Files = Ractive.extend({
 
                 }
                 else {
-                    return prefix + "/" + tag;
+                    return prefix + tag;
                 }
             }
         }
