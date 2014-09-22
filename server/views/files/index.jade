@@ -58,6 +58,15 @@ block content
               span.meter(style="width: {{uploading.progress}}%")
           | {{/uploading_files}}
 
+          .row
+            .right.columns.medium-8
+              form(on-submit="filter")
+                .row
+                  .columns.small-2
+                    label.right.inline(for="filter") Filtrer
+                  .columns.small-10
+                    input#filter(name="filter" type="text")
+
         | {{#files}}
         .row(intro-outro="slide")
           .small-2.columns

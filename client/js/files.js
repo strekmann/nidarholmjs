@@ -1,20 +1,62 @@
-module.exports.fileListView = function (files, active_user) {
-    var ractive = new Ractive({
-        el: '#files',
-        template: '#template',
-        noIntro: true,
-        data: {
-            files: files,
-            uploading_files: [],
-            active_user: active_user,
-            gotall: false,
-            page: 0,
-            shortdate: function (date) {
-                return moment(date).format("ll");
+var Files = Ractive.extend({
+    noIntro: true,
+    data: {
+        uploading_files: [],
+        gotall: false,
+        page: 0,
+        filter: [],
+        shortdate: function (date) {
+            return moment(date).format("ll");
+        },
+        taglink: function (tag) {
+            var prefix = "/files/t/";
+            if (tag) {
+                var old_tags = window.location.href.split(prefix, 2);
+                if (old_tags.length === 2) {
+                    // we have tags
+                    var tags = old_tags[1].split("/");
+                    tags.push(tag);
+                    return prefix + tags.uniq.join("/");
+
+                }
+                else {
+                    return prefix + "/" + tag;
+                }
             }
         }
+    },
+    search: function (query) {
+        return $.ajax({
+            url: '/tags',
+            dataType: 'json',
+            type: 'get',
+            data: {
+                q: query
+            }
+        });
+    }
+});
+
+module.exports.fileListView = function (f, active_user) {
+    var files = new Files({
+        el: '#files',
+        template: '#template',
+        data: {
+            files: f,
+            active_user: active_user,
+        }
     });
-    ractive.on('deleteFile', function (event) {
+    files.on('search', function (event) {
+        event.original.preventDefault();
+
+        var query = event.context.query;
+        files.search(query)
+        .then(function (data) {
+            //console.log(data);
+        });
+    });
+
+    files.on('deleteFile', function (event) {
         event.original.preventDefault();
         var file = $(event.node),
             promise = $.ajax({
@@ -25,24 +67,24 @@ module.exports.fileListView = function (files, active_user) {
 
         promise.then(function (file) {
             var index = event.keypath.split('.').pop();
-            ractive.data.files.splice(index, 1);
+            files.data.files.splice(index, 1);
         });
     });
-    ractive.on('fetchMore', function (event) {
+    files.on('fetchMore', function (event) {
         event.original.preventDefault();
-        ractive.add('page', 1);
+        files.add('page', 1);
         var promise = $.ajax({
             url: '/files',
             type: 'GET',
             dataType: 'json',
-            data: {page: ractive.get('page')}
+            data: {page: files.get('page')}
         });
 
         promise.then(function (data) {
             if (data.length === 0) {
                 self.set('gotall', true);
             }
-            ractive.data.files.push.apply(ractive.data.files, data);
+            files.data.files.push.apply(files.data.files, data);
         });
     });
     var uploadzone = new Dropzone("#upload", {
@@ -51,22 +93,22 @@ module.exports.fileListView = function (files, active_user) {
     });
 
     uploadzone.on("sending", function (file) {
-        ractive.data.uploading_files.push(file);
+        files.data.uploading_files.push(file);
     });
     uploadzone.on("uploadprogress", function (file, progress) {
-        _.each(ractive.data.uploading_files, function (f, i) {
+        _.each(files.data.uploading_files, function (f, i) {
             if (f.name === file.name) {
-                ractive.set('uploading_files.' + i, file);
+                files.set('uploading_files.' + i, file);
             }
         });
     });
     uploadzone.on("success", function (frontend_file, backend_file) {
-        _.each(ractive.data.uploading_files, function (f, i) {
+        _.each(files.data.uploading_files, function (f, i) {
             if (f.name === frontend_file.name) {
-                ractive.data.uploading_files.splice(i, 1);
+                files.data.uploading_files.splice(i, 1);
             }
         });
-        ractive.data.files.unshift(backend_file);
+        files.data.files.unshift(backend_file);
     });
 
     $('#drop').on('click', function (event) {
@@ -74,4 +116,23 @@ module.exports.fileListView = function (files, active_user) {
     });
 
     require('s7n').tagify();
+    var has_tags = window.location.href.split("/files/t/", 2);
+    var tags;
+    if (has_tags.length === 2) {
+        tags = has_tags[1].split("/");
+    }
+    else {
+        tags = [];
+    }
+    $('#filter').val(tags.join(","));
+
+    require('s7n').tagify({selector: '#filter'}, function (element) {
+        var tags = element.val;
+        if (tags.length) {
+            window.location.href = '/files/t/' + tags.join('/');
+        }
+        else {
+            window.location.href = '/files';
+        }
+    });
 };

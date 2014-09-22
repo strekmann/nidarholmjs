@@ -48,8 +48,21 @@ var flash = function (messages, member_group_id) {
     return ractive;
 };
 
-var tagify = function (tags) {
-    $('#tags').select2({
+var tagify = function () {
+    var options = {},
+        callback;
+
+    if (_.isObject(arguments[0])) {
+        options = arguments[0];
+    }
+
+    callback = arguments[arguments.length-1];
+
+    var selector = options.selector || '#tags',
+        url = options.url || '/tags',
+        selected = options.tags || [];
+
+    $(selector).select2({
         width: '100%',
         tags: [],
         tokenSeparators: [",", " "],
@@ -89,6 +102,11 @@ var tagify = function (tags) {
             }
         }
     });
+    if (_.isFunction(callback)) {
+        $(selector).on("change", function(element) {
+            callback(element);
+        });
+    }
 };
 
 module.exports = {

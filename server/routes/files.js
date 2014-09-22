@@ -43,6 +43,47 @@ module.exports.index = function (req, res) {
     });
 };
 
+module.exports.search = function (req, res) {
+    var tagstring = req.params[0];
+    var query;
+    if (req.user) {
+        query = File.find().or([
+            {creator: req.user},
+            {'permissions.public': true},
+            {'permissions.users': req.user._id},
+            {'permissions.groups': { $in: req.user.groups }}
+        ]);
+    }
+    else {
+        query = File.find({'permissions.public': true});
+    }
+
+    _.each(tagstring.split("/"), function (tag) {
+        query.find({'tags': tag});
+    });
+
+    query = query
+        .sort('-created')
+        .populate('creator', 'username name')
+        .limit(20);
+    if (req.query.page) {
+        query = query.skip(20 * req.query.page);
+    }
+    query.exec(function (err, files) {
+        if (err) {
+            throw err;
+        }
+        res.format({
+            html: function () {
+                res.render('files/index', {files: files, meta: {title: 'Filer'}});
+            },
+            json: function () {
+                res.json(200, files);
+            }
+        });
+    });
+};
+
 module.exports.upload = function (req, res) {
     if (!req.is_member) {
         res.send(403, "Forbidden");
