@@ -279,6 +279,13 @@ var Project = Ractive.extend({
             data: _.pick(event, 'title', 'mdtext', 'start', 'end', 'permissions', 'location', 'tags')
         });
     },
+    deleteEvent: function (event) {
+        return $.ajax({
+            type: 'DELETE',
+            url: window.location.href,
+            dataType: 'json'
+        });
+    },
     createPiece: function (piece, project) {
         piece.project = this.get('project._id');
         return $.ajax({
@@ -862,6 +869,11 @@ module.exports.eventView = function (event, active_user) {
         }, 1);
     });
 
+    project.on('toggleDelete', function (event) {
+        event.original.preventDefault();
+        this.toggle('askDelete');
+    });
+
     project.on('updateEvent', function (event) {
         event.original.preventDefault();
         editor.codemirror.save();
@@ -876,6 +888,15 @@ module.exports.eventView = function (event, active_user) {
         }, function (xhr, status, err) {
             console.error(err);
             //project.get('error').push(err);
+        });
+    });
+
+    project.on('deleteEvent', function (event) {
+        event.original.preventDefault();
+        project.deleteEvent(event.context.event)
+        .then(function (data) {
+            flash.data.success.push(data.title + " er slettet");
+            //window.location.href = history.go(-2);
         });
     });
 };

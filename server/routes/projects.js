@@ -216,7 +216,17 @@ module.exports.project = function (req, res, next) {
             res.send(404, 'Not found');
         }
         else {
-            Event.find({tags: project.tag}).populate('creator', 'username name').sort('start').exec(function (err, events) {
+            Event
+            .find({tags: project.tag})
+            .or([
+                {creator: req.user._id},
+                {'permissions.public': true},
+                {'permissions.users': req.user._id},
+                {'permissions.groups': { $in: req.user.groups }}
+            ])
+            .populate('creator', 'username name')
+            .sort('start')
+            .exec(function (err, events) {
                 ForumPost.find({tags: project.tag}).populate('creator', 'username name').sort('-created').exec(function (err, posts) {
                     var images = [];
                     var non_images = [];
@@ -282,13 +292,23 @@ module.exports.project_create_event = function (req, res, next) {
     }
 };
 
-// TODO: Only hide. Or remove project tag. Or ask.
-module.exports.project_delete_event = function (req, res, next) {
+module.exports.delete_event = function (req, res, next) {
     var event_id = req.params.event_id;
-    Event.findByIdAndRemove(event_id, function (err, event) {
-        if (err) { return next(err); }
-        res.json(200, event);
-    });
+
+    if (req.user) {
+        Event.findByIdAndRemove(req.params.id).or([
+            {creator: req.user._id},
+            {'permissions.public': true},
+            {'permissions.users': req.user._id},
+            {'permissions.groups': { $in: req.user.groups }}
+        ]).exec(function (err, event) {
+            if (err) { return next(err); }
+            res.json(200, event);
+        });
+    }
+    else {
+        res.render('403');
+    }
 };
 
 module.exports.events = function (req, res, next) {
