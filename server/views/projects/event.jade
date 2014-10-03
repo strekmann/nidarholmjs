@@ -21,7 +21,7 @@ block content
 
   script#template(type="text/ractive")
     | {{^expanded}}
-    if is_admin || active_user._id === event.creator
+    if is_admin || active_user && active_user._id === event.creator
       .right
         | {{#if .askDelete}}
         | Slett?&nbsp;
