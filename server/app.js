@@ -342,7 +342,7 @@ app.put('/events/:id', project_routes.update_event);
 app.delete('/events/:id', project_routes.delete_event);
 app.get('/music', project_routes.music);
 app.post('/music', project_routes.create_piece);
-app.get('/music/:id', project_routes.piece);
+app.get('/music/:id', musicscoreadmin_middleware, project_routes.piece);
 app.post('/music/:id/scores', musicscoreadmin_middleware, project_routes.upload_score);
 
 var proxy_routes = require('./routes/proxy');

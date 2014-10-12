@@ -1,5 +1,6 @@
 // express middleware
 var moment = require('moment'),
+    _ = require('underscore'),
     uuid = require('node-uuid'),
     RememberMeToken = require('../models').RememberMeToken;
 
@@ -28,11 +29,13 @@ module.exports.persistentLogin = function (req, res, next) {
 
 module.exports.musicscoreadmin_middleware = function (req, res, next) {
     var organization = req.organization;
-    if (!organization.musicadmin_group) {
-        organization.musicadmin_group = organization.admin_group;
+    if (!organization.musicscoreadmin_group) {
+        organization.musicscoreadmin_group = organization.admin_group;
     }
-    req.is_musicscoreadmin = res.locals.is_musicscoreadmin = _.some(organization.musicscoreadmin_group, function (member) {
-        return member.user === req.user._id;
+    organization.populate('musicscoreadmin_group', function () {
+        req.is_musicscoreadmin = res.locals.is_musicscoreadmin = _.some(organization.musicscoreadmin_group.members, function (member) {
+            return member.user === req.user._id;
+        });
+        next();
     });
-    next();
 };
