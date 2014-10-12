@@ -636,19 +636,11 @@ module.exports.contacts = function (req, res, next) {
 
 module.exports.edit_organization = function (req, res, next) {
     if (req.is_admin) {
-        req.organization
-        .populate('musicscore_admins', 'name username')
-        .populate({
-            path: 'member_group.members.user',
-            select: 'name',
-            model: 'User'
-        }, function (err, org) {
-            var users = _.pluck(org.member_group.members, 'user');
-            users.sort(function (a, b) { return a.name.localeCompare(b.name); });
+        Group.find({organization: req.organization._id}).select('name').exec(function (err, groups) {
             res.render('organization/edit_organization', {
                 organization: req.organization,
                 locales: config.languages,
-                users: users,
+                groups: groups,
                 meta: {title: 'Rediger organisasjon'}
             });
         });
@@ -711,31 +703,26 @@ module.exports.update_organization = function (req, res, next) {
     }
 };
 
-module.exports.add_musicscore_admin = function (req, res, next) {
+module.exports.set_admin_group = function (req, res, next) {
     if (!req.is_admin) {
         res.json(403, 'Forbidden');
     } else {
-        req.organization.musicscore_admins.push(req.body.user);
+        req.organization.administration_group = req.body.group;
         req.organization.save(function (err) {
             if (err) { return next(err); }
-            User.findById(req.body.user)
-            .select('username name')
-            .exec(function (err, user) {
-                if (err) { return next(err); }
-                res.json(user);
-            });
+            res.json({});
         });
     }
 };
 
-module.exports.remove_musicscore_admin = function (req, res, next) {
+module.exports.set_musicscoreadmin_group = function (req, res, next) {
     if (!req.is_admin) {
         res.json(403, 'Forbidden');
     } else {
-        req.organization.musicscore_admins.pull(req.body._id);
+        req.organization.musicscoreadmin_group = req.body.group;
         req.organization.save(function (err) {
             if (err) { return next(err); }
-            res.json(200, {});
+            res.json({});
         });
     }
 };

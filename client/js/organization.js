@@ -19,57 +19,55 @@ module.exports.editOrganizationView = function () {
 
 var Admins = Ractive.extend({
     data: {
-        users: [],
-        musicscore_admins: []
+        groups: [],
+        musicscoreadmin_group: null
     },
-    addMusicscoreAdmin: function (user_id) {
+    setAdminGroup: function () {
+        var self = this;
         return $.ajax({
-            url: '/organization/admin/musicscoreadmins',
+            url: '/organization/admin/admin_group',
             dataType: 'json',
-            type: 'post',
+            type: 'put',
             data: {
-                user: user_id
+                group: self.data.admin_group
             }
         });
     },
-    removeMusicscoreAdmin: function (user) {
+    setMusicscoreadminGroup: function () {
+        var self = this;
         return $.ajax({
-            url: '/organization/admin/musicscoreadmins',
-            datatype: 'json',
-            type: 'delete',
-            data: _.pick(user, '_id')
+            url: '/organization/admin/musicscoreadmin_group',
+            dataType: 'json',
+            type: 'put',
+            data: {
+                group: self.data.musicscoreadmin_group
+            }
         });
     }
 });
 
-module.exports.addMusicscoreAdminView = function (ma, u) {
+module.exports.setMusicscoreAdminView = function (gs, ag, mg) {
     var admins = new Admins({
-        el: '#musicscore-admins',
-        template: '#musicscore-admins-template',
+        el: '#admin-change',
+        template: '#admin-change-template',
         data: {
-            users: u,
-            musicscore_admins: ma
+            groups: gs,
+            admin_group: ag,
+            musicscoreadmin_group: mg
         }
     });
 
-    admins.on('addMusicscoreAdmin', function (event) {
+    admins.on('setAdminGroup', function (event) {
         event.original.preventDefault();
-
-        admins.addMusicscoreAdmin(event.context.newadmin)
+        admins.setAdminGroup()
         .then(function (data) {
-            admins.get('musicscore_admins').push(data);
         });
     });
 
-    admins.on('removeMusicscoreAdmin', function (event) {
+    admins.on('setMusicscoreadminGroup', function (event) {
         event.original.preventDefault();
-
-        var keypath = event.keypath;
-
-        admins.removeMusicscoreAdmin(event.context)
+        admins.setMusicscoreadminGroup()
         .then(function (data) {
-            var index = event.keypath.split('.').pop();
-            admins.get('musicscore_admins').splice(index, 1);
         });
     });
 };

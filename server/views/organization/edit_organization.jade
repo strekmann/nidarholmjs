@@ -93,39 +93,44 @@ block content
             .columns
               button.small(type="submit") Lagre
 
-          .row
-            .columns.medium-4
-              h2 Noteadministratorer
+          #admin-change
 
-              #musicscore-admins
+  script#admin-change-template(type="text/ractive")
+    hr
+    .row
+      .columns.medium-6
+        h2 Administratorgruppe
 
-  script#musicscore-admins-template(type="text/ractive")
-    ul
-      | {{#musicscore_admins}}
-      li {{.name}}
-        | &nbsp;
-        a
-          i.fa.fa-times(on-click='removeMusicscoreAdmin')
-      | {{/musicscore_admins}}
-
-    form(on-submit="addMusicscoreAdmin")
-      .row
-        .columns
-          label(for="musicscore_admin_user")
-          select#musicscore_admin_user(value="{{newadmin}}")
-            | {{#users}}
+        form()
+          label(for="admin_group")
+          select#admin_group(value="{{admin_group}}" on-blur="setAdminGroup")
+            option
+            | {{#groups}}
             option(value="{{._id}}") {{.name}}
-            | {{/users}}
-      .row
-        .columns
-          button.tiny Legg til som noteansvarlig
+            | {{/groups}}
+
+      .columns.medium-6
+        h2 Noteadministratorgruppe
+
+        form()
+          label(for="musicscoreadmin_group")
+          select#musicscoreadmin_group(value="{{musicscoreadmin_group}}" on-blur="setMusicscoreadminGroup")
+            option
+            | {{#groups}}
+            option(value="{{._id}}") {{.name}}
+            | {{/groups}}
 
 block javascript
   script.
     require('s7n').organization.editOrganizationView();
   script
-    | require('s7n').organization.addMusicscoreAdminView(
-    != JSON.stringify(organization.musicscore_admins)
+    | require('s7n').organization.setMusicscoreAdminView(
+    != JSON.stringify(groups)
     | ,
-    != JSON.stringify(users)
+    != JSON.stringify(organization.administration_group._id)
+    | ,
+    if (!organization.musicscoreadmin_group)
+      != JSON.stringify("")
+    else
+      != JSON.stringify(organization.musicscoreadmin_group)
     | );

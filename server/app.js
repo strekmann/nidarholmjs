@@ -8,6 +8,7 @@ var _           = require('underscore'),
     settings    = require('./settings'),
     util        = require('./lib/util'),
     persistentLogin = require('./lib/middleware').persistentLogin,
+    musicscoreadmin_middleware = require('./lib/middleware').musicscoreadmin_middleware,
     app         = require('libby')(express, settings);
 
 var User = require('./models/index').User,
@@ -73,7 +74,6 @@ app.configure(function(){
         Organization.findById('nidarholm')
         .populate('member_group')
         .populate('administration_group') // no need to select fields, ids only
-        .populate('musicscoreadmin_group')
         .exec(function (err, organization) {
             if (err) { next(err); }
             if (organization) {
@@ -84,9 +84,6 @@ app.configure(function(){
                 }
                 if (!organization.administration_group) {
                     organization.administration_group = organization.member_group;
-                }
-                if (!organization.musicscoreadmin_group) {
-                    organization.musicscoreadmin_group = organization.administration_group;
                 }
                 res.locals.address = req.protocol + "://" + organization.domain;
                 res.locals.path = req.path;
@@ -109,9 +106,6 @@ app.configure(function(){
                             if (!organization.administration_group) {
                                 organization.administration_group = organization.member_group;
                             }
-                            if (!organization.musicscoreadmin_group) {
-                                organization.musicscoreadmin_group = organization.administration_group;
-                            }
                             res.locals.address = req.protocol + "://" + organization.domain;
                             res.locals.path = req.path;
                             next();
@@ -131,9 +125,6 @@ app.configure(function(){
                     return member.user === req.user._id;
                 });
                 req.is_admin = res.locals.is_admin = _.some(req.organization.administration_group.members, function (member) {
-                    return member.user === req.user._id;
-                });
-                req.is_musicscoreadmin = res.locals.is_musicscoreadmin = _.some(req.organization.musicscoreadmin_group, function (member) {
                     return member.user === req.user._id;
                 });
                 // TODO: User redis for caching
@@ -314,8 +305,8 @@ app.get('/contact', organization_routes.contacts);
 app.get('/organization/edit', organization_routes.edit_organization);
 app.post('/organization/edit', organization_routes.update_organization);
 app.get('/organization/updated_email_lists.json/:groups', organization_routes.encrypted_mailman_lists);
-app.post('/organization/admin/musicscoreadmins', organization_routes.add_musicscore_admin);
-app.delete('/organization/admin/musicscoreadmins', organization_routes.remove_musicscore_admin);
+app.put('/organization/admin/admin_group', organization_routes.set_admin_group);
+app.put('/organization/admin/musicscoreadmin_group', organization_routes.set_musicscoreadmin_group);
 
 var file_routes = require('./routes/files');
 app.get('/files', file_routes.index);
@@ -352,7 +343,7 @@ app.delete('/events/:id', project_routes.delete_event);
 app.get('/music', project_routes.music);
 app.post('/music', project_routes.create_piece);
 app.get('/music/:id', project_routes.piece);
-app.post('/music/:id/scores', project_routes.upload_score);
+app.post('/music/:id/scores', musicscoreadmin_middleware, project_routes.upload_score);
 
 var proxy_routes = require('./routes/proxy');
 app.get('/proxy/postcode/:postcode', proxy_routes.postcode);

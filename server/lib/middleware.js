@@ -25,3 +25,14 @@ module.exports.persistentLogin = function (req, res, next) {
         return next();
     });
 };
+
+module.exports.musicscoreadmin_middleware = function (req, res, next) {
+    var organization = req.organization;
+    if (!organization.musicadmin_group) {
+        organization.musicadmin_group = organization.admin_group;
+    }
+    req.is_musicscoreadmin = res.locals.is_musicscoreadmin = _.some(organization.musicscoreadmin_group, function (member) {
+        return member.user === req.user._id;
+    });
+    next();
+};

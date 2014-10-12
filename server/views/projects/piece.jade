@@ -63,8 +63,7 @@ block content
           | {{/ user_scores}}
         | {{/if user_scores.length}}
 
-        - var is_local_admin = _.contains(organization.musicscore_admins, active_user._id)
-        if is_local_admin
+        if is_musicscoreadmin
           h2 Last opp noter
           | {{#groups}}
           h3 {{.name}}
