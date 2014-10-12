@@ -748,7 +748,7 @@ module.exports.add_piece = function (req, res, next) {
 
 
 module.exports.upload_score = function (req, res, next) {
-    if (!req.is_admin) {
+    if (req.is_musicscoreadmin) {
         res.status(403).send('Forbidden');
     }
     else {

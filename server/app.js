@@ -71,17 +71,23 @@ app.configure(function(){
     // init org
     app.use(function (req, res, next) {
         Organization.findById('nidarholm')
-        .populate('administration_group') // no need to select fields, ids only
         .populate('member_group')
+        .populate('administration_group') // no need to select fields, ids only
+        .populate('musicscoreadmin_group')
         .exec(function (err, organization) {
             if (err) { next(err); }
             if (organization) {
+                req.organization = res.locals.organization = organization;
                 // is it a hack?
                 if (!organization.description) {
                     organization.description = {};
                 }
-                req.organization = organization;
-                res.locals.organization = organization;
+                if (!organization.administration_group) {
+                    organization.administration_group = organization.member_group;
+                }
+                if (!organization.musicscoreadmin_group) {
+                    organization.musicscoreadmin_group = organization.administration_group;
+                }
                 res.locals.address = req.protocol + "://" + organization.domain;
                 res.locals.path = req.path;
                 next();
@@ -91,14 +97,21 @@ app.configure(function(){
                     organization._id = 'nidarholm';
                     organization.domain = 'nidarholm.no';
                     organization.instrument_groups = [];
-                    organization.administration_group = group;
                     organization.member_group = group;
 
                     organization.save(function (err) {
                         group.organization = organization;
                         group.save(function (err) {
-                            req.organization = organization;
-                            res.locals.organization = organization;
+                            req.organization = res.locals.organization = organization;
+                            if (!organization.description) {
+                                organization.description = {};
+                            }
+                            if (!organization.administration_group) {
+                                organization.administration_group = organization.member_group;
+                            }
+                            if (!organization.musicscoreadmin_group) {
+                                organization.musicscoreadmin_group = organization.administration_group;
+                            }
                             res.locals.address = req.protocol + "://" + organization.domain;
                             res.locals.path = req.path;
                             next();
@@ -118,6 +131,9 @@ app.configure(function(){
                     return member.user === req.user._id;
                 });
                 req.is_admin = res.locals.is_admin = _.some(req.organization.administration_group.members, function (member) {
+                    return member.user === req.user._id;
+                });
+                req.is_musicscoreadmin = res.locals.is_musicscoreadmin = _.some(req.organization.musicscoreadmin_group, function (member) {
                     return member.user === req.user._id;
                 });
                 // TODO: User redis for caching
