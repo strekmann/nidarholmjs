@@ -82,7 +82,6 @@ var OrganizationSchema = new mongoose.Schema({
     contact_groups: [{type: String, ref: 'Group'}], // contacts page
     administration_group: {type: String, ref: 'Group'}, // temporary. privileges will be split later
     musicscoreadmin_group: {type: String, ref: 'Group'},
-    musicscore_admins: [{type: String, ref: 'User'}], // deprecated
     member_group: {type: String, ref: 'Group'},
     contact_text: {type: String, trim: true},
     visitor_address: {type: String, trim: true},
