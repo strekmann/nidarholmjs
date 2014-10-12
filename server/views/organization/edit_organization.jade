@@ -104,10 +104,10 @@ block content
         form()
           label(for="admin_group")
           select#admin_group(value="{{admin_group}}" on-blur="setAdminGroup")
-            option
-            | {{#groups}}
+            | {{#user_groups}}
             option(value="{{._id}}") {{.name}}
-            | {{/groups}}
+            | {{/user_groups}}
+        a.button.tiny(href="/groups/{{admin_group}}") Rediger gruppemedlemmer
 
       .columns.medium-6
         h2 Noteadministratorgruppe
@@ -119,6 +119,7 @@ block content
             | {{#groups}}
             option(value="{{._id}}") {{.name}}
             | {{/groups}}
+        a.button.tiny(href="/groups/{{musicscoreadmin_group}}") Rediger gruppemedlemmer
 
 block javascript
   script.
@@ -126,6 +127,8 @@ block javascript
   script
     | require('s7n').organization.setMusicscoreAdminView(
     != JSON.stringify(groups)
+    | ,
+    != JSON.stringify(active_user.groups)
     | ,
     != JSON.stringify(organization.administration_group._id)
     | ,

@@ -46,12 +46,13 @@ var Admins = Ractive.extend({
     }
 });
 
-module.exports.setMusicscoreAdminView = function (gs, ag, mg) {
+module.exports.setMusicscoreAdminView = function (gs, ugs, ag, mg) {
     var admins = new Admins({
         el: '#admin-change',
         template: '#admin-change-template',
         data: {
             groups: gs,
+            user_groups: ugs,
             admin_group: ag,
             musicscoreadmin_group: mg
         }
