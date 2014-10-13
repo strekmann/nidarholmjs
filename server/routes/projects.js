@@ -418,6 +418,7 @@ module.exports.update_event = function (req, res, next) {
             event.tags = req.body.tags;
             event.start = req.body.start;
             event.end = req.body.end;
+            event.modified = moment();
             event.location = req.body.location;
             event.save(function (err) {
                 if (err) {
