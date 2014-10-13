@@ -627,7 +627,7 @@ module.exports.ical_events = function (req, res, next) {
         ical.addProperty("X-WR-CALNAME", "Nidarholmkalenderen");
         ical.addProperty("METHOD", "PUBLISH");
         ical.addProperty("CALSCALE", "GREGORIAN");
-        ical.addProperty("X-ORIGINAL", "http://nidarholm.no/events/");
+        ical.addProperty("X-ORIGINAL", "https://nidarholm.no/events/");
         _.each(events, function (e) {
             var event = new icalendar.VEvent();
             event.addProperty('UID', e.id);
@@ -640,7 +640,7 @@ module.exports.ical_events = function (req, res, next) {
             event.setDate(e.start, e.end);
             event.setDescription(e.mdtext.replace(/\r/g, ''));
             event.setLocation(e.location);
-            event.addProperty('URL', 'http://nidarholm.no/events/' + e.id);
+            event.addProperty('URL', 'https://nidarholm.no/events/' + e.id);
             ical.addComponent(event);
         });
         res.setHeader('Filename', 'nidarholm.ics');
