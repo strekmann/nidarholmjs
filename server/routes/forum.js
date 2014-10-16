@@ -67,7 +67,7 @@ module.exports.create_post = function (req, res, next) {
         var post = new ForumPost();
         post._id = shortid();
         post.title = req.body.title;
-        post.creator = req.user;
+        post.creator = req.user._id;
         post.mdtext = req.body.mdtext;
         post.tags = req.body.tags;
         post.permissions = parse_web_permissions(req.body.permissions);
@@ -105,7 +105,7 @@ module.exports.update_post = function (req, res, next) {
         permissions = parse_web_permissions(req.body.permissions);
 
     ForumPost.findById(req.params.id, function (err, post) {
-        if (post.creator === req.user || req.is_admin) {
+        if (post.creator === req.user._id || req.is_admin) {
             post.title = title;
             post.mdtext = mdtext;
             post.tags = tags;
@@ -126,7 +126,7 @@ module.exports.update_post = function (req, res, next) {
                             activity.content = {
                                 snippet: snippetify(post.mdtext)
                             };
-                            activity.changes.push({user: req.user, changed: post.modified});
+                            activity.changes.push({user: req.user._id, changed: post.modified});
                             activity.save(function (err, activity) {
                                 res.json(200, post);
                             });
@@ -149,7 +149,7 @@ module.exports.delete_post = function (req, res, next) {
 
     ForumPost.findByIdAndRemove(id, function (err, post) {
         if (err) { return next(err); }
-        if (post.creator === req.user || req.is_admin) {
+        if (post.creator === req.user._id || req.is_admin) {
             Activity.findOneAndRemove({content_type: 'forum', content_ids: post._id}, function (err, activity) {});
             res.json(200, post);
         }
@@ -217,7 +217,7 @@ module.exports.create_reply = function (req, res, next) {
         else {
             var reply = new ForumReply();
             reply.mdtext = req.body.mdtext;
-            reply.creator = req.user;
+            reply.creator = req.user._id;
 
             post.replies.push(reply);
             post.save(function (err) {
@@ -226,7 +226,7 @@ module.exports.create_reply = function (req, res, next) {
                 }
                 var modified = moment();
                 Activity.update({content_type: 'forum', content_ids: post._id}, {
-                    $push: {changes: {user: req.user, changed: modified}},
+                    $push: {changes: {user: req.user._id, changed: modified}},
                     $set: {modified: modified}
                 }, function () {});
                 reply.populate('creator', 'username name profile_picture_path', function (err, reply) {
@@ -270,7 +270,7 @@ module.exports.update_reply = function (req, res, next) {
         if (reply === undefined) {
             return next(new Error('Reply not found, could not edit reply'));
         }
-        if (reply.creator === req.user || req.is_admin) {
+        if (reply.creator === req.user._id || req.is_admin) {
             reply.mdtext = mdtext;
             post.save(function (err) {
                 if (err) {
@@ -310,7 +310,7 @@ module.exports.create_comment = function (req, res, next) {
         if (post) {
             var comment = new ForumComment();
             comment.mdtext = req.body.mdtext;
-            comment.creator = req.user;
+            comment.creator = req.user._id;
             var reply = post.replies.id(replyid);
             if (reply === undefined) {
                 return next(new Error('Reply not found, could not add comment'));
@@ -322,7 +322,7 @@ module.exports.create_comment = function (req, res, next) {
                 }
                 var modified = moment();
                 Activity.update({content_type: 'forum', content_ids: post._id}, {
-                    $push: {changes: {user: req.user, changed: modified}},
+                    $push: {changes: {user: req.user._id, changed: modified}},
                     $set: {modified: modified}
                 }, function () {});
                 comment.populate('creator', 'username name profile_picture_path', function (err, comment) {
@@ -356,7 +356,7 @@ module.exports.update_comment = function (req, res, next) {
         if (reply === undefined) {
             return next(new Error('Comment not found, could not edit comment'));
         }
-        if (comment.creator === req.user || req.is_admin) {
+        if (comment.creator === req.user._id || req.is_admin) {
             comment.mdtext = mdtext;
             post.save(function (err) {
                 if (err) {
