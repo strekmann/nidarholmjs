@@ -26,6 +26,7 @@ var setup_editor = function (element_id) {
 };
 
 module.exports.threadView = function(post, active_user){
+    var md_editor;
     var forum = new Forum({
         el: '#forum',
         template: '#template',
@@ -128,6 +129,7 @@ module.exports.threadView = function(post, active_user){
             if (forum.get('is_editing')) {
                 $('.chosen-permissions').chosen({width: '100%'});
                 require('s7n').tagify();
+                md_editor = setup_editor('#mdtext');
             }
         }, 1);
     });
