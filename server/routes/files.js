@@ -12,7 +12,7 @@ module.exports.index = function (req, res) {
     var query;
     if (req.user) {
         query = File.find().or([
-            {creator: req.user},
+            {creator: req.user._id},
             {'permissions.public': true},
             {'permissions.users': req.user._id},
             {'permissions.groups': { $in: req.user.groups }}
@@ -48,7 +48,7 @@ module.exports.search = function (req, res) {
     var query;
     if (req.user) {
         query = File.find().or([
-            {creator: req.user},
+            {creator: req.user._id},
             {'permissions.public': true},
             {'permissions.users': req.user._id},
             {'permissions.groups': { $in: req.user.groups }}
@@ -91,7 +91,7 @@ module.exports.upload = function (req, res) {
     else {
         var filename = req.files.file.originalname,
             tmp_path = req.files.file.path,
-            user = req.user,
+            user = req.user._id,
             options = {
                 permissions: util.parse_web_permissions(req.body.permissions),
                 tags: req.body.tags.split(",")
@@ -114,7 +114,7 @@ module.exports.upload = function (req, res) {
 
                 activity.content_ids.push(file._id);
                 activity.title = file.filename;
-                activity.changes.push({user: req.user, changed: file.created});
+                activity.changes.push({user: req.user._id, changed: file.created});
                 activity.permissions = file.permissions;
                 activity.modified = file.created;
 
