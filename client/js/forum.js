@@ -5,10 +5,14 @@ var checkAreaSize = function(openSize) {
         var type = event.original.type,
             elem = $(event.node);
 
-        if (type === 'focus' && elem.val().trim().length === 0){
-            elem.css('height', openSize);
-        } else if (type === 'focus' && elem.val().trim().length > 100) {
-            elem.css('height', openSize);
+        if (type === 'focus') {
+            if (elem.val().trim().length === 0) {
+                elem.css('height', openSize);
+            } else if (elem.val().trim().length > 100) {
+                elem.css('height', openSize);
+            } else {
+                elem.css('height', openSize * 0.5);
+            }
         } else if (elem.val().trim().length === 0){
             elem.css('height', '');
         }
@@ -75,6 +79,7 @@ module.exports.threadView = function(post, active_user){
         };
         forum.addReply(reply);
         $('#reply').val('');
+        $('#reply').css('height', '');
     });
 
     forum.on('deleteReply', function(event){

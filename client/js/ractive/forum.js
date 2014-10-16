@@ -1,7 +1,9 @@
 var Forum = Ractive.extend({
+    noIntro: true, // do not slide on page load
+
     // Will be called as soon as the instance has finished rendering.
     init: function(options){
-        this.restAPI = options.restAPI || '/api/forum';
+        this.restAPI = options.restAPI || '/forum';
         this.data.tags = _.filter(window.location.pathname.replace(this.restAPI, '').replace(/^\/t/, '').split('/'), function (element) {
             if (element) { return element; }
         });

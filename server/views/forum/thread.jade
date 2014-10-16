@@ -70,7 +70,7 @@ block content
               a.tiny.button.right(on-click="addReply") Send
 
         | {{#post.replies}}
-        .row
+        .row(intro="slide")
           | {{#if .creator.profile_picture_path}}
           img(src="{{.creator.profile_picture_path}}").columns.small-2
           | {{else}}
