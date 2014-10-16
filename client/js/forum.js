@@ -20,9 +20,7 @@ var checkAreaSize = function(openSize) {
 };
 
 var setup_editor = function (element_id) {
-    var editor = new Editor($(element_id));
-    editor.render();
-    return editor;
+    return new Editor({element: $(element_id)[0]});
 };
 
 module.exports.threadView = function(post, active_user){
@@ -104,6 +102,7 @@ module.exports.threadView = function(post, active_user){
 
     forum.on('updatePost', function (event) {
         event.original.preventDefault();
+        md_editor.codemirror.save();
 
         var post = {
             title: $('#title').val(),
@@ -205,6 +204,7 @@ module.exports.forumView = function (posts) {
     forum.on('addPost', function (event) {
         event.original.preventDefault();
         md_editor.codemirror.save();
+
         event.context.post.title = $('#title').val(); // FIXME: should not be necessary
         event.context.post.mdtext = $('#mdtext').val();
         event.context.post.permissions = $('#permissions').val();
