@@ -367,6 +367,9 @@ nav.top-bar {
 #forum,
 #news,
 #projects {
+    table {
+        table-layout: auto;
+    }
     textarea {
         height: 2rem;
         min-height: 2rem;
