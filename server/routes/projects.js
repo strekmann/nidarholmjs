@@ -517,7 +517,7 @@ module.exports.project_create_file = function (req, res, next) {
                 Activity.findOne({
                     content_type: 'upload',
                     'changes.user': file.creator,
-                    modified: {$gt: moment(file.created).subtract('minutes', 10).toDate()},
+                    modified: {$gt: moment(file.created).subtract(10, 'minutes').toDate()},
                     project: project._id
                 }, function (err, activity) {
 
@@ -614,7 +614,7 @@ module.exports.ical_events = function (req, res, next) {
 
     var query = Event.find({'permissions.public': true});
     query = query
-        .where({start: {$gte: moment().subtract('years', 1).startOf('day')}})
+        .where({start: {$gte: moment().subtract(1, 'years').startOf('day')}})
         .sort('start')
         .populate('creator', 'username name');
     query.exec(function (err, events) {
@@ -639,7 +639,7 @@ module.exports.ical_events = function (req, res, next) {
             }
             event.setSummary(e.title);
             event.setDate(e.start, e.end);
-            event.setDescription(e.mdtext.replace(/\r/g, ''));
+            event.setDescription(e.mdtext.replace(/\r/g, '').replace(/(<([^>]+)>)/ig,""));
             event.setLocation(e.location);
             event.addProperty('URL', 'https://nidarholm.no/events/' + e.id);
             ical.addComponent(event);

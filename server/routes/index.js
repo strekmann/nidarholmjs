@@ -269,7 +269,7 @@ module.exports.forgotten_password = function (req, res) { // GET
                 req.flash('error', err);
                 res.redirect('/login/reset');
             }
-            if (!code || code.created < moment().subtract('hours', 1)) {
+            if (!code || code.created < moment().subtract(1, 'hours')) {
                 req.flash('error', 'Passordkoden er ugyldig. Du får prøve å lage en ny.');
                 res.redirect('/login/reset');
             }
