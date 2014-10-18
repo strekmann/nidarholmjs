@@ -639,7 +639,7 @@ module.exports.ical_events = function (req, res, next) {
             }
             event.setSummary(e.title);
             event.setDate(e.start, e.end);
-            event.setDescription(e.mdtext.replace(/\r/g, ''));
+            event.setDescription(e.mdtext.replace(/\r/g, '').replace(/(<([^>]+)>)/ig,""));
             event.setLocation(e.location);
             event.addProperty('URL', 'https://nidarholm.no/events/' + e.id);
             ical.addComponent(event);
