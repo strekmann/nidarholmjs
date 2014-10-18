@@ -103,7 +103,7 @@ module.exports.upload = function (req, res) {
             Activity.findOne({
                 content_type: 'upload',
                 'changes.user': file.creator,
-                modified: {$gt: moment(file.created).subtract('minutes', 10).toDate()},
+                modified: {$gt: moment(file.created).subtract(10, 'minutes').toDate()},
                 project: {$exists: false}
             }, function (err, activity) {
 
