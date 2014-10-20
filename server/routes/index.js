@@ -12,7 +12,7 @@ var _ = require('underscore'),
     Activity = require('../models').Activity,
     File = require('../models/files').File,
     Project = require('../models/projects').Project,
-    Event = require('../models/projects').Event;
+    _Event = require('../models/projects').Event;
 
 // core routes - base is /
 module.exports.index = function(req, res) {
@@ -43,7 +43,7 @@ module.exports.index = function(req, res) {
                 throw err;
             }
 
-            query = Event.find().or([
+            query = _Event.find().or([
                 {creator: req.user},
                 {'permissions.public': true},
                 {'permissions.users': req.user._id},
@@ -87,7 +87,7 @@ module.exports.index = function(req, res) {
         });
     }
     else {
-        query = Event
+        query = _Event
         .find({'permissions.public': true})
         .where({start: {$gte: moment().startOf('day')}})
         .sort('start')

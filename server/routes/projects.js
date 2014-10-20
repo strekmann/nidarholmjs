@@ -7,7 +7,7 @@ var uslug = require('uslug'),
     config = require('../settings'),
     snippetify = require('../lib/util').snippetify,
     Project = require('../models/projects').Project,
-    Event = require('../models/projects').Event,
+    _Event = require('../models/projects').Event,
     Piece = require('../models/projects').Piece,
     File = require('../models/files').File,
     ForumPost = require('../models/forum').ForumPost,
@@ -216,7 +216,7 @@ module.exports.project = function (req, res, next) {
             res.send(404, 'Not found');
         }
         else {
-            Event
+            _Event
             .find({tags: project.tag})
             .or([
                 {creator: req.user._id},
@@ -267,7 +267,7 @@ module.exports.project_create_event = function (req, res, next) {
         Project.findById(id, function (err, project) {
             if (err) { return next(err); }
 
-            var event = new Event();
+            var event = new _Event();
             event.tags = [project.tag];
             event.title = title;
             event.location = location;
@@ -296,7 +296,7 @@ module.exports.delete_event = function (req, res, next) {
     var event_id = req.params.event_id;
 
     if (req.user) {
-        Event.findByIdAndRemove(req.params.id).or([
+        _Event.findByIdAndRemove(req.params.id).or([
             {creator: req.user._id},
             {'permissions.public': true},
             {'permissions.users': req.user._id},
@@ -339,7 +339,7 @@ module.exports.events = function (req, res, next) {
 
     var query;
     if (req.user) {
-        query = Event.find().or([
+        query = _Event.find().or([
             {creator: req.user},
             {'permissions.public': true},
             {'permissions.users': req.user._id},
@@ -347,7 +347,7 @@ module.exports.events = function (req, res, next) {
         ]);
     }
     else {
-        query = Event.find({'permissions.public': true});
+        query = _Event.find({'permissions.public': true});
     }
     query = query
         .where({start: {$gte: start, $lte: end}})
@@ -370,7 +370,7 @@ module.exports.events = function (req, res, next) {
 
 module.exports.event = function (req, res, next) {
     if (req.user) {
-        query = Event.findById(req.params.id).or([
+        query = _Event.findById(req.params.id).or([
             {creator: req.user._id},
             {'permissions.public': true},
             {'permissions.users': req.user._id},
@@ -378,7 +378,7 @@ module.exports.event = function (req, res, next) {
         ]);
     }
     else {
-        query = Event.findById(req.params.id).where({'permissions.public': true});
+        query = _Event.findById(req.params.id).where({'permissions.public': true});
     }
     query.exec(function (err, event) {
         if (err) {
@@ -398,7 +398,7 @@ module.exports.event = function (req, res, next) {
 };
 
 module.exports.update_event = function (req, res, next) {
-    Event.findById(req.params.id)
+    _Event.findById(req.params.id)
     .or([
         {creator: req.user._id},
         {'permissions.public': true},
@@ -612,7 +612,7 @@ module.exports.remove_piece = function (req, res, next) {
 module.exports.ical_events = function (req, res, next) {
     var icalendar = require('icalendar');
 
-    var query = Event.find({'permissions.public': true});
+    var query = _Event.find({'permissions.public': true});
     query = query
         .where({start: {$gte: moment().subtract(1, 'years').startOf('day')}})
         .sort('start')
