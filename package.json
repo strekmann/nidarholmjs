@@ -45,10 +45,9 @@
     "redis": "0.10.x",
     "short-mongo-id": "sigurdga/short-mongo-id",
     "slug": "0.4.x",
-    "superagent": "0.17.x",
+    "superagent": "^0.20.0",
     "underscore": "1.6.x",
-    "uslug": "1.0.x",
-    "winston": "^0.7.3"
+    "uslug": "1.0.x"
   },
   "devDependencies": {
     "uglify-js": "",
