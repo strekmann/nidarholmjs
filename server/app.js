@@ -85,14 +85,14 @@ app.configure(function(){
                 if (!organization.administration_group) {
                     organization.administration_group = organization.member_group;
                 }
-                res.locals.address = req.protocol + "://" + organization.domain;
+                res.locals.address = req.protocol + "://" + organization.webdomain;
                 res.locals.path = req.path;
                 next();
             } else {
                 get_member_group().then(function (group) {
                     organization = new Organization();
                     organization._id = 'nidarholm';
-                    organization.domain = 'nidarholm.no';
+                    organization.webdomain = 'nidarholm.no';
                     organization.instrument_groups = [];
                     organization.member_group = group;
 
@@ -106,7 +106,7 @@ app.configure(function(){
                             if (!organization.administration_group) {
                                 organization.administration_group = organization.member_group;
                             }
-                            res.locals.address = req.protocol + "://" + organization.domain;
+                            res.locals.address = req.protocol + "://" + organization.webdomain;
                             res.locals.path = req.path;
                             next();
                         });

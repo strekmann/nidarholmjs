@@ -59,7 +59,7 @@ html(lang=lang dir=lang_dir)
 
       if organization.social_media.twitter
         meta(name="twitter:site" content="@" + organization.social_media.twitter)
-        meta(name="twitter:domain" content=organization.domain)
+        meta(name="twitter:domain" content=organization.webdomain)
         if meta.author && meta.author.social_media && meta.author.social_media.twitter
           meta(name="twitter:creator" content="@" + meta.author.social_media.twitter)
         else

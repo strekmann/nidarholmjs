@@ -653,7 +653,7 @@ module.exports.edit_organization = function (req, res, next) {
 module.exports.update_organization = function (req, res, next) {
     if (req.is_admin) {
         var name = req.body.name,
-            domain = req.body.domain,
+            webdomain = req.body.webdomain,
             contact_text = req.body.contact_text,
             visitor_address = req.body.visitor_address,
             mail_address = req.body.mail_address,
@@ -672,7 +672,7 @@ module.exports.update_organization = function (req, res, next) {
         var org = req.organization;
 
         org.name = name;
-        org.domain = domain;
+        org.webdomain = webdomain;
         org.contact_text = contact_text;
         org.visitor_address = visitor_address;
         org.mail_address = mail_address;
