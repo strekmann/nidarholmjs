@@ -20,23 +20,25 @@ describe("Register user", function () {
 
     describe("Register user", function () {
         var agent = request.agent(app);
+        var data = {
+                name: "Test Testson",
+                email: "testson@example.com",
+                password1: "pass",
+                password2: "pass"
+            };
 
         it("should create user", function (done) {
+
             agent
                 .post('/register')
-                .send({
-                    name: "Test Testson",
-                    desired_username: "testson",
-                    password1: "pass",
-                    password2: "pass"
-                })
+                .send(data)
                 .set('Accept', 'text/html')
                 .expect(302)
                 .end(function (err, res) {
                     if (err) { return done(err); }
                     res.header.location.should.equal("/");
                     // check that user is actually saved
-                    User.findById('testson', function (err, user) {
+                    User.findOne({email: data.email}, function (err, user) {
                         if (err) {
                             done(err);
                         } else if (!user) {
@@ -55,7 +57,7 @@ describe("Register user", function () {
                 .end(function (err, res) {
                     $ = cheerio.load(res.text);
                     var username = $('#topbar-username').text();
-                    username.should.equal('testson');
+                    username.should.equal(data.name);
                     done(err);
                 });
         });
