@@ -4,7 +4,7 @@ var express = require('express'),
     moment = require('moment'),
     User = require('../models').User,
     Project = require('../models/projects').Project,
-    Event = require('../models/projects').Event;
+    CalendarEvent = require('../models/projects').Event;
 
 router.get('/', function (req, res, next) {
     // Fetch up to one year at a time in the future
@@ -33,7 +33,7 @@ router.get('/', function (req, res, next) {
 
     var query;
     if (req.user) {
-        query = _Event.find().or([
+        query = CalendarEvent.find().or([
             {creator: req.user},
             {'permissions.public': true},
             {'permissions.users': req.user._id},
@@ -41,7 +41,7 @@ router.get('/', function (req, res, next) {
         ]);
     }
     else {
-        query = _Event.find({'permissions.public': true});
+        query = CalendarEvent.find({'permissions.public': true});
     }
     query = query
         .where({start: {$gte: start, $lte: end}})
@@ -64,7 +64,7 @@ router.get('/', function (req, res, next) {
 
 router.get('/:id', function (req, res, next) {
     if (req.user) {
-        query = _Event.findById(req.params.id).or([
+        query = CalendarEvent.findById(req.params.id).or([
             {creator: req.user._id},
             {'permissions.public': true},
             {'permissions.users': req.user._id},
@@ -72,7 +72,7 @@ router.get('/:id', function (req, res, next) {
         ]);
     }
     else {
-        query = _Event.findById(req.params.id).where({'permissions.public': true});
+        query = CalendarEvent.findById(req.params.id).where({'permissions.public': true});
     }
     query.exec(function (err, event) {
         if (err) {
@@ -92,7 +92,7 @@ router.get('/:id', function (req, res, next) {
 });
 
 router.put('/:id', function (req, res, next) {
-    _Event.findById(req.params.id)
+    CalendarEvent.findById(req.params.id)
     .or([
         {creator: req.user._id},
         {'permissions.public': true},
@@ -130,7 +130,7 @@ router.delete('/:event_id', function (req, res, next) {
     var event_id = req.params.event_id;
 
     if (req.user) {
-        _Event.findByIdAndRemove(req.params.id).or([
+        CalendarEvent.findByIdAndRemove(req.params.id).or([
             {creator: req.user._id},
             {'permissions.public': true},
             {'permissions.users': req.user._id},

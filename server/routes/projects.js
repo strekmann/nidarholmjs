@@ -7,7 +7,7 @@ var uslug = require('uslug'),
     config = require('../settings'),
     snippetify = require('../lib/util').snippetify,
     Project = require('../models/projects').Project,
-    _Event = require('../models/projects').Event,
+    CalendarEvent = require('../models/projects').Event,
     Piece = require('../models/projects').Piece,
     File = require('../models/files').File,
     ForumPost = require('../models/forum').ForumPost,
@@ -216,7 +216,7 @@ module.exports.project = function (req, res, next) {
             res.send(404, 'Not found');
         }
         else {
-            _Event
+            CalendarEvent
             .find({tags: project.tag})
             .or([
                 {creator: req.user._id},
@@ -267,7 +267,7 @@ module.exports.project_create_event = function (req, res, next) {
         Project.findById(id, function (err, project) {
             if (err) { return next(err); }
 
-            var event = new _Event();
+            var event = new CalendarEvent();
             event.tags = [project.tag];
             event.title = title;
             event.location = location;
@@ -476,7 +476,7 @@ module.exports.remove_piece = function (req, res, next) {
 module.exports.ical_events = function (req, res, next) {
     var icalendar = require('icalendar');
 
-    var query = _Event.find({'permissions.public': true});
+    var query = CalendarEvent.find({'permissions.public': true});
     query = query
         .where({start: {$gte: moment().subtract(1, 'years').startOf('day')}})
         .sort('start')

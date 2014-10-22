@@ -14,7 +14,7 @@ var _ = require('underscore'),
     Activity = require('../models').Activity,
     File = require('../models/files').File,
     Project = require('../models/projects').Project,
-    _Event = require('../models/projects').Event;
+    CalendarEvent = require('../models/projects').Event;
 
 // core routes - base is /
 
@@ -46,7 +46,7 @@ router.get('/', function(req, res) {
                 throw err;
             }
 
-            query = _Event.find().or([
+            query = CalendarEvent.find().or([
                 {creator: req.user},
                 {'permissions.public': true},
                 {'permissions.users': req.user._id},
@@ -90,7 +90,7 @@ router.get('/', function(req, res) {
         });
     }
     else {
-        query = _Event
+        query = CalendarEvent
         .find({'permissions.public': true})
         .where({start: {$gte: moment().startOf('day')}})
         .sort('start')
