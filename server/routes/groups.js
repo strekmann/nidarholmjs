@@ -1,6 +1,7 @@
 var express = require('express'),
     router = express.Router(),
     _ = require('underscore'),
+    shortid = require('short-mongo-id'),
     ensureAuthenticated = require('../lib/middleware').ensureAuthenticated,
     is_admin = require('../lib/middleware').is_admin,
     User = require('../models').User,
