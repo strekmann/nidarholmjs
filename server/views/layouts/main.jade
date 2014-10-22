@@ -70,8 +70,9 @@ html(lang=lang dir=lang_dir)
 
     link(href="/css/site.css?"+stamp rel="stylesheet")
 
-    //if lt IE 9
-      script(src='http://html5shim.googlecode.com/svn/trunk/html5.js')
+    //
+      if lt IE 9
+        <script src="http://html5shim.googlecode.com/svn/trunk/html5.js">
 
     script(src="/js/modernizr.js")
 
@@ -158,19 +159,19 @@ html(lang=lang dir=lang_dir)
     .row
       .large-12.columns
         #flash
-          if messages.error
+          if messages && messages.error
             each message in messages.error
               .alert-box.alert(data-alert)= message
                 a.close &times;
-          if messages.warning
+          if messages && messages.warning
             each message in messages.warning
               .alert-box.warning(data-alert)= message
                 a.close &times;
-          if messages.success
+          if messages && messages.success
             each message in messages.success
               .alert-box.success(data-alert)= message
                 a.close &times;
-          if messages.info
+          if messages && messages.info
             each message in messages.info
               .alert-box.info(data-alert)= message
                 a.close &times;
@@ -262,7 +263,7 @@ html(lang=lang dir=lang_dir)
 
     script
       | var flash = require('s7n').flash(
-      != JSON.stringify(messages)
+      != JSON.stringify(messages || [])
       | ,
       != JSON.stringify(organization.member_group._id)
       | );

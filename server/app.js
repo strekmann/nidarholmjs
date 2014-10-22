@@ -41,169 +41,121 @@ var get_member_group = function () {
     return promise;
 };
 
-app.configure(function(){
+// set jade as template engine
+app.set('views', path.join(__dirname, 'views'));
+app.set('view engine', 'jade');
 
-    // set jade as template engine
-    app.set('views', path.join(__dirname, 'views'));
-    app.set('view engine', 'jade');
+// initialize passport
+app.use(app.passport.initialize());
+app.use(app.passport.session());
+app.use(app.passport.authenticate('remember-me'));
 
-    // initialize passport
-    app.use(app.passport.initialize());
-    app.use(app.passport.session());
-    app.use(app.passport.authenticate('remember-me'));
+// utils
+app.use(function (req, res, next) {
+    moment.lang(req.lang); // has to be before the next functions
+    res.locals.stamp = app.stamp;
+    res.locals._ = _;
+    res.locals.marked = marked;
+    res.locals.moment = moment;
+    res.locals.isodate = util.isodate;
+    res.locals.simpledate = util.simpledate;
+    res.locals.shortdate = util.shortdate;
+    res.locals.longdate = util.longdate;
+    res.locals.ago = util.ago;
+    res.locals.prettyhost = util.prettyhost;
+    res.locals.phoneformat = util.phoneformat;
+    next();
+});
 
-    // utils
-    app.use(function (req, res, next) {
-        moment.lang(req.lang); // has to be before the next functions
-        res.locals.stamp = app.stamp;
-        res.locals._ = _;
-        res.locals.marked = marked;
-        res.locals.moment = moment;
-        res.locals.isodate = util.isodate;
-        res.locals.simpledate = util.simpledate;
-        res.locals.shortdate = util.shortdate;
-        res.locals.longdate = util.longdate;
-        res.locals.ago = util.ago;
-        res.locals.prettyhost = util.prettyhost;
-        res.locals.phoneformat = util.phoneformat;
-        next();
-    });
-
-    // init org
-    app.use(function (req, res, next) {
-        Organization.findById('nidarholm')
-        .populate('member_group')
-        .populate('administration_group') // no need to select fields, ids only
-        .exec(function (err, organization) {
-            if (err) { next(err); }
-            if (organization) {
-                req.organization = res.locals.organization = organization;
-                // is it a hack?
-                if (!organization.description) {
-                    organization.description = {};
-                }
-                if (!organization.administration_group) {
-                    organization.administration_group = organization.member_group;
-                }
-                res.locals.address = req.protocol + "://" + organization.webdomain;
-                res.locals.path = req.path;
-                next();
-            } else {
-                get_member_group().then(function (group) {
-                    organization = new Organization();
-                    organization._id = 'nidarholm';
-                    organization.webdomain = 'nidarholm.no';
-                    organization.instrument_groups = [];
-                    organization.member_group = group;
-
-                    organization.save(function (err) {
-                        group.organization = organization;
-                        group.save(function (err) {
-                            req.organization = res.locals.organization = organization;
-                            if (!organization.description) {
-                                organization.description = {};
-                            }
-                            if (!organization.administration_group) {
-                                organization.administration_group = organization.member_group;
-                            }
-                            res.locals.address = req.protocol + "://" + organization.webdomain;
-                            res.locals.path = req.path;
-                            next();
-                        });
-                    });
-                });
+// init org
+app.use(function (req, res, next) {
+    Organization.findById('nidarholm')
+    .populate('member_group')
+    .populate('administration_group') // no need to select fields, ids only
+    .exec(function (err, organization) {
+        if (err) { next(err); }
+        if (organization) {
+            req.organization = res.locals.organization = organization;
+            // is it a hack?
+            if (!organization.description) {
+                organization.description = {};
             }
-        });
-    });
-    // has to go after passport.session()
-    app.use(function (req, res, next) {
-        if (req.user) {
-            req.user.populate('groups', 'name', function (err, user) {
-                // or do we need the name or organization of the groups? At least name
-                req.user = res.locals.active_user = user;
-                req.is_member = res.locals.is_member = _.some(req.organization.member_group.members, function (member) {
-                    return member.user === req.user._id;
-                });
-                req.is_admin = res.locals.is_admin = _.some(req.organization.administration_group.members, function (member) {
-                    return member.user === req.user._id;
-                });
-                // TODO: User redis for caching
-                //User.find().select('username name').exec(function (err, all_users) {
-                    //if (err) { next(err); }
-                    //var indexed_users = _.indexBy(all_users, '_id');
-                    //var groups_of_users = _.reduce(req.user.groups, function (memo, group) {
-                        //if (group) {
-                            //console.log(group);
-                            //return _.union(memo, _.map(group.members, function (member) {
-                                //return member._id;
-                            //}));
-                        //} else {
-                            //return memo;
-                        //}
-                    //}, []);
-                    //// now an array of arrays: use union for now
-                    //req.user.friends = _.map(_.compact(groups_of_users), function (user_id) {
-                        //return indexed_users[user_id];
-                    //});
-                    User.populate(req.user, 'friends', function (err, user) {
-                        if (err) { next(err); }
+            if (!organization.administration_group) {
+                organization.administration_group = organization.member_group;
+            }
+            res.locals.address = req.protocol + "://" + organization.webdomain;
+            res.locals.path = req.path;
+            next();
+        } else {
+            get_member_group().then(function (group) {
+                organization = new Organization();
+                organization._id = 'nidarholm';
+                organization.webdomain = 'nidarholm.no';
+                organization.instrument_groups = [];
+                organization.member_group = group;
+
+                organization.save(function (err) {
+                    group.organization = organization;
+                    group.save(function (err) {
+                        req.organization = res.locals.organization = organization;
+                        if (!organization.description) {
+                            organization.description = {};
+                        }
+                        if (!organization.administration_group) {
+                            organization.administration_group = organization.member_group;
+                        }
+                        res.locals.address = req.protocol + "://" + organization.webdomain;
+                        res.locals.path = req.path;
                         next();
                     });
-                //});
+                });
             });
-        } else {
-            next();
         }
     });
-
-    app.use(multer());
-    // middleware changing req or res should come before this
-    app.use(app.router);
-    app.use(express.static(path.join(__dirname, '..' ,'public')));
-
-    // 500 status
-    app.use(function(err, req, res, next){
-        console.error("ERR:", err.message, err.stack);
-        res.status(500);
-        res.format({
-            html: function(){
-                res.render('500', {
-                    error: err.message,
-                    status: err.status || 500
-                });
-            },
-
-            json: function(){
-                res.json(500, {
-                    error: err.message,
-                    status: err.status || 500
-                });
-            }
-        });
-    });
-
-    // 404 status
-    app.use(function(req, res, next){
-        res.status(404);
-        res.format({
-            html: function(){
-                res.render('404', {
-                    status: 404,
-                    error: 'file not found',
-                    url: req.url
-                });
-            },
-
-            json: function(){
-                res.json(404, {
-                    status: '404',
-                    error: 'file not found',
-                    url: req.url
-                });
-            }
-        });
-    });
 });
+// has to go after passport.session()
+app.use(function (req, res, next) {
+    if (req.user) {
+        req.user.populate('groups', 'name', function (err, user) {
+            // or do we need the name or organization of the groups? At least name
+            req.user = res.locals.active_user = user;
+            req.is_member = res.locals.is_member = _.some(req.organization.member_group.members, function (member) {
+                return member.user === req.user._id;
+            });
+            req.is_admin = res.locals.is_admin = _.some(req.organization.administration_group.members, function (member) {
+                return member.user === req.user._id;
+            });
+            // TODO: User redis for caching
+            //User.find().select('username name').exec(function (err, all_users) {
+                //if (err) { next(err); }
+                //var indexed_users = _.indexBy(all_users, '_id');
+                //var groups_of_users = _.reduce(req.user.groups, function (memo, group) {
+                    //if (group) {
+                        //console.log(group);
+                        //return _.union(memo, _.map(group.members, function (member) {
+                            //return member._id;
+                        //}));
+                    //} else {
+                        //return memo;
+                    //}
+                //}, []);
+                //// now an array of arrays: use union for now
+                //req.user.friends = _.map(_.compact(groups_of_users), function (user_id) {
+                    //return indexed_users[user_id];
+                //});
+                User.populate(req.user, 'friends', function (err, user) {
+                    if (err) { next(err); }
+                    next();
+                });
+            //});
+        });
+    } else {
+        next();
+    }
+});
+
+app.use(multer());
+app.use(express.static(path.join(__dirname, '..' ,'public')));
 
 // routes
 var core_routes = require('./routes/index');
@@ -350,6 +302,49 @@ app.get('/proxy/postcode/:postcode', proxy_routes.postcode);
 
 app.get('/foundation', function(req, res){
     res.render('foundation');
+});
+
+// 500 status
+app.use(function(err, req, res, next){
+    console.error("ERR:", err.message, err.stack);
+    res.status(500);
+    res.format({
+        html: function(){
+            res.render('500', {
+                error: err.message,
+                status: err.status || 500
+            });
+        },
+
+        json: function(){
+            res.json(500, {
+                error: err.message,
+                status: err.status || 500
+            });
+        }
+    });
+});
+
+// 404 status
+app.use(function(req, res, next){
+    res.status(404);
+    res.format({
+        html: function(){
+            res.render('404', {
+                status: 404,
+                error: 'file not found',
+                url: req.url
+            });
+        },
+
+        json: function(){
+            res.json(404, {
+                status: '404',
+                error: 'file not found',
+                url: req.url
+            });
+        }
+    });
 });
 
 module.exports = app;
