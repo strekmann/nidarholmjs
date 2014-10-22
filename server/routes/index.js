@@ -1,4 +1,6 @@
 var _ = require('underscore'),
+    express = require('express'),
+    router = express.Router(),
     async = require('async'),
     crypto = require('crypto'),
     moment = require('moment'),
@@ -15,7 +17,8 @@ var _ = require('underscore'),
     _Event = require('../models/projects').Event;
 
 // core routes - base is /
-module.exports.index = function(req, res) {
+
+router.get('/', function(req, res) {
     var query,
         meta = {
             title: req.organization.name,
@@ -131,20 +134,20 @@ module.exports.index = function(req, res) {
             });
         });
     }
-};
+});
 
-module.exports.login = function(req, res){
+router.get('/login', function(req, res){
     res.render('login', {meta: {title: 'Logg inn'}});
-};
+});
 
-module.exports.logout = function(req, res){
+router.get('/logout', function(req, res){
     req.logout();
     req.session.destroy();
     res.clearCookie('remember_me');
     res.redirect('/');
-};
+});
 
-module.exports.check_email = function (req, res, next) {
+router.post('/login/check_email', function (req, res, next) {
     var pattern = new RegExp(req.body.email, 'i');
     User.findOne({email: {$regex: pattern}}, function (err, user) {
         if (err) {
@@ -157,9 +160,9 @@ module.exports.check_email = function (req, res, next) {
             res.status(200).json({status: false});
         }
     });
-};
+});
 
-module.exports.tagsearch = function (req, res) {
+router.get('/tags', function (req, res) {
     if (req.is_member) {
         if (req.query.q) {
             var pattern = RegExp('^' + req.query.q);
@@ -209,9 +212,9 @@ module.exports.tagsearch = function (req, res) {
     else {
         res.json(403, {});
     }
-};
+});
 
-module.exports.register = function(req, res) {
+router.post('/register', function(req, res) {
     // TODO: Use sanitizer
     if (req.body.email && req.body.name && req.body.password1 && req.body.password2) {
         // Check if passwords are equal
@@ -259,55 +262,55 @@ module.exports.register = function(req, res) {
         req.flash('error', 'Information missing');
         res.redirect('/login');
     }
-};
+});
 
-module.exports.forgotten_password = function (req, res) { // GET
-    if (req.params.code) {
-        // step 3 code sent back to server. will verify code, login user and redirect to new password form
-        PasswordCode.findById(req.params.code, function (err, code) {
-            if (err) {
-                req.flash('error', err);
-                res.redirect('/login/reset');
-            }
-            if (!code || code.created < moment().subtract(1, 'hours')) {
-                req.flash('error', 'Passordkoden er ugyldig. Du får prøve å lage en ny.');
-                res.redirect('/login/reset');
-            }
-            if (code) {
-                // Log in automatically
-                User.findById(code.user, function (err, user) {
-                    if (err) {
-                        req.flash('error', 'Fant ikke brukeren');
-                        res.redirect('/login/reset');
-                    }
-                    else {
-                        req.logIn(user, function (err) {
-                            if(!err){
-                                res.redirect('/login/reset');
-                            } else {
-                                req.flash('error', 'Klarte ikke å logge deg inn');
-                                res.redirect('/login/reset');
-                            }
-                        });
-                    }
-                });
-            }
-            else {
-                console.error("should really never get here, but didn't we?");
-                res.redirect('/login/reset');
-            }
-        });
-    } else {
-        // step 1 will present user with email password form
-        var error;
-        if (!config.auth.smtp.host) {
-            error = 'Dette vi ikke virke, da serveren ikke kan sende epost nå.';
+router.get('/login/reset/:code', function (req, res) { // GET
+    // step 3 code sent back to server. will verify code, login user and redirect to new password form
+    PasswordCode.findById(req.params.code, function (err, code) {
+        if (err) {
+            req.flash('error', err);
+            res.redirect('/login/reset');
         }
-        res.render('auth/newpassword', {error: error});
-    }
-};
+        if (!code || code.created < moment().subtract(1, 'hours')) {
+            req.flash('error', 'Passordkoden er ugyldig. Du får prøve å lage en ny.');
+            res.redirect('/login/reset');
+        }
+        if (code) {
+            // Log in automatically
+            User.findById(code.user, function (err, user) {
+                if (err) {
+                    req.flash('error', 'Fant ikke brukeren');
+                    res.redirect('/login/reset');
+                }
+                else {
+                    req.logIn(user, function (err) {
+                        if(!err){
+                            res.redirect('/login/reset');
+                        } else {
+                            req.flash('error', 'Klarte ikke å logge deg inn');
+                            res.redirect('/login/reset');
+                        }
+                    });
+                }
+            });
+        }
+        else {
+            console.error("should really never get here, but didn't we?");
+            res.redirect('/login/reset');
+        }
+    });
+});
 
-module.exports.reset_password = function (req, res) { // POST
+router.get('/login/reset', function (req, res) { // GET
+    // step 1 will present user with email password form
+    var error;
+    if (!config.auth.smtp.host) {
+        error = 'Dette vi ikke virke, da serveren ikke kan sende epost nå.';
+    }
+    res.render('auth/newpassword', {error: error});
+});
+
+router.post('/login/reset', function (req, res) { // POST
     if (req.user) {
         // Check if passwords are equal
         var password1 = req.body.password1.trim();
@@ -380,4 +383,6 @@ module.exports.reset_password = function (req, res) { // POST
             res.redirect('/login/reset');
         }
     }
-};
+});
+
+module.exports = router;

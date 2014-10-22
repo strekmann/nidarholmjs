@@ -158,14 +158,7 @@ app.use(multer());
 app.use(express.static(path.join(__dirname, '..' ,'public')));
 
 // routes
-var core_routes = require('./routes/index');
-
-app.get('/', core_routes.index);
-
-app.get('/login/reset/:code', core_routes.forgotten_password);
-app.get('/login/reset', core_routes.forgotten_password);
-app.post('/login/reset', core_routes.reset_password);
-app.get('/login', core_routes.login);
+app.get('/', require('./routes/index'));
 app.post('/login',
          app.passport.authenticate('local', {
              failureRedirect: '/login',
@@ -177,8 +170,6 @@ app.post('/login',
              delete req.session.returnTo;
              res.redirect(url);
          });
-
-app.post('/login/check_email', core_routes.check_email);
 
 app.get('/auth/google', app.passport.authenticate('google', { scope: [
     'https://www.googleapis.com/auth/userinfo.profile',
@@ -205,12 +196,6 @@ app.get('/auth/twitter/callback', app.passport.authenticate('twitter', {failureR
     delete req.session.returnTo;
     res.redirect(url);
 });
-
-app.get('/logout', core_routes.logout);
-
-app.post('/register', core_routes.register);
-
-app.get('/tags', core_routes.tagsearch);
 
 var forum_routes = require('./routes/forum');
 app.get('/forum', forum_routes.index);
