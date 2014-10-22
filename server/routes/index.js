@@ -49,7 +49,7 @@ module.exports.index = function(req, res) {
                 {'permissions.users': req.user._id},
                 {'permissions.groups': { $in: req.user.groups }}
             ])
-            .where({start: {$gte: moment().startOf('day'), $lte: moment().add('months', 6).startOf('day').toDate()}})
+            .where({start: {$gte: moment().startOf('day'), $lte: moment().add(6, 'months').startOf('day').toDate()}})
             .sort('start');
             query.exec(function (err, events) {
                 query = Project.find().or([

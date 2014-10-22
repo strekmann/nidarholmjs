@@ -52,7 +52,7 @@ app.use(app.passport.authenticate('remember-me'));
 
 // utils
 app.use(function (req, res, next) {
-    moment.lang(req.lang); // has to be before the next functions
+    moment.locale(req.locale); // has to come before the next functions
     res.locals.stamp = app.stamp;
     res.locals._ = _;
     res.locals.marked = marked;

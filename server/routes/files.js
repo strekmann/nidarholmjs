@@ -226,10 +226,10 @@ module.exports.thumbnail_file = function (req, res) {
 
     fs.exists(fullpath, function (exists) {
         if (exists) {
-            res.sendfile(fullpath);
+            res.sendFile(fullpath);
         }
         else {
-            res.send(404, 'Not found');
+            res.sendStatus(404);
         }
     });
 };
@@ -241,10 +241,10 @@ module.exports.normal_file = function (req, res) {
 
     fs.exists(fullpath, function (exists) {
         if (exists) {
-            res.sendfile(fullpath);
+            res.sendFile(fullpath);
         }
         else {
-            res.send(404, 'Not found');
+            res.sendStatus(404);
         }
     });
 };
@@ -256,10 +256,10 @@ module.exports.large_file = function (req, res) {
 
     fs.exists(fullpath, function (exists) {
         if (exists) {
-            res.sendfile(fullpath);
+            res.sendFile(fullpath);
         }
         else {
-            res.send(404, 'Not found');
+            res.sendStatus(404);
         }
     });
 };
@@ -271,10 +271,10 @@ module.exports.raw_file = function (req, res) {
 
     fs.exists(fullpath, function (exists) {
         if (exists) {
-            res.sendfile(fullpath);
+            res.sendFile(fullpath);
         }
         else {
-            res.send(404, 'Not found');
+            res.sendStatus(404);
         }
     });
 };
