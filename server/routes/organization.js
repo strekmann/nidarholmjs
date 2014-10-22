@@ -83,14 +83,12 @@ module.exports.create_user = function (req, res, next) {
                 user.email = email;
                 user.instrument = instrument;
                 var member_group = organization.member_group;
-                if (orgperm) {
-                    if (organization.member_group) {
-                        user.groups.push(organization.member_group);
-                        member_group.members.push({user: user, role: instrument});
-                        member_group.save(function (err) {
-                            if (err) { next(err); }
-                        });
-                    }
+                if (orgperm && organization.member_group && organization.member_group._id !== groupid) {
+                    user.groups.push(organization.member_group);
+                    member_group.members.push({user: user, role: instrument});
+                    member_group.save(function (err) {
+                        if (err) { next(err); }
+                    });
                 }
                 if (groupid) {
                     Group.findById(groupid, function (err, group) {
