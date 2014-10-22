@@ -91,9 +91,14 @@ router.post('/upload', is_member, function (req, res) {
     var filename = req.files.file.originalname,
         tmp_path = req.files.file.path,
         user = req.user._id,
-        options = {
+        tags = req.body.tags;
+
+    if (_.isEmpty(tags)) {
+        tags = [];
+    }
+    var options = {
             permissions: util.parse_web_permissions(req.body.permissions),
-            tags: req.body.tags.split(",")
+            tags: tags
         };
 
     util.upload_file(tmp_path, filename, user, options, function (err, file) {
