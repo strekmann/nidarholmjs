@@ -270,7 +270,7 @@ router.post('/:postid/replies', function (req, res, next) {
     });
 });
 
-router.delete('/forum/:postid/replies/:replyid', function (req, res, next) {
+router.delete('/:postid/replies/:replyid', function (req, res, next) {
     var postid = req.params.postid,
         replyid = req.params.replyid;
 
