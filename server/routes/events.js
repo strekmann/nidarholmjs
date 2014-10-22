@@ -126,9 +126,7 @@ router.put('/:id', function (req, res, next) {
     });
 });
 
-router.delete('/:event_id', function (req, res, next) {
-    var event_id = req.params.event_id;
-
+router.delete('/:id', function (req, res, next) {
     if (req.user) {
         CalendarEvent.findByIdAndRemove(req.params.id).or([
             {creator: req.user._id},
