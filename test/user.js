@@ -101,7 +101,6 @@ describe("User", function () {
                     done(err);
                 });
         });
-        /*
         it("should see user page with list of groups", function (done) {
             agent
                 .get('/users/testuserfriend')
@@ -111,13 +110,11 @@ describe("User", function () {
                     $ = cheerio.load(res.text);
                     var groups = $('#groups .group');
                     groups.length.should.equal(0);
-                    var possible_groups = $('#group option');
-                    // organization members group is always present
-                    possible_groups.length.should.equal(2);
+                    var possible_groups = $('#groups .option');
+                    possible_groups.length.should.equal(1);
                     done(err);
                 });
         });
-        */
         it("should add one group", function (done) {
             agent
                 .post('/users/testuserfriend/groups')
@@ -133,7 +130,6 @@ describe("User", function () {
                     done();
                 });
         });
-        /*
         it("should see added group", function (done) {
             agent
                 .get('/users/testuserfriend')
@@ -145,14 +141,12 @@ describe("User", function () {
                     groups.length.should.equal(1);
                     groups.first().text().should.equal("testgroup");
                     // TODO: should maybe remove the possibility to add the group again
-                    var possible_groups = $('#group option');
-                    // always +1 for org members
-                    possible_groups.length.should.equal(2);
+                    var possible_groups = $('#groups .option');
+                    possible_groups.length.should.equal(1);
                     groupid = possible_groups.first().attr('value');
                     done(err);
                 });
         });
-        */
         it("should see added user in group member page", function (done) {
             agent
                 .get('/groups/' + group.id)

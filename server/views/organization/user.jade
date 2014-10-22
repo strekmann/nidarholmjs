@@ -38,6 +38,16 @@ block content
           p= user.reskontro
           = user.membership_history
 
+          #groups
+            h2 Med i grupper
+            ul
+              for group in user.groups
+                li.group= group.name
+
+            ul
+              for group in groups
+                .option= group._id
+
         p#username(data-username=user.username)= user.username
 
       .medium-3.columns.hide-for-small-only
