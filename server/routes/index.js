@@ -8,6 +8,7 @@ var _ = require('underscore'),
     nodemailer = require('nodemailer'),
     shortid = require('short-mongo-id'),
     config = require('../settings'),
+    is_member = require('../lib/middleware').is_member,
     User = require('../models').User,
     PasswordCode = require('../models').PasswordCode,
     ForumPost = require('../models/forum').ForumPost,
@@ -82,7 +83,7 @@ router.get('/', function(req, res) {
                         json: function () {
                             // only activities, as this is called when users
                             // fetches more activites from the log
-                            res.json(200, activities);
+                            res.json(activities);
                         }
                     });
                 });
@@ -154,63 +155,58 @@ router.post('/login/check_email', function (req, res, next) {
             return next(err);
         }
         if (user) {
-            res.status(200).json({status: true});
+            res.json({status: true});
         }
         else {
-            res.status(200).json({status: false});
+            res.json({status: false});
         }
     });
 });
 
-router.get('/tags', function (req, res) {
-    if (req.is_member) {
-        if (req.query.q) {
-            var pattern = RegExp('^' + req.query.q);
-            async.parallel({
-                project_tags: function (callback) {
-                    Project.find().select('tag').exec(function (err, projects) {
-                        var matches = _.reduce(projects, function (memo, project) {
-                            if (project.tag && project.tag.match(pattern)) {
-                                memo.push(project.tag);
-                            }
-                            return memo;
-                        }, []);
-                        callback(err, matches);
+router.get('/tags', is_member, function (req, res) {
+    if (req.query.q) {
+        var pattern = RegExp('^' + req.query.q);
+        async.parallel({
+            project_tags: function (callback) {
+                Project.find().select('tag').exec(function (err, projects) {
+                    var matches = _.reduce(projects, function (memo, project) {
+                        if (project.tag && project.tag.match(pattern)) {
+                            memo.push(project.tag);
+                        }
+                        return memo;
+                    }, []);
+                    callback(err, matches);
+                });
+            },
+            forum_tags: function (callback) {
+                ForumPost.distinct('tags', function (err, tags) {
+                    var matches = _.filter(tags, function (tag) {
+                        return tag.match(pattern);
                     });
-                },
-                forum_tags: function (callback) {
-                    ForumPost.distinct('tags', function (err, tags) {
-                        var matches = _.filter(tags, function (tag) {
-                            return tag.match(pattern);
-                        });
-                        callback(err, matches);
+                    callback(err, matches);
+                });
+            },
+            files_tags: function (callback) {
+                File.distinct('tags', function (err, tags) {
+                    var matches = _.filter(tags, function (tag) {
+                        return tag.match(pattern);
                     });
-                },
-                files_tags: function (callback) {
-                    File.distinct('tags', function (err, tags) {
-                        var matches = _.filter(tags, function (tag) {
-                            return tag.match(pattern);
-                        });
-                        callback(err, matches);
-                    });
-                }
-            }, function (err, results) {
-                if (err) {
-                    console.error(err);
-                    res.json(500, err);
-                }
-                else {
-                    var tags = _.flatten(results);
-                    res.json(200, {tags: tags});
-                }
-            });
-        }
-        else {
-            res.json(400, {});
-        }
+                    callback(err, matches);
+                });
+            }
+        }, function (err, results) {
+            if (err) {
+                console.error(err);
+                res.sendStatus(500);
+            }
+            else {
+                var tags = _.flatten(results);
+                res.json({tags: tags});
+            }
+        });
     }
     else {
-        res.json(403, {});
+        res.sendStatus(400);
     }
 });
 
@@ -369,7 +365,7 @@ router.post('/login/reset', function (req, res) { // POST
                                         res.status(500).json({error: error});
                                     }
                                     else {
-                                        res.status(200).json({status: true});
+                                        res.json({status: true});
                                     }
                                 }
                             });

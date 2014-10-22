@@ -70,7 +70,7 @@ module.exports.index = function (req, res, next) {
                 });
             },
             json: function () {
-                res.json(200, projects);
+                res.json(projects);
             }
         });
     });
@@ -96,10 +96,10 @@ module.exports.year = function (req, res, next) {
 
     query.exec(function (err, projects) {
         if (err) {
-            res.json(500, err);
+            res.sendStatus(500);
         }
         else {
-            res.json(200, projects);
+            res.json(projects);
         }
     });
 };
@@ -107,10 +107,10 @@ module.exports.year = function (req, res, next) {
 
 module.exports.create_project = function (req, res, next) {
     if (!req.is_member) {
-        res.send(403, 'Forbidden');
+        res.sendStatus(403);
     }
     else if (!req.body.end) {
-        res.json(400, {error: 'Project end time is missing'});
+        res.status(400).json({error: 'Project end time is missing'});
     }
     else {
         var project = new Project();
@@ -136,11 +136,11 @@ module.exports.create_project = function (req, res, next) {
 
         project.save(function (err) {
             if (err) {
-                res.json(400, err);
+                res.status(400).json(err);
             }
             res.format({
                 json: function () {
-                    res.json(200, project);
+                    res.json(project);
                 },
                 html: function () {
                     res.redirect('/projects/' + project._id);
@@ -175,11 +175,11 @@ module.exports.update_project = function (req, res, next) {
 
             project.save(function (err) {
                 if (err) { return next(err); }
-                res.json(200, project);
+                res.json(project);
             });
         }
         else {
-            res.json(403, 'Forbidden');
+            res.sendStatus(403);
         }
     });
 };
@@ -189,7 +189,7 @@ module.exports.delete_project = function (req, res, next) {
 
     Project.findByIdAndRemove(id, function (err, project) {
         if (err) { return next(err); }
-        res.json(200, project);
+        res.json(project);
     });
 };
 
@@ -213,7 +213,7 @@ module.exports.project = function (req, res, next) {
     query.lean().exec(function (err, project) {
         if (err) { return next(err); }
         if (!project) {
-            res.send(404, 'Not found');
+            res.sendStatus(404);
         }
         else {
             CalendarEvent
@@ -233,7 +233,7 @@ module.exports.project = function (req, res, next) {
                     File.find({tags: project.tag}).populate('creator', 'username name').exec(function (err, files) {
                         res.format({
                             json: function () {
-                                res.json(200, project);
+                                res.json(project);
                             },
                             html: function () {
                                 res.render('projects/project', {
@@ -280,7 +280,7 @@ module.exports.project_create_event = function (req, res, next) {
                 if (err) { return next(err); }
                 res.format({
                     json: function () {
-                        res.json(200, event);
+                        res.json(event);
                     },
                     html: function () {
                         req.flash('success', 'Aktiviteten ble lagret');
@@ -299,7 +299,7 @@ module.exports.project_create_post = function (req, res, next) {
 
     Project.findById(id, function (err, project) {
         if (err) {
-            res.json(400, err);
+            res.status(400).json(err);
         }
         var post = new ForumPost();
         post._id = shortid();
@@ -325,7 +325,7 @@ module.exports.project_create_post = function (req, res, next) {
             activity.save(function (err) {});
             post.populate('creator', 'username name', function (err, post) {
                 if (err) {
-                    res.json(400, err);
+                    res.status(400).json(err);
                 }
                 else {
                     res.format({
@@ -333,7 +333,7 @@ module.exports.project_create_post = function (req, res, next) {
                             res.redirect('/projects/' + project._id);
                         },
                         json: function () {
-                            res.json(200, post);
+                            res.json(post);
                         }
                     });
                 }
@@ -347,13 +347,13 @@ module.exports.project_delete_post = function (req, res, next) {
     var post_id = req.params.post_id;
     ForumPost.findByIdAndRemove(post_id, function (err, event) {
         if (err) { return next(err); }
-        res.json(200, event);
+        res.json(event);
     });
 };
 
 module.exports.project_create_file = function (req, res, next) {
     if (!req.user) {
-        res.json(403, "Forbidden");
+        res.sendStatus(403);
     }
     else {
         Project.findById(req.params.id)
@@ -429,7 +429,7 @@ module.exports.project_create_file = function (req, res, next) {
                     activity.save(function (err) {});
                 });
 
-                res.json(200, file);
+                res.json(file);
             });
         });
     }
@@ -450,7 +450,7 @@ module.exports.add_piece = function (req, res, next) {
                     var music = {
                         piece: piece
                     };
-                    res.status(200).json(music);
+                    res.json(music);
                 });
             });
         });
@@ -459,7 +459,7 @@ module.exports.add_piece = function (req, res, next) {
 
 module.exports.remove_piece = function (req, res, next) {
     if (!req.is_member) {
-        res.json(403, 'Forbidden');
+        res.sendStatus(403);
     }
     else {
         Project.findById(req.params.project_id, function (err, project) {
@@ -467,7 +467,7 @@ module.exports.remove_piece = function (req, res, next) {
             project.music.pull(req.body._id);
             project.save(function (err) {
                 if (err) { return next(err); }
-                res.json(200, {});
+                res.sendStatus(200);
             });
         });
     }

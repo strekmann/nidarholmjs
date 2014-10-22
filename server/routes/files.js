@@ -7,6 +7,7 @@ var _ = require('underscore'),
     mongoose = require('mongoose'),
     util = require('../lib/util'),
     config = require('../settings'),
+    is_member = require('../lib/middleware').is_member,
     File = require('../models/files').File,
     Activity = require('../models').Activity;
 
@@ -39,7 +40,7 @@ router.get('/', function (req, res) {
                 res.render('files/index', {files: files, meta: {title: 'Filer'}});
             },
             json: function () {
-                res.json(200, files);
+                res.json(files);
             }
         });
     });
@@ -80,95 +81,90 @@ router.get('/t/*', function (req, res) {
                 res.render('files/index', {files: files, meta: {title: 'Filer'}});
             },
             json: function () {
-                res.json(200, files);
+                res.json(files);
             }
         });
     });
 });
 
-router.post('/upload', function (req, res) {
-    if (!req.is_member) {
-        res.send(403, "Forbidden");
-    }
-    else {
-        var filename = req.files.file.originalname,
-            tmp_path = req.files.file.path,
-            user = req.user._id,
-            options = {
-                permissions: util.parse_web_permissions(req.body.permissions),
-                tags: req.body.tags.split(",")
-            };
+router.post('/upload', is_member, function (req, res) {
+    var filename = req.files.file.originalname,
+        tmp_path = req.files.file.path,
+        user = req.user._id,
+        options = {
+            permissions: util.parse_web_permissions(req.body.permissions),
+            tags: req.body.tags.split(",")
+        };
 
-        util.upload_file(tmp_path, filename, user, options, function (err, file) {
-            if (err) { throw err; }
+    util.upload_file(tmp_path, filename, user, options, function (err, file) {
+        if (err) { throw err; }
 
-            Activity.findOne({
-                content_type: 'upload',
-                'changes.user': file.creator,
-                modified: {$gt: moment(file.created).subtract(10, 'minutes').toDate()},
-                project: {$exists: false}
-            }, function (err, activity) {
+        Activity.findOne({
+            content_type: 'upload',
+            'changes.user': file.creator,
+            modified: {$gt: moment(file.created).subtract(10, 'minutes').toDate()},
+            project: {$exists: false}
+        }, function (err, activity) {
 
-                if (!activity) {
-                    activity = new Activity();
-                    activity.content_type = 'upload';
+            if (!activity) {
+                activity = new Activity();
+                activity.content_type = 'upload';
+            }
+
+            activity.content_ids.push(file._id);
+            activity.title = file.filename;
+            activity.changes.push({user: req.user._id, changed: file.created});
+            activity.permissions = file.permissions;
+            activity.modified = file.created;
+
+            if (file.tags) {
+                _.each(file.tags, function (tag) {
+                    activity.tags.addToSet(tag);
+                });
+            }
+
+            if (!activity.content) {
+                activity.content = {};
+            }
+
+            if (file.is_image) {
+                if (!activity.content.images) {
+                    activity.content.images = [];
                 }
-
-                activity.content_ids.push(file._id);
-                activity.title = file.filename;
-                activity.changes.push({user: req.user._id, changed: file.created});
-                activity.permissions = file.permissions;
-                activity.modified = file.created;
-
-                if (file.tags) {
-                    _.each(file.tags, function (tag) {
-                        activity.tags.addToSet(tag);
-                    });
+                var image_already_there = _.find(activity.content.images, function (image) {
+                    return image.thumbnail_path === file.thumbnail_path;
+                });
+                if (!image_already_there) {
+                    activity.content.images.push({thumbnail_path: file.thumbnail_path, _id: file._id});
                 }
-
-                if (!activity.content) {
-                    activity.content = {};
+            }
+            else {
+                if (!activity.content.non_images) {
+                    activity.content.non_images = [];
                 }
-
-                if (file.is_image) {
-                    if (!activity.content.images) {
-                        activity.content.images = [];
-                    }
-                    var image_already_there = _.find(activity.content.images, function (image) {
-                        return image.thumbnail_path === file.thumbnail_path;
-                    });
-                    if (!image_already_there) {
-                        activity.content.images.push({thumbnail_path: file.thumbnail_path, _id: file._id});
-                    }
+                var already_there = _.find(activity.content.non_images, function (non_image) {
+                    return non_image.filename === file.filename;
+                });
+                if (!already_there) {
+                    activity.content.non_images.push({filename: file.filename, _id: file._id});
                 }
-                else {
-                    if (!activity.content.non_images) {
-                        activity.content.non_images = [];
-                    }
-                    var already_there = _.find(activity.content.non_images, function (non_image) {
-                        return non_image.filename === file.filename;
-                    });
-                    if (!already_there) {
-                        activity.content.non_images.push({filename: file.filename, _id: file._id});
-                    }
-                }
-                activity.markModified('content');
-                activity.save(function (err) {});
-            });
-
-            res.format({
-                json: function () {
-                    file.populate('creator', 'username name', function (err, file) {
-                        if (err) { throw err; }
-                        res.json(200, file);
-                    });
-                },
-                html: function () {
-                    res.redirect("/files");
-                }
-            });
+            }
+            activity.markModified('content');
+            activity.save(function (err) {});
         });
-    }
+
+        res.format({
+            json: function () {
+                file.populate('creator', 'username name', function (err, file) {
+                    if (err) { throw err; }
+                    res.json(file);
+                });
+            },
+            html: function () {
+                res.redirect("/files");
+            }
+        });
+    });
 });
 
 router.put('/:id', function (req, res) {
@@ -191,7 +187,7 @@ router.put('/:id', function (req, res) {
     }, function(err, file) {
         if (err) { throw err; }
         console.log(file);
-        res.json(200, file);
+        res.json(file);
     });
 });
 
@@ -201,7 +197,7 @@ router.delete('/:id', function (req, res, next) {
     File.findByIdAndRemove(id, function (err, file) {
         if (err) { return next(err); }
         Activity.findOneAndRemove({content_type: 'upload', content_id: file._id}, function (err, activity) {});
-        res.json(200, file);
+        res.json(file);
     });
 });
 

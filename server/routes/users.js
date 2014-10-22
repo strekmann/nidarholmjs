@@ -129,12 +129,12 @@ router.get('/:username/pictures', function (req, res, next) {
             .exec(function (err, files) {
                 if (err) { throw err; }
                 files.reverse();
-                res.json(200, files);
+                res.json(files);
             });
         });
     }
     else {
-        res.json(403, 'Forbidden');
+        res.sendStatus(403);
     }
 });
 
@@ -155,13 +155,13 @@ router.post('/:username/pictures', function (req, res, next) {
                 user.profile_picture_path = file.thumbnail_path;
                 user.save(function (err) {
                     if (err) { throw err; }
-                    res.json(200, file);
+                    res.json(file);
                 });
             });
         });
     }
     else {
-        res.json(403, {});
+        res.sendStatus(403);
     }
 });
 
@@ -179,13 +179,13 @@ router.put('/:username/pictures/:id', function (req, res, next) {
                 user.profile_picture_path = file.path;
                 user.save(function (err) {
                     if (err) { throw err; }
-                    res.json(200, file);
+                    res.json(file);
                 });
             });
         });
     }
     else {
-        res.json(403, {});
+        res.sendStatus(403);
     }
 });
 
@@ -202,14 +202,14 @@ router.post('/:username/groups', is_admin, function (req, res, next) {
                 return groupid === g.toString();
             });
             if (already) {
-                res.json(404, {});
+                res.sendStatus(404);
             } else {
                 user.groups.push(group);
                 user.save(function (err) {
                     if (err) { throw err; }
                     group.members.push({user: user._id});
                     group.save(function (err) {
-                        res.json(200, group);
+                        res.json(group);
                     });
                 });
             }
@@ -217,34 +217,29 @@ router.post('/:username/groups', is_admin, function (req, res, next) {
     });
 });
 
-router.delete('/:username/groups/:groupid', function (req, res, next) {
-    if (req.is_admin) {
-        var username = req.params.username,
-            groupid = req.params.groupid;
+router.delete('/:username/groups/:groupid', is_admin, function (req, res, next) {
+    var username = req.params.username,
+        groupid = req.params.groupid;
 
-        User.findOne({username: username}, function (err, user) {
+    User.findOne({username: username}, function (err, user) {
+        if (err) { next(err); }
+        user.groups.pull(groupid);
+        user.save(function (err) {
             if (err) { next(err); }
-            user.groups.pull(groupid);
-            user.save(function (err) {
+            Group.findById(groupid, function (err, group) {
                 if (err) { next(err); }
-                Group.findById(groupid, function (err, group) {
+                _.each(group.members.filter(function (member){
+                    return member.user === user._id;
+                }), function (member) {
+                    group.members.pull(member);
+                });
+                group.save(function(err) {
                     if (err) { next(err); }
-                    _.each(group.members.filter(function (member){
-                        return member.user === user._id;
-                    }), function (member) {
-                        group.members.pull(member);
-                    });
-                    group.save(function(err) {
-                        if (err) { next(err); }
-                        res.json(200);
-                    });
+                    res.sendStatus(200);
                 });
             });
         });
-    }
-    else {
-        res.json(403, 'Forbidden');
-    }
+    });
 });
 
 module.exports = router;

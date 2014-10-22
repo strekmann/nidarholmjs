@@ -56,7 +56,7 @@ router.get('/', function (req, res, next) {
                 res.render('projects/events', {events: events, meta: {title: "Aktiviteter"}});
             },
             json: function () {
-                res.json(200, {events: events});
+                res.json({events: events});
             }
         });
     });
@@ -116,10 +116,10 @@ router.put('/:id', function (req, res, next) {
             event.location = req.body.location;
             event.save(function (err) {
                 if (err) {
-                    res.json(400, err);
+                    res.status(400).json(err);
                 }
                 else {
-                    res.json(200, event);
+                    res.json(event);
                 }
             });
         }
@@ -137,7 +137,7 @@ router.delete('/:event_id', function (req, res, next) {
             {'permissions.groups': { $in: req.user.groups }}
         ]).exec(function (err, event) {
             if (err) { return next(err); }
-            res.json(200, event);
+            res.json(event);
         });
     }
     else {

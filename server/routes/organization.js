@@ -137,11 +137,11 @@ module.exports.create_user = function (req, res, next) {
                 //}
             //});
             //if (has_group) {
-                //res.json(200, group);
+                //res.json(group);
             //} else {
                 //org.instrument_groups.push(group);
                 //org.save(function (err) {
-                    //res.json(200, group);
+                    //res.json(group);
                 //});
             //}
         //});
@@ -157,7 +157,7 @@ module.exports.remove_group = function (req, res, next) {
         org.instrument_groups.pull(groupid);
         org.save(function (err) {
             if (err) { next(new Error(err)); }
-            res.json(200);
+            res.sendStatus(200);
         });
     });
 };
@@ -175,15 +175,15 @@ module.exports.add_instrument_group = function (req, res, next) {
                 organization.instrument_groups.push(groupid);
                 organization.save(function (err) {
                     if (err) { next(err); }
-                    res.json(200, {});
+                    res.sendStatus(200);
                 });
             } else {
-                res.json(400, {});
+                res.sendStatus(400);
             }
         });
     }
     else {
-        res.json(403, {});
+        res.sendStatus(403);
     }
 };
 
@@ -196,12 +196,12 @@ module.exports.remove_instrument_group = function (req, res, next) {
             organization.instrument_groups.pull(groupid);
             organization.save(function (err) {
                 if (err) { next(err); }
-                res.json(200);
+                res.sendStatus(200);
             });
         });
     }
     else {
-        res.json(403, {});
+        res.sendStatus(403);
     }
 };
 
@@ -215,12 +215,12 @@ module.exports.order_instrument_groups = function (req, res, next) {
             organization.instrument_groups = group_order;
             organization.save(function (err) {
                 if (err) { next(err); }
-                res.json(200, {});
+                res.sendStatus(200);
             });
         });
     }
     else {
-        res.json(403, {});
+        res.sendStatus(403);
     }
 };
 
@@ -316,24 +316,24 @@ module.exports.update_organization = function (req, res, next) {
 
 module.exports.set_admin_group = function (req, res, next) {
     if (!req.is_admin) {
-        res.json(403, 'Forbidden');
+        res.sendStatus(403);
     } else {
         req.organization.administration_group = req.body.group;
         req.organization.save(function (err) {
             if (err) { return next(err); }
-            res.json({});
+            res.sendStatus(200);
         });
     }
 };
 
 module.exports.set_musicscoreadmin_group = function (req, res, next) {
     if (!req.is_admin) {
-        res.json(403, 'Forbidden');
+        res.sendStatus(403);
     } else {
         req.organization.musicscoreadmin_group = req.body.group;
         req.organization.save(function (err) {
             if (err) { return next(err); }
-            res.json({});
+            res.sendStatus(200);
         });
     }
 };

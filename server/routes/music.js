@@ -1,26 +1,22 @@
 var express = require('express'),
     router = express.Router(),
     _ = require('underscore'),
+    is_member = require('../lib/middleware').is_member,
     User = require('../models').User,
     Project = require('../models/projects').Project,
     Piece = require('../models/projects').Piece;
 
-router.get('/', function (req, res, next) {
-    if (req.is_member) {
-        Piece.find().sort('title').exec(function (err, pieces) {
-            res.format({
-                html: function () {
-                    res.render('projects/music', {pieces: pieces, meta: {title: 'Notearkivet'}});
-                },
-                json: function () {
-                    res.json(200, {pieces: pieces});
-                }
-            });
+router.get('/', is_member, function (req, res, next) {
+    Piece.find().sort('title').exec(function (err, pieces) {
+        res.format({
+            html: function () {
+                res.render('projects/music', {pieces: pieces, meta: {title: 'Notearkivet'}});
+            },
+            json: function () {
+                res.json({pieces: pieces});
+            }
         });
-    }
-    else {
-        res.json(403, {});
-    }
+    });
 });
 
 router.get('/:id', function (req, res, next) {
@@ -88,7 +84,7 @@ router.post('/', function (req, res, next) {
                         var music = {
                             piece: piece
                         };
-                        res.status(200).json(music);
+                        res.json(music);
                     });
                 });
             }
@@ -126,7 +122,7 @@ router.post('/:id/scores', function (req, res, next) {
                         json: function () {
                             file.populate('creator', 'username name', function (err, file) {
                                 if (err) { throw err; }
-                                res.json(200, file);
+                                res.json(file);
                             });
                         },
                         html: function () {
