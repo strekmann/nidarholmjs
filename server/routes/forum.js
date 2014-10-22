@@ -1,4 +1,6 @@
 var _ = require('underscore'),
+    express = require('express'),
+    router = express.Router(),
     shortid = require('short-mongo-id'),
     moment = require('moment'),
     parse_web_permissions = require('../lib/util').parse_web_permissions,
@@ -8,19 +10,10 @@ var _ = require('underscore'),
     ForumComment = require('../models/forum').ForumComment,
     Activity = require('../models').Activity;
 
-module.exports.index = function (req, res, next) {
-    // sende med prosjekt i url, eller søke opp prosjekter for alle tags?
-    // sende med prosjekt i url
-    var tagquery,
-        tags;
+// forum with prefix /forum
 
-    if (req.params[0]) {
-        tags = req.params[0].replace(/\/$/, '').split("/");
-        tagquery = {'tags': { $all: tags }};
-    } else {
-        tagquery = {};
-    }
-    var query = ForumPost.find(tagquery);
+router.get('/', function (req, res, next) {
+    var query = ForumPost.find();
     if (req.user) {
         query = query.or([
             {creator: req.user._id},
@@ -57,9 +50,53 @@ module.exports.index = function (req, res, next) {
             }
         });
     });
-};
+});
 
-module.exports.create_post = function (req, res, next) {
+router.get(/^\/t\/(.+)/, function (req, res, next) {
+    // sende med prosjekt i url, eller søke opp prosjekter for alle tags?
+    // sende med prosjekt i url
+    var tags = req.params[0].replace(/\/$/, '').split("/"),
+        tagquery = {'tags': { $all: tags }},
+        query = ForumPost.find(tagquery);
+    if (req.user) {
+        query = query.or([
+            {creator: req.user._id},
+            {'permissions.public': true},
+            {'permissions.users': req.user._id},
+            {'permissions.groups': { $in: req.user.groups }}
+        ]);
+    }
+    else {
+        query = query.where({'permissions.public': true});
+    }
+    query = query.sort('-created')
+        .populate('creator', 'username name profile_picture_path')
+        .select('_id title created mdtext tags permissions creator');
+
+    if (req.query.page) {
+        query = query.skip(20 * req.query.page);
+    }
+    query = query.limit(20);
+    query.exec(function (err, posts) {
+        if (err) {
+            return next(err);
+        }
+
+        res.format({
+            json: function () {
+                res.json(200, posts);
+            },
+            html: function () {
+                res.render('forum/index', {
+                    posts: posts,
+                    meta: {title: "Forum"}
+                });
+            }
+        });
+    });
+});
+
+router.post('/', function (req, res, next) {
     if (!req.is_member) {
         res.status(403).json('Forbidden');
     }
@@ -96,9 +133,9 @@ module.exports.create_post = function (req, res, next) {
             });
         });
     }
-};
+});
 
-module.exports.update_post = function (req, res, next) {
+router.put('/:id', function (req, res, next) {
     var title = req.body.title,
         mdtext = req.body.mdtext,
         tags = req.body.tags,
@@ -142,9 +179,10 @@ module.exports.update_post = function (req, res, next) {
             res.json(403, 'Forbidden');
         }
     });
-};
+});
 
-module.exports.delete_post = function (req, res, next) {
+router.delete('/:id', function (req, res, next) {
+    // TODO: Add permission checks
     var id = req.params.id;
 
     ForumPost.findByIdAndRemove(id, function (err, post) {
@@ -157,10 +195,9 @@ module.exports.delete_post = function (req, res, next) {
             res.json(403, 'Forbidden');
         }
     });
-};
+});
 
-module.exports.get_post = function (req, res, next) {
-
+router.get('/:id', function (req, res, next) {
     ForumPost.findById(req.params.id)
     .or([
         {creator: req.user._id},
@@ -195,9 +232,9 @@ module.exports.get_post = function (req, res, next) {
             });
         }
     });
-};
+});
 
-module.exports.create_reply = function (req, res, next) {
+router.post('/:postid/replies', function (req, res, next) {
     var postid = req.params.postid;
 
     ForumPost.findById(postid)
@@ -235,9 +272,9 @@ module.exports.create_reply = function (req, res, next) {
             });
         }
     });
-};
+});
 
-module.exports.delete_reply = function (req, res, next) {
+router.delete('/forum/:postid/replies/:replyid', function (req, res, next) {
     var postid = req.params.postid,
         replyid = req.params.replyid;
 
@@ -255,9 +292,9 @@ module.exports.delete_reply = function (req, res, next) {
             res.json(200);
         });
     });
-};
+});
 
-module.exports.update_reply = function (req, res, next) {
+router.put('/:postid/replies/:replyid', function (req, res, next) {
     var postid = req.params.postid,
         replyid = req.params.replyid,
         mdtext = req.body.mdtext;
@@ -283,8 +320,9 @@ module.exports.update_reply = function (req, res, next) {
             res.json(403, 'Forbidden');
         }
     });
-};
-module.exports.get_replies = function (req, res, next) {
+});
+
+router.get('/:id/replies', function (req, res, next) {
     ForumPost.findById(req.params.id)
     .or([
         {creator: req.user._id},
@@ -298,9 +336,10 @@ module.exports.get_replies = function (req, res, next) {
         }
         res.json(200, post.replies);
     });
-};
+});
 
-module.exports.create_comment = function (req, res, next) {
+router.post('/:postid/replies/:replyid/comments',
+            function (req, res, next) {
     var replyid = req.params.replyid;
 
     ForumPost.findOne({'replies._id': replyid}, function (err, post) {
@@ -336,9 +375,10 @@ module.exports.create_comment = function (req, res, next) {
             return next(new Error('Post not found, could not add comment'));
         }
     });
-};
+});
 
-module.exports.update_comment = function (req, res, next) {
+router.put('/:postid/replies/:replyid/comments/:commentid',
+           function (req, res, next) {
     var postid = req.params.postid,
         replyid = req.params.replyid,
         commentid = req.params.commentid,
@@ -369,9 +409,10 @@ module.exports.update_comment = function (req, res, next) {
             res.json(403, 'Forbidden');
         }
     });
-};
+});
 
-module.exports.delete_comment = function (req, res, next) {
+router.delete('/:postid/replies/:replyid/comments/:commentid',
+              function (req, res, next) {
     var postid = req.params.postid,
         replyid = req.params.replyid,
         commentid = req.params.commentid;
@@ -396,4 +437,6 @@ module.exports.delete_comment = function (req, res, next) {
             return next(new Error('Post not found, could not delete comment'));
         }
     });
-};
+});
+
+module.exports = router;

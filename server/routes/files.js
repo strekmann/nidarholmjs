@@ -1,4 +1,6 @@
 var _ = require('underscore'),
+    express = require('express'),
+    router = express.Router(),
     path = require('path'),
     fs = require('fs'),
     moment= require('moment'),
@@ -8,7 +10,7 @@ var _ = require('underscore'),
     File = require('../models/files').File,
     Activity = require('../models').Activity;
 
-module.exports.index = function (req, res) {
+router.get('/', function (req, res) {
     var query;
     if (req.user) {
         query = File.find().or([
@@ -41,9 +43,9 @@ module.exports.index = function (req, res) {
             }
         });
     });
-};
+});
 
-module.exports.search = function (req, res) {
+router.get('/t/*', function (req, res) {
     var tagstring = req.params[0];
     var query;
     if (req.user) {
@@ -82,9 +84,9 @@ module.exports.search = function (req, res) {
             }
         });
     });
-};
+});
 
-module.exports.upload = function (req, res) {
+router.post('/upload', function (req, res) {
     if (!req.is_member) {
         res.send(403, "Forbidden");
     }
@@ -167,9 +169,9 @@ module.exports.upload = function (req, res) {
             });
         });
     }
-};
+});
 
-module.exports.update = function (req, res) {
+router.put('/:id', function (req, res) {
     var id = req.params.id,
         tags = req.body.tags,
         users = [],
@@ -191,9 +193,9 @@ module.exports.update = function (req, res) {
         console.log(file);
         res.json(200, file);
     });
-};
+});
 
-module.exports.delete_file = function (req, res, next) {
+router.delete('/:id', function (req, res, next) {
     var id = req.params.id;
 
     File.findByIdAndRemove(id, function (err, file) {
@@ -201,9 +203,9 @@ module.exports.delete_file = function (req, res, next) {
         Activity.findOneAndRemove({content_type: 'upload', content_id: file._id}, function (err, activity) {});
         res.json(200, file);
     });
-};
+});
 
-module.exports.show_file = function (req, res) {
+router.get('/:id', function (req, res) {
     File.findById(req.params.id).or([
         {creator: req.user._id},
         {'permissions.public': true},
@@ -217,9 +219,9 @@ module.exports.show_file = function (req, res) {
             res.render('files/show_file', {file: file, meta: {title: file.filename}});
         }
     });
-};
+});
 
-module.exports.thumbnail_file = function (req, res) {
+router.get('/th/:path/:filename', function (req, res) {
     var filepath = req.params.path,
         filename = req.params.filename,
         fullpath = path.join(config.files.thumbnail_prefix, filepath.substr(0,2), filepath.substr(2,2), filepath);
@@ -232,9 +234,9 @@ module.exports.thumbnail_file = function (req, res) {
             res.sendStatus(404);
         }
     });
-};
+});
 
-module.exports.normal_file = function (req, res) {
+router.get('/n/:path/:filename', function (req, res) {
     var filepath = req.params.path,
         filename = req.params.filename,
         fullpath = path.join(config.files.normal_prefix, filepath.substr(0,2), filepath.substr(2,2), filepath);
@@ -247,9 +249,9 @@ module.exports.normal_file = function (req, res) {
             res.sendStatus(404);
         }
     });
-};
+});
 
-module.exports.large_file = function (req, res) {
+router.get('/l/:path/:filename', function (req, res) {
     var filepath = req.params.path,
         filename = req.params.filename,
         fullpath = path.join(config.files.large_prefix, filepath.substr(0,2), filepath.substr(2,2), filepath);
@@ -262,9 +264,9 @@ module.exports.large_file = function (req, res) {
             res.sendStatus(404);
         }
     });
-};
+});
 
-module.exports.raw_file = function (req, res) {
+router.get('/:path/:filename', function (req, res) {
     var filepath = req.params.path,
         filename = req.params.filename,
         fullpath = path.join(config.files.raw_prefix, filepath.substr(0,2), filepath.substr(2,2), filepath);
@@ -277,4 +279,6 @@ module.exports.raw_file = function (req, res) {
             res.sendStatus(404);
         }
     });
-};
+});
+
+module.exports = router;

@@ -158,7 +158,6 @@ app.use(multer());
 app.use(express.static(path.join(__dirname, '..' ,'public')));
 
 // routes
-app.get('/', require('./routes/index'));
 app.post('/login',
          app.passport.authenticate('local', {
              failureRedirect: '/login',
@@ -197,20 +196,14 @@ app.get('/auth/twitter/callback', app.passport.authenticate('twitter', {failureR
     res.redirect(url);
 });
 
-var forum_routes = require('./routes/forum');
-app.get('/forum', forum_routes.index);
-app.get(/^\/forum\/t\/(.+)/, forum_routes.index);  // tags
-app.get('/forum/:id', forum_routes.get_post);
-app.put('/forum/:id', forum_routes.update_post);
-app.get('/forum/:id/replies', forum_routes.get_replies);
-app.post('/forum', forum_routes.create_post);
-app.delete('/forum/:id', forum_routes.delete_post);
-app.post('/forum/:postid/replies', forum_routes.create_reply);
-app.put('/forum/:postid/replies/:replyid', forum_routes.update_reply);
-app.delete('/forum/:postid/replies/:replyid', forum_routes.delete_reply);
-app.post('/forum/:postid/replies/:replyid/comments', forum_routes.create_comment);
-app.put('/forum/:postid/replies/:replyid/comments/:commentid', forum_routes.update_comment);
-app.delete('/forum/:postid/replies/:replyid/comments/:commentid', forum_routes.delete_comment);
+app.use('/', require('./routes/index'));
+app.use('/proxy', require('./routes/proxy'));
+app.use('/forum', require('./routes/forum'));
+app.use('/files', require('./routes/files'));
+app.use('/users', require('./routes/users'));
+app.use('/groups', require('./routes/groups'));
+app.use('/music', require('./routes/music'));
+app.use('/events', require('./routes/events'));
 
 var organization_routes = require('./routes/organization');
 app.get('/members', organization_routes.memberlist);
@@ -220,21 +213,6 @@ app.post('/members/new', organization_routes.create_user);
 //app.post('/members', organization_routes.add_group);
 app.delete('/members/:groupid', organization_routes.remove_group);
 
-app.get('/users', organization_routes.users);
-app.get('/users/:username', organization_routes.user);
-app.get('/users/:username/edit', organization_routes.edit_user);
-app.post('/users/:id/edit', organization_routes.update_user);
-app.get('/users/:username/pictures', organization_routes.user_pictures);
-app.post('/users/:username/pictures', organization_routes.upload_profile_picture);
-app.put('/users/:username/pictures/:id', organization_routes.set_profile_picture);
-app.post('/users/:username/groups', organization_routes.user_add_group);
-app.delete('/users/:username/groups/:groupid', organization_routes.user_remove_group);
-
-app.get('/groups', organization_routes.groups);
-app.post('/groups', organization_routes.add_group);
-app.get('/groups/:id', organization_routes.group);
-app.post('/groups/:id/users', organization_routes.group_add_user);
-app.delete('/groups/:groupid/users/:username', organization_routes.group_remove_user);
 app.post('/organization', organization_routes.add_instrument_group);
 app.delete('/organization/:id', organization_routes.remove_instrument_group);
 app.post('/organization/order', organization_routes.order_instrument_groups);
@@ -245,18 +223,6 @@ app.get('/organization/updated_email_lists.json/:groups', organization_routes.en
 app.put('/organization/admin/admin_group', organization_routes.set_admin_group);
 app.put('/organization/admin/musicscoreadmin_group', organization_routes.set_musicscoreadmin_group);
 
-var file_routes = require('./routes/files');
-app.get('/files', file_routes.index);
-app.post('/files/upload', file_routes.upload);
-app.get('/files/t/*', file_routes.search);
-app.put('/files/:id', file_routes.update);
-app.delete('/files/:id', file_routes.delete_file);
-app.get('/files/:id', file_routes.show_file);
-app.get('/files/th/:path/:filename', file_routes.thumbnail_file);
-app.get('/files/n/:path/:filename', file_routes.normal_file);
-app.get('/files/l/:path/:filename', file_routes.large_file);
-app.get('/files/:path/:filename', file_routes.raw_file);
-
 var project_routes = require('./routes/projects');
 app.get('/projects', project_routes.index);
 app.post('/projects', project_routes.create_project);
@@ -265,25 +231,13 @@ app.get('/:year(\\d{4})/:tag', project_routes.project);
 app.put('/projects/:id', project_routes.update_project);
 app.delete('/projects/:id', project_routes.delete_project);
 app.post('/projects/:id/events', project_routes.project_create_event);
-app.delete('/projects/:project_id/events/:event_id', project_routes.delete_event);
 app.post('/projects/:id/forum', project_routes.project_create_post);
 app.delete('/projects/:project_id/forum/:post_id', project_routes.project_delete_post);
 app.post('/projects/:id/files', project_routes.project_create_file);
 app.put('/projects/:project_id/music', project_routes.add_piece);
 app.delete('/projects/:project_id/music', project_routes.remove_piece);
-app.get('/events', project_routes.events);
 app.get('/events/public.ics', project_routes.ical_events);
 app.get('/events/export.ics', project_routes.ical_events);
-app.get('/events/:id', project_routes.event);
-app.put('/events/:id', project_routes.update_event);
-app.delete('/events/:id', project_routes.delete_event);
-app.get('/music', project_routes.music);
-app.post('/music', project_routes.create_piece);
-app.get('/music/:id', musicscoreadmin_middleware, project_routes.piece);
-app.post('/music/:id/scores', musicscoreadmin_middleware, project_routes.upload_score);
-
-var proxy_routes = require('./routes/proxy');
-app.get('/proxy/postcode/:postcode', proxy_routes.postcode);
 
 app.get('/foundation', function(req, res){
     res.render('foundation');

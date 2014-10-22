@@ -1,6 +1,8 @@
-var fetch_city = require('../lib/util').fetch_city;
+var express = require('express'),
+    router = express.Router(),
+    fetch_city = require('../lib/util').fetch_city;
 
-module.exports.postcode = function (req, res) {
+router.get('/postcode/:postcode', function (req, res) {
     fetch_city(req.params.postcode, function (err, city) {
         if (err) {
             if (err === "notfound") {
@@ -15,4 +17,6 @@ module.exports.postcode = function (req, res) {
             res.json(200, city);
         }
     });
-};
+});
+
+module.exports = router;
