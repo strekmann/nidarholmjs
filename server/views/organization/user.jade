@@ -166,7 +166,7 @@ block content
           if !user.groups || user.groups.length === 0
             p Ingen grupper. Legg personen til i grupper ved å trykke knappen under.
 
-        ul
+        ul#groups
           | {{#groups}}
           li.group
             a(href="/groups/{{_id}}") {{name}}

@@ -1,8 +1,10 @@
 var express = require('express'),
     router = express.Router(),
+    _ = require('underscore'),
     countries = require('country-list/country/cldr/nb/country'),
     util = require('../lib/util'),
     upload_file = util.upload_file,
+    is_admin = require('../lib/middleware').is_admin,
     config = require('../settings'),
     User = require('../models').User,
     Group = require('../models').Group,
@@ -163,7 +165,7 @@ router.post('/:username/pictures', function (req, res, next) {
     }
 });
 
-router.put('/:usernmae/pictures/:id', function (req, res, next) {
+router.put('/:username/pictures/:id', function (req, res, next) {
     if (req.user.username === req.params.username || req.is_admin) {
         var username = req.params.username,
             id = req.params.id;
@@ -187,37 +189,32 @@ router.put('/:usernmae/pictures/:id', function (req, res, next) {
     }
 });
 
-router.post('/:username/groups', function (req, res, next) {
-    if (req.is_admin) {
-        var username = req.params.username,
-            groupid = req.body.groupid;
+router.post('/:username/groups', is_admin, function (req, res, next) {
+    var username = req.params.username,
+        groupid = req.body.groupid;
 
-        User.findOne({username: username}, function (err, user) {
-            if (err) { throw err; }
-            Group.findById(groupid, function (err, group) {
-                if (err) { return next(err); }
-                if (!group) { return next(new Error("Unrecognized group")); }
-                var already = _.find(user.groups, function (g) {
-                    return groupid === g.toString();
-                });
-                if (already) {
-                    res.json(404, {});
-                } else {
-                    user.groups.push(group);
-                    user.save(function (err) {
-                        if (err) { throw err; }
-                        group.members.push({user: user._id});
-                        group.save(function (err) {
-                            res.json(200, group);
-                        });
-                    });
-                }
+    User.findOne({username: username}, function (err, user) {
+        if (err) { throw err; }
+        Group.findById(groupid, function (err, group) {
+            if (err) { return next(err); }
+            if (!group) { return next(new Error("Unrecognized group")); }
+            var already = _.find(user.groups, function (g) {
+                return groupid === g.toString();
             });
+            if (already) {
+                res.json(404, {});
+            } else {
+                user.groups.push(group);
+                user.save(function (err) {
+                    if (err) { throw err; }
+                    group.members.push({user: user._id});
+                    group.save(function (err) {
+                        res.json(200, group);
+                    });
+                });
+            }
         });
-    }
-    else {
-        res.json(403, 'Forbidden');
-    }
+    });
 });
 
 router.delete('/:username/groups/:groupid', function (req, res, next) {

@@ -1,5 +1,6 @@
 var express = require('express'),
     router = express.Router(),
+    _ = require('underscore'),
     User = require('../models').User,
     Group = require('../models').Group,
     Organization = require('../models').Organization;
