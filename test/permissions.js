@@ -24,7 +24,8 @@ describe("Permissions", function () {
             group = new Group({
                 _id: 'testgroup',
                 name: 'testgroup',
-                organization: 'nidarholm'
+                organization: 'nidarholm',
+                members: [{user: 'testid'}]
             });
             user1 = new User({
                 _id: 'testid',
@@ -39,7 +40,8 @@ describe("Permissions", function () {
             });
             organization = new Organization({
                 _id: 'nidarholm',
-                instrument_groups: [group]
+                instrument_groups: [group._id],
+                member_group: group._id
             });
             file = new File({
                 _id: 'file1',
@@ -99,7 +101,7 @@ describe("Permissions", function () {
                     if (err) { return done(err); }
                     $ = cheerio.load(res.text);
                     var username = $('#topbar-username').text();
-                    username.should.equal(user1.username);
+                    username.should.equal(user1.name);
                     done();
                 });
         });

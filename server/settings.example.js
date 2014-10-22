@@ -3,6 +3,16 @@ module.exports = {
     uri: 'http://localhost:3000/',
     sessionSecret: 'sessionSecretString',
     auth: {
+        facebook: {
+            clientId: 'clientId',
+            clientSecret: 'clientSecret',
+            callbackURL: 'http://localhost:3000/auth/facebook/callback'
+        },
+        twitter: {
+            clientId: 'clientId',
+            clientSecret: 'clientSecret',
+            callbackURL: 'http://localhost:3000/auth/twitter/callback'
+        },
         google: {
             clientId: 'googleClientId',
             clientSecret: 'googleCLientSecret',
@@ -33,10 +43,10 @@ module.exports = {
     locales: ['en'],
     defaultLocale: 'en',
     files: {
-        raw_prefix: 'uploaded_files',
-        normal_prefix: 'uploaded_files/normal',
-        large_prefix: 'uploaded_files/large',
-        thumbnail_prefix: 'uploaded_files/thumbnail'
+        raw_prefix: '/tmp/uploaded_files',
+        normal_prefix: '/tmp/uploaded_files/normal',
+        large_prefix: '/tmp/uploaded_files/large',
+        thumbnail_prefix: '/tmp/uploaded_files/thumbnail'
     },
     organization: 'nidarholm',
     profile_picture_tag: 'profilbilde',
