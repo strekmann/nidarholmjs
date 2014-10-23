@@ -6,3 +6,5 @@ services:
   - redis-server
 before_install: cp server/settings.example.js server/settings.js
 env: NODE_ENV=test
+notifications:
+  irc: "irc.efnet.org#strekmann"
