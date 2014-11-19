@@ -562,6 +562,10 @@ nav.top-bar {
     list-style: none;
     margin-left: 0;
 
+    [class*="block-grid-"] > li {
+        padding: 0 0.625rem;
+    }
+
     h1 {
         font-size: rem-calc(22px);
         font-style: normal;
@@ -581,9 +585,10 @@ nav.top-bar {
             width: 40px;
         }
         .last {
-            line-height: 1.2;
+            line-height: 1.5;
             padding-left: 5px;
             color: $grey-color;
+            font-size: rem-calc(13px);
         }
         span.image {
             position: relative;
