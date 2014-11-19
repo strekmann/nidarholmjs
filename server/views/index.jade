@@ -92,7 +92,7 @@ block content
     li
       | {{#content_type == "upload"}}
       h1
-        i.fa.fa-upload.right
+        i.fa.fa-upload.left
         a(href='/files/{{content_ids.0}}')
           | {{title}}
         small
@@ -120,7 +120,7 @@ block content
       | {{/content_type}}
       | {{#content_type == "forum"}}
       h1
-        i.fa.fa-comments-o.right
+        i.fa.fa-comments-o.left
         a(href='/forum/{{content_ids.0}}')
           | {{title}}
       .row

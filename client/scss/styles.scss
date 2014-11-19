@@ -571,6 +571,9 @@ nav.top-bar {
         font-style: normal;
         margin-top: rem-calc(20px);
         margin-bottom: rem-calc(5px);
+        i {
+            margin: 0 rem-calc(8px);
+        }
     }
     p {
         margin-bottom: 0;
