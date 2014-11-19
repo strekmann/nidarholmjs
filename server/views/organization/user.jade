@@ -148,7 +148,7 @@ block content
             a.secondary(href="/auth/twitter")
               i.fa.fa-twitter-square.fa-2x
 
-        if is_admin
+        if is_admin && (user.facebook_id || user.google_id || user.twitter_id)
           p Har aktivert alternativ innlogging med 
             if user.facebook_id
               i.fa.fa-facebook-square
