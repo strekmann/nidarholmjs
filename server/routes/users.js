@@ -56,7 +56,7 @@ router.get('/:username/edit', function (req, res, next) {
     .select('-password -algorithm -salt -friends')
     .exec(function (err, user) {
         if (err) { next(err); }
-        if (req.is_admin || req.user === user) {
+        if (req.is_admin || req.user._id === user._id) {
             if (!user.country) {
                 user.country = "NO";
             }
