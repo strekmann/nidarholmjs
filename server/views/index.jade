@@ -92,11 +92,11 @@ block content
     li
       | {{#content_type == "upload"}}
       h1
-        i.fa.fa-upload.right
+        i.fa.fa-upload.fa-fw.left
         a(href='/files/{{content_ids.0}}')
           | {{title}}
         small
-          |  
+          | &emsp;  
           a(href="/{{.project.year}}/{{.project.tag}}") {{.project.title}}
       | {{#content.images.length}}
       .row
@@ -120,7 +120,7 @@ block content
       | {{/content_type}}
       | {{#content_type == "forum"}}
       h1
-        i.fa.fa-comments-o.right
+        i.fa.fa-comments-o.fa-fw.left
         a(href='/forum/{{content_ids.0}}')
           | {{title}}
       .row
@@ -152,8 +152,9 @@ block content
             | &nbsp;{{.}}
           | {{/if}}
           | {{#if content_type === "upload"}}
-          i.fa.fa-tag
-          | &nbsp;{{.}}
+          a(href="/files/t/{{.}}")
+            i.fa.fa-tag
+            | &nbsp;{{.}}
           | {{/if}}
           | &nbsp;
           | {{/.}}

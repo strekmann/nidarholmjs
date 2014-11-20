@@ -20,13 +20,14 @@ describe("Group", function () {
             group = new Group({
                 _id: 'testgroup',
                 name: 'testgroup',
-                organization: 'nidarholm'
+                organization: 'nidarholm',
+                members: [{user: 'testid'}]
             });
             user1 = new User({
                 _id: 'testid',
                 username: 'testuser',
                 name: 'Test Testson',
-                groups: [group],
+                groups: [group._id],
                 is_active: true,
                 is_admin: false,
                 algorithm: 'sha1',
@@ -35,7 +36,8 @@ describe("Group", function () {
             });
             organization = new Organization({
                 _id: 'nidarholm',
-                member_group: group.id,
+                member_group: group._id,
+                administration_group: group._id,
                 instrument_groups: [group]
             });
             group.save(function (err) {
@@ -73,7 +75,7 @@ describe("Group", function () {
         it("should add new group to organization", function (done) {
             agent
             .post('/groups')
-            .send({name: 'New group', _id: 'newgroup'})
+            .send({name: 'New group'})
             .expect(200)
             .end(function (err, res) {
                 if (err) { return done(err); }
@@ -89,6 +91,31 @@ describe("Group", function () {
             .end(function (err, res) {
                 if (err) { return done(err); }
                 done();
+            });
+        });
+        it("should find not find new group, as it has no members", function (done) {
+            agent
+                .get('/members')
+                .set('Accept', 'text/html')
+                .expect(200)
+                .end(function (err, res) {
+                    if (err) { return done(err); }
+                    $ = cheerio.load(res.text);
+                    var groups = $('#memberlist .group');
+                    groups.length.should.equal(1);
+                    done();
+            });
+        });
+        it("should add member to new group", function (done) {
+            agent
+                .post('/users/testuser/groups')
+                .send({groupid: groupid})
+                .set('Accept', 'text/html')
+                .expect(200)
+                .end(function (err, res) {
+                    if (err) { return done(err); }
+                    res.body.name.should.equal('New group');
+                    done();
             });
         });
         it("should find new group in member list", function (done) {

@@ -18,7 +18,7 @@ module.exports = function(grunt) {
                 dest: 'public/js/site.js',
                 src: ['client/js/index.js'],
                 options: {
-                    alias: ['client/js/index.js:s7n']
+                    alias: ['./client/js/index.js:s7n']
                 }
             }
         },
@@ -30,11 +30,8 @@ module.exports = function(grunt) {
                 ]
             },
             dest: {
-                options: {
-                    outputStyle: 'compressed'
-                },
                 files: {
-                    'tmp/css/styles.css': 'client/scss/styles.scss'
+                    '/tmp/styles.css': 'client/scss/styles.scss'
                 }
             }
         },
@@ -44,7 +41,7 @@ module.exports = function(grunt) {
                     bare: true
                 },
                 files: {
-                    'tmp/js/chosen.js': [
+                    '/tmp/chosen.js': [
                         'bower_components/chosen/coffee/lib/abstract-chosen.coffee',
                         'bower_components/chosen/coffee/lib/select-parser.coffee',
                         'bower_components/chosen/coffee/chosen.jquery.coffee'
@@ -61,7 +58,7 @@ module.exports = function(grunt) {
                     'bower_components/pickadate/lib/themes/default.time.css',
                     'bower_components/select2/select2.css',
                     'bower_components/dropzone/downloads/css/dropzone.css',
-                    'tmp/css/styles.css'
+                    '/tmp/styles.css'
                 ],
                 dest: 'public/css/site.css'
             },
@@ -89,7 +86,7 @@ module.exports = function(grunt) {
                     'bower_components/uslug/lib/uslug.js',
                     'bower_components/iscroll/build/iscroll.js',
                     'bower_components/select2/select2.js',
-                    'tmp/js/chosen.js',
+                    '/tmp/chosen.js',
                     'client/vendor/js/*.js',
                     'bower_components/dropzone/downloads/dropzone.js'
                 ],

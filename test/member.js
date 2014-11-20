@@ -21,13 +21,14 @@ describe("Member", function () {
             group = new Group({
                 _id: 'testgroup',
                 name: 'testgroup',
-                organization: 'nidarholm'
+                organization: 'nidarholm',
+                members: [{user: 'testid'}]
             });
             user1 = new User({
                 _id: 'testid',
                 username: 'testuser',
                 name: 'Test Testson',
-                groups: [group],
+                groups: [group._id],
                 is_active: true,
                 is_admin: false,
                 algorithm: 'sha1',
@@ -36,8 +37,9 @@ describe("Member", function () {
             });
             organization = new Organization({
                 _id: 'nidarholm',
-                member_group: group.id,
-                instrument_groups: [group]
+                member_group: group._id,
+                administration_group: group._id,
+                instrument_groups: [group._id]
             });
             group.save(function (err) {
                 if (err) {
@@ -91,8 +93,8 @@ describe("Member", function () {
                 $ = cheerio.load(res.text);
                 var members = $('#users .user');
                 members.length.should.equal(2);
-                members.eq(1).find('a').text().should.equal(testuser_name);
-                members.eq(1).find('a').attr('href').should.equal('/users/nidarholm.random-testuser.1');
+                members.eq(0).find('a').text().should.equal(testuser_name);
+                members.eq(0).find('a').attr('href').should.equal('/users/nidarholm.random-testuser.1');
                 done(err);
             });
         });
@@ -118,8 +120,8 @@ describe("Member", function () {
                 $ = cheerio.load(res.text);
                 var members = $('#users .user');
                 members.length.should.equal(3);
-                members.eq(2).find('a').text().should.equal(testuser_name);
-                members.eq(2).find('a').attr('href').should.equal('/users/nidarholm.random-testuser.2');
+                members.eq(1).find('a').text().should.equal(testuser_name);
+                members.eq(1).find('a').attr('href').should.equal('/users/nidarholm.random-testuser.2');
                 done(err);
             });
         });
@@ -131,8 +133,7 @@ describe("Member", function () {
             .end(function (err, res) {
                 $ = cheerio.load(res.text);
                 var groups = $('#groups .group');
-                //console.log(groups.text());
-                groups.length.should.equal(2);
+                groups.length.should.equal(1);
                 done(err);
             });
         });
@@ -144,9 +145,8 @@ describe("Member", function () {
             .end(function (err, res) {
                 $ = cheerio.load(res.text);
                 var users = $('#memberlist .group .member');
-                //console.log(groups.text());
                 users.length.should.equal(2);
-                users.last().find('a').text().should.equal(testuser_name);
+                users.eq(0).find('a').attr('href').should.equal('/users/nidarholm.random-testuser.2');
                 done(err);
             });
         });

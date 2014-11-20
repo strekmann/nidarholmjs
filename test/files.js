@@ -5,18 +5,28 @@ describe("Files", function () {
     var cheerio = require('cheerio'),
         mongoose = require('mongoose'),
         User = require('../server/models/index').User,
+        Group = require('../server/models/index').Group,
+        Organization = require('../server/models/index').Organization,
         File = require('../server/models/files').File,
         file_routes = require('../server/routes/files');
 
     var agent = request.agent(app),
+        group,
         user1,
         file1;
 
     before(function (done) {
         app.db.connection.db.dropDatabase(function () {
 
+            group = new Group({
+                _id: 'testgroup',
+                name: 'testgroup',
+                organization: 'nidarholm',
+                members: [{user: 'testid'}]
+            });
+
             user1 = new User({
-                _id: 'tester',
+                _id: 'testid',
                 username: 'testuser',
                 name: 'Test Testson',
                 is_active: true,
@@ -26,6 +36,13 @@ describe("Files", function () {
                 password: 'db14b6f48c30e441ef9f2ef7f3e1b0185f8eb5e3'
             });
 
+            organization = new Organization({
+                _id: 'nidarholm',
+                member_group: group._id,
+                administration_group: group._id,
+                instrument_groups: [group]
+            });
+
             file1 = new File({
                 _id: "file1",
                 creator: user1,
@@ -33,19 +50,31 @@ describe("Files", function () {
                 hash: 'c22'
             });
 
-            user1.save(function (err) {
+            group.save(function (err) {
                 if (err) {
                     done(err);
                 } else {
-                    file1.save(function (err) {
-                        agent
-                            .post('/login')
-                            .send({username: user1.username, password: 'Passw0rd'})
-                            .expect(302)
-                            .end(function(err, res) {
-                                res.header.location.should.equal('/');
-                                done(err);
+                    user1.save(function (err) {
+                        if(err) {
+                            done(err);
+                        } else {
+                            organization.save(function (err) {
+                                if(err) {
+                                    done(err);
+                                } else {
+                                    file1.save(function (err) {
+                                        agent
+                                            .post('/login')
+                                            .send({username: user1.username, password: 'Passw0rd'})
+                                            .expect(302)
+                                            .end(function(err, res) {
+                                                res.header.location.should.equal('/');
+                                                done(err);
+                                            });
+                                    });
+                                }
                             });
+                        }
                     });
                 }
             });

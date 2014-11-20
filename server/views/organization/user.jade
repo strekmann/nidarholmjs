@@ -38,6 +38,16 @@ block content
           p= user.reskontro
           = user.membership_history
 
+          #groups
+            h2 Med i grupper
+            ul
+              for group in user.groups
+                li.group= group.name
+
+            ul
+              for group in groups
+                .option= group._id
+
         p#username(data-username=user.username)= user.username
 
       .medium-3.columns.hide-for-small-only
@@ -138,7 +148,7 @@ block content
             a.secondary(href="/auth/twitter")
               i.fa.fa-twitter-square.fa-2x
 
-        if is_admin
+        if is_admin && (user.facebook_id || user.google_id || user.twitter_id)
           p Har aktivert alternativ innlogging med 
             if user.facebook_id
               i.fa.fa-facebook-square
@@ -166,7 +176,7 @@ block content
           if !user.groups || user.groups.length === 0
             p Ingen grupper. Legg personen til i grupper ved å trykke knappen under.
 
-        ul
+        ul#groups
           | {{#groups}}
           li.group
             a(href="/groups/{{_id}}") {{name}}

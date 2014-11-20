@@ -1,4 +1,6 @@
 var _ = require('underscore'),
+    express = require('express'),
+    router = express.Router(),
     async = require('async'),
     crypto = require('crypto'),
     moment = require('moment'),
@@ -6,16 +8,18 @@ var _ = require('underscore'),
     nodemailer = require('nodemailer'),
     shortid = require('short-mongo-id'),
     config = require('../settings'),
+    is_member = require('../lib/middleware').is_member,
     User = require('../models').User,
     PasswordCode = require('../models').PasswordCode,
     ForumPost = require('../models/forum').ForumPost,
     Activity = require('../models').Activity,
     File = require('../models/files').File,
     Project = require('../models/projects').Project,
-    Event = require('../models/projects').Event;
+    CalendarEvent = require('../models/projects').Event;
 
 // core routes - base is /
-module.exports.index = function(req, res) {
+
+router.get('/', function(req, res) {
     var query,
         meta = {
             title: req.organization.name,
@@ -43,13 +47,13 @@ module.exports.index = function(req, res) {
                 throw err;
             }
 
-            query = Event.find().or([
+            query = CalendarEvent.find().or([
                 {creator: req.user},
                 {'permissions.public': true},
                 {'permissions.users': req.user._id},
                 {'permissions.groups': { $in: req.user.groups }}
             ])
-            .where({start: {$gte: moment().startOf('day'), $lte: moment().add('months', 6).startOf('day').toDate()}})
+            .where({start: {$gte: moment().startOf('day'), $lte: moment().add(6, 'months').startOf('day').toDate()}})
             .sort('start');
             query.exec(function (err, events) {
                 query = Project.find().or([
@@ -79,7 +83,7 @@ module.exports.index = function(req, res) {
                         json: function () {
                             // only activities, as this is called when users
                             // fetches more activites from the log
-                            res.json(200, activities);
+                            res.json(activities);
                         }
                     });
                 });
@@ -87,7 +91,7 @@ module.exports.index = function(req, res) {
         });
     }
     else {
-        query = Event
+        query = CalendarEvent
         .find({'permissions.public': true})
         .where({start: {$gte: moment().startOf('day')}})
         .sort('start')
@@ -131,87 +135,82 @@ module.exports.index = function(req, res) {
             });
         });
     }
-};
+});
 
-module.exports.login = function(req, res){
+router.get('/login', function(req, res){
     res.render('login', {meta: {title: 'Logg inn'}});
-};
+});
 
-module.exports.logout = function(req, res){
+router.get('/logout', function(req, res){
     req.logout();
     req.session.destroy();
     res.clearCookie('remember_me');
     res.redirect('/');
-};
+});
 
-module.exports.check_email = function (req, res, next) {
+router.post('/login/check_email', function (req, res, next) {
     var pattern = new RegExp(req.body.email, 'i');
     User.findOne({email: {$regex: pattern}}, function (err, user) {
         if (err) {
             return next(err);
         }
         if (user) {
-            res.status(200).json({status: true});
+            res.json({status: true});
         }
         else {
-            res.status(200).json({status: false});
+            res.json({status: false});
         }
     });
-};
+});
 
-module.exports.tagsearch = function (req, res) {
-    if (req.is_member) {
-        if (req.query.q) {
-            var pattern = RegExp('^' + req.query.q);
-            async.parallel({
-                project_tags: function (callback) {
-                    Project.find().select('tag').exec(function (err, projects) {
-                        var matches = _.reduce(projects, function (memo, project) {
-                            if (project.tag && project.tag.match(pattern)) {
-                                memo.push(project.tag);
-                            }
-                            return memo;
-                        }, []);
-                        callback(err, matches);
+router.get('/tags', is_member, function (req, res) {
+    if (req.query.q) {
+        var pattern = RegExp('^' + req.query.q);
+        async.parallel({
+            project_tags: function (callback) {
+                Project.find().select('tag').exec(function (err, projects) {
+                    var matches = _.reduce(projects, function (memo, project) {
+                        if (project.tag && project.tag.match(pattern)) {
+                            memo.push(project.tag);
+                        }
+                        return memo;
+                    }, []);
+                    callback(err, matches);
+                });
+            },
+            forum_tags: function (callback) {
+                ForumPost.distinct('tags', function (err, tags) {
+                    var matches = _.filter(tags, function (tag) {
+                        return tag.match(pattern);
                     });
-                },
-                forum_tags: function (callback) {
-                    ForumPost.distinct('tags', function (err, tags) {
-                        var matches = _.filter(tags, function (tag) {
-                            return tag.match(pattern);
-                        });
-                        callback(err, matches);
+                    callback(err, matches);
+                });
+            },
+            files_tags: function (callback) {
+                File.distinct('tags', function (err, tags) {
+                    var matches = _.filter(tags, function (tag) {
+                        return tag.match(pattern);
                     });
-                },
-                files_tags: function (callback) {
-                    File.distinct('tags', function (err, tags) {
-                        var matches = _.filter(tags, function (tag) {
-                            return tag.match(pattern);
-                        });
-                        callback(err, matches);
-                    });
-                }
-            }, function (err, results) {
-                if (err) {
-                    console.error(err);
-                    res.json(500, err);
-                }
-                else {
-                    var tags = _.flatten(results);
-                    res.json(200, {tags: tags});
-                }
-            });
-        }
-        else {
-            res.json(400, {});
-        }
+                    callback(err, matches);
+                });
+            }
+        }, function (err, results) {
+            if (err) {
+                console.error(err);
+                res.sendStatus(500);
+            }
+            else {
+                var tags = _.flatten(results);
+                res.json({tags: tags});
+            }
+        });
     }
     else {
-        res.json(403, {});
+        res.sendStatus(400);
     }
-};
+});
 
-module.exports.register = function(req, res) {
+router.post('/register', function(req, res) {
     // TODO: Use sanitizer
     if (req.body.email && req.body.name && req.body.password1 && req.body.password2) {
         // Check if passwords are equal
@@ -259,55 +258,55 @@ module.exports.register = function(req, res) {
         req.flash('error', 'Information missing');
         res.redirect('/login');
     }
-};
+});
 
-module.exports.forgotten_password = function (req, res) { // GET
-    if (req.params.code) {
-        // step 3 code sent back to server. will verify code, login user and redirect to new password form
-        PasswordCode.findById(req.params.code, function (err, code) {
-            if (err) {
-                req.flash('error', err);
-                res.redirect('/login/reset');
-            }
-            if (!code || code.created < moment().subtract(1, 'hours')) {
-                req.flash('error', 'Passordkoden er ugyldig. Du får prøve å lage en ny.');
-                res.redirect('/login/reset');
-            }
-            if (code) {
-                // Log in automatically
-                User.findById(code.user, function (err, user) {
-                    if (err) {
-                        req.flash('error', 'Fant ikke brukeren');
-                        res.redirect('/login/reset');
-                    }
-                    else {
-                        req.logIn(user, function (err) {
-                            if(!err){
-                                res.redirect('/login/reset');
-                            } else {
-                                req.flash('error', 'Klarte ikke å logge deg inn');
-                                res.redirect('/login/reset');
-                            }
-                        });
-                    }
-                });
-            }
-            else {
-                console.error("should really never get here, but didn't we?");
-                res.redirect('/login/reset');
-            }
-        });
-    } else {
-        // step 1 will present user with email password form
-        var error;
-        if (!config.auth.smtp.host) {
-            error = 'Dette vi ikke virke, da serveren ikke kan sende epost nå.';
+router.get('/login/reset/:code', function (req, res) { // GET
+    // step 3 code sent back to server. will verify code, login user and redirect to new password form
+    PasswordCode.findById(req.params.code, function (err, code) {
+        if (err) {
+            req.flash('error', err);
+            res.redirect('/login/reset');
         }
-        res.render('auth/newpassword', {error: error});
-    }
-};
+        if (!code || code.created < moment().subtract(1, 'hours')) {
+            req.flash('error', 'Passordkoden er ugyldig. Du får prøve å lage en ny.');
+            res.redirect('/login/reset');
+        }
+        if (code) {
+            // Log in automatically
+            User.findById(code.user, function (err, user) {
+                if (err) {
+                    req.flash('error', 'Fant ikke brukeren');
+                    res.redirect('/login/reset');
+                }
+                else {
+                    req.logIn(user, function (err) {
+                        if(!err){
+                            res.redirect('/login/reset');
+                        } else {
+                            req.flash('error', 'Klarte ikke å logge deg inn');
+                            res.redirect('/login/reset');
+                        }
+                    });
+                }
+            });
+        }
+        else {
+            console.error("should really never get here, but didn't we?");
+            res.redirect('/login/reset');
+        }
+    });
+});
 
-module.exports.reset_password = function (req, res) { // POST
+router.get('/login/reset', function (req, res) { // GET
+    // step 1 will present user with email password form
+    var error;
+    if (!config.auth.smtp.host) {
+        error = 'Dette vi ikke virke, da serveren ikke kan sende epost nå.';
+    }
+    res.render('auth/newpassword', {error: error});
+});
+
+router.post('/login/reset', function (req, res) { // POST
     if (req.user) {
         // Check if passwords are equal
         var password1 = req.body.password1.trim();
@@ -366,7 +365,7 @@ module.exports.reset_password = function (req, res) { // POST
                                         res.status(500).json({error: error});
                                     }
                                     else {
-                                        res.status(200).json({status: true});
+                                        res.json({status: true});
                                     }
                                 }
                             });
@@ -380,4 +379,6 @@ module.exports.reset_password = function (req, res) { // POST
             res.redirect('/login/reset');
         }
     }
-};
+});
+
+module.exports = router;

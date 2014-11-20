@@ -5,11 +5,15 @@ describe("Forum", function () {
     var cheerio = require('cheerio'),
         mongoose = require('mongoose'),
         User = require('../server/models/index').User,
+        Group = require('../server/models/index').Group,
+        Organization = require('../server/models/index').Organization,
         ForumPost = require('../server/models/forum').ForumPost,
         forum_routes = require('../server/routes/forum');
 
     var agent = request.agent(app),
         user1,
+        group,
+        organization,
         post1,
         post2,
         reply1,
@@ -17,6 +21,13 @@ describe("Forum", function () {
 
     before(function (done) {
         app.db.connection.db.dropDatabase(function () {
+
+            group = new Group({
+                _id: 'testgroup',
+                name: 'testgroup',
+                organization: 'nidarholm',
+                members: [{user: 'testid'}]
+            });
 
             user1 = new User({
                 _id: 'testid',
@@ -29,6 +40,13 @@ describe("Forum", function () {
                 password: 'db14b6f48c30e441ef9f2ef7f3e1b0185f8eb5e3'
             });
 
+            organization = new Organization({
+                _id: 'nidarholm',
+                member_group: group._id,
+                administration_group: group._id,
+                instrument_groups: [group]
+            });
+
             post1 = new ForumPost({
                 _id: 'post1',
                 creator: user1,
@@ -36,19 +54,31 @@ describe("Forum", function () {
                 mdtext: 'Some text'
             });
 
-            user1.save(function (err) {
+            group.save(function (err) {
                 if (err) {
                     done(err);
                 } else {
-                    post1.save(function (err) {
-                        agent
-                            .post('/login')
-                            .send({username: user1.username, password: 'Passw0rd'})
-                            .expect(302)
-                            .end(function(err, res) {
-                                res.header.location.should.equal('/');
-                                done(err);
+                    user1.save(function (err) {
+                        if(err) {
+                            done(err);
+                        } else {
+                            organization.save(function (err) {
+                                if(err) {
+                                    done(err);
+                                } else {
+                                    post1.save(function (err) {
+                                        agent
+                                            .post('/login')
+                                            .send({username: user1.username, password: 'Passw0rd'})
+                                            .expect(302)
+                                            .end(function(err, res) {
+                                                res.header.location.should.equal('/');
+                                                done(err);
+                                            });
+                                    });
+                                }
                             });
+                        }
                     });
                 }
             });
@@ -83,6 +113,7 @@ describe("Forum", function () {
                     mdtext: 'New content'
                 })
                 .set('Accept', 'application/json')
+                .expect(200)
                 .end(function (err, res) {
                     if (err) { return done(err); }
                     res.body.creator.name.should.equal(user1.name);

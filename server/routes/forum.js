@@ -1,6 +1,9 @@
 var _ = require('underscore'),
+    express = require('express'),
+    router = express.Router(),
     shortid = require('short-mongo-id'),
     moment = require('moment'),
+    is_member = require('../lib/middleware').is_member,
     parse_web_permissions = require('../lib/util').parse_web_permissions,
     snippetify = require('../lib/util').snippetify,
     ForumPost = require('../models/forum').ForumPost,
@@ -8,19 +11,10 @@ var _ = require('underscore'),
     ForumComment = require('../models/forum').ForumComment,
     Activity = require('../models').Activity;
 
-module.exports.index = function (req, res, next) {
-    // sende med prosjekt i url, eller søke opp prosjekter for alle tags?
-    // sende med prosjekt i url
-    var tagquery,
-        tags;
+// forum with prefix /forum
 
-    if (req.params[0]) {
-        tags = req.params[0].replace(/\/$/, '').split("/");
-        tagquery = {'tags': { $all: tags }};
-    } else {
-        tagquery = {};
-    }
-    var query = ForumPost.find(tagquery);
+router.get('/', function (req, res, next) {
+    var query = ForumPost.find();
     if (req.user) {
         query = query.or([
             {creator: req.user._id},
@@ -47,7 +41,7 @@ module.exports.index = function (req, res, next) {
 
         res.format({
             json: function () {
-                res.json(200, posts);
+                res.json(posts);
             },
             html: function () {
                 res.render('forum/index', {
@@ -57,48 +51,87 @@ module.exports.index = function (req, res, next) {
             }
         });
     });
-};
+});
 
-module.exports.create_post = function (req, res, next) {
-    if (!req.is_member) {
-        res.status(403).json('Forbidden');
+router.get(/^\/t\/(.+)/, function (req, res, next) {
+    // sende med prosjekt i url, eller søke opp prosjekter for alle tags?
+    // sende med prosjekt i url
+    var tags = req.params[0].replace(/\/$/, '').split("/"),
+        tagquery = {'tags': { $all: tags }},
+        query = ForumPost.find(tagquery);
+    if (req.user) {
+        query = query.or([
+            {creator: req.user._id},
+            {'permissions.public': true},
+            {'permissions.users': req.user._id},
+            {'permissions.groups': { $in: req.user.groups }}
+        ]);
     }
     else {
-        var post = new ForumPost();
-        post._id = shortid();
-        post.title = req.body.title;
-        post.creator = req.user._id;
-        post.mdtext = req.body.mdtext;
-        post.tags = req.body.tags;
-        post.permissions = parse_web_permissions(req.body.permissions);
-        post.save(function (err) {
-            if (err) {
-                return next(err);
-            }
-            var activity = new Activity();
-            activity.content_type = 'forum';
-            activity.content_ids = [post._id];
-            activity.title = post.title;
-            activity.changes = [{user: post.creator, changed: post.created}];
-            activity.permissions = post.permissions;
-            activity.tags = post.tags;
-            activity.modified = post.created;
-            activity.content = {
-                snippet: snippetify(post.mdtext)
-            };
-
-            activity.save(function (err) {});
-            if (err) {
-                return next(err);
-            }
-            post.populate('creator', 'username name profile_picture_path', function (err, post) {
-                res.json(200, post);
-            });
-        });
+        query = query.where({'permissions.public': true});
     }
-};
+    query = query.sort('-created')
+        .populate('creator', 'username name profile_picture_path')
+        .select('_id title created mdtext tags permissions creator');
 
-module.exports.update_post = function (req, res, next) {
+    if (req.query.page) {
+        query = query.skip(20 * req.query.page);
+    }
+    query = query.limit(20);
+    query.exec(function (err, posts) {
+        if (err) {
+            return next(err);
+        }
+
+        res.format({
+            json: function () {
+                res.json(posts);
+            },
+            html: function () {
+                res.render('forum/index', {
+                    posts: posts,
+                    meta: {title: "Forum"}
+                });
+            }
+        });
+    });
+});
+
+router.post('/', is_member, function (req, res, next) {
+    var post = new ForumPost();
+    post._id = shortid();
+    post.title = req.body.title;
+    post.creator = req.user._id;
+    post.mdtext = req.body.mdtext;
+    post.tags = req.body.tags;
+    post.permissions = parse_web_permissions(req.body.permissions);
+    post.save(function (err) {
+        if (err) {
+            return next(err);
+        }
+        var activity = new Activity();
+        activity.content_type = 'forum';
+        activity.content_ids = [post._id];
+        activity.title = post.title;
+        activity.changes = [{user: post.creator, changed: post.created}];
+        activity.permissions = post.permissions;
+        activity.tags = post.tags;
+        activity.modified = post.created;
+        activity.content = {
+            snippet: snippetify(post.mdtext)
+        };
+
+        activity.save(function (err) {});
+        if (err) {
+            return next(err);
+        }
+        post.populate('creator', 'username name profile_picture_path', function (err, post) {
+            res.json(post);
+        });
+    });
+});
+
+router.put('/:id', function (req, res, next) {
     var title = req.body.title,
         mdtext = req.body.mdtext,
         tags = req.body.tags,
@@ -128,39 +161,39 @@ module.exports.update_post = function (req, res, next) {
                             };
                             activity.changes.push({user: req.user._id, changed: post.modified});
                             activity.save(function (err, activity) {
-                                res.json(200, post);
+                                res.json(post);
                             });
                         }
                         else {
-                            res.json(200, post);
+                            res.json(post);
                         }
                     });
                 });
             });
         }
         else {
-            res.json(403, 'Forbidden');
+            res.sendStatus(403);
         }
     });
-};
+});
 
-module.exports.delete_post = function (req, res, next) {
+router.delete('/:id', function (req, res, next) {
+    // TODO: Add permission checks
     var id = req.params.id;
 
     ForumPost.findByIdAndRemove(id, function (err, post) {
         if (err) { return next(err); }
         if (post.creator === req.user._id || req.is_admin) {
             Activity.findOneAndRemove({content_type: 'forum', content_ids: post._id}, function (err, activity) {});
-            res.json(200, post);
+            res.json(post);
         }
         else {
-            res.json(403, 'Forbidden');
+            res.sendStatus(403);
         }
     });
-};
+});
 
-module.exports.get_post = function (req, res, next) {
-
+router.get('/:id', function (req, res, next) {
     ForumPost.findById(req.params.id)
     .or([
         {creator: req.user._id},
@@ -183,7 +216,7 @@ module.exports.get_post = function (req, res, next) {
 
             res.format({
                 json: function(){
-                    res.json(200, post);
+                    res.json(post);
                 },
 
                 html: function(){
@@ -195,9 +228,9 @@ module.exports.get_post = function (req, res, next) {
             });
         }
     });
-};
+});
 
-module.exports.create_reply = function (req, res, next) {
+router.post('/:postid/replies', function (req, res, next) {
     var postid = req.params.postid;
 
     ForumPost.findById(postid)
@@ -212,7 +245,7 @@ module.exports.create_reply = function (req, res, next) {
             return next(err);
         }
         if (!post) {
-            res.json(404, 'Not found');
+            res.sendStatus(404);
         }
         else {
             var reply = new ForumReply();
@@ -230,14 +263,14 @@ module.exports.create_reply = function (req, res, next) {
                     $set: {modified: modified}
                 }, function () {});
                 reply.populate('creator', 'username name profile_picture_path', function (err, reply) {
-                    res.json(200, reply);
+                    res.json(reply);
                 });
             });
         }
     });
-};
+});
 
-module.exports.delete_reply = function (req, res, next) {
+router.delete('/:postid/replies/:replyid', function (req, res, next) {
     var postid = req.params.postid,
         replyid = req.params.replyid;
 
@@ -252,12 +285,12 @@ module.exports.delete_reply = function (req, res, next) {
             }
             // TODO: Better to leave name here than to remove all.
             // Activity.findOneAndUpdate({content_type: 'forum', content_id: post._id}, {$pull: {users: req.user}, $set: {modified: new Date()}}, function (err, activity) {});
-            res.json(200);
+            res.sendStatus(200);
         });
     });
-};
+});
 
-module.exports.update_reply = function (req, res, next) {
+router.put('/:postid/replies/:replyid', function (req, res, next) {
     var postid = req.params.postid,
         replyid = req.params.replyid,
         mdtext = req.body.mdtext;
@@ -276,15 +309,16 @@ module.exports.update_reply = function (req, res, next) {
                 if (err) {
                     return next(err);
                 }
-                res.json(200, reply);
+                res.json(reply);
             });
         }
         else {
-            res.json(403, 'Forbidden');
+            res.sendStatus(403);
         }
     });
-};
-module.exports.get_replies = function (req, res, next) {
+});
+
+router.get('/:id/replies', function (req, res, next) {
     ForumPost.findById(req.params.id)
     .or([
         {creator: req.user._id},
@@ -296,11 +330,12 @@ module.exports.get_replies = function (req, res, next) {
         if (err) {
             return next(err);
         }
-        res.json(200, post.replies);
+        res.json(post.replies);
     });
-};
+});
 
-module.exports.create_comment = function (req, res, next) {
+router.post('/:postid/replies/:replyid/comments',
+            function (req, res, next) {
     var replyid = req.params.replyid;
 
     ForumPost.findOne({'replies._id': replyid}, function (err, post) {
@@ -329,16 +364,17 @@ module.exports.create_comment = function (req, res, next) {
                     if (err) {
                         return next(err);
                     }
-                    res.json(200, comment);
+                    res.json(comment);
                 });
             });
         } else {
             return next(new Error('Post not found, could not add comment'));
         }
     });
-};
+});
 
-module.exports.update_comment = function (req, res, next) {
+router.put('/:postid/replies/:replyid/comments/:commentid',
+           function (req, res, next) {
     var postid = req.params.postid,
         replyid = req.params.replyid,
         commentid = req.params.commentid,
@@ -362,16 +398,17 @@ module.exports.update_comment = function (req, res, next) {
                 if (err) {
                     return next(err);
                 }
-                res.json(200, comment);
+                res.json(comment);
             });
         }
         else {
-            res.json(403, 'Forbidden');
+            res.sendStatus(403);
         }
     });
-};
+});
 
-module.exports.delete_comment = function (req, res, next) {
+router.delete('/:postid/replies/:replyid/comments/:commentid',
+              function (req, res, next) {
     var postid = req.params.postid,
         replyid = req.params.replyid,
         commentid = req.params.commentid;
@@ -390,10 +427,12 @@ module.exports.delete_comment = function (req, res, next) {
                 if (err) {
                     return next(err);
                 }
-                res.json(200);
+                res.sendStatus(200);
             });
         } else {
             return next(new Error('Post not found, could not delete comment'));
         }
     });
-};
+});
+
+module.exports = router;

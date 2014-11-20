@@ -4,6 +4,7 @@ describe("User", function () {
 
     var cheerio = require('cheerio'),
         mongoose = require('mongoose'),
+        _ = require('underscore'),
         util = require('../server/lib/util'),
         User = require('../server/models/index').User,
         Group = require('../server/models/index').Group,
@@ -14,7 +15,8 @@ describe("User", function () {
     var agent = request.agent(app),
         user1,
         user2,
-        group;
+        group,
+        org;
 
     before(function (done) {
         app.db.connection.db.dropDatabase(function () {
@@ -23,13 +25,14 @@ describe("User", function () {
             group = new Group({
                 _id: 'testgroup',
                 name: 'testgroup',
-                organization: 'nidarholm'
+                organization: 'nidarholm',
+                members: [{user: 'testid'}]
             });
             user1 = new User({
                 _id: 'testid',
                 username: 'testuser',
                 name: 'Test Testson',
-                groups: [group],
+                groups: [group._id],
                 is_active: true,
                 is_admin: false,
                 algorithm: 'sha1',
@@ -44,6 +47,11 @@ describe("User", function () {
                 is_active: true,
                 is_admin: false
             });
+            org = new Organization({
+                _id: 'nidarholm',
+                administration_group: 'testgroup',
+                member_group: 'testgroup'
+            });
             group.save(function (err) {
                 if (err) {
                     done(err);
@@ -53,14 +61,19 @@ describe("User", function () {
                             done(err);
                         } else {
                             user2.save(function (err) {
-                                agent
-                                    .post('/login')
-                                    .send({username: user1.username, password: 'Passw0rd'})
-                                    .expect(302)
-                                    .end(function(err, res) {
-                                        res.header.location.should.equal('/');
+                                org.save(function (err) {
+                                    if (err) {
                                         done(err);
-                                    });
+                                    }
+                                    agent
+                                        .post('/login')
+                                        .send({username: user1.username, password: 'Passw0rd'})
+                                        .expect(302)
+                                        .end(function(err, res) {
+                                            res.header.location.should.equal('/');
+                                            done(err);
+                                        });
+                                });
                             });
                         }
                     });
@@ -76,7 +89,7 @@ describe("User", function () {
     });
 
     describe("Add existing user to group", function () {
-        it("should have empty group", function (done) {
+        it("should have viewer (testuser) as member", function (done) {
             agent
                 .get('/groups/' + group.id)
                 .set('Accept', 'text/html')
@@ -84,7 +97,7 @@ describe("User", function () {
                 .end(function (err, res) {
                     $ = cheerio.load(res.text);
                     var members = $('#members .member');
-                    members.length.should.equal(0);
+                    members.length.should.equal(1); // testuser is member to be able to see page
                     done(err);
                 });
         });
@@ -97,9 +110,8 @@ describe("User", function () {
                     $ = cheerio.load(res.text);
                     var groups = $('#groups .group');
                     groups.length.should.equal(0);
-                    var possible_groups = $('#group option');
-                    // organization members group is always present
-                    possible_groups.length.should.equal(2);
+                    var possible_groups = $('#groups .option');
+                    possible_groups.length.should.equal(1);
                     done(err);
                 });
         });
@@ -113,7 +125,8 @@ describe("User", function () {
                     if (err) { return done(err); }
                     var result = res.body;
                     result.name.should.equal('testgroup');
-                    result.members[0].user.should.equal('friend1');
+                    var found = _.find(result.members, function (m) { return m.user === 'friend1'; });
+                    expect(found);
                     done();
                 });
         });
@@ -128,9 +141,8 @@ describe("User", function () {
                     groups.length.should.equal(1);
                     groups.first().text().should.equal("testgroup");
                     // TODO: should maybe remove the possibility to add the group again
-                    var possible_groups = $('#group option');
-                    // always +1 for org members
-                    possible_groups.length.should.equal(2);
+                    var possible_groups = $('#groups .option');
+                    possible_groups.length.should.equal(1);
                     groupid = possible_groups.first().attr('value');
                     done(err);
                 });
@@ -143,7 +155,7 @@ describe("User", function () {
                 .end(function (err, res) {
                     $ = cheerio.load(res.text);
                     var members = $('#members .member');
-                    members.length.should.equal(1);
+                    members.length.should.equal(2);
                     members.first().find('a').text().should.equal(user2.name);
                     done(err);
                 });

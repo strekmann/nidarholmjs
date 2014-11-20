@@ -3,7 +3,7 @@ extends ../layouts/main
 block content
   .row
     .columns
-      form#user(method="post" action="/users/" + user._id + '/edit')
+      form#user(method="post" action="/users/" + user._id)
         h1= user.name
 
         label(for="name") Navn

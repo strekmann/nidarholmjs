@@ -15,6 +15,16 @@ module.exports.ensureAuthenticated = function(req, res, next) {
     res.redirect('/login');
 };
 
+module.exports.is_admin = function (req, res, next) {
+    if (req.is_admin) { return next(); }
+    else { return res.sendStatus(403); }
+};
+
+module.exports.is_member = function (req, res, next) {
+    if (req.is_member) { return next(); }
+    else { return res.sendStatus(403); }
+};
+
 module.exports.persistentLogin = function (req, res, next) {
     if (req.body.username && !req.body.remember_me) { return next(); }
     var token = new RememberMeToken();
