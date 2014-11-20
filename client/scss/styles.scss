@@ -563,7 +563,7 @@ nav.top-bar {
     margin-left: 0;
 
     [class*="block-grid-"] > li {
-        padding: 0 0.625rem;
+        padding: 0.4rem 0.625rem;
     }
 
     h1 {
@@ -572,7 +572,7 @@ nav.top-bar {
         margin-top: rem-calc(20px);
         margin-bottom: rem-calc(5px);
         i {
-            margin: 0 rem-calc(8px);
+            margin-right: 11px;
         }
     }
     p {
