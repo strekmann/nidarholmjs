@@ -705,9 +705,13 @@ span.permissions {
     }
 }
 
-@media #{$small-only} {
+
+#memberlist .row {
+    margin-bottom: rem-calc(10px);
+}
+@media #{$large-up} {
     #memberlist .row {
-        margin-bottom: rem-calc(10px);
+        margin-bottom: 0;
     }
 }
 
@@ -717,7 +721,7 @@ span.permissions {
     }
 }
 
-@media #{medium-up} {
+@media #{large-up} {
     .group {
         .member {
             .columns {
