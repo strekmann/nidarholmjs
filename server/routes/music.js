@@ -7,7 +7,13 @@ var express = require('express'),
     Piece = require('../models/projects').Piece;
 
 router.get('/', is_member, function (req, res, next) {
-    Piece.find().sort('title').exec(function (err, pieces) {
+    var piece_query;
+    if (req.query.q) {
+        piece_query = Piece.find().regex('title', new RegExp(req.query.q, 'i'));
+    } else {
+        piece_query = Piece.find();
+    }
+    piece_query.sort('title').exec(function (err, pieces) {
         res.format({
             html: function () {
                 res.render('projects/music', {pieces: pieces, meta: {title: 'Notearkivet'}});
