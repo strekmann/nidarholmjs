@@ -30,25 +30,25 @@ block content
                 if member && member.user
                   .member.row
                     if active_user && is_member
-                      a(href="/users/" + member.user.username).medium-4.columns
+                      a(href="/users/" + member.user.username).medium-3.columns.small-8
                         = member.user.name
                     else
-                      .columns.medium-4
+                      .columns.medium-3.small-8
                         = member.user.name
-                    .medium-2.columns
+                    .medium-2.columns.small-4
                       = member.user.instrument
                       if member.role && member.role.title
                         = member.role.title
                       else
                         | &nbsp;
                     if active_user && is_member
-                      .medium-2.columns
+                      .medium-4.columns.small-8.medium-push-3
+                        a(href="mailto:" + member.user.email)
+                          = member.user.email
+                      .medium-3.columns.small-4.medium-pull-4
                         if member.user.phone
                           a(href='tel:'+member.user.phone)
                             = phoneformat(member.user.phone)
-                      .medium-4.columns
-                        a(href="mailto:" + member.user.email)
-                          = member.user.email
 
 block javascript
   script.

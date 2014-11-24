@@ -262,7 +262,10 @@ nav.top-bar {
     border-bottom: 1px solid $hr-border-color;
 
     .title-area h1 {
-        text-transform: uppercase;
+        a {
+            text-transform: uppercase;
+            padding: 0;
+        }
     }
 
     a:hover {
@@ -702,16 +705,25 @@ span.permissions {
     }
 }
 
+@media #{$small-only} {
+    #memberlist .row {
+        margin-bottom: rem-calc(10px);
+    }
+}
+
 #contact {
     figure {
         margin: 0;
     }
 }
 
-.group {
-    .member {
-        .columns {
-            margin-bottom: rem-calc(5px);
+@media #{medium-up} {
+    .group {
+        .member {
+            .columns {
+                margin-bottom: rem-calc(5px);
+                line-height: 1;
+            }
         }
     }
 }
