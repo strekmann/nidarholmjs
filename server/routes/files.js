@@ -207,12 +207,19 @@ router.delete('/:id', function (req, res, next) {
 });
 
 router.get('/:id', function (req, res) {
-    File.findById(req.params.id).or([
-        {creator: req.user._id},
-        {'permissions.public': true},
-        {'permissions.users': req.user._id},
-        {'permissions.groups': { $in: req.user.groups }}
-    ]).populate('creator', 'name username').exec(function (err, file) {
+    var query = File.findById(req.params.id);
+    if (req.user) {
+        query = query.or([
+            {creator: req.user._id},
+            {'permissions.public': true},
+            {'permissions.users': req.user._id},
+            {'permissions.groups': { $in: req.user.groups }}
+        ]);
+    }
+    else {
+        query = query.where('permissions.public', true);
+    }
+    query.populate('creator', 'name username').exec(function (err, file) {
         if (!file) {
             res.send(404, 'Not found');
         }
