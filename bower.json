@@ -5,7 +5,7 @@
     "underscore": "",
     "moment": "~2.8.1",
     "font-awesome": "",
-    "ractive": "",
+    "ractive": "^0.5.0",
     "chosen": "",
     "marked": "",
     "ractive-decorators-sortable": "ractivejs/ractive-decorators-sortable",
