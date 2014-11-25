@@ -2,6 +2,7 @@ var express = require('express'),
     router = express.Router(),
     _ = require('underscore'),
     shortid = require('short-mongo-id'),
+    util = require('../lib/util'),
     is_member = require('../lib/middleware').is_member,
     is_musicscoreadmin = require('../lib/middleware').is_musicscoreadmin,
     User = require('../models').User,
@@ -27,7 +28,7 @@ router.get('/', is_member, function (req, res, next) {
     });
 });
 
-router.get('/:id', is_musicscoreadmin, function (req, res, next) {
+router.get('/:id', is_member, is_musicscoreadmin, function (req, res, next) {
     Piece.findById(req.params.id)
     .populate('scores')
     .exec(function (err, piece) {
@@ -100,48 +101,43 @@ router.post('/', function (req, res, next) {
     }
 });
 
-router.post('/:id/scores', function (req, res, next) {
-    if (!req.is_musicscoreadmin) {
-        res.status(403).send('Forbidden');
-    }
-    else {
-        var options = {
-            permissions: {
-                'public': false,
-                users: [],
-                groups: [req.body.group]
-            }
-        };
+router.post('/:id/scores', is_member, is_musicscoreadmin, function (req, res, next) {
+    var options = {
+        permissions: {
+            'public': false,
+            users: [],
+            groups: [req.body.group]
+        }
+    };
 
-        Piece.findById(req.params.id, function (err, piece) {
+    Piece.findById(req.params.id, function (err, piece) {
+        if (err) { return next(err); }
+
+        var filename = req.files.file.originalname,
+            tmp_path = req.files.file.path;
+
+        util.upload_file(tmp_path, filename, req.user, options, function (err, file) {
             if (err) { return next(err); }
 
-            var filename = req.files.file.originalname,
-                tmp_path = req.files.file.path;
-
-            util.upload_file(tmp_path, filename, req.user, options, function (err, file) {
+            piece.scores.addToSet(file._id);
+            piece.save(function (err) {
                 if (err) { return next(err); }
 
-                piece.scores.addToSet(file._id);
-                piece.save(function (err) {
-                    if (err) { return next(err); }
-
-                    res.format({
-                        json: function () {
-                            file.populate('creator', 'username name', function (err, file) {
-                                if (err) { throw err; }
-                                res.json(file);
-                            });
-                        },
-                        html: function () {
-                            res.redirect("/files");
-                        }
-                    });
+                res.format({
+                    json: function () {
+                        file.populate('creator', 'username name', function (err, file) {
+                            if (err) { throw err; }
+                            res.json(file);
+                        });
+                    },
+                    html: function () {
+                        res.redirect("/files");
+                    }
                 });
             });
-
         });
-    }
+
+    });
 });
 
 module.exports = router;
