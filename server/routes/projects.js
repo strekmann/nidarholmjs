@@ -210,7 +210,8 @@ module.exports.project = function (req, res, next) {
         query = query.where({'permissions.public': true});
     }
     query = query.populate('music.piece');
-    query.lean().exec(function (err, project) {
+    query = query.populate('poster');
+    query.exec(function (err, project) {
         if (err) { return next(err); }
         if (!project) {
             res.sendStatus(404);
@@ -477,6 +478,31 @@ module.exports.remove_piece = function (req, res, next) {
                     },
                     json: function () {
                         res.json({});
+                    }
+                });
+            });
+        });
+    }
+};
+
+module.exports.set_poster = function (req, res, next) {
+    if (!req.is_member) {
+        res.sendStatus(403);
+    }
+    else {
+        Project.findById(req.params.id, function (err, project) {
+            if (err) { return next(err); }
+            project.poster = req.body.image_id;
+            project.save(function (err) {
+                if (err) { return next(err); }
+                res.format({
+                    html: function () {
+                        res.sendStatus(200);
+                    },
+                    json: function () {
+                        project.populate('poster', function (err, project) {
+                            res.json(project.poster);
+                        });
                     }
                 });
             });

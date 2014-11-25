@@ -10,10 +10,17 @@ block content
               for project in projects
                 li
                   a.project(href="/" + project.year + "/" + project.tag)
-                    p
-                      b= project.title
-                      br
-                      = shortdate(project.end)
+                    if project.poster
+                      img(src=project.poster.normal_path alt=project.title)
+                      p
+                        b= project.title
+                        br
+                        = shortdate(project.end)
+                    else
+                      p
+                        b= project.title
+                        br
+                        = shortdate(project.end)
             hr
 
           if events

@@ -250,6 +250,7 @@ app.post('/projects/:id/events', project_routes.project_create_event);
 app.post('/projects/:id/forum', project_routes.project_create_post);
 app.delete('/projects/:project_id/forum/:post_id', project_routes.project_delete_post);
 app.post('/projects/:id/files', project_routes.project_create_file);
+app.put('/projects/:id/poster', project_routes.set_poster);
 app.put('/projects/:project_id/music', project_routes.add_piece);
 app.delete('/projects/:project_id/music', project_routes.remove_piece);
 app.get('/foundation', function(req, res){

@@ -229,14 +229,14 @@ var Project = Ractive.extend({
     createProject: function (project) {
         return $.ajax({
             type: 'POST',
-            url: this.restAPI,
+            url: '/projects',
             data: project
         });
     },
     updateProject: function (project) {
         return $.ajax({
             type: 'PUT',
-            url: this.restAPI,
+            url: '/projects/' + project._id,
             data: project
         });
     },
@@ -310,6 +310,17 @@ var Project = Ractive.extend({
             dataType: 'json',
             url: '/projects/' + project._id + '/music',
             data: piece
+        });
+    },
+    setPoster: function (image_id) {
+        var project = this.get('project');
+        return $.ajax({
+            type: 'PUT',
+            dataType: 'json',
+            url: '/projects/' + project._id + '/poster',
+            data: {
+                image_id: image_id
+            }
         });
     },
     setup_uploadzone: function (element_id, clickable_element_id) {
@@ -599,6 +610,24 @@ module.exports.projectDetailView = function (p, events, posts, files) {
         }
     });
 
+    var postermodal = new Ractive({
+        el: '#poster-modal',
+        template: '#poster-modal-template'
+    });
+
+    postermodal.on('close', function (event) {
+        event.original.preventDefault();
+        $('#music-modal').foundation('reveal', 'close');
+    });
+
+    postermodal.on('setPoster', function (event) {
+        event.original.preventDefault();
+        projects.setPoster(event.context._id)
+        .then(function (data) {
+            projects.set('project.poster', data);
+            $('#poster-modal').foundation('reveal', 'close');
+        });
+    });
     // Music modal section
     var musicmodal = new Ractive({
         el: '#music-modal',
@@ -719,8 +748,17 @@ module.exports.projectDetailView = function (p, events, posts, files) {
 
     projects.on('newPost', function (event) {
         postmodal.set('post', {});
-        postmodal.set('serror', undefined);
+        postmodal.set('error', undefined);
         $('#post-modal').foundation('reveal', 'open');
+    });
+
+    projects.on('choosePoster', function (event) {
+        postermodal.set('poster', undefined);
+        postermodal.set('project', projects.get('project'));
+        postermodal.set('images', projects.get('images'));
+        postermodal.set('error', undefined);
+        $('#poster-modal').foundation('reveal', 'open');
+        projects.setup_uploadzone('#poster_upload', '#add_poster');
     });
 
     projects.on('newPiece', function (event) {

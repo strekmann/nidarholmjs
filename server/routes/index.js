@@ -70,6 +70,7 @@ router.get('/', function(req, res) {
                 .limit(2);
                 query
                 .populate('creator', 'name username')
+                .populate('poster')
                 .exec(function (err, projects) {
                     res.format({
                         html: function () {

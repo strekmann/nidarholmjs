@@ -11,7 +11,10 @@ block content
     a.close-reveal-modal &#215;
 
   #music-modal.reveal-modal(data-reveal)
-    a.close-reveal-modal
+    a.close-reveal-modal &#215;
+
+  #poster-modal.reveal-modal(data-reveal)
+    a.close-reveal-modal &#215;
 
   #project
     .row
@@ -160,6 +163,22 @@ block content
                 button Lagre
                 button.secondary(on-click="close") Avbryt
 
+  script#poster-modal-template(type="text/ractive")
+    if active_user
+      .row
+        .columns
+          h2 Velg prosjektbilde
+          form#poster_upload(on-submit="createFile" action="/projects/{{project._id}}/files")
+            #add_poster
+              | Dra filer hit, eller klikk for å velge
+
+          ul.small-block-grid-4
+            | {{#each images}}
+            li(intro="fade" class="{{ is_active_image(_id) ? 'active' : '' }}")
+              a(href="/projects/{{project._id}}}}/poster}}" on-click="setPoster")
+                img.th(src="{{thumbnail_path}}")
+            | {{/each}}
+
   script#music-modal-template(type="text/ractive")
     if active_user
       .row
@@ -222,7 +241,7 @@ block content
           .row
             .columns
               if is_member
-                dl.sub-nav
+                dl.sub-nav.right
                   dt Prosjektbeskrivelse:
                   dd(class="{{description=='internal' ? 'active' : ''}}")
                     a(on-click="setInternal") Intern
@@ -239,8 +258,8 @@ block content
                 | {{#public_mdtext}}
                 | {{{marked(public_mdtext)}}}
                 | {{/public_mdtext}}
-        | {{/project}}
 
+        | {{/project}}
         #music
           if is_member
             .right
@@ -297,13 +316,28 @@ block content
                     a#add_file.button.tiny Legg til fil
 
       .medium-4.columns
+        #poster
+          | {{#if .project.poster}}
+          if is_member
+            a(href="#" on-click="choosePoster")
+              img(src="{{.project.poster.normal_path}}")
+          else
+            img(src="{{.project.poster.normal_path}}")
+          | {{else}}
+          if is_member
+            a.button.tiny(on-click="choosePoster")
+              i.fa.fa-comments-o
+              | &nbsp;
+              | Velg prosjektbilde
+          | {{/if}}
+
         #events
           if active_user
             .right
               a.button.tiny(on-click="newEvent")
                 i.fa.fa-calendar-o
                 | &nbsp;
-                | Ny
+                | Ny aktivitet
           | {{#if expanded_finished}}
           | {{#finished_events}}
           |   {{>event}}
