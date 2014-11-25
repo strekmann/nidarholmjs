@@ -285,7 +285,14 @@ router.delete('/:postid/replies/:replyid', function (req, res, next) {
             }
             // TODO: Better to leave name here than to remove all.
             // Activity.findOneAndUpdate({content_type: 'forum', content_id: post._id}, {$pull: {users: req.user}, $set: {modified: new Date()}}, function (err, activity) {});
-            res.sendStatus(200);
+            res.format({
+                html: function () {
+                    res.sendStatus(200);
+                },
+                json: function () {
+                    res.json({});
+                }
+            });
         });
     });
 });
@@ -427,7 +434,14 @@ router.delete('/:postid/replies/:replyid/comments/:commentid',
                 if (err) {
                     return next(err);
                 }
-                res.sendStatus(200);
+                res.format({
+                    html: function () {
+                        res.sendStatus(200);
+                    },
+                    json: function () {
+                        res.json({});
+                    }
+                });
             });
         } else {
             return next(new Error('Post not found, could not delete comment'));

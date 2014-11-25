@@ -471,7 +471,14 @@ module.exports.remove_piece = function (req, res, next) {
             project.music.pull(req.body._id);
             project.save(function (err) {
                 if (err) { return next(err); }
-                res.sendStatus(200);
+                res.format({
+                    html: function () {
+                        res.sendStatus(200);
+                    },
+                    json: function () {
+                        res.json({});
+                    }
+                });
             });
         });
     }

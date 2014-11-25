@@ -126,7 +126,14 @@ router.delete('/:groupid/users/:username', is_admin, function (req, res, next) {
                 });
                 group.save(function(err) {
                     if (err) { next(err); }
-                    res.sendStatus(200);
+                    res.format({
+                        html: function () {
+                            res.sendStatus(200);
+                        },
+                        json: function () {
+                            res.json({});
+                        }
+                    });
                 });
             });
         });
