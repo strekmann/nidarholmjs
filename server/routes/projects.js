@@ -216,15 +216,19 @@ module.exports.project = function (req, res, next) {
             res.sendStatus(404);
         }
         else {
-            CalendarEvent
-            .find({tags: project.tag})
-            .or([
-                {creator: req.user._id},
-                {'permissions.public': true},
-                {'permissions.users': req.user._id},
-                {'permissions.groups': { $in: req.user.groups }}
-            ])
-            .populate('creator', 'username name')
+            var event_query = CalendarEvent.find({tags: project.tag});
+
+            if (req.user) {
+                event_query = event_query.or([
+                    {creator: req.user._id},
+                    {'permissions.public': true},
+                    {'permissions.users': req.user._id},
+                    {'permissions.groups': { $in: req.user.groups }}
+                ]);
+            } else {
+                event_query = event_query.where({'permissions.public': true});
+            }
+            event_query.populate('creator', 'username name')
             .sort('start')
             .exec(function (err, events) {
                 ForumPost.find({tags: project.tag}).populate('creator', 'username name').sort('-created').exec(function (err, posts) {

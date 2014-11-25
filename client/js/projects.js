@@ -9,7 +9,7 @@ function getParameterByName(name) {
 var Project = Ractive.extend({
 
     // Will be called as soon as the instance has finished rendering.
-    init: function(options){
+    onconstruct: function(options){
         this.restAPI = options.restAPI || window.location.href;
     },
 
@@ -315,21 +315,23 @@ var Project = Ractive.extend({
     setup_uploadzone: function (element_id, clickable_element_id) {
         var project = this;
 
-        var uploadzone = new Dropzone(element_id, {
-          //acceptedFiles: 'image/*',
-          previewTemplate: '<span></span>',
-          clickable: clickable_element_id
-        });
+        if ($(element_id).length && $(clickable_element_id).length) {
+            var uploadzone = new Dropzone(element_id, {
+              //acceptedFiles: 'image/*',
+              previewTemplate: '<span></span>',
+              clickable: clickable_element_id
+            });
 
-        uploadzone.on("success", function (frontend_file, backend_file) {
-            if (backend_file.is_image) {
-                project.get('images').push(backend_file);
-            }
-            else {
-                project.get('non_images').push(backend_file);
-            }
-        });
-        return uploadzone;
+            uploadzone.on("success", function (frontend_file, backend_file) {
+                if (backend_file.is_image) {
+                    project.get('images').push(backend_file);
+                }
+                else {
+                    project.get('non_images').push(backend_file);
+                }
+            });
+            return uploadzone;
+        }
     }
 });
 
