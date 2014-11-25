@@ -303,6 +303,9 @@ nav.top-bar {
 
 #next-events,
 #next-projects {
+    h1 {
+        font-size: rem-calc(20px);
+    }
     a.project,
     a.event {
         display: inline-block;

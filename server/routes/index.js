@@ -94,19 +94,20 @@ router.get('/', function(req, res) {
     else {
         query = CalendarEvent
         .find({'permissions.public': true})
-        .where({start: {$gte: moment().startOf('day')}})
+        .where({start: {$gte: moment().startOf('day').toDate()}})
         .sort('start')
         .limit(8);
         query.exec(function (err, events) {
             query = Project.find({'permissions.public': true})
             .or([
                 {start: null},
-                {start: {$lte: moment().startOf('day')}}
+                {start: {$lte: moment().startOf('day').toDate()}}
             ])
-            .where({end: {$gte: moment().startOf('day')}})
+            .where({end: {$gte: moment().startOf('day').toDate()}})
             .sort('end')
-            .limit(2);
-            query.lean().exec(function (err, projects) {
+            .limit(2)
+            .populate('poster');
+            query.exec(function (err, projects) {
                 ForumPost
                 .find({'permissions.public': true, 'tags': config.news_tag})
                 .sort('-created')

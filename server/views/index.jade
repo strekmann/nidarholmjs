@@ -5,34 +5,38 @@ block content
     .row
       .columns.large-3.large-push-9
         .show-for-large-up
-          if active_user && projects.length
-            ul#next-projects.small-block-grid-1
-              for project in projects
-                li
-                  a.project(href="/" + project.year + "/" + project.tag)
-                    if project.poster
-                      img(src=project.poster.normal_path alt=project.title)
-                      p
-                        b= project.title
-                        br
-                        = shortdate(project.end)
-                    else
-                      p
-                        b= project.title
-                        br
-                        = shortdate(project.end)
+          if projects.length
+            #next-projects
+              h1 Kommende prosjekt
+              ul.small-block-grid-1
+                for project in projects
+                  li
+                    a.project(href="/" + project.year + "/" + project.tag)
+                      if project.poster
+                        img(src=project.poster.normal_path alt=project.title)
+                        p
+                          b= project.title
+                          br
+                          = shortdate(project.end)
+                      else
+                        p
+                          b= project.title
+                          br
+                          = shortdate(project.end)
             hr
 
           if events
-            ul#next-events.small-block-grid-1
-              for event in events
-                li
-                  a.event(href="/events/"+event.id)
-                    b= moment(event.start).format('Do MMMM')
-                    br
-                    = event.title
-            #more-events
-              a(href="/events") Full aktivitetsliste
+            #next-events
+              h1 Kommende aktiviteter
+              ul.small-block-grid-1
+                for event in events
+                  li
+                    a.event(href="/events/"+event.id)
+                      b= moment(event.start).format('Do MMMM')
+                      br
+                      = event.title
+              #more-events
+                a(href="/events") Full aktivitetsliste
 
         #eventwrapper.hide-for-large-up
           #eventscroller
