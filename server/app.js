@@ -8,7 +8,6 @@ var _           = require('underscore'),
     settings    = require('./settings'),
     util        = require('./lib/util'),
     persistentLogin = require('./lib/middleware').persistentLogin,
-    musicscoreadmin_middleware = require('./lib/middleware').musicscoreadmin_middleware,
     app         = require('libby')(express, settings);
 
 var User = require('./models/index').User,
@@ -49,6 +48,20 @@ app.set('view engine', 'jade');
 app.use(app.passport.initialize());
 app.use(app.passport.session());
 app.use(app.passport.authenticate('remember-me'));
+
+app.use(function (req, res, next) {
+    if (settings.fake_user_username) {
+        User.findOne({username: settings.fake_user_username}, function (err, user) {
+            if (user) {
+                req.user = res.locals.user = user;
+            }
+            return next();
+        });
+    }
+    else {
+        return next();
+    }
+});
 
 // utils
 app.use(function (req, res, next) {

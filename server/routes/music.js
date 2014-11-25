@@ -3,6 +3,7 @@ var express = require('express'),
     _ = require('underscore'),
     shortid = require('short-mongo-id'),
     is_member = require('../lib/middleware').is_member,
+    is_musicscoreadmin = require('../lib/middleware').is_musicscoreadmin,
     User = require('../models').User,
     Project = require('../models/projects').Project,
     Piece = require('../models/projects').Piece;
@@ -26,7 +27,7 @@ router.get('/', is_member, function (req, res, next) {
     });
 });
 
-router.get('/:id', function (req, res, next) {
+router.get('/:id', is_musicscoreadmin, function (req, res, next) {
     Piece.findById(req.params.id)
     .populate('scores')
     .exec(function (err, piece) {

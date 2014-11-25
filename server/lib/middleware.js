@@ -37,7 +37,7 @@ module.exports.persistentLogin = function (req, res, next) {
     });
 };
 
-module.exports.musicscoreadmin_middleware = function (req, res, next) {
+module.exports.is_musicscoreadmin = function (req, res, next) {
     var organization = req.organization;
     if (!organization.musicscoreadmin_group) {
         organization.musicscoreadmin_group = organization.admin_group;
@@ -46,6 +46,6 @@ module.exports.musicscoreadmin_middleware = function (req, res, next) {
         req.is_musicscoreadmin = res.locals.is_musicscoreadmin = _.some(organization.musicscoreadmin_group.members, function (member) {
             return member.user === req.user._id;
         });
-        next();
+        return next();
     });
 };
