@@ -21,7 +21,7 @@ mixin permission_options(groups, users, selected)
         else
           option(value="u-"+friend.id)= friend.name
 
-html(lang=lang dir=lang_dir)
+html(lang=lang dir=lang_dir locale=locale)
   head
     meta(charset="utf-8")
     meta(http-equiv="X-UA-Compatible" content="IE=edge")
