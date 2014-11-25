@@ -203,6 +203,10 @@ app.use('/files', require('./routes/files'));
 app.use('/users', require('./routes/users'));
 app.use('/groups', require('./routes/groups'));
 app.use('/music', require('./routes/music'));
+
+var project_routes = require('./routes/projects');
+app.get('/events/public.ics', project_routes.ical_events);
+app.get('/events/export.ics', project_routes.ical_events);
 app.use('/events', require('./routes/events'));
 
 var organization_routes = require('./routes/organization');
@@ -223,7 +227,6 @@ app.get('/organization/updated_email_lists.json/:groups', organization_routes.en
 app.put('/organization/admin/admin_group', organization_routes.set_admin_group);
 app.put('/organization/admin/musicscoreadmin_group', organization_routes.set_musicscoreadmin_group);
 
-var project_routes = require('./routes/projects');
 app.get('/projects', project_routes.index);
 app.post('/projects', project_routes.create_project);
 //app.get('/:year(\\d{4})', project_routes.year);
@@ -236,9 +239,6 @@ app.delete('/projects/:project_id/forum/:post_id', project_routes.project_delete
 app.post('/projects/:id/files', project_routes.project_create_file);
 app.put('/projects/:project_id/music', project_routes.add_piece);
 app.delete('/projects/:project_id/music', project_routes.remove_piece);
-app.get('/events/public.ics', project_routes.ical_events);
-app.get('/events/export.ics', project_routes.ical_events);
-
 app.get('/foundation', function(req, res){
     res.render('foundation');
 });

@@ -63,8 +63,10 @@ router.get('/', function (req, res, next) {
 });
 
 router.get('/:id', function (req, res, next) {
+    var query;
     if (req.user) {
-        query = CalendarEvent.findById(req.params.id).or([
+        query = CalendarEvent.findById(req.params.id)
+        .or([
             {creator: req.user._id},
             {'permissions.public': true},
             {'permissions.users': req.user._id},
