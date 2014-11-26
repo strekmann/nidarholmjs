@@ -26,9 +26,12 @@ router.get('/', function(req, res) {
             image: null,
             type: 'website'
         };
-        if (req.organization.description && _.has(req.organization.description, req.lang)) {
-            meta.description = req.organization.description[req.lang];
-        }
+
+    if (req.organization.description && _.has(req.organization.description, req.lang)) {
+        meta.description = req.organization.description[req.lang];
+    }
+    var now = moment.utc().startOf('day').toDate();
+
     if (req.user) {  // we know the user
         query = Activity.find().or([
             {'permissions.public': true},
@@ -53,20 +56,28 @@ router.get('/', function(req, res) {
                 {'permissions.users': req.user._id},
                 {'permissions.groups': { $in: req.user.groups }}
             ])
-            .where({start: {$gte: moment().startOf('day'), $lte: moment().add(6, 'months').startOf('day').toDate()}})
+            .where({start: {$gte: now, $lte: moment.utc().add(6, 'months').startOf('day').toDate()}})
             .sort('start');
             query.exec(function (err, events) {
-                query = Project.find().or([
+                query = Project.find({
+                    end: {$gte: now},
+                    $or: [{'permissions.public': true}, {'permissions.users': req.user._id}, {'permissions.groups': { $in: req.user.groups }} ],
+                }).where({
+                    $or: [{start: {$exists: false}}, {start: {$lt: now}}]
+                });
+                /* for some reason this does not work. maybe the multiple or?
+                query = Project.find({end: {$gte: now}})
+                .or([
+                    {start: {$exists: false}},
+                    {start: {$lte: now}}
+                ])
+                .or([
                     {'permissions.public': true},
                     {'permissions.users': req.user._id},
                     {'permissions.groups': { $in: req.user.groups }}
-                ])
-                .or([
-                    {start: null},
-                    {start: {$lte: moment().startOf('day').toDate()}}
-                ])
-                .where({end: {$gte: moment().startOf('day').toDate()}})
-                .sort('end')
+                ]);
+                */
+                query.sort('end')
                 .limit(2);
                 query
                 .populate('creator', 'name username')
@@ -98,12 +109,11 @@ router.get('/', function(req, res) {
         .sort('start')
         .limit(8);
         query.exec(function (err, events) {
-            query = Project.find({'permissions.public': true})
+            query = Project.find({'permissions.public': true, end: {$gte: now}})
             .or([
-                {start: null},
-                {start: {$lte: moment().startOf('day').toDate()}}
+                {start: {$exists: false}},
+                {start: {$lte: now}}
             ])
-            .where({end: {$gte: moment().startOf('day').toDate()}})
             .sort('end')
             .limit(2)
             .populate('poster');
