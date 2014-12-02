@@ -96,6 +96,10 @@ router.post('/upload', is_member, function (req, res) {
     if (_.isEmpty(tags)) {
         tags = [];
     }
+    else {
+        tags = tags.split(',');
+    }
+
     var options = {
             permissions: util.parse_web_permissions(req.body.permissions),
             tags: tags
