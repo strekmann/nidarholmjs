@@ -55,13 +55,13 @@ block content
               .wrapper
                 input#tags(type="text" name="tags" value="{{file.tags}}" placeholder="Merkelapper")
               | {{else}}
-              .right
-                | {{#each file.tags}}
-                a(href="/files/t/{{.}}")
-                  i.fa.fa-tag.fa-fw
-                  | {{.}}
-                = " "
-                | {{/each}}
+              .text-right
+                span#tags
+                  | {{#each file.tags}}
+                  a(href="/files/t/{{.}}")
+                    i.fa.fa-tag
+                    | {{.}}
+                  | {{/each}}
                 span.type
                   = file.mimetype
               | {{/if}}

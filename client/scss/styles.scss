@@ -528,6 +528,12 @@ nav.top-bar {
     span.type {
         margin-left: 10px;
     }
+    span#tags {
+        i {
+            margin-left: 8px;
+            margin-right: 3px;
+        }
+    }
 }
 
 #profile-pictures {
