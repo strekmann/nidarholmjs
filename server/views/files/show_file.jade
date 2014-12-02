@@ -2,7 +2,6 @@ extends ../layouts/main
 
 block content
   section#file
-
     .row
       .columns
         h1= file.filename
@@ -13,7 +12,7 @@ block content
                 i.fa.fa-tag
                 | &nbsp;
                 = tag
-            | &nbsp;
+              = " "
             = file.mimetype
           a(href="/users/"+file.creator.username)= file.creator.name
           | &nbsp;
@@ -25,3 +24,56 @@ block content
         p= file.caption
 
         p= file.permissions
+
+  script#template(type="text/ractive")
+    .row
+      .columns
+        form(on-submit="updateFile")
+          | {{#if file.toggledEdit}}
+          .row
+            .columns.small-8
+              input#filename.columns.small-8(type="text" name="filename" value="{{file.filename}}" placeholder="Filnavn")
+            .columns.small-4
+              .right
+                button.small Lagre
+          | {{else}}
+          if file.creator._id === active_user._id || is_admin
+            .right
+              button.small(on-click="toggleEdit")
+                i.fa.fa-edit
+                | &nbsp;
+                | Rediger
+          h1= file.filename
+          | {{/if}}
+          .row
+            .columns.medium-6
+              a(href="/users/"+file.creator.username)= file.creator.name
+              = " "
+              = file.shortdate
+            .columns.medium-6
+              | {{#if file.toggledEdit}}
+              input#tags(type="text" name="tags" value="{{file.tags}}" placeholder="Merkelapper")
+              | {{else}}
+              .right
+                each tag in file.tags
+                  a(href="/files/t/"+tag)
+                    i.fa.fa-tag
+                    | &nbsp;
+                    = tag
+                  = " "
+                span.type
+                  = file.mimetype
+              | {{/if}}
+          if file.is_image
+            img#image(src=file.large_path)
+          else
+            a.button(href=file.path) Last ned
+          p= file.caption
+
+          p= file.permissions
+
+block javascript
+  script
+    | require('s7n').files.fileDetailView(
+    != JSON.stringify(file)
+    | );

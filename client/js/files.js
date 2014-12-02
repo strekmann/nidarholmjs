@@ -45,6 +45,36 @@ var Files = Ractive.extend({
     }
 });
 
+module.exports.fileDetailView = function (f) {
+    var files = new Files({
+        el: '#file',
+        template: '#template',
+        data: {
+            file: f
+        }
+    });
+
+    files.on('toggleEdit', function (event) {
+        event.original.preventDefault();
+        files.toggle('file.toggledEdit');
+        require('s7n').tagify({selector: 'input#tags'});
+    });
+
+    files.on('updateFile', function (event) {
+        event.original.preventDefault();
+        event.context.file.tags = $(event.node).find('input#tags')[0].value;
+
+        files.updateFile(event.context.file)
+        .then(function (data) {
+            var file = files.get('file');
+            file.tags = data.tags;
+            file.filename = data.filename;
+            file.toggledEdit = false;
+            files.set('file', file);
+        });
+    });
+};
+
 module.exports.fileListView = function (f, active_user, admin_group) {
     var files = new Files({
         el: '#files',
