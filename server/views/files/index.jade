@@ -75,6 +75,13 @@ block content
             | {{/is_image}}
           .small-10.columns
             .file(outro="fade")
+              | {{#if .toggledEdit}}
+              form(on-submit="editFile")
+                input.filename(type="text" name="filename" value="{{.filename}}" placeholder="Filnavn")
+                input.tags(type="text" name="tags" value="{{.tags}}" placeholder="Merkelapper")
+                button.small Lagre
+                button.small.secondary(type="reset" on-click="toggleEdit") Avbryt
+              | {{else}}
               a(href="/files/{{_id}}")
                 h2 {{filename}}
               .meta
@@ -86,10 +93,12 @@ block content
                     time.created(datetime="{{isodate(created)}}") {{shortdate(created)}}
                   .columns.small-3.text-right.creator
                     permissionicons(permissions="{{permissions}}")
-                    a.edit(href='#')
+                    | {{#if active_user._id === creator._id || is_admin}}
+                    a.edit(href='#' on-click="toggleEdit")
                       i.fa.fa-edit
                     a.delete(href="/files/{{_id}}" on-click="deleteFile")
                       i.fa.fa-trash-o
+                    | {{/if}}
               .tags
                 | {{#.tags}}
                 | {{#.}}
@@ -98,6 +107,7 @@ block content
                   | &nbsp;{{.}}
                 | {{/.}}
                 | {{/.tags}}
+              | {{/if}}
         | {{/files}}
 
         | {{^gotall}}

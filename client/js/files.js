@@ -34,6 +34,14 @@ var Files = Ractive.extend({
                 q: query
             }
         });
+    },
+    updateFile: function (file) {
+        return $.ajax({
+            url: '/files/' + file._id,
+            dataType: 'json',
+            type: 'put',
+            data: _.pick(file, 'filename', 'tags')
+        });
     }
 });
 
@@ -53,6 +61,27 @@ module.exports.fileListView = function (f, active_user) {
         files.search(query)
         .then(function (data) {
             //console.log(data);
+        });
+    });
+
+    files.on('toggleEdit', function (event) {
+        event.original.preventDefault();
+        files.toggle('files.' + event.keypath.split('.').pop() + '.toggledEdit');
+        require('s7n').tagify({selector: 'input.tags'});
+    });
+
+    files.on('editFile', function (event) {
+        event.original.preventDefault();
+        var index = event.keypath.split('.').pop();
+        event.context.tags = $(event.node).find('input.tags')[0].value;
+
+        files.updateFile(event.context)
+        .then(function (data) {
+            var file = files.get('files.' + index);
+            file.tags = data.tags;
+            file.filename = data.filename;
+            file.toggledEdit = false;
+            files.set('files.' + index, file);
         });
     });
 

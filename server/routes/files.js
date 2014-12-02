@@ -176,13 +176,43 @@ router.post('/upload', is_member, function (req, res) {
     });
 });
 
-router.put('/:id', function (req, res) {
+router.put('/:id', is_member, function (req, res, next) {
     var id = req.params.id,
         tags = req.body.tags,
-        users = [],
-        groups = [],
-        broadcast = false;
+        filename = req.body.filename;
 
+    if (_.isEmpty(tags)) {
+        tags = [];
+    }
+    else {
+        tags = tags.split(',');
+    }
+
+    var query = File.findById(id).or([
+            {creator: req.user._id},
+            {'permissions.public': true},
+            {'permissions.users': req.user._id},
+            {'permissions.groups': { $in: req.user.groups }}
+        ]);
+
+    query.exec(function (err, file) {
+        if (err) { return next(err); }
+
+        if (!file) {
+            res.status(403).json();
+        }
+
+        file.filename = filename;
+        file.tags = tags;
+        file.save(function (err) {
+            if (err) { return next(err); }
+            console.log(file);
+            res.json(file);
+        });
+    });
+
+
+    /*
     _.each(req.body.permissions, function (permission) {
         console.log(permission);
     });
@@ -198,6 +228,7 @@ router.put('/:id', function (req, res) {
         console.log(file);
         res.json(file);
     });
+    */
 });
 
 router.delete('/:id', function (req, res, next) {
