@@ -593,11 +593,16 @@ nav.top-bar {
             height: 40px;
             width: 40px;
         }
-        .last {
+        .changes {
             line-height: 1.5;
             padding-left: 5px;
             color: $grey-color;
             font-size: rem-calc(13px);
+            .updates,
+            .last,
+            .tags {
+                padding-left: 5px;
+            }
         }
         span.image {
             position: relative;

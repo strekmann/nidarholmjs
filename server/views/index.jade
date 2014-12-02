@@ -147,29 +147,34 @@ block content
             span {{.count}}
             | {{/if}}
           | {{/user_images}}
-          .last
+          .changes
             | {{#changes.length > 1}}
-            | &nbsp; {{ changes.length - 1 }} oppdateringer
+            span.updates
+              | {{ changes.length - 1 }} oppdateringer
             | {{/changes}}
+            span.tags
+              | {{#tags}}
+              | {{#.}}
+              | {{#if content_type === "forum"}}
+              a(href="/forum/t/{{.}}")
+                i.fa.fa-tag
+                | &nbsp;{{.}}
+              | {{/if}}
+              | {{#if content_type === "upload"}}
+              a(href="/files/t/{{.}}")
+                i.fa.fa-tag
+                | &nbsp;{{.}}
+              | {{/if}}
+              | &nbsp;
+              | {{/.}}
+              | {{/tags}}
             br
-            | &nbsp; siste fra {{ last(changes).user.name }} {{ago(modified)}}
-      .row
-        .columns
-          | {{#tags}}
-          | {{#.}}
-          | {{#if content_type === "forum"}}
-          a(href="/forum/t/{{.}}")
-            i.fa.fa-tag
-            | &nbsp;{{.}}
-          | {{/if}}
-          | {{#if content_type === "upload"}}
-          a(href="/files/t/{{.}}")
-            i.fa.fa-tag
-            | &nbsp;{{.}}
-          | {{/if}}
-          | &nbsp;
-          | {{/.}}
-          | {{/tags}}
+            span.last
+              | siste fra
+              = " "
+              a(href="/users/{{ last(changes).user.username }}") {{ last(changes).user.name }}
+              = " "
+              | {{ago(modified)}}
 
     | {{/activities}}
 
