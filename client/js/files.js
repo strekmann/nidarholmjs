@@ -45,13 +45,19 @@ var Files = Ractive.extend({
     }
 });
 
-module.exports.fileListView = function (f, active_user) {
+module.exports.fileListView = function (f, active_user, admin_group) {
     var files = new Files({
         el: '#files',
         template: '#template',
         data: {
             files: f,
             active_user: active_user,
+            is_admin: function () {
+                var is_member_of_group = _.find(active_user.groups, function (group) {
+                    return group._id === admin_group._id;
+                });
+                return Boolean(is_member_of_group);
+            }
         }
     });
     files.on('search', function (event) {

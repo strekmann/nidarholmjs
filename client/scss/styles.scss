@@ -513,6 +513,9 @@ nav.top-bar {
     }
     .tags {
         font-size: rem-calc(13px);
+        a {
+            margin-right: 8px;
+        }
     }
 }
 

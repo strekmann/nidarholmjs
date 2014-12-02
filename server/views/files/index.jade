@@ -93,7 +93,7 @@ block content
                     time.created(datetime="{{isodate(created)}}") {{shortdate(created)}}
                   .columns.small-3.text-right.creator
                     permissionicons(permissions="{{permissions}}")
-                    | {{#if active_user._id === creator._id || is_admin}}
+                    | {{#if active_user._id === creator._id || is_admin()}}
                     a.edit(href='#' on-click="toggleEdit")
                       i.fa.fa-edit
                     a.delete(href="/files/{{_id}}" on-click="deleteFile")
@@ -122,6 +122,8 @@ block javascript
     != JSON.stringify(files)
     | ,
     != JSON.stringify(active_user) || "null"
+    | ,
+    != JSON.stringify(organization.administration_group)
     | );
 
   script.

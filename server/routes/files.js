@@ -206,7 +206,6 @@ router.put('/:id', is_member, function (req, res, next) {
         file.tags = tags;
         file.save(function (err) {
             if (err) { return next(err); }
-            console.log(file);
             res.json(file);
         });
     });
