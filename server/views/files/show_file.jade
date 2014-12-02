@@ -32,7 +32,7 @@ block content
           | {{#if file.toggledEdit}}
           .row
             .columns.small-8
-              input#filename.columns.small-8(type="text" name="filename" value="{{file.filename}}" placeholder="Filnavn")
+              input#filename(type="text" name="filename" value="{{file.filename}}" placeholder="Filnavn")
             .columns.small-4
               .right
                 button.small Lagre
@@ -43,7 +43,7 @@ block content
                 i.fa.fa-edit
                 | &nbsp;
                 | Rediger
-          h1= file.filename
+          h1 {{file.filename}}
           | {{/if}}
           .row
             .columns.medium-6
@@ -52,15 +52,16 @@ block content
               = file.shortdate
             .columns.medium-6
               | {{#if file.toggledEdit}}
-              input#tags(type="text" name="tags" value="{{file.tags}}" placeholder="Merkelapper")
+              .wrapper
+                input#tags(type="text" name="tags" value="{{file.tags}}" placeholder="Merkelapper")
               | {{else}}
               .right
-                each tag in file.tags
-                  a(href="/files/t/"+tag)
-                    i.fa.fa-tag
-                    | &nbsp;
-                    = tag
-                  = " "
+                | {{#each file.tags}}
+                a(href="/files/t/{{.}}")
+                  i.fa.fa-tag.fa-fw
+                  | {{.}}
+                = " "
+                | {{/each}}
                 span.type
                   = file.mimetype
               | {{/if}}

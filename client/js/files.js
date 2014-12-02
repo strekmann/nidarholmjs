@@ -57,12 +57,12 @@ module.exports.fileDetailView = function (f) {
     files.on('toggleEdit', function (event) {
         event.original.preventDefault();
         files.toggle('file.toggledEdit');
-        require('s7n').tagify({selector: 'input#tags'});
+        require('s7n').tagify({selector: '#tags'});
     });
 
     files.on('updateFile', function (event) {
         event.original.preventDefault();
-        event.context.file.tags = $(event.node).find('input#tags')[0].value;
+        event.context.file.tags = $(event.node).find('#tags')[0].value;
 
         files.updateFile(event.context.file)
         .then(function (data) {
