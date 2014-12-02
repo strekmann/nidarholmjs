@@ -206,28 +206,13 @@ router.put('/:id', is_member, function (req, res, next) {
         file.tags = tags;
         file.save(function (err) {
             if (err) { return next(err); }
+
+            Activity.update({content_ids: id}, {$set: {tags: tags}, title: filename}, function (err, status) {
+                if (err) { console.error(err); }
+            });
             res.json(file);
         });
     });
-
-
-    /*
-    _.each(req.body.permissions, function (permission) {
-        console.log(permission);
-    });
-    File.findOneAndUpdate({_id: id}, {
-        permissions: {
-            users: users,
-            groups: groups,
-            broadcast: broadcast
-        },
-        tags: tags
-    }, function(err, file) {
-        if (err) { throw err; }
-        console.log(file);
-        res.json(file);
-    });
-    */
 });
 
 router.delete('/:id', function (req, res, next) {
