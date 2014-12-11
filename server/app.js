@@ -159,10 +159,10 @@ app.use(function (req, res, next) {
                 //req.user.friends = _.map(_.compact(groups_of_users), function (user_id) {
                     //return indexed_users[user_id];
                 //});
-                //User.populate(req.user, 'friends', function (err, user) {
-                    //if (err) { next(err); }
-            next();
-                //});
+            User.populate(req.user, 'friends', function (err) {
+                if (err) { next(err); }
+                next();
+            });
             //});
         });
     } else {

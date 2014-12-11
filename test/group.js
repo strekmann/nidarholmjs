@@ -131,6 +131,7 @@ describe("Group", function () {
                     done();
             });
         });
+        /* Now ractive
         it("should find group id for instrument group in new user form", function (done) {
             agent
             .get('/members/new')
@@ -144,5 +145,6 @@ describe("Group", function () {
                 done(err);
             });
         });
+        */
     });
 });
