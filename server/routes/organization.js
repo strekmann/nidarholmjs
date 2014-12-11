@@ -1,15 +1,10 @@
-var Q = require("q"),
-    _ = require('underscore'),
+var _ = require('underscore'),
     async = require('async'),
     slug = require('slug'),
-    marked = require('marked'),
-    mongoose = require('mongoose'),
-    shortid = require('short-mongo-id'),
     config = require('../settings'),
     User = require('../models').User,
     Group = require('../models').Group,
-    Organization = require('../models').Organization,
-    File = require('../models/files').File;
+    Organization = require('../models').Organization;
 
 module.exports.memberlist = function (req, res) {
     req.organization.populate('instrument_groups', 'name members', function (err, organization) {
@@ -44,7 +39,7 @@ module.exports.memberlist = function (req, res) {
     });
 };
 
-module.exports.add_user = function (req, res) {
+module.exports.add_user = function (req, res, next) {
     if (!req.is_admin) {
         res.send(403, 'Forbidden');
     }
@@ -53,6 +48,7 @@ module.exports.add_user = function (req, res) {
         .find({organization: req.organization._id})
         .select('name')
         .exec(function (err, groups) {
+            if (err) { return next(err); }
             res.render('organization/add_user', {groups: groups, meta: {title: 'Legg til nytt korpsmedlem'}});
         });
     }
@@ -69,6 +65,7 @@ module.exports.create_user = function (req, res, next) {
                 next(new Error('Something is very wrong, nidarholm does not exist'));
             }
             User.count().exec(function (err, user_count) {
+                if (err) { return next(err); }
                 var name = req.body.name,
                     email = req.body.email,
                     instrument = req.body.instrument,
@@ -250,19 +247,19 @@ module.exports.order_instrument_groups = function (req, res, next) {
     }
 };
 
+/*jslint todo: true*/
 module.exports.contacts = function (req, res, next) {
     // TODO: Try to merge the two populate calls
     // Does the following actually work?
     req.organization.populate('contact_groups', function (err, organization) {
+        if (err) { return next(err); }
         organization.populate({
             path: 'contact_groups.members.user',
             select: 'name username',
             model: 'User'
         },
             function (err, organization) {
-                if (err) {
-                    next(new Error(err));
-                }
+                if (err) { return next(err); }
                 res.render('organization/contact', {
                     organization: organization,
                     meta: {title: 'Kontakt'}
@@ -274,6 +271,7 @@ module.exports.contacts = function (req, res, next) {
 module.exports.edit_organization = function (req, res, next) {
     if (req.is_admin) {
         Group.find({organization: req.organization._id}).select('name').exec(function (err, groups) {
+            if (err) { return next(err); }
             res.render('organization/edit_organization', {
                 organization: req.organization,
                 locales: config.languages,
@@ -302,7 +300,7 @@ module.exports.update_organization = function (req, res, next) {
             map_url = req.body.map_url,
             facebook = req.body.facebook,
             twitter = req.body.twitter,
-            description = req.body.description;
+            description = req.body.description,
             tracking_code = req.body.tracking_code;
 
 
@@ -317,7 +315,7 @@ module.exports.update_organization = function (req, res, next) {
         org.city = city;
         org.email = email;
         org.organization_number = organization_number;
-        org.public_bank_account = req.body.public_bank_account;
+        org.public_bank_account = public_bank_account;
         org.map_url = map_url;
         org.social_media.facebook = facebook;
         org.social_media.twitter = twitter;
@@ -331,7 +329,7 @@ module.exports.update_organization = function (req, res, next) {
         org.markModified('description');
 
         org.save(function (err) {
-            if (err) { console.error(err); }
+            if (err) { return next(err); }
             res.redirect('/contact');
         });
     }
@@ -384,7 +382,7 @@ var translate = function (string) {
     return string.replace('æ', 'a').replace('ø', 'o').replace('å', 'a').replace(/\s+/, '');
 };
 
-module.exports.encrypted_mailman_lists = function (req, res, next) {
+module.exports.encrypted_mailman_lists = function (req, res) {
     if (!req.params.groups) {
         res.send(400, 'Nothing to do');
     }
@@ -393,6 +391,7 @@ module.exports.encrypted_mailman_lists = function (req, res, next) {
         secret = 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa';
         var encoded_groups = req.params.groups;
         aes.decrypt(encoded_groups, secret, function (err, data){
+            if (err) { console.error(err); }
             data = JSON.parse(data);
             async.map(data.groups, function (group, callback) {
                 var listname = data.prefix + translate(group.toLowerCase());
@@ -424,11 +423,13 @@ module.exports.encrypted_mailman_lists = function (req, res, next) {
                         }
                     });
             }, function (err, lists) {
+                if (err) { console.error(err); }
                 var mailinglists = {};
                 _.each(lists, function (list) {
                     mailinglists[list.name] = list.emails;
                 });
                 aes.encrypt(JSON.stringify(mailinglists), secret, function (err, data) {
+                    if (err) { console.error(err); }
                     res.send(data);
                 });
             });

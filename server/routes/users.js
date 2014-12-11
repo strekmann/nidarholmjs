@@ -1,3 +1,6 @@
+/*jslint unparam: true*/
+/*jslint todo: true*/
+
 var express = require('express'),
     router = express.Router(),
     _ = require('underscore'),
@@ -117,7 +120,7 @@ router.post('/:id', function (req, res, next) {
     }
 });
 
-router.get('/:username/pictures', function (req, res, next) {
+router.get('/:username/pictures', function (req, res) {
     if (req.params.username === req.user.username || req.is_admin) {
         User
         .findOne({username: req.params.username})
@@ -138,12 +141,11 @@ router.get('/:username/pictures', function (req, res, next) {
     }
 });
 
-router.post('/:username/pictures', function (req, res, next) {
+router.post('/:username/pictures', function (req, res) {
     if (req.user.username === req.params.username || req.is_admin) {
         var username = req.params.username,
             filepath = req.files.file.path,
             filename = req.files.file.originalname,
-            user = req.user,
             options = {
                 tags: [ config.profile_picture_tag]
             };
@@ -165,7 +167,7 @@ router.post('/:username/pictures', function (req, res, next) {
     }
 });
 
-router.put('/:username/pictures/:id', function (req, res, next) {
+router.put('/:username/pictures/:id', function (req, res) {
     if (req.user.username === req.params.username || req.is_admin) {
         var username = req.params.username,
             id = req.params.id;
@@ -194,7 +196,7 @@ router.post('/:username/groups', is_admin, function (req, res, next) {
         groupid = req.body.groupid;
 
     User.findOne({username: username}, function (err, user) {
-        if (err) { throw err; }
+        if (err) { return next(err); }
         Group.findById(groupid, function (err, group) {
             if (err) { return next(err); }
             if (!group) { return next(new Error("Unrecognized group")); }
@@ -206,9 +208,10 @@ router.post('/:username/groups', is_admin, function (req, res, next) {
             } else {
                 user.groups.push(group);
                 user.save(function (err) {
-                    if (err) { throw err; }
+                    if (err) { return next(err); }
                     group.members.push({user: user._id});
                     group.save(function (err) {
+                        if (err) { return next(err); }
                         res.json(group);
                     });
                 });

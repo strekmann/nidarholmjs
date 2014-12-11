@@ -1,3 +1,5 @@
+/*globals $, Ractive, flash*/
+
 var Group = require('./ractive/organization').Group;
 
 module.exports.groupView = function (group, users) {
@@ -9,6 +11,7 @@ module.exports.groupView = function (group, users) {
             users: users
         }
     });
+    /*jslint unparam: true*/
     ractive.on("addUser", function (event) {
         event.original.preventDefault();
         var form = $(event.node),
@@ -30,8 +33,7 @@ module.exports.groupView = function (group, users) {
 
     ractive.on("removeUser", function (event) {
         event.original.preventDefault();
-        var user = $(event.node),
-            promise = $.ajax({
+        var promise = $.ajax({
                 url: event.node.href,
                 type: 'delete',
                 dataType: 'json'
@@ -51,7 +53,7 @@ module.exports.groupListView = function () {
         restAPI: '/groups'
     });
 
-    grouplist.on('toggleNew', function (event) {
+    grouplist.on('toggleNew', function () {
         this.toggle('expanded');
     });
 
@@ -77,7 +79,7 @@ module.exports.groupListView = function () {
         grouplist.removeInstrumentGroup(group);
     });
 
-    grouplist.on('moveInstrumentGroup', function (event) {
+    grouplist.on('moveInstrumentGroup', function () {
         grouplist.orderInstrumentGroups();
     });
 

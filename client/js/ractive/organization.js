@@ -1,3 +1,5 @@
+/*globals $, _, Ractive, flash*/
+
 var Group = Ractive.extend({
 
     init: function (options) {
@@ -13,6 +15,7 @@ var Group = Ractive.extend({
                 data: group,
             });
 
+        /*jslint unparam: true*/
         promise.then(function (data) {
             self.data.groups.push(data);
         }, function (xhr, status, err) {
@@ -29,7 +32,8 @@ var Group = Ractive.extend({
                 data: group
             });
 
-        promise.then(function (data) {
+        /*jslint unparam: true*/
+        promise.then(function () {
             self.data.igroups.push(group);
         }, function(xhr, status, err){
             flash.data.error.push(group.name + ' er allerede en instrumentgruppe');
@@ -44,7 +48,8 @@ var Group = Ractive.extend({
                 type: 'DELETE'
             });
 
-        promise.then(function (data) {
+        /*jslint unparam: true*/
+        promise.then(function () {
             var index =  _.indexOf(_.pluck(self.data.igroups, '_id'), group._id);
             if (index !== -1){
                 self.data.igroups.splice(index, 1);
@@ -64,9 +69,8 @@ var Group = Ractive.extend({
                 }
             });
 
-        promise.then(function (data) {
-            //console.log("DONE");
-        }, function(xhr, status, err){
+        /*jslint unparam: true*/
+        promise.error(function(xhr, status, err){
             console.error(err);
         });
     },

@@ -1,10 +1,6 @@
 var mongoose = require('mongoose'),
     moment = require('moment'),
-    schema = require('../models').schema,
-    _ = require('underscore'),
-    path = require('path'),
-    shortid = require('short-mongo-id'),
-    config = require('../settings');
+    path = require('path');
 
 var FileSchema = new mongoose.Schema({
     _id: {type: String, required: true, unique: true},

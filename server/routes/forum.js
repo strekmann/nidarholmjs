@@ -1,5 +1,6 @@
-var _ = require('underscore'),
-    express = require('express'),
+/*jslint todo: true*/
+
+var express = require('express'),
     router = express.Router(),
     shortid = require('short-mongo-id'),
     moment = require('moment'),
@@ -12,7 +13,6 @@ var _ = require('underscore'),
     Activity = require('../models').Activity;
 
 // forum with prefix /forum
-
 router.get('/', function (req, res, next) {
     var query = ForumPost.find();
     if (req.user) {
@@ -121,11 +121,13 @@ router.post('/', is_member, function (req, res, next) {
             snippet: snippetify(post.mdtext)
         };
 
-        activity.save(function (err) {});
-        if (err) {
-            return next(err);
-        }
+        activity.save(function (err) {
+            if (err) { console.error(err); }
+        });
+
+        if (err) { return next(err); }
         post.populate('creator', 'username name profile_picture_path', function (err, post) {
+            if (err) { return next(err); }
             res.json(post);
         });
     });
@@ -138,6 +140,7 @@ router.put('/:id', function (req, res, next) {
         permissions = parse_web_permissions(req.body.permissions);
 
     ForumPost.findById(req.params.id, function (err, post) {
+        if (err) { return next(err); }
         if (post.creator === req.user._id || req.is_admin) {
             post.title = title;
             post.mdtext = mdtext;
@@ -150,7 +153,9 @@ router.put('/:id', function (req, res, next) {
                     return next(err);
                 }
                 post.populate('creator', 'username name profile_picture_path', function (err, post) {
+                    if (err) { return next(err); }
                     Activity.findOne({content_type: 'forum', content_ids: post._id}, function (err, activity) {
+                        if (err) { console.error(err); }
                         if (activity) {
                             activity.title = title;
                             activity.modified = post.modified;
@@ -160,7 +165,8 @@ router.put('/:id', function (req, res, next) {
                                 snippet: snippetify(post.mdtext)
                             };
                             activity.changes.push({user: req.user._id, changed: post.modified});
-                            activity.save(function (err, activity) {
+                            activity.save(function (err) {
+                                if (err) { console.error(err); }
                                 res.json(post);
                             });
                         }
@@ -184,7 +190,11 @@ router.delete('/:id', function (req, res, next) {
     ForumPost.findByIdAndRemove(id, function (err, post) {
         if (err) { return next(err); }
         if (post.creator === req.user._id || req.is_admin) {
-            Activity.findOneAndRemove({content_type: 'forum', content_ids: post._id}, function (err, activity) {});
+            Activity.findOneAndRemove({
+                content_type: 'forum', content_ids: post._id
+            }, function (err) {
+                if (err) {console.error(err); }
+            });
             res.json(post);
         }
         else {
@@ -254,15 +264,16 @@ router.post('/:postid/replies', function (req, res, next) {
 
             post.replies.push(reply);
             post.save(function (err) {
-                if (err) {
-                    return next(err);
-                }
+                if (err) { return next(err); }
                 var modified = moment();
                 Activity.update({content_type: 'forum', content_ids: post._id}, {
                     $push: {changes: {user: req.user._id, changed: modified}},
                     $set: {modified: modified}
-                }, function () {});
+                }, function (err) {
+                    if (err) { console.error(err); }
+                });
                 reply.populate('creator', 'username name profile_picture_path', function (err, reply) {
+                    if (err) { return next(err); }
                     res.json(reply);
                 });
             });
@@ -366,7 +377,9 @@ router.post('/:postid/replies/:replyid/comments',
                 Activity.update({content_type: 'forum', content_ids: post._id}, {
                     $push: {changes: {user: req.user._id, changed: modified}},
                     $set: {modified: modified}
-                }, function () {});
+                }, function (err) {
+                    if (err) { console.error(err); }
+                });
                 comment.populate('creator', 'username name profile_picture_path', function (err, comment) {
                     if (err) {
                         return next(err);

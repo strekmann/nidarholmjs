@@ -1,6 +1,5 @@
 // express middleware
-var moment = require('moment'),
-    _ = require('underscore'),
+var _ = require('underscore'),
     uuid = require('node-uuid'),
     RememberMeToken = require('../models').RememberMeToken;
 
@@ -17,12 +16,12 @@ module.exports.ensureAuthenticated = function(req, res, next) {
 
 module.exports.is_admin = function (req, res, next) {
     if (req.is_admin) { return next(); }
-    else { return res.sendStatus(403); }
+    return res.sendStatus(403);
 };
 
 module.exports.is_member = function (req, res, next) {
     if (req.is_member) { return next(); }
-    else { return res.sendStatus(403); }
+    return res.sendStatus(403);
 };
 
 module.exports.persistentLogin = function (req, res, next) {
@@ -31,7 +30,7 @@ module.exports.persistentLogin = function (req, res, next) {
     token._id = uuid.v4();
     token.user = req.user._id;
     token.save(function(err) {
-        if (err) { return done(err); }
+        if (err) { return next(err); }
         res.cookie('remember_me', token, { path: '/', httpOnly: true, maxAge: 604800000 }); // 7 days
         return next();
     });

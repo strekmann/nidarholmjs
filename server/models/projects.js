@@ -1,5 +1,4 @@
-var mongoose = require('mongoose'),
-    schema = require('../models').schema;
+var mongoose = require('mongoose');
 
 var PieceSchema = new mongoose.Schema({
     _id: {type: String, required: true, unique: true},

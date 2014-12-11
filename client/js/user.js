@@ -1,5 +1,7 @@
+/*global $, _, Ractive, moment, flash, marked, Dropzone*/
+
 module.exports.editUserView = function () {
-    $("#postcode").keyup(function (event) {
+    $("#postcode").keyup(function () {
         var value = $(this).val();
         value = value.replace(/\D/g,'');
         if (value.length === 4) {
@@ -51,13 +53,9 @@ module.exports.userView = function (user, active_user) {
                         // mobile xxx xx xxx
                         return number.substr(0, 3) + " " + number.substr(3, 2) + " " + number.substr(5, 3);
                     }
-                    else {
-                        return number.substr(0, 2) + " " + number.substr(2, 2) + " " + number.substr(4 ,2) + " " + number.substr(6, 2);
-                    }
+                    return number.substr(0, 2) + " " + number.substr(2, 2) + " " + number.substr(4 ,2) + " " + number.substr(6, 2);
                 }
-                else {
-                    return original;
-                }
+                return original;
             },
             uploading_files: []
         }
@@ -84,8 +82,7 @@ module.exports.userView = function (user, active_user) {
 
     ractive.on("removeGroup", function (event) {
         event.original.preventDefault();
-        var group = $(event.node),
-            promise = $.ajax({
+        var promise = $.ajax({
                 url: event.node.href,
                 type: 'delete',
                 dataType: 'json'
@@ -102,9 +99,7 @@ module.exports.userView = function (user, active_user) {
         var pictures = $('#profile-pictures');
         $(document).foundation('reflow');
         pictures.foundation('reveal', 'open');
-        var picture = $(event.node),
-            upload = $('#upload'),
-            promise = $.ajax({
+        var promise = $.ajax({
                 url: '/users/' + ractive.get('user').username + '/pictures',
                 type: 'GET',
                 dataType: 'json'
@@ -143,9 +138,7 @@ module.exports.userView = function (user, active_user) {
 
     ractive.on("setProfilePicture", function (event) {
         event.original.preventDefault();
-        var picture = $(event.node);
-        var path = picture.children('img').attr('src'),
-            promise = $.ajax({
+        var promise = $.ajax({
                 url: event.node.href,
                 type: 'put',
                 dataType: 'json'

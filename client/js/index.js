@@ -1,5 +1,8 @@
+/*globals $, _, Ractive, moment*/
+
 moment.locale($('html').attr('locale'));
 
+/*jshint -W079 */
 var flash = function (messages, member_group_id) {
 
     var permissions_component = Ractive.extend({
@@ -48,19 +51,19 @@ var flash = function (messages, member_group_id) {
     return ractive;
 };
 
-var tagify = function () {
+var tagify = function (first_var) {
     var options = {},
         callback;
 
-    if (_.isObject(arguments[0])) {
-        options = arguments[0];
+    if (_.isObject(first_var)) {
+        options = first_var;
     }
 
     callback = arguments[arguments.length-1];
 
-    var selector = options.selector || '#tags',
-        url = options.url || '/tags',
-        selected = options.tags || [];
+    var selector = options.selector || '#tags';
+        //url = options.url || '/tags',
+        //selected = options.tags || [];
 
     $(selector).select2({
         width: '100%',
@@ -70,8 +73,7 @@ var tagify = function () {
         initSelection: function (element, callback) {
             var data = [];
             $(element.val().split(",")).each(function () {
-                var self = this,
-                    tag = this.trim();
+                var tag = this.trim();
                 data.push({id: tag, text: tag});
             });
             callback(data);
@@ -90,12 +92,12 @@ var tagify = function () {
             url: "/tags",
             dataType: "json",
             quietMillis: 100,
-            data: function (term, page) {
+            data: function (term) { // , page
                 return {
                     q: term
                 };
             },
-            results: function (data, page) {
+            results: function (data) { // , page
                 return {results: _.map(data.tags, function(tag) {
                     return {id: tag, text: tag};
                 })};

@@ -1,10 +1,11 @@
+/*jslint todo: true */
+
 var uslug = require('uslug'),
     moment = require('moment'),
     _ = require('underscore'),
     shortid = require('short-mongo-id'),
     util = require('../lib/util'),
     upload_file = util.upload_file,
-    config = require('../settings'),
     snippetify = require('../lib/util').snippetify,
     Project = require('../models/projects').Project,
     CalendarEvent = require('../models/projects').Event,
@@ -12,12 +13,6 @@ var uslug = require('uslug'),
     File = require('../models/files').File,
     ForumPost = require('../models/forum').ForumPost,
     Activity = require('../models').Activity;
-
-// TODO: Create file util functions
-var fs = require('fs'),
-    path = require('path'),
-    mkdirp = require('mkdirp'),
-    crypto = require('crypto');
 
 module.exports.index = function (req, res, next) {
     var query;
@@ -36,9 +31,7 @@ module.exports.index = function (req, res, next) {
     query.sort('end')
         .populate('creator', 'username name');
     query.exec(function (err, projects) {
-        if (err) {
-            throw err;
-        }
+        if (err) { return next(err); }
 
         res.format({
             html: function () {
@@ -58,9 +51,7 @@ module.exports.index = function (req, res, next) {
                     .populate('creator', 'username name');
 
                 query.exec(function (err, previous_projects) {
-                    if (err) {
-                        throw err;
-                    }
+                    if (err) { return next(err); }
 
                     res.render('projects/index', {
                         projects: projects,
@@ -105,7 +96,7 @@ module.exports.year = function (req, res, next) {
 };
 */
 
-module.exports.create_project = function (req, res, next) {
+module.exports.create_project = function (req, res) {
     if (!req.is_member) {
         res.sendStatus(403);
     }
@@ -232,10 +223,11 @@ module.exports.project = function (req, res, next) {
             event_query.populate('creator', 'username name')
             .sort('start')
             .exec(function (err, events) {
+                if (err) { return next(err); }
                 ForumPost.find({tags: project.tag}).populate('creator', 'username name').sort('-created').exec(function (err, posts) {
-                    var images = [];
-                    var non_images = [];
+                    if (err) { return next(err); }
                     File.find({tags: project.tag}).populate('creator', 'username name').exec(function (err, files) {
+                        if (err) { return next(err); }
                         res.format({
                             json: function () {
                                 res.json(project);
@@ -327,7 +319,9 @@ module.exports.project_create_post = function (req, res, next) {
             activity.content = {
                 snippet: snippetify(post.mdtext)
             };
-            activity.save(function (err) {});
+            activity.save(function (err) {
+                if (err) { console.error(err); }
+            });
             post.populate('creator', 'username name', function (err, post) {
                 if (err) {
                     res.status(400).json(err);
@@ -368,7 +362,7 @@ module.exports.project_create_file = function (req, res, next) {
             {'permissions.users': req.user._id},
             {'permissions.groups': { $in: req.user.groups }}
         ]).exec(function (err, project) {
-            if (err) { throw err; }
+            if (err) { return next(err); }
             var filepath = req.files.file.path,
                 filename = req.files.file.originalname,
                 user = req.user;
@@ -378,13 +372,14 @@ module.exports.project_create_file = function (req, res, next) {
                 tags: [project.tag]
             };
             upload_file(filepath, filename, user, options, function (err, file) {
-                if (err) { throw err; }
+                if (err) { return next(err); }
                 Activity.findOne({
                     content_type: 'upload',
                     'changes.user': file.creator,
                     modified: {$gt: moment(file.created).subtract(10, 'minutes').toDate()},
                     project: project._id
                 }, function (err, activity) {
+                    if (err) { console.error(err); }
 
                     if (!activity) {
                         activity = new Activity();
@@ -431,7 +426,9 @@ module.exports.project_create_file = function (req, res, next) {
                         }
                     }
                     activity.markModified('content');
-                    activity.save(function (err) {});
+                    activity.save(function (err) {
+                        if (err) { console.error(err); }
+                    });
                 });
 
                 res.json(file);
@@ -501,6 +498,7 @@ module.exports.set_poster = function (req, res, next) {
                     },
                     json: function () {
                         project.populate('poster', function (err, project) {
+                            if (err) { console.error(err); }
                             res.json(project.poster);
                         });
                     }
@@ -510,6 +508,8 @@ module.exports.set_poster = function (req, res, next) {
     }
 };
 
+/*jslint unparam: true*/
+/*jshint unused: vars*/
 module.exports.ical_events = function (req, res, next) {
     var icalendar = require('icalendar');
 
@@ -519,9 +519,7 @@ module.exports.ical_events = function (req, res, next) {
         .sort('start')
         .populate('creator', 'username name');
     query.exec(function (err, events) {
-        if (err) {
-            throw err;
-        }
+        if (err) { return next(err); }
 
         var ical = new icalendar.iCalendar("2.0");
         ical.addProperty('VERSION', '2.0');

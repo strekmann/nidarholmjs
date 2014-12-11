@@ -1,3 +1,5 @@
+/*globals $, _, window, Ractive, moment, Dropzone*/
+
 var Files = Ractive.extend({
     noIntro: true,
     data: {
@@ -19,9 +21,7 @@ var Files = Ractive.extend({
                     return prefix + tags.uniq.join("/");
 
                 }
-                else {
-                    return prefix + tag;
-                }
+                return prefix + tag;
             }
         }
     },
@@ -95,9 +95,7 @@ module.exports.fileListView = function (f, active_user, admin_group) {
 
         var query = event.context.query;
         files.search(query)
-        .then(function (data) {
-            //console.log(data);
-        });
+        .then();
     });
 
     files.on('toggleEdit', function (event) {
@@ -123,14 +121,13 @@ module.exports.fileListView = function (f, active_user, admin_group) {
 
     files.on('deleteFile', function (event) {
         event.original.preventDefault();
-        var file = $(event.node),
-            promise = $.ajax({
+        var promise = $.ajax({
                 url: event.node.href,
                 type: 'delete',
                 dataType: 'json'
             });
 
-        promise.then(function (file) {
+        promise.then(function () {
             var index = event.keypath.split('.').pop();
             files.data.files.splice(index, 1);
         });
@@ -147,7 +144,7 @@ module.exports.fileListView = function (f, active_user, admin_group) {
 
         promise.then(function (data) {
             if (data.length === 0) {
-                self.set('gotall', true);
+                files.set('gotall', true);
             }
             files.data.files.push.apply(files.data.files, data);
         });
@@ -160,7 +157,7 @@ module.exports.fileListView = function (f, active_user, admin_group) {
     uploadzone.on("sending", function (file) {
         files.data.uploading_files.push(file);
     });
-    uploadzone.on("uploadprogress", function (file, progress) {
+    uploadzone.on("uploadprogress", function (file) { //, progress
         _.each(files.data.uploading_files, function (f, i) {
             if (f.name === file.name) {
                 files.set('uploading_files.' + i, file);
@@ -176,7 +173,7 @@ module.exports.fileListView = function (f, active_user, admin_group) {
         files.data.files.unshift(backend_file);
     });
 
-    $('#drop').on('click', function (event) {
+    $('#drop').on('click', function () {
         $('#upload').trigger('click');
     });
 
@@ -192,9 +189,9 @@ module.exports.fileListView = function (f, active_user, admin_group) {
     $('#filter').val(tags.join(","));
 
     require('s7n').tagify({selector: '#filter'}, function (element) {
-        var tags = element.val;
-        if (tags.length) {
-            window.location.href = '/files/t/' + tags.join('/');
+        var t = element.val;
+        if (t.length) {
+            window.location.href = '/files/t/' + t.join('/');
         }
         else {
             window.location.href = '/files';

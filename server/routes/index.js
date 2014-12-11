@@ -1,3 +1,5 @@
+/*jslint todo: true*/
+
 var _ = require('underscore'),
     express = require('express'),
     router = express.Router(),
@@ -19,7 +21,7 @@ var _ = require('underscore'),
 
 // core routes - base is /
 
-router.get('/', function(req, res) {
+router.get('/', function(req, res, next) {
     var query,
         meta = {
             title: req.organization.name,
@@ -46,9 +48,7 @@ router.get('/', function(req, res) {
         query.populate('changes.user', 'name profile_picture_path')
         .populate('project', 'year tag title')
         .exec(function (err, activities) {
-            if (err) {
-                throw err;
-            }
+            if (err) { return next(err); }
 
             query = CalendarEvent.find().or([
                 {creator: req.user},
@@ -59,6 +59,7 @@ router.get('/', function(req, res) {
             .where({start: {$gte: now, $lte: moment.utc().add(6, 'months').startOf('day').toDate()}})
             .sort('start');
             query.exec(function (err, events) {
+                if (err) { return next(err); }
                 query = Project.find({
                     end: {$gte: now},
                     $or: [{'permissions.public': true}, {'permissions.users': req.user._id}, {'permissions.groups': { $in: req.user.groups }} ],
@@ -83,6 +84,7 @@ router.get('/', function(req, res) {
                 .populate('creator', 'name username')
                 .populate('poster')
                 .exec(function (err, projects) {
+                    if (err) { return next(err); }
                     res.format({
                         html: function () {
                             res.render('index', {
@@ -109,6 +111,7 @@ router.get('/', function(req, res) {
         .sort('start')
         .limit(8);
         query.exec(function (err, events) {
+            if (err) { return next(err); }
             query = Project.find({'permissions.public': true, end: {$gte: now}})
             .or([
                 {start: {$exists: false}},
@@ -118,12 +121,14 @@ router.get('/', function(req, res) {
             .limit(2)
             .populate('poster');
             query.exec(function (err, projects) {
+                if (err) { return next(err); }
                 ForumPost
                 .find({'permissions.public': true, 'tags': config.news_tag})
                 .sort('-created')
                 .limit(5)
                 .populate('creator', 'name username')
                 .exec(function (err, posts) {
+                    if (err) { return next(err); }
                     res.format({
                         html: function () {
                             _.each(projects, function (project) {
@@ -149,6 +154,7 @@ router.get('/', function(req, res) {
     }
 });
 
+/*jslint unparam: true*/
 router.get('/login', function(req, res){
     res.render('login', {meta: {title: 'Logg inn'}});
 });
@@ -222,7 +228,7 @@ router.get('/tags', is_member, function (req, res) {
     }
 });
 
-router.post('/register', function(req, res) {
+router.post('/register', function(req, res, next) {
     // TODO: Use sanitizer
     if (req.body.email && req.body.name && req.body.password1 && req.body.password2) {
         // Check if passwords are equal
@@ -248,22 +254,18 @@ router.post('/register', function(req, res) {
             user.salt = salt;
             user.algorithm = algorithm;
             user.save(function (err) {
-                if (err) {
-                    console.error("Error saving user:", err);
-                    return next(err);
-                } else {
-                    // Log in newly registered user automatically
-                    req.logIn(user, function (err) {
-                        if(!err){
-                            // TODO: Since this is first login, redirect to account page
-                            req.flash('info', 'You are now registered, and logged in.');
-                            res.redirect('/');
-                        } else {
-                            req.flash('error', 'There was something wrong with your newly created user that prevented us from logging in for you. Please try to login yourself.');
-                            res.redirect('/login');
-                        }
-                    });
-                }
+                if (err) { return next(err); }
+                // Log in newly registered user automatically
+                req.logIn(user, function (err) {
+                    if(!err){
+                        // TODO: Since this is first login, redirect to account page
+                        req.flash('info', 'You are now registered, and logged in.');
+                        res.redirect('/');
+                    } else {
+                        req.flash('error', 'There was something wrong with your newly created user that prevented us from logging in for you. Please try to login yourself.');
+                        res.redirect('/login');
+                    }
+                });
             });
         }
     } else {
@@ -318,7 +320,7 @@ router.get('/login/reset', function (req, res) { // GET
     res.render('auth/newpassword', {error: error});
 });
 
-router.post('/login/reset', function (req, res) { // POST
+router.post('/login/reset', function (req, res, next) { // POST
     if (req.user) {
         // Check if passwords are equal
         var password1 = req.body.password1.trim();
@@ -350,10 +352,13 @@ router.post('/login/reset', function (req, res) { // POST
         if (req.body.email) {
             var pattern = new RegExp(req.body.email, 'i');
             User.findOne({email: {$regex: pattern}}, function (err, user) {
+                if (err) { return next(err); }
+
                 var code = new PasswordCode();
                 code._id = uuid.v4();
                 code.user = user._id;
                 code.save(function (err) {
+                    if (err) { return next(err); }
                     if (config.auth.smtp.host) {
                         var transporter = nodemailer.createTransport(config.auth.smtp);
                         var mail_options = {

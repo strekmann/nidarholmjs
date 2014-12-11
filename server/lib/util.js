@@ -35,9 +35,8 @@ module.exports.simpledate = function(date) {
 module.exports.shortdate = function (date) {
     if (date) {
         return moment(date).format('ll');
-    } else {
-        return date;
     }
+    return date;
 };
 
 module.exports.longdate = function (date) {
@@ -110,8 +109,8 @@ module.exports.fetch_city = function (postcode, callback) {
 // expects. Input is an array or string of p, g-id or u-id strings.
 // Was trying to do this in pre-save, but mongoose should get the kind of
 // objects it expects, or it gets too magic.
-module.exports.parse_web_permissions = function (permissions, callback) {
-    perm = {public: false, groups: [], users: []};
+module.exports.parse_web_permissions = function (permissions) {
+    var perm = {public: false, groups: [], users: []};
     if (_.isArray(permissions)) {
         _.each(permissions, function (permission) {
             if (permission === "p") {
@@ -129,7 +128,7 @@ module.exports.parse_web_permissions = function (permissions, callback) {
             }
         });
     } else if (_.isString(permissions)) {
-        permission = permissions;
+        var permission = permissions;
         if (permission === "p") {
             perm.public = true;
         } else {

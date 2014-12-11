@@ -1,8 +1,9 @@
-module.exports.memberlistView = function () {
-};
+/*globals $, Ractive*/
+
+module.exports.memberlistView = undefined;
 
 module.exports.editOrganizationView = function () {
-    $("#postcode").keyup(function (event) {
+    $("#postcode").keyup(function () {
         var value = $(this).val();
         value = value.replace(/\D/g,'');
         if (value.length === 4) {
@@ -61,14 +62,12 @@ module.exports.setMusicscoreAdminView = function (gs, ugs, ag, mg) {
     admins.on('setAdminGroup', function (event) {
         event.original.preventDefault();
         admins.setAdminGroup()
-        .then(function (data) {
-        });
+        .then();
     });
 
     admins.on('setMusicscoreadminGroup', function (event) {
         event.original.preventDefault();
         admins.setMusicscoreadminGroup()
-        .then(function (data) {
-        });
+        .then();
     });
 };

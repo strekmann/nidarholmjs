@@ -1,3 +1,5 @@
+/*globals $, _,  Editor*/
+
 var Forum = require('./ractive/forum');
 
 var checkAreaSize = function(openSize) {
@@ -32,7 +34,7 @@ module.exports.threadView = function(post, active_user){
             post: post,
             active_user: active_user,
             permission_options: function () {
-                var active_user = forum.get('active_user');
+                //var active_user = forum.get('active_user');
                 var selected_permissions = forum.get('post.permissions');
 
                 // public
@@ -72,7 +74,7 @@ module.exports.threadView = function(post, active_user){
         }
     });
 
-    forum.on('addReply', function(event){
+    forum.on('addReply', function(){
         var reply = {
             mdtext: $('#reply').val()
         };
@@ -104,13 +106,15 @@ module.exports.threadView = function(post, active_user){
         event.original.preventDefault();
         md_editor.codemirror.save();
 
-        var post = {
+        var p = {
             title: $('#title').val(),
             mdtext: $('#mdtext').val(),
             tags: $('#tags').select2('val'),
             permissions: $('#permissions').val()
         };
-        var promise = forum.updatePost(post);
+        var promise = forum.updatePost(p);
+
+        /*jslint unparam: true*/
         promise.then(function (data) {
             forum.set('post', data);
             forum.toggle('is_editing');
@@ -119,11 +123,8 @@ module.exports.threadView = function(post, active_user){
         });
     });
 
-    forum.on('toggleEdit', function (event) {
+    forum.on('toggleEdit', function () {
         this.toggle('is_editing');
-        var format = function (item) {
-            return item.name;
-        };
         setTimeout(function(){
             if (forum.get('is_editing')) {
                 $('.chosen-permissions').chosen({width: '100%'});
@@ -148,8 +149,11 @@ module.exports.threadView = function(post, active_user){
             _id: event.context._id,
             mdtext: $(event.node).find('.mdtext').val()
         };
+
         var promise = forum.updateReply(reply);
-        promise.then(function (data) {
+
+        /*jslint unparam: true*/
+        promise.then(function () {
             $(event.node).siblings('.content').show();
             $(event.node).hide();
         }, function(xhr, status, err){
@@ -173,6 +177,8 @@ module.exports.threadView = function(post, active_user){
             mdtext: $(event.node).find('.mdtext').val()
         };
         var promise = forum.updateComment(replyid, comment);
+
+        /*jslint unparam: true*/
         promise.then(function (data) {
             $(event.node).siblings('.content').show();
             $(event.node).hide();
@@ -211,6 +217,8 @@ module.exports.forumView = function (posts) {
         event.context.post.tags = $('#tags').select2('val');
 
         var promise = forum.addPost(event.context.post);
+
+        /*jslint unparam: true*/
         promise.then(function (data) {
             forum.data.posts.unshift(data);
             forum.toggle('expanded');
@@ -223,6 +231,7 @@ module.exports.forumView = function (posts) {
         event.original.preventDefault();
         var promise = forum.deletePost(event.context);
 
+        /*jslint unparam: true*/
         promise.then(function(data){
             var index = event.keypath.split('.').pop();
             forum.data.posts.splice(index, 1);
@@ -236,7 +245,7 @@ module.exports.forumView = function (posts) {
         forum.fetchPosts();
     });
 
-    forum.on('toggleNew', function(event){
+    forum.on('toggleNew', function(){
         this.toggle('expanded');
 
         setTimeout(function(){

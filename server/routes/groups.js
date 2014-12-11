@@ -1,3 +1,5 @@
+/*jslint todo: true*/
+
 var express = require('express'),
     router = express.Router(),
     _ = require('underscore'),
@@ -9,8 +11,6 @@ var express = require('express'),
     Organization = require('../models').Organization;
 
 router.get('/', ensureAuthenticated, function (req, res, next) {
-    var name = req.body.name;
-
     Organization.findById(req.organization._id)
     .populate('instrument_groups', 'name')
     .exec(function (err, organization) {
@@ -55,19 +55,20 @@ router.get('/:id', function (req, res, next){
     });
 });
 
-router.post('/', is_admin, function (req, res) {
+router.post('/', is_admin, function (req, res, next) {
     // dumb add group
     var name = req.body.name;
 
     Organization.findById(req.organization._id, function (err, org) {
-        if (err) { throw err; }
+        if (err) { return next(err); }
         Group
         .findOne({name: name, organization: org})
         .select('name')
         .exec(function (err, group) {
-            if (err) { throw err; }
+            if (err) { return next(err); }
             if (!group) {
                 Group.create({_id: shortid(), name: name, organization: org}, function (err, group) {
+                    if (err) { return next(err); }
                     res.json(group);
                 });
             }
@@ -85,26 +86,27 @@ router.post('/:id/users', is_admin, function (req, res, next) {
     User.findOne({username: username})
         .select('username name groups')
         .exec(function (err, user) {
-        if (err) { throw err; }
-        Group.findById(groupid, function (err, group) {
             if (err) { return next(err); }
-            if (!group) { return next(new Error("Unrecognized group")); }
-            var already = _.find(user.groups, function (g) {
-                return groupid === g.toString();
-            });
-            if (already) {
-                res.sendStatus(404);
-            } else {
-                user.groups.push(group);
-                user.save(function (err) {
-                    if (err) { throw err; }
-                    group.members.push({user: user._id});
-                    group.save(function (err) {
-                        res.json(_.omit(user, 'groups'));
-                    });
+            Group.findById(groupid, function (err, group) {
+                if (err) { return next(err); }
+                if (!group) { return next(new Error("Unrecognized group")); }
+                var already = _.find(user.groups, function (g) {
+                    return groupid === g.toString();
                 });
-            }
-        });
+                if (already) {
+                    res.sendStatus(404);
+                } else {
+                    user.groups.push(group);
+                    user.save(function (err) {
+                        if (err) { throw err; }
+                        group.members.push({user: user._id});
+                        group.save(function (err) {
+                            if (err) { return next(err); }
+                            res.json(_.omit(user, 'groups'));
+                        });
+                    });
+                }
+            });
     });
 });
 

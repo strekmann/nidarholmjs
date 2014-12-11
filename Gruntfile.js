@@ -1,15 +1,31 @@
 module.exports = function(grunt) {
     grunt.initConfig({
         jshint: {
-            files: ['client/js/**/*.js', 'server/**/*.js', 'test/*.js'],
-            options: {
-                curly: true,
-                eqeqeq: true,
-                eqnull: true,
-                browser: true,
-                ignores: ['public/**/*.js'],
-                globals: {
-                    jQuery: true
+            server: {
+                src: ['server/**/*.js'],
+                options: {
+                    curly: true,
+                    undef: true,
+                    unused: true,
+                    eqeqeq: true,
+                    eqnull: true,
+                    node: true
+                }
+            },
+            client: {
+                src: ['client/js/**/*.js'],
+                options: {
+                    curly: true,
+                    undef: true,
+                    unused: 'vars',
+                    eqeqeq: true,
+                    eqnull: true,
+                    browser: true,
+                    globals: {
+                        module: false,
+                        require: false,
+                        console: false
+                    }
                 }
             }
         },

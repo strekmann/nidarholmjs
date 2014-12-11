@@ -1,8 +1,11 @@
+/*jslint todo: true*/
+/*globals $, _, window, document, Ractive, moment, marked, Dropzone, flash, Editor, uslug*/
+
 // from http://stackoverflow.com/questions/901115/how-can-i-get-query-string-values-in-javascript
 function getParameterByName(name) {
     name = name.replace(/[\[]/, "\\[").replace(/[\]]/, "\\]");
     var regex = new RegExp("[\\?&]" + name + "=([^&#]*)"),
-        results = regex.exec(location.search);
+        results = regex.exec(window.location.search);
     return results === null ? "" : decodeURIComponent(results[1].replace(/\+/g, " "));
 }
 
@@ -85,9 +88,7 @@ var Project = Ractive.extend({
             if(basename.length > length + 3) {
                 return basename.slice(0, length) + "…" + extension;
             }
-            else {
-                return filename;
-            }
+            return filename;
         },
         ago: function (date) {
             if (date) {
@@ -126,43 +127,33 @@ var Project = Ractive.extend({
                     if (startm.isSame(startd) && endm.isSame(endd)) {
                         return '<time class="start" datetime="' + startm.format() + '">' + startm.format('LL') + '</time>';
                     }
-                    else {
-                        return '<time class="start" datetime="' + startm.format() + '">' + startm.format('LLL') + '</time> – <time class="end" datetime="' + endm.format() + '">' + endm.format('LT') + '</time>';
-                    }
+                    return '<time class="start" datetime="' + startm.format() + '">' + startm.format('LLL') + '</time> – <time class="end" datetime="' + endm.format() + '">' + endm.format('LT') + '</time>';
                 }
-                else {
-                    //console.log(startm, startd, startm.isSame(startd));
-                    //console.log(endm, endd, endm.isSame(endd));
-                    // saving dates should always set startOf('day') AND later wholeday
-                    if (startm.isSame(startd) && endm.isSame(endd)) {
-                        return '<time class="start" datetime="' + startm.format() + '">' + startm.format('LL') + '</time> – <time class="end" datetime="' + endm.format() + '">' + endm.format('LL') + '</time>';
-                    }
-                    else {
-                        return '<time class="start" datetime="' + startm.format() + '">' + startm.format('LLL') + '</time> – <time class="end" datetime="' + endm.format() + '">' + endm.format('LLL') + '</time>';
-                    }
+                //console.log(startm, startd, startm.isSame(startd));
+                //console.log(endm, endd, endm.isSame(endd));
+                // saving dates should always set startOf('day') AND later wholeday
+                if (startm.isSame(startd) && endm.isSame(endd)) {
+                    return '<time class="start" datetime="' + startm.format() + '">' + startm.format('LL') + '</time> – <time class="end" datetime="' + endm.format() + '">' + endm.format('LL') + '</time>';
                 }
+                return '<time class="start" datetime="' + startm.format() + '">' + startm.format('LLL') + '</time> – <time class="end" datetime="' + endm.format() + '">' + endm.format('LLL') + '</time>';
             }
-            else if (start) {
+            if (start) {
                 // only start
                 startm = moment(start);
                 startd = moment(startm).startOf('day');
                 if (startm.isSame(startd, 'second')) {
                     return '<time datetime="' + startm.format() + '">' + startm.format('LL') + '</time>';
                 }
-                else {
-                    return '<time datetime="' + startm.format() + '">' + startm.format('LLL') + '</time>';
-                }
+                return '<time datetime="' + startm.format() + '">' + startm.format('LLL') + '</time>';
             }
-            else if (end) {
+            if (end) {
                 // only end
                 endm = moment(end);
                 endd = moment(endm).startOf('day');
                 if (endm.isSame(endd, 'second')) {
                     return '<time datetime="' + endm.format() + '">' + endm.format('LL') + '</time>';
                 }
-                else {
-                    return '<time datetime="' + endm.format() + '">' + endm.format('LLL') + '</time>';
-                }
+                return '<time datetime="' + endm.format() + '">' + endm.format('LLL') + '</time>';
             }
         },
         permission_options: function () {
@@ -279,14 +270,14 @@ var Project = Ractive.extend({
             data: _.pick(event, 'title', 'mdtext', 'start', 'end', 'permissions', 'location', 'tags')
         });
     },
-    deleteEvent: function (event) {
+    deleteEvent: function () {
         return $.ajax({
             type: 'DELETE',
             url: window.location.href,
             dataType: 'json'
         });
     },
-    createPiece: function (piece, project) {
+    createPiece: function (piece) {
         piece.project = this.get('project._id');
         return $.ajax({
             type: 'POST',
@@ -333,6 +324,7 @@ var Project = Ractive.extend({
               clickable: clickable_element_id
             });
 
+            /*jslint unparam: true*/
             uploadzone.on("success", function (frontend_file, backend_file) {
                 if (backend_file.is_image) {
                     project.get('images').push(backend_file);
@@ -351,7 +343,7 @@ var setup_editor = function (element_id) {
 };
 
 module.exports.projectListView = function (projects, previous_projects) {
-    var internal_editor, uploadzone;
+    var internal_editor;
 
     var projectlist = new Project({
         el: '#projects',
@@ -369,7 +361,7 @@ module.exports.projectListView = function (projects, previous_projects) {
         projectlist.set('project.tag', uslug(node.val()));
     });
 
-    projectlist.on('toggleNew', function (event) {
+    projectlist.on('toggleNew', function () {
         this.toggle('expanded');
         setTimeout(function(){
             if (projectlist.get('expanded')) {
@@ -391,6 +383,7 @@ module.exports.projectListView = function (projects, previous_projects) {
         event.context.project.private_mdtext = $('#private_mdtext').val();
         event.context.project.permissions = $('#permissions').val();
 
+        /*jslint unparam: true*/
         projectlist.createProject(event.context.project)
         .then(function (data) {
             projectlist.toggle('expanded');
@@ -407,7 +400,7 @@ module.exports.projectListView = function (projects, previous_projects) {
         projectlist.fetchProjects()
         .then(function(data){
             if (data.length === 0){
-                self.set('gotall', true);
+                projectlist.set('gotall', true);
             }
             projectlist.get('previous_projects').push.apply(projectlist.get('previous_projects'), data);
         });
@@ -454,8 +447,24 @@ module.exports.projectDetailView = function (p, events, posts, files) {
     }
     var project_internal_editor,
         project_external_editor,
-        post_editor,
-        event_editor;
+        post_editor;
+
+    // Project section
+    var projects = new Project({
+            el: '#project',
+            template: '#template',
+            restAPI: '/projects/' + p._id,
+            data: {
+                project: p,
+                events: upcoming,
+                finished_events: finished,
+                posts: posts,
+                images: images,
+                non_images: non_images,
+                music: p.music,
+                description: 'internal'
+            }
+        });
 
     // Project modal section
     var projectmodal = new Ractive({
@@ -481,50 +490,6 @@ module.exports.projectDetailView = function (p, events, posts, files) {
                 }
                 return ret;
             }
-        }
-    });
-
-    projectmodal.on('close', function (event) {
-        event.original.preventDefault();
-        $('#project-modal').foundation('reveal', 'close');
-    });
-
-    projectmodal.on('updateProject', function (event) {
-        event.original.preventDefault();
-        if (project_internal_editor) {
-            event.context.project.private_mdtext = project_internal_editor.codemirror.getValue() || event.context.project.private_mdtext;
-        }
-        if (project_external_editor) {
-            event.context.project.public_mdtext = project_external_editor.codemirror.getValue() || event.context.project.public_mdtext;
-        }
-        console.log(event.context);
-        event.context.project.permissions = $('#permissions').val();
-
-        projects.updateProject(event.context.project)
-        .then(function(data) {
-            // ok
-            projects.set('project', data);
-            $('#project-modal').foundation('reveal', 'close');
-        }, function (xhr, status, err) {
-            eventmodal.set('error', err.responseJSON.error);
-        });
-    });
-
-    projectmodal.on('setInternal', function (event) {
-        event.original.preventDefault();
-        projectmodal.set('description', 'internal');
-        project_internal_editor = setup_editor('#private_mdtext');
-    });
-
-    projectmodal.on('setExternal', function (event) {
-        event.original.preventDefault();
-        projectmodal.set('description', 'external');
-        project_external_editor = setup_editor('#public_mdtext');
-    });
-
-    $(document).on('opened.fndtn.reveal', '#project-modal[data-reveal]', function () {
-        if (!project_internal_editor) {
-            project_internal_editor = setup_editor('#private_mdtext');
         }
     });
 
@@ -560,6 +525,52 @@ module.exports.projectDetailView = function (p, events, posts, files) {
         }
     });
 
+    projectmodal.on('close', function (event) {
+        event.original.preventDefault();
+        $('#project-modal').foundation('reveal', 'close');
+    });
+
+    projectmodal.on('updateProject', function (event) {
+        event.original.preventDefault();
+        if (project_internal_editor) {
+            event.context.project.private_mdtext = project_internal_editor.codemirror.getValue() || event.context.project.private_mdtext;
+        }
+        if (project_external_editor) {
+            event.context.project.public_mdtext = project_external_editor.codemirror.getValue() || event.context.project.public_mdtext;
+        }
+        console.log(event.context);
+        event.context.project.permissions = $('#permissions').val();
+
+        /*jslint unparam: true*/
+        projects.updateProject(event.context.project)
+        .then(function(data) {
+            // ok
+            projects.set('project', data);
+            $('#project-modal').foundation('reveal', 'close');
+        }, function (xhr, status, err) {
+            eventmodal.set('error', err.responseJSON.error);
+        });
+    });
+
+    projectmodal.on('setInternal', function (event) {
+        event.original.preventDefault();
+        projectmodal.set('description', 'internal');
+        project_internal_editor = setup_editor('#private_mdtext');
+    });
+
+    projectmodal.on('setExternal', function (event) {
+        event.original.preventDefault();
+        projectmodal.set('description', 'external');
+        project_external_editor = setup_editor('#public_mdtext');
+    });
+
+    $(document).on('opened.fndtn.reveal', '#project-modal[data-reveal]', function () {
+        if (!project_internal_editor) {
+            project_internal_editor = setup_editor('#private_mdtext');
+        }
+    });
+
+
     eventmodal.on('close', function (event) {
         event.original.preventDefault();
         $('#event-modal').foundation('reveal', 'close');
@@ -594,6 +605,7 @@ module.exports.projectDetailView = function (p, events, posts, files) {
         post_editor.codemirror.save(); //toTextArea();
         event.context.post.mdtext = $('#post_mdtext').val();
 
+        /*jslint unparam: true*/
         projects.createPost(event.context.post, '/projects/' + projects.get('project._id') + '/forum')
         .then(function (data) {
             flash.data.success.push(data.title + ' ble lagt til i forum');
@@ -662,23 +674,6 @@ module.exports.projectDetailView = function (p, events, posts, files) {
         });
     });
 
-    // Project section
-    var projects = new Project({
-            el: '#project',
-            template: '#template',
-            restAPI: '/projects/' + p._id,
-            data: {
-                project: p,
-                events: upcoming,
-                finished_events: finished,
-                posts: posts,
-                images: images,
-                non_images: non_images,
-                music: p.music,
-                description: 'internal'
-            }
-        });
-
     projects.on('editProject', function (event) {
         var project = _.clone(event.context.project);
         projectmodal.set('project', project);
@@ -708,7 +703,7 @@ module.exports.projectDetailView = function (p, events, posts, files) {
         projects.toggle('expanded_finished');
     });
 
-    projects.on('newEvent', function (event) {
+    projects.on('newEvent', function () {
         eventmodal.set('event', {});
         eventmodal.set('error', undefined);
         $('#event-modal').foundation('reveal', 'open');
@@ -746,13 +741,13 @@ module.exports.projectDetailView = function (p, events, posts, files) {
         projects.toggle(event.keypath + '.toggled');
     });
 
-    projects.on('newPost', function (event) {
+    projects.on('newPost', function () {
         postmodal.set('post', {});
         postmodal.set('error', undefined);
         $('#post-modal').foundation('reveal', 'open');
     });
 
-    projects.on('choosePoster', function (event) {
+    projects.on('choosePoster', function () {
         postermodal.set('poster', undefined);
         postermodal.set('project', projects.get('project'));
         postermodal.set('images', projects.get('images'));
@@ -761,7 +756,7 @@ module.exports.projectDetailView = function (p, events, posts, files) {
         projects.setup_uploadzone('#poster_upload', '#add_poster');
     });
 
-    projects.on('newPiece', function (event) {
+    projects.on('newPiece', function () {
         musicmodal.set('piece', {});
         musicmodal.set('error', undefined);
         $('#music-modal').foundation('reveal', 'open');
@@ -772,12 +767,12 @@ module.exports.projectDetailView = function (p, events, posts, files) {
                 url: "/music",
                 dataType: "json",
                 quietMillis: 100,
-                data: function (term, page) {
+                data: function (term) { //, page
                     return {
                         q: term
                     };
                 },
-                results: function (data, page) {
+                results: function (data) { //, page
                     return {results: _.map(data.pieces, function (piece) {
                         return {id: piece._id, text: piece.title};
                     })};
@@ -798,7 +793,7 @@ module.exports.projectDetailView = function (p, events, posts, files) {
         var index = event.keypath.split(".").pop();
 
         projects.removePiece(event.context)
-        .then(function (data) {
+        .then(function () {
             projects.get('music').splice(index, 1);
         });
     });
@@ -882,7 +877,7 @@ module.exports.eventView = function (event, active_user) {
         }),
         editor;
 
-    project.on('toggleEdit', function (event) {
+    project.on('toggleEdit', function () {
         this.toggle('expanded');
         setTimeout(function(){
             if (project.get('expanded')) {
@@ -921,6 +916,7 @@ module.exports.eventView = function (event, active_user) {
         event.context.event.permissions = $('#permissions').val();
         event.context.event.tags = $('#tags').select2('val');
 
+        /*jslint unparam: true*/
         project.updateEvent(event.context.event)
         .then(function (data) {
             project.fire('toggleEdit');
@@ -941,7 +937,7 @@ module.exports.eventView = function (event, active_user) {
     });
 };
 
-module.exports.musicView = function (p, q) {
+module.exports.musicView = function (p) {
     var project = new Project({
         el: '#music',
         template: '#template',
@@ -964,7 +960,7 @@ module.exports.musicView = function (p, q) {
                 var pattern = new RegExp(word, 'i');
 
                 var pieces = _.filter(all, function (piece) {
-                    if (piece.title.match(pattern) || piece.subtitle && piece.subtitle.match(pattern)){
+                    if (piece.title.match(pattern) || (piece.subtitle && piece.subtitle.match(pattern))){
                         return true;
                     }
                     var composermatch = _.filter(piece.composers, function(composer) {
@@ -1014,13 +1010,14 @@ module.exports.piece = function (p, g, us) {
     });
 
     Dropzone.autoDiscover = false;
+    /*jslint unparam: true*/
     $('.sigdrop').each(function (count, el) {
         var group = $(el).find('input[name=group]').val();
         var id = '#' + $(el).attr('id');
         var drop = new Dropzone(id, {
             url: '/music/' + piece.get('piece._id') + '/scores'
         });
-        var scores = piece.get('scores')[group];
+        scores = piece.get('scores')[group];
         _.each(scores, function (file) {
             var mockfile = {
                 name: file.filename

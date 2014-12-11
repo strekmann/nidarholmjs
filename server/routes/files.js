@@ -4,7 +4,6 @@ var _ = require('underscore'),
     path = require('path'),
     fs = require('fs'),
     moment= require('moment'),
-    mongoose = require('mongoose'),
     util = require('../lib/util'),
     config = require('../settings'),
     is_member = require('../lib/middleware').is_member,
@@ -114,6 +113,7 @@ router.post('/upload', is_member, function (req, res) {
             modified: {$gt: moment(file.created).subtract(10, 'minutes').toDate()},
             project: {$exists: false}
         }, function (err, activity) {
+            if (err) { console.error(err); }
 
             if (!activity) {
                 activity = new Activity();
@@ -159,7 +159,9 @@ router.post('/upload', is_member, function (req, res) {
                 }
             }
             activity.markModified('content');
-            activity.save(function (err) {});
+            activity.save(function (err) {
+                if (err) { console.error(err); }
+            });
         });
 
         res.format({
@@ -207,7 +209,7 @@ router.put('/:id', is_member, function (req, res, next) {
         file.save(function (err) {
             if (err) { return next(err); }
 
-            Activity.update({content_ids: id}, {$set: {tags: tags}, title: filename}, function (err, status) {
+            Activity.update({content_ids: id}, {$set: {tags: tags}, title: filename}, function (err) {
                 if (err) { console.error(err); }
             });
             res.json(file);
@@ -220,12 +222,16 @@ router.delete('/:id', function (req, res, next) {
 
     File.findByIdAndRemove(id, function (err, file) {
         if (err) { return next(err); }
-        Activity.findOneAndRemove({content_type: 'upload', content_id: file._id}, function (err, activity) {});
+        Activity.findOneAndRemove({
+            content_type: 'upload', content_id: file._id
+        }, function (err) {
+            if (err) { console.error(err); }
+        });
         res.json(file);
     });
 });
 
-router.get('/:id', function (req, res) {
+router.get('/:id', function (req, res, next) {
     var query = File.findById(req.params.id);
     if (req.user) {
         query = query.or([
@@ -239,6 +245,7 @@ router.get('/:id', function (req, res) {
         query = query.where('permissions.public', true);
     }
     query.populate('creator', 'name username').exec(function (err, file) {
+        if (err) { return next(err); }
         if (!file) {
             res.send(404, 'Not found');
         }
@@ -250,7 +257,7 @@ router.get('/:id', function (req, res) {
 
 router.get('/th/:path/:filename', function (req, res) {
     var filepath = req.params.path,
-        filename = req.params.filename,
+        //filename = req.params.filename,
         fullpath = path.join(config.files.thumbnail_prefix, filepath.substr(0,2), filepath.substr(2,2), filepath);
 
     fs.exists(fullpath, function (exists) {
@@ -265,7 +272,7 @@ router.get('/th/:path/:filename', function (req, res) {
 
 router.get('/n/:path/:filename', function (req, res) {
     var filepath = req.params.path,
-        filename = req.params.filename,
+        //filename = req.params.filename,
         fullpath = path.join(config.files.normal_prefix, filepath.substr(0,2), filepath.substr(2,2), filepath);
 
     fs.exists(fullpath, function (exists) {
@@ -280,7 +287,7 @@ router.get('/n/:path/:filename', function (req, res) {
 
 router.get('/l/:path/:filename', function (req, res) {
     var filepath = req.params.path,
-        filename = req.params.filename,
+        //filename = req.params.filename,
         fullpath = path.join(config.files.large_prefix, filepath.substr(0,2), filepath.substr(2,2), filepath);
 
     fs.exists(fullpath, function (exists) {
@@ -295,7 +302,7 @@ router.get('/l/:path/:filename', function (req, res) {
 
 router.get('/:path/:filename', function (req, res) {
     var filepath = req.params.path,
-        filename = req.params.filename,
+        //filename = req.params.filename,
         fullpath = path.join(config.files.raw_prefix, filepath.substr(0,2), filepath.substr(2,2), filepath);
 
     fs.exists(fullpath, function (exists) {

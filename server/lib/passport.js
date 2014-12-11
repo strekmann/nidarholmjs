@@ -22,7 +22,7 @@ var fetchUser = function (user_id, callback) {
     });
 };
 
-module.exports = function(app){
+module.exports = function(){
     passport.serializeUser(function(user, done) {
         done(null, user._id);
     });
@@ -47,9 +47,8 @@ module.exports = function(app){
             hashedPassword.update(password);
             if (user.password === hashedPassword.digest('hex')) {
                 return done(null, user);
-            } else {
-                return done(null, false, {message: 'Galt passord'});
             }
+            return done(null, false, {message: 'Galt passord'});
         });
     }));
 
@@ -69,6 +68,7 @@ module.exports = function(app){
         });
     }));
 
+    /*jslint unparam: true*/
     passport.use(new FacebookStrategy({
         clientID: config.auth.facebook.clientId,
         clientSecret: config.auth.facebook.clientSecret,

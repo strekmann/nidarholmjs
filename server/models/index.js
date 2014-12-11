@@ -1,5 +1,4 @@
 var mongoose = require('mongoose'),
-    config = require('../settings'),
     marked = require('marked');
 
 var PasswordCode = new mongoose.Schema({

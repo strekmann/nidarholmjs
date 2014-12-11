@@ -1,3 +1,7 @@
+/*globals $, _, window, Ractive, marked, moment*/
+
+/*jslint unparam: true */
+
 var Forum = Ractive.extend({
     noIntro: true, // do not slide on page load
 
@@ -31,8 +35,7 @@ var Forum = Ractive.extend({
     },
 
     deletePost: function(post){
-        var self = this,
-            url = [this.restAPI, post._id],
+        var url = [this.restAPI, post._id],
             promise = $.ajax({
                 url: url.join('/'),
                 type: 'DELETE'
@@ -170,7 +173,7 @@ var Forum = Ractive.extend({
         }
 
         var self = this,
-            url = _.union([this.restAPI], tags, this.data.tags);
+            url = _.union([this.restAPI], tags, this.data.tags),
             promise = $.ajax({
                 url: url.join('/'),
                 type: 'GET',

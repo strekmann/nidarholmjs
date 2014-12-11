@@ -21,14 +21,14 @@ var get_member_group = function () {
     var promise = new mongoose.Promise();
 
     Group.findOne({name: 'Medlemmer'}, function (err, group) {
-        if (err) { next(err); }
+        if (err) { throw err; }
 
         if (!group) {
             // testing
             group = new Group();
             group._id = 'medlemmer';
             group.name = 'Medlemmer';
-            group.save(function (err) {
+            group.save(function () {
                 promise.fulfill(group);
             });
         }
@@ -52,6 +52,7 @@ app.use(app.passport.authenticate('remember-me'));
 app.use(function (req, res, next) {
     if (settings.fake_user_username) {
         User.findOne({username: settings.fake_user_username}, function (err, user) {
+            if (err) { return next(err); }
             if (user) {
                 req.user = res.locals.user = user;
             }
@@ -86,7 +87,7 @@ app.use(function (req, res, next) {
     .populate('member_group')
     .populate('administration_group') // no need to select fields, ids only
     .exec(function (err, organization) {
-        if (err) { next(err); }
+        if (err) { return next(err); }
         if (organization) {
             req.organization = res.locals.organization = organization;
             // is it a hack?
@@ -108,8 +109,10 @@ app.use(function (req, res, next) {
                 organization.member_group = group;
 
                 organization.save(function (err) {
+                    if (err) { return next(err); }
                     group.organization = organization;
                     group.save(function (err) {
+                        if (err) { return next(err); }
                         req.organization = res.locals.organization = organization;
                         if (!organization.description) {
                             organization.description = {};
@@ -130,6 +133,7 @@ app.use(function (req, res, next) {
 app.use(function (req, res, next) {
     if (req.user) {
         req.user.populate('groups', 'name', function (err, user) {
+            if (err) { return next(err); }
             // or do we need the name or organization of the groups? At least name
             req.user = res.locals.active_user = user;
             req.is_member = res.locals.is_member = _.some(req.organization.member_group.members, function (member) {
@@ -138,7 +142,6 @@ app.use(function (req, res, next) {
             req.is_admin = res.locals.is_admin = _.some(req.organization.administration_group.members, function (member) {
                 return member.user === req.user._id;
             });
-            // TODO: User redis for caching
             //User.find().select('username name').exec(function (err, all_users) {
                 //if (err) { next(err); }
                 //var indexed_users = _.indexBy(all_users, '_id');
@@ -156,10 +159,10 @@ app.use(function (req, res, next) {
                 //req.user.friends = _.map(_.compact(groups_of_users), function (user_id) {
                     //return indexed_users[user_id];
                 //});
-                User.populate(req.user, 'friends', function (err, user) {
-                    if (err) { next(err); }
-                    next();
-                });
+                //User.populate(req.user, 'friends', function (err, user) {
+                    //if (err) { next(err); }
+            next();
+                //});
             //});
         });
     } else {
@@ -253,11 +256,14 @@ app.post('/projects/:id/files', project_routes.project_create_file);
 app.put('/projects/:id/poster', project_routes.set_poster);
 app.put('/projects/:project_id/music', project_routes.add_piece);
 app.delete('/projects/:project_id/music', project_routes.remove_piece);
+/*jslint unparam: true*/
 app.get('/foundation', function(req, res){
     res.render('foundation');
 });
 
 // 500 status
+/*jshint unused: vars*/
+/*jslint unparam: true*/
 app.use(function(err, req, res, next){
     console.error("ERR:", err.message, err.stack);
     res.status(500);
@@ -279,7 +285,7 @@ app.use(function(err, req, res, next){
 });
 
 // 404 status
-app.use(function(req, res, next){
+app.use(function(req, res){
     res.status(404);
     res.format({
         html: function(){

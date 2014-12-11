@@ -1,3 +1,5 @@
+/*globals $, _, Ractive*/
+
 var Register = Ractive.extend({
     checkEmail: function (email) {
         return $.ajax({
@@ -41,6 +43,7 @@ module.exports = {
             }, []);
             return activity;
         });
+        /*
         var ractive_activities = new Ractive({
             el: '#activities',
             template: '#activity-template',
@@ -57,6 +60,7 @@ module.exports = {
                 }
             }
         });
+        */
 
     },
 
@@ -81,7 +85,7 @@ module.exports = {
             .then(function (data) {
                 if (data.status) {
                     ractive.sendResetPasswordEmail(event.context.email)
-                    .then(function (data) {
+                    .then(function () {
                         resetpasswordmodal.set('warning', "Du finnes allerede i brukerdatabasen. En epost for å nullstille passordet har blitt sendt.");
                         $('#reset-password-modal').foundation('reveal', 'open');
                     }, function (error) {

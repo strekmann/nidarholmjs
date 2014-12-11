@@ -1,8 +1,4 @@
-var mongoose = require('mongoose'),
-    shortid = require('short-mongo-id'),
-    User = require('../models').User,
-    UserSchema = require('../models').schema.user,
-    GroupSchema = require('../models').schema.group;
+var mongoose = require('mongoose');
 
 var ForumCommentSchema = new mongoose.Schema({
     created: {type: Date, default: Date.now},

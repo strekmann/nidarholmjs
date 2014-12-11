@@ -1,9 +1,7 @@
 var express = require('express'),
     router = express.Router(),
-    _ = require('underscore'),
     moment = require('moment'),
-    User = require('../models').User,
-    Project = require('../models/projects').Project,
+    util = require('../lib/util'),
     CalendarEvent = require('../models/projects').Event;
 
 router.get('/', function (req, res, next) {
@@ -13,7 +11,8 @@ router.get('/', function (req, res, next) {
         startyear,
         endyear,
         start,
-        end;
+        end,
+        query;
 
     y = parseInt(y, 10);
 
@@ -29,9 +28,8 @@ router.get('/', function (req, res, next) {
     } else {
         start = moment().month(7).date(1).year(startyear).startOf('day');
     }
-     end = moment().month(7).date(1).year(endyear).startOf('day');
+    end = moment().month(7).date(1).year(endyear).startOf('day');
 
-    var query;
     if (req.user) {
         query = CalendarEvent.find().or([
             {creator: req.user},
@@ -39,8 +37,7 @@ router.get('/', function (req, res, next) {
             {'permissions.users': req.user._id},
             {'permissions.groups': { $in: req.user.groups }}
         ]);
-    }
-    else {
+    } else {
         query = CalendarEvent.find({'permissions.public': true});
     }
     query = query
@@ -48,9 +45,7 @@ router.get('/', function (req, res, next) {
         .sort('start')
         .populate('creator', 'username name');
     query.exec(function (err, events) {
-        if (err) {
-            throw err;
-        }
+        if (err) { return next(err); }
         res.format({
             html: function () {
                 res.render('projects/events', {events: events, meta: {title: "Aktiviteter"}});
@@ -66,24 +61,20 @@ router.get('/:id', function (req, res, next) {
     var query;
     if (req.user) {
         query = CalendarEvent.findById(req.params.id)
-        .or([
-            {creator: req.user._id},
-            {'permissions.public': true},
-            {'permissions.users': req.user._id},
-            {'permissions.groups': { $in: req.user.groups }}
-        ]);
-    }
-    else {
+            .or([
+                {creator: req.user._id},
+                {'permissions.public': true},
+                {'permissions.users': req.user._id},
+                {'permissions.groups': { $in: req.user.groups }}
+            ]);
+    } else {
         query = CalendarEvent.findById(req.params.id).where({'permissions.public': true});
     }
     query.exec(function (err, event) {
-        if (err) {
-            return next(err);
-        }
+        if (err) { return next(err); }
         if (!event) {
             res.send(404, 'Not found');
-        }
-        else {
+        } else {
             res.format({
                 html: function () {
                     res.render('projects/event', {event: event, meta: {title: event.title}});
@@ -95,37 +86,35 @@ router.get('/:id', function (req, res, next) {
 
 router.put('/:id', function (req, res, next) {
     CalendarEvent.findById(req.params.id)
-    .or([
-        {creator: req.user._id},
-        {'permissions.public': true},
-        {'permissions.users': req.user._id},
-        {'permissions.groups': { $in: req.user.groups }}
-    ]).exec(function (err, event) {
-        if (err) {
-            return next(err);
-        }
-        if (!event) {
-            res.send(400, 'Not found');
-        }
-        else {
-            event.title = req.body.title;
-            event.mdtext = req.body.mdtext;
-            event.permissions = util.parse_web_permissions(req.body.permissions);
-            event.tags = req.body.tags;
-            event.start = req.body.start;
-            event.end = req.body.end;
-            event.modified = moment();
-            event.location = req.body.location;
-            event.save(function (err) {
-                if (err) {
-                    res.status(400).json(err);
-                }
-                else {
-                    res.json(event);
-                }
-            });
-        }
-    });
+        .or([
+            {creator: req.user._id},
+            {'permissions.public': true},
+            {'permissions.users': req.user._id},
+            {'permissions.groups': { $in: req.user.groups }}
+        ]).exec(function (err, event) {
+            if (err) { return next(err); }
+            if (!event) {
+                res.send(400, 'Not found');
+            }
+            else {
+                event.title = req.body.title;
+                event.mdtext = req.body.mdtext;
+                event.permissions = util.parse_web_permissions(req.body.permissions);
+                event.tags = req.body.tags;
+                event.start = req.body.start;
+                event.end = req.body.end;
+                event.modified = moment();
+                event.location = req.body.location;
+                event.save(function (err) {
+                    if (err) {
+                        res.status(400).json(err);
+                    }
+                    else {
+                        res.json(event);
+                    }
+                });
+            }
+        });
 });
 
 router.delete('/:id', function (req, res, next) {

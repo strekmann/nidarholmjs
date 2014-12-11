@@ -5,7 +5,6 @@ var express = require('express'),
     util = require('../lib/util'),
     is_member = require('../lib/middleware').is_member,
     is_musicscoreadmin = require('../lib/middleware').is_musicscoreadmin,
-    User = require('../models').User,
     Project = require('../models/projects').Project,
     Piece = require('../models/projects').Piece;
 
@@ -17,6 +16,7 @@ router.get('/', is_member, function (req, res, next) {
         piece_query = Piece.find();
     }
     piece_query.sort('title').exec(function (err, pieces) {
+        if (err) { return next(err); }
         res.format({
             html: function () {
                 res.render('projects/music', {pieces: pieces, meta: {title: 'Notearkivet'}});
@@ -34,6 +34,7 @@ router.get('/:id', is_member, is_musicscoreadmin, function (req, res, next) {
     .exec(function (err, piece) {
         if (err) { return next(err); }
         req.organization.populate('instrument_groups', 'name', function (err, organization) {
+            if (err) { return next(err); }
             var groups = _.map(organization.instrument_groups, function (group) {
                 var g = group.toObject();
                 var scores = _.filter(piece.scores, function (score) {
@@ -47,19 +48,17 @@ router.get('/:id', is_member, is_musicscoreadmin, function (req, res, next) {
                 if (file.permissions.public) {
                     return true;
                 }
-                else if (_.contains(file.permissions.users, req.user._id)) {
+                if (_.contains(file.permissions.users, req.user._id)) {
                     return true;
                 }
-                else {
-                    var allowed = false;
-                    _.each(req.user.groups, function (group) {
-                        var g = group._id;
-                        if(_.contains(file.permissions.groups, g)) {
-                            allowed = true;
-                        }
-                    });
-                    return allowed;
-                }
+                var allowed = false;
+                _.each(req.user.groups, function (group) {
+                    var g = group._id;
+                    if(_.contains(file.permissions.groups, g)) {
+                        allowed = true;
+                    }
+                });
+                return allowed;
             });
             //console.log(user_scores);
             res.render('projects/piece', {piece: piece, groups: groups, user_scores: user_scores});
@@ -87,6 +86,7 @@ router.post('/', function (req, res, next) {
             if (err) { return next(err); }
             if (req.body.project) {
                 Project.findById(req.body.project, function (err, project) {
+                    if (err) { return next(err); }
                     project.music.addToSet({piece: piece._id});
                     project.save(function (err) {
                         if (err) { return next(err); }
@@ -126,7 +126,7 @@ router.post('/:id/scores', is_member, is_musicscoreadmin, function (req, res, ne
                 res.format({
                     json: function () {
                         file.populate('creator', 'username name', function (err, file) {
-                            if (err) { throw err; }
+                            if (err) { return next(err); }
                             res.json(file);
                         });
                     },
