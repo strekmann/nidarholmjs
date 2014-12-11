@@ -136,7 +136,7 @@ module.exports.fileListView = function (f, active_user, admin_group) {
         event.original.preventDefault();
         files.add('page', 1);
         var promise = $.ajax({
-            url: '/files',
+            url: window.location.href,
             type: 'GET',
             dataType: 'json',
             data: {page: files.get('page')}
