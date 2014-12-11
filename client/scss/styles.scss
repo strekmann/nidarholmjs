@@ -748,6 +748,15 @@ span.permissions {
     }
 }
 
+#results {
+    .result {
+        a.edit {
+            float: left;
+            margin-right: 5px;
+        }
+    }
+}
+
 @media #{large-up} {
     .group {
         .member {

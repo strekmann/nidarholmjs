@@ -150,3 +150,53 @@ module.exports.userView = function (user, active_user) {
         });
     });
 };
+module.exports.addUser = function () {
+    var userform = new Ractive({
+        el: '#adduser',
+        template: '#template',
+        data: {
+            results: [],
+            approx_date: function (datetime) {
+                if (datetime) {
+                    return moment(datetime).format('MMMM YYYY');
+                }
+            },
+            phoneformat: function (number) {
+                if (number) {
+                    var original = number;
+                    number = number.replace(/^\+47/).trim();
+                    if (number.length === 8) {
+                        // let's say it's a norwegian number
+                        if (number.match(/^(?:4|9)/)) {
+                            // mobile xxx xx xxx
+                            return number.substr(0, 3) + " " + number.substr(3, 2) + " " + number.substr(5, 3);
+                        }
+                        return number.substr(0, 2) + " " + number.substr(2, 2) + " " + number.substr(4 ,2) + " " + number.substr(6, 2);
+                    }
+                    return original;
+                }
+            }
+        }
+    });
+
+    userform.on('toggleExpanded', function () {
+        userform.toggle('expanded');
+    });
+
+    userform.on('search', function (event) {
+        var name = event.context.name;
+        if (name.length > 1) {
+            var promise = $.ajax({
+                url: '/users',
+                type: 'GET',
+                dataType: 'json',
+                data: {
+                    q: name
+                }
+            });
+            promise.then(function(data) {
+                userform.set('results', data.users);
+            });
+        }
+    });
+};

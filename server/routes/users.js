@@ -13,19 +13,25 @@ var express = require('express'),
     Group = require('../models').Group,
     File = require('../models/files').File;
 
-router.get('/', function (req, res) {
-    if (!req.is_admin) {
-        res.send(403, 'Forbidden');
+router.get('/', is_admin, function (req, res) {
+    var user_query;
+    if (req.query.q) {
+        user_query = User.find().regex('name', new RegExp(req.query.q, 'i'));
+    } else {
+        user_query = User.find();
     }
-    else {
-        User
-        .find()
-        .select('username name')
-        .sort('name')
-        .exec(function (err, users) {
-            res.render('organization/users', {users: users, meta: {title: 'Alle brukere'}});
+    user_query.select('username name phone address city instrument joined born')
+    .sort('name')
+    .exec(function (err, users) {
+        res.format({
+            html: function () {
+                res.render('organization/users', {users: users, meta: {title: 'Alle brukere'}});
+            },
+            json: function () {
+                res.json({users: users});
+            }
         });
-    }
+    });
 });
 
 router.get('/:username', function (req, res) {

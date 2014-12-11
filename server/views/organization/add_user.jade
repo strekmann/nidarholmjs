@@ -1,37 +1,66 @@
 extends ../layouts/main.jade
 
 block content
-  .row
-    .columns
-      h1 Legg til nytt korpsmedlem
+  section#adduser
 
-  form(method='post')
+  script#template(type="text/ractive")
     .row
       .columns
-        label(for='name') Navn
-        input#name(type='text' name='name')
-    .row
-      .columns
-        label(for='email') Epost
-        input#email(type='text' name='email')
-    .row
-      .columns
-        label(for='instrument') Instrument
-        input#instrument(type='text' name='instrument')
-    .row
-      .columns
-        input#orgperm(type='checkbox' checked name='orgperm')
-        label(for='orgperm') Gi personen medlemsrettigheter
-    .row#grouprow
-      .columns
-        label(for='group') Gi rettigheter til instrumentgruppe
-        select#group(name='group')
-          option (Ingen)
-          for group in groups
-            option(value=group.id)= group.name
-    .row
-      .columns
-        button Lagre
+        h1 Legg til nytt korpsmedlem
+
+    form(method="post")
+      .row
+        .columns
+          label(for="name") Navn
+          input#name(type="text" name="name" value="{{name}}" on-keyup="search")
+      | {{#if expanded}}
+      .row
+        .columns
+          label(for='email') Epost
+          input#email(type='text' name='email')
+      .row
+        .columns
+          label(for='instrument') Instrument
+          input#instrument(type='text' name='instrument')
+      .row
+        .columns
+          input#orgperm(type='checkbox' checked name='orgperm')
+          label(for='orgperm') Gi personen medlemsrettigheter
+      .row#grouprow
+        .columns
+          label(for='group') Gi rettigheter til instrumentgruppe
+          select#group(name='group')
+            option (Ingen)
+            for group in groups
+              option(value=group.id)= group.name
+      .row
+        .columns
+          button Lagre
+          button.secondary(type="reset" on-click="toggleExpanded") Avbryt
+      | {{else}}
+      .row
+        .columns
+          #results
+            | {{#results}}
+            .result.clearfix
+              a.button.small.edit(href="/users/{{username}}/edit")
+                i.fa.fa-edit.fa-lg
+              a(href="/users/{{username}}") {{.name}}
+              | {{#if .instrument}}
+              span ({{.instrument}})
+              | {{/if}}
+              br
+              | {{phoneformat(.phone)}} {{.address}} {{.city}}
+              | {{#if .born}}
+              span født {{approx_date(.born)}}
+              | {{/if}}
+              | {{#if .joined}}
+              span startet første gang {{approx_date(.joined)}}
+              | {{/if}}
+            | {{/results}}
+            button(on-click="toggleExpanded") Nytt medlem
+      | {{/if}}
+
 
 block javascript
   script.
@@ -43,3 +72,4 @@ block javascript
         $('#grouprow').hide();
       }
     });
+    require('s7n').user.addUser();
