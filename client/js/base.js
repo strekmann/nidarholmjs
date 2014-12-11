@@ -1,4 +1,4 @@
-/*globals $, _, Ractive*/
+/*globals $, _, Ractive, moment, marked*/
 
 var Register = Ractive.extend({
     checkEmail: function (email) {
@@ -43,7 +43,7 @@ module.exports = {
             }, []);
             return activity;
         });
-        /*
+
         var ractive_activities = new Ractive({
             el: '#activities',
             template: '#activity-template',
@@ -60,8 +60,8 @@ module.exports = {
                 }
             }
         });
-        */
 
+        return ractive_activities;
     },
 
     registerView: function () {
