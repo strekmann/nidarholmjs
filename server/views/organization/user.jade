@@ -124,9 +124,10 @@ block content
         | {{/country}}
 
         if is_admin
-          p {{reskontro}}
-          hr
-          | {{{marked(.membership_history)}}}
+          .for_admin
+            p {{reskontro}}
+            hr
+            | {{{marked(.membership_history)}}}
 
         if user._id === active_user._id
           h2 Alternativ innlogging
@@ -149,15 +150,16 @@ block content
               i.fa.fa-twitter-square.fa-2x
 
         if is_admin && (user.facebook_id || user.google_id || user.twitter_id)
-          p Har aktivert alternativ innlogging med 
-            if user.facebook_id
-              i.fa.fa-facebook-square
-            | &emsp;
-            if user.google_id
-              i.fa.fa-google-plus-square
-            | &emsp;
-            if user.twitter_id
-              i.fa.fa-twitter-square
+          .for_admin
+            p Har aktivert alternativ innlogging med 
+              if user.facebook_id
+                i.fa.fa-facebook-square
+              | &emsp;
+              if user.google_id
+                i.fa.fa-google-plus-square
+              | &emsp;
+              if user.twitter_id
+                i.fa.fa-twitter-square
 
       .medium-3.columns.hide-for-small-only
         a(href="/users/{{username}}/picture" on-click="changeProfilePicture")
@@ -187,40 +189,41 @@ block content
           | {{/groups}}
 
         if is_admin
-          #addgroup
-            //button.new_group.small
-              i.fa.fa-plus
-            form(on-submit="addGroup" method="POST" action="/users/{{username}}/groups")
-              .row
-                .columns
-                  h3 Legg til i grupper
-              .row
-                .columns
-                  label(for='group') Finn gruppe
-                  select#group
-                    for group in groups
-                      option(value=group.id)= group.name
-              .row
-                .columns
-                  //button.reset.secondary(type='reset') Avbryt
-                  button.tiny Legg til
+          .for_admin
+            #addgroup
+              //button.new_group.small
+                i.fa.fa-plus
+              form(on-submit="addGroup" method="POST" action="/users/{{username}}/groups")
+                .row
+                  .columns
+                    h3 Legg til i grupper
+                .row
+                  .columns
+                    label(for='group') Finn gruppe
+                    select#group
+                      for group in groups
+                        option(value=group.id)= group.name
+                .row
+                  .columns
+                    //button.reset.secondary(type='reset') Avbryt
+                    button.tiny Legg til
 
-          p Brukernavn <code>{{username}}</code>, passordalgoritme: <code>{{algorithm}}</code>, krypteringsstyrke: <code>{{length(salt)}}</code>
-          | {{#is_active}}
-          | Aktiv brukerkonto
-          | {{/is_active}}
-          | {{^is_active}}
-          | Blokkert brukerkonto
-          | {{/is_active}}
-          | {{#is_admin}}
-          | — Admin
-          | {{/is_admin}}
-          | {{#in_list}}
-          | — I medlemslista
-          | {{/in_list}}
-          | {{#on_leave}}
-          | — Har permisjon
-          | {{/on_leave}}
+            p Brukernavn <code>{{username}}</code>, passordalgoritme: <code>{{algorithm}}</code>, krypteringsstyrke: <code>{{length(salt)}}</code>
+            | {{#is_active}}
+            | Aktiv brukerkonto
+            | {{/is_active}}
+            | {{^is_active}}
+            | Blokkert brukerkonto
+            | {{/is_active}}
+            | {{#is_admin}}
+            | — Admin
+            | {{/is_admin}}
+            | {{#in_list}}
+            | — I medlemslista
+            | {{/in_list}}
+            | {{#on_leave}}
+            | — Har permisjon
+            | {{/on_leave}}
 
 
       .hide-for-small-only

@@ -548,6 +548,10 @@ nav.top-bar {
     }
 }
 
+.for_admin {
+    background-color: scale-color($primary-color, $lightness: 95%);
+}
+
 #groups {
     #all_groups {
         margin: 0;
