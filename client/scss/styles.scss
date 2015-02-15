@@ -732,6 +732,9 @@ span.permissions {
     }
 }
 
+.red {
+    color: $alert-color;
+}
 
 #memberlist .row {
     margin-bottom: rem-calc(10px);

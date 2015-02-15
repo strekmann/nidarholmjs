@@ -11,7 +11,7 @@ module.exports.memberlist = function (req, res) {
         if (err) { throw err; }
         User.populate(organization.instrument_groups, {
             path: 'members.user',
-            select: 'username name phone email instrument groups',
+            select: 'username name phone email instrument groups no_email',
             match: {'groups': organization.member_group, 'in_list': true, 'on_leave': false}
             //options: {sort: {name: -1}} // does not work, cuts result set
         }, function (err) {
@@ -396,7 +396,7 @@ module.exports.encrypted_mailman_lists = function (req, res) {
             async.map(data.groups, function (group, callback) {
                 var listname = data.prefix + translate(group.toLowerCase());
                 Group.findOne({name: group})
-                    .populate('members.user', 'email groups in_list on_leave')
+                    .populate('members.user', 'email groups in_list on_leave no_email')
                         /*{
                         path: 'members.user',
                         select: 'email',
@@ -408,7 +408,7 @@ module.exports.encrypted_mailman_lists = function (req, res) {
                         }
                         else {
                             var emails = _.reduce(g.members, function (list, member) {
-                                if (member.user.email && member.user.in_list && _.find(member.user.groups, function (group) {
+                                if (member.user.email && !member.user.no_email && _.find(member.user.groups, function (group) {
                                     return group === req.organization.member_group._id;
                                 })) {
                                     list.push(member.user.email);

@@ -39,6 +39,8 @@ block content
               label(for="in_list") Med i medlemslista
               input#on_leave(name="on_leave" type="checkbox" checked=(user.on_leave ? "checked" : undefined))
               label(for="on_leave") Har perm
+              input#no_email(name="no_email" type="checkbox" checked=(user.no_email ? "checked" : undefined))
+              label(for="no_email") Ikke epost
           .row
             .columns
               label(for="joined") Ble medlem første gang
@@ -49,6 +51,12 @@ block content
               input#reskontro(name="reskontro" type="text" value=user.reskontro)
               label(for="membership_history") Medlemskapshistorikk
               textarea#membership_history(name="membership_history")= user.membership_history
+        else
+          if active_user._id == user._id
+            .row
+              .columns
+                input#no_email(name="no_email" type="checkbox" checked=(user.no_email ? "checked" : undefined))
+                label(for="no_email") Ikke epost
 
         button Lagre
 

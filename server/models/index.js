@@ -63,6 +63,7 @@ var UserSchema = new mongoose.Schema({
     // from membership_status
     in_list: {type: Boolean, required: true, default: true},
     on_leave: {type: Boolean, required: true, default: false},
+    no_email: {type: Boolean, required: true, default: false},
     social_media: {
         website: {type: String},
         blog: {type: String},

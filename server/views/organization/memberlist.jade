@@ -45,6 +45,9 @@ block content
                       .large-4.columns.small-8.large-push-2
                         a(href="mailto:" + member.user.email)
                           = member.user.email
+                        if member.user.no_email
+                          |  
+                          i.fa.fa-exclamation-circle.red(title="Mottar ikke epost")
                       .large-2.columns.small-4.large-pull-4
                         if member.user.phone
                           a(href='tel:'+member.user.phone)

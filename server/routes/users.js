@@ -105,15 +105,29 @@ router.post('/:id', function (req, res, next) {
         if (req.body.membership_history) {
             changes.membership_history = req.body.membership_history;
         }
-        if (req.body.in_list) {
-            changes.in_list = true;
-        } else {
-            changes.in_list = false;
+        if (req.is_admin) {
+            if (req.body.in_list) {
+                changes.in_list = true;
+            } else {
+                changes.in_list = false;
+            }
+            if (req.body.on_leave) {
+                changes.on_leave = true;
+            } else {
+                changes.on_leave = false;
+            }
+            if (req.body.no_email) {
+                changes.no_email = true;
+            } else {
+                changes.no_email = false;
+            }
         }
-        if (req.body.on_leave) {
-            changes.on_leave = true;
-        } else {
-            changes.on_leave = false;
+        else { // self edit
+            if (req.body.no_email) {
+                changes.no_email = true;
+            } else {
+                changes.no_email = false;
+            }
         }
 
         User.findByIdAndUpdate(id, changes, function (err, user) {
