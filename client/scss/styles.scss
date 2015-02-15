@@ -735,6 +735,9 @@ span.permissions {
 .red {
     color: $alert-color;
 }
+.unimportant {
+    color: $hr-border-color;
+}
 
 #memberlist .row {
     margin-bottom: rem-calc(10px);
