@@ -274,7 +274,7 @@ module.exports.edit_organization = function (req, res, next) {
             if (err) { return next(err); }
             res.render('organization/edit_organization', {
                 organization: req.organization,
-                locales: config.languages,
+                locales: config.locales,
                 groups: groups,
                 meta: {title: 'Rediger organisasjon'}
             });
