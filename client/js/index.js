@@ -51,6 +51,46 @@ var flash = function (messages, member_group_id) {
     return ractive;
 };
 
+var userify = function (selector, data, callback) {
+    var hashed_data = _.indexBy(data, '_id');
+    hashed_data = _.mapObject(hashed_data, function (val) {
+        return val.name;
+    });
+    $(selector).select2({
+        width: '100%',
+        multiple: true,
+        tokenSeparators: [",", " "],
+        minimumInputLength: 2,
+        initSelection : function (element, callback) {
+            var d= [];
+            $(element.val().split(",")).each(function () {
+                d.push({id: this, text: hashed_data[this]});
+            });
+            callback(d);
+        },
+        ajax: {
+            url: "/users",
+            dataType: "json",
+            quietMillis: 100,
+            data: function (term) { // , page
+                return {
+                    q: term
+                };
+            },
+            results: function (data) { // , page
+                return {results: _.map(data.users, function(user) {
+                    return {id: user._id, text: user.name};
+                })};
+            }
+        }
+    });
+    if (_.isFunction(callback)) {
+        $(selector).on("change", function(element) {
+            callback(element);
+        });
+    }
+};
+
 var tagify = function (first_var) {
     var options = {},
         callback;
@@ -120,6 +160,7 @@ module.exports = {
     projects: require('./projects'),
     files: require('./files'),
     flash: flash,
-    tagify: tagify
+    tagify: tagify,
+    userify: userify
 };
 

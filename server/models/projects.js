@@ -91,7 +91,9 @@ var ProjectSchema = new mongoose.Schema({
         role: {type: String}
     }],
     poster: {type: String, ref: 'File'},
-    original_project_users: [{type: String, ref: 'User'}]
+    original_project_users: [{type: String, ref: 'User'}],
+    conductors: [{type: String, ref: 'User'}],
+    managers: [{type: String, ref: 'User'}]
 });
 
 module.exports = {

@@ -87,6 +87,13 @@ block content
               | {{/if}}
               .row
                 .columns.medium-6
+                  label Prosjektleder(e)
+                    input#managers(type="text" name="managers" value="{{idify(project.managers)}}")
+                .columns.medium-6
+                  label Dirigent(er)
+                    input#conductors(type="text" name="conductors" value="{{idify(project.conductors)}}")
+              .row
+                .columns.medium-6
                   label(for="startdate") Prosjektstart
                   input#startdate(name="startdate" type="text" value="{{isodate(.project.start)}}")
                 .columns.medium-6
@@ -237,6 +244,23 @@ block content
                 | {{{daterange(start, end)}}}
             .columns.small-3.text-right
               permissionicons(permissions="{{permissions}}")
+          .row
+            | {{#if conductors.length}}
+            .columns.medium-6
+              b Dirigent:
+              | {{#each .conductors}}
+              |  
+              a(href="/users/{{.username}}") {{.name}}
+              | {{/each}}
+            | {{/if}}
+            | {{#if managers.length}}
+            .columns.medium-6
+              b Prosjektleder:
+              | {{#each .managers}}
+              |  
+              a(href="/users/{{.username}}") {{.name}}
+              | {{/each}}
+            | {{/if}}
         .content
           .row
             .columns

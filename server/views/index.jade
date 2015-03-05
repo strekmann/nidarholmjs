@@ -3,8 +3,8 @@ extends layouts/main
 block content
   section#index
     .row
-      .columns.large-3.large-push-9
-        .show-for-large-up
+      .columns.medium-4.medium-push-8
+        .show-for-medium-up
           if projects.length
             #next-projects
               h1 Kommende prosjekt
@@ -14,15 +14,22 @@ block content
                     a.project(href="/" + project.year + "/" + project.tag)
                       if project.poster
                         img(src=project.poster.normal_path alt=project.title)
-                        p
-                          b= project.title
+                      p
+                        b= project.title
+                        br
+                        = shortdate(project.end)
+                        if project.managers.length
                           br
-                          = shortdate(project.end)
-                      else
-                        p
-                          b= project.title
+                          b Prosjektleder:
+                          each manager in project.managers
+                            |  
+                            = manager.name
+                        if project.conductors.length
                           br
-                          = shortdate(project.end)
+                          b Dirigent:
+                          each conductor in project.conductors
+                            |  
+                            = conductor.name
             hr
 
           if events
@@ -38,7 +45,7 @@ block content
               #more-events
                 a(href="/events") Full aktivitetsliste
 
-        #eventwrapper.hide-for-large-up
+        #eventwrapper.hide-for-medium-up
           #eventscroller
             ul#next-events
               for event in events
@@ -48,7 +55,7 @@ block content
                     br
                     = event.title
 
-      .large-9.columns.large-pull-3
+      .medium-8.columns.medium-pull-4
         if active_user
           ul#activities
 

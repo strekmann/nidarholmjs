@@ -82,6 +82,8 @@ router.get('/', function(req, res, next) {
                 .limit(2);
                 query
                 .populate('creator', 'name username')
+                .populate('conductors', 'name username')
+                .populate('managers', 'name username')
                 .populate('poster')
                 .exec(function (err, projects) {
                     if (err) { return next(err); }
@@ -179,6 +181,24 @@ router.post('/login/check_email', function (req, res, next) {
             res.json({status: false});
         }
     });
+});
+
+router.get('/users', is_member, function (req, res, next) {
+    if (req.query.q) {
+        var pattern = RegExp('^' + req.query.q, 'i');
+        User.find().select('username name').exec(function (err, users) {
+            if (err) { return next(err); }
+            var filtered = _.filter(users, function (user) {
+                if (user.name.match(pattern) || user.username.match(pattern)) {
+                    return user;
+                }
+            });
+            res.json({users: filtered});
+        });
+    }
+    else {
+        res.sendStatus(400);
+    }
 });
 
 router.get('/tags', is_member, function (req, res) {

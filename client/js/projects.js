@@ -489,6 +489,9 @@ module.exports.projectDetailView = function (p, events, posts, files) {
                     ret.push("p");
                 }
                 return ret;
+            },
+            idify: function (elements) {
+                return _.pluck(elements, '_id');
             }
         }
     });
@@ -538,7 +541,6 @@ module.exports.projectDetailView = function (p, events, posts, files) {
         if (project_external_editor) {
             event.context.project.public_mdtext = project_external_editor.codemirror.getValue() || event.context.project.public_mdtext;
         }
-        console.log(event.context);
         event.context.project.permissions = $('#permissions').val();
 
         /*jslint unparam: true*/
@@ -679,13 +681,21 @@ module.exports.projectDetailView = function (p, events, posts, files) {
         projectmodal.set('project', project);
         projectmodal.set('error', undefined);
         $('#project-modal').foundation('reveal', 'open');
-        $('.chosen-permissions').chosen({width: '100%'});
-        $('#startdate').pickadate({format: 'yyyy-mm-dd', formatSubmit: 'yyyy-mm-dd', onSet: function (context) {
-            projectmodal.set('project.start', moment(context.select).startOf('day').toISOString());
-        }});
-        $('#enddate').pickadate({format: 'yyyy-mm-dd', formatSubmit: 'yyyy-mm-dd', onSet: function (context) {
-            projectmodal.set('project.end', moment(context.select).startOf('day').toISOString());
-        }});
+        setTimeout(function() {
+            $('.chosen-permissions').chosen({width: '100%'});
+            $('#startdate').pickadate({format: 'yyyy-mm-dd', formatSubmit: 'yyyy-mm-dd', onSet: function (context) {
+                projectmodal.set('project.start', moment(context.select).startOf('day').toISOString());
+            }});
+            $('#enddate').pickadate({format: 'yyyy-mm-dd', formatSubmit: 'yyyy-mm-dd', onSet: function (context) {
+                projectmodal.set('project.end', moment(context.select).startOf('day').toISOString());
+            }});
+            require('s7n').userify('#managers', projectmodal.get('project.managers'), function (element) {
+                projectmodal.set('project.managers', element.val);
+            });
+            require('s7n').userify('#conductors', projectmodal.get('project.conductors'), function (element) {
+                projectmodal.set('project.conductors', element.val);
+            });
+        }, 1);
     });
 
     projects.on('setInternal', function (event) {

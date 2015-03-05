@@ -151,6 +151,8 @@ module.exports.update_project = function (req, res, next) {
                 permissions = util.parse_web_permissions(req.body.permissions),
                 private_mdtext = req.body.private_mdtext,
                 public_mdtext = req.body.public_mdtext,
+                conductors = req.body.conductors,
+                managers = req.body.managers,
                 start = req.body.start,
                 end = req.body.end,
                 year = moment(end).year();
@@ -159,6 +161,8 @@ module.exports.update_project = function (req, res, next) {
             project.tag = tag;
             project.private_mdtext = private_mdtext;
             project.public_mdtext = public_mdtext;
+            project.managers = managers;
+            project.conductors = conductors;
             project.start = start;
             project.end = end;
             project.year = year;
@@ -166,7 +170,10 @@ module.exports.update_project = function (req, res, next) {
 
             project.save(function (err) {
                 if (err) { return next(err); }
-                res.json(project);
+                project.populate('managers', 'username name').populate('conductors', 'username name', function (err, project) {
+                    if (err) { return next(err); }
+                    res.json(project);
+                });
             });
         }
         else {
@@ -202,6 +209,8 @@ module.exports.project = function (req, res, next) {
     }
     query = query.populate('music.piece');
     query = query.populate('poster');
+    query = query.populate('conductors', 'name username');
+    query = query.populate('managers', 'name username');
     query.exec(function (err, project) {
         if (err) { return next(err); }
         if (!project) {
