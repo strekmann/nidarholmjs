@@ -5,34 +5,6 @@ block content
     .row
       .columns.medium-4.medium-push-8
         .show-for-medium-up
-          if active_user
-            if projects.length
-              #next-projects
-                h1 Kommende prosjekt
-                ul.small-block-grid-1
-                  for project in projects
-                    li
-                      a.project(href="/" + project.year + "/" + project.tag)
-                        if project.poster
-                          img(src=project.poster.normal_path alt=project.title)
-                        p
-                          b= project.title
-                          br
-                          = shortdate(project.end)
-                          if project.managers.length
-                            br
-                            b Prosjektleder:
-                            each manager in project.managers
-                              |  
-                              = manager.name
-                          if project.conductors.length
-                            br
-                            b Dirigent:
-                            each conductor in project.conductors
-                              |  
-                              = conductor.name
-              hr
-
           if events
             #next-events
               h1 Kommende aktiviteter
@@ -66,14 +38,12 @@ block content
                     a(href="/"+project.year+"/"+project.tag)= project.title
                   .meta
                     .row
-                      .columns.small-9
+                      .columns
                         span.byline
                           if project.start
                             = shortdate(project.start)
                             | – 
                           = shortdate(project.end)
-                      .columns.small-3.text-right
-                        permissionicons(permissions=project.permissions)
                     .row
                       .columns
                         if project.concerts
@@ -86,17 +56,20 @@ block content
                         .columns.medium-6
                           b Dirigent:
                           for conductor in project.conductors
+                            |  
                             a(href="/users/"+conductor.username)= conductor.name
                       if project.managers.length
                         .columns.medium-6
                           b Prosjektleder:
                           for manager in project.managers
+                            |  
                             a(href="/users/"+manager.username)= manager.name
                 .row
                   .columns
                     .content
                       != marked(project.private_mdtext)
 
+          hr
           ul#activities
 
         else
