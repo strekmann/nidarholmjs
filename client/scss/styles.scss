@@ -689,6 +689,12 @@ nav.top-bar {
     }
 }
 #events {
+    h1 {
+        font-size: $h1-font-size - rem-calc(10);
+    }
+    h2 {
+        font-size: $h2-font-size - rem-calc(6);
+    }
     .meta {
         border-top: 1px solid $hr-border-color;
         padding-top: rem-calc(2px);

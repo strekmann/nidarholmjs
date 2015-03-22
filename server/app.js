@@ -76,6 +76,7 @@ app.use(function (req, res, next) {
     res.locals.shortdate = util.shortdate;
     res.locals.longdate = util.longdate;
     res.locals.ago = util.ago;
+    res.locals.daterange = util.daterange;
     res.locals.prettyhost = util.prettyhost;
     res.locals.phoneformat = util.phoneformat;
     next();

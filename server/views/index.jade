@@ -6,15 +6,30 @@ block content
       .columns.medium-4.medium-push-8
         .show-for-medium-up
           if events
-            #next-events
-              h1 Kommende aktiviteter
+            #events
+              h1 Neste aktiviteter
               ul.small-block-grid-1
                 for event in events
                   li
-                    a.event(href="/events/"+event.id)
-                      b= moment(event.start).format('Do MMMM')
-                      br
-                      = event.title
+                    h2
+                      a.event(href="/events/"+event.id)= event.title
+                    .meta
+                      != daterange(event.start, event.end)
+
+                      if event.start < moment.utc().add(10, 'days')
+                        if event.location
+                          br
+                          = event.location
+                        if event.mdtext
+                          .content
+                            != marked(event.mdtext)
+                      else
+                        if event.mdtext
+                          .right
+                            p …
+                        if event.location
+                          br
+                          = event.location
               #more-events
                 a(href="/events") Full aktivitetsliste
 
