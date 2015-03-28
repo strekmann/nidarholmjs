@@ -52,7 +52,10 @@ block content
                   h1
                     a(href="/"+project.year+"/"+project.tag)= project.title
                   .row
-                    .columns.medium-9
+                    .columns.medium-4.push-8
+                      if project.poster
+                        img(src=project.poster.path alt="")
+                    .columns.medium-8.pull-4
                       .meta
                         .row
                           .columns
@@ -81,15 +84,11 @@ block content
                               for manager in project.managers
                                 |  
                                 a(href="/users/"+manager.username)= manager.name
-                    .columns.medium-3.show-for-medium-up
-                      if project.poster
-                        img(src=project.poster.path alt="")
-                .row
-                  .columns
-                    .content
-                      != marked(project.private_mdtext)
-                    a(href="/"+project.year+"/"+project.tag) Mer
-
+                      .row
+                        .columns
+                          .content
+                            != marked(project.private_mdtext)
+                          a(href="/"+project.year+"/"+project.tag) Mer
 
           hr
           h1 Nylig aktivitet
@@ -105,18 +104,24 @@ block content
                 header
                   h1
                     a(href="/"+project.year+"/"+project.tag)= project.title
-                  .meta
-                    .row
-                      .columns
-                        for concert in project.concerts
-                          time.start(datetime=concert.start)= longdate(concert.start)
-                          if concert.location
-                            span.location= concert.location
+                  .row
+                    .columns.medium-4.push-8
+                      if project.poster
+                        img(src=project.poster.path alt="")
 
-              .content
-                .row
-                  .columns
-                    != marked(project.public_mdtext)
+                    .columns.medium-8.pull-4
+                      .meta
+                        .row
+                          .columns
+                            for concert in project.concerts
+                              time.start(datetime=concert.start)= longdate(concert.start)
+                              if concert.location
+                                span.location= concert.location
+
+                      .content
+                        .row
+                          .columns
+                            != marked(project.public_mdtext)
 
           #news
             for post in posts
