@@ -180,7 +180,6 @@ module.exports.fileListView = function (f, _tags, active_user, admin_group) {
         $('#upload').trigger('click');
     });
 
-    require('s7n').tagify();
     var has_tags = window.location.href.split("/files/t/", 2);
     var tags;
     if (has_tags.length === 2) {
@@ -190,7 +189,9 @@ module.exports.fileListView = function (f, _tags, active_user, admin_group) {
         tags = [];
     }
     $('#filter').val(tags.join(","));
+    $('#tags').val(tags.join(","));
 
+    require('s7n').tagify();
     require('s7n').tagify({selector: '#filter'}, function (element) {
         var t = element.val;
         if (t.length) {
