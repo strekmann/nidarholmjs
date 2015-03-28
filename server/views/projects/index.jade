@@ -82,34 +82,44 @@ block content
         button.small.secondary(type="reset" on-click="toggleNew") Avbryt
     | {{/expanded}}
 
-    | {{#projects.length}}
-    h1 Kommende prosjekter
-    | {{#projects}}
-    |   {{>project}}
-    | {{/projects}}
-    | {{/projects.length}}
-
-    h1 Tidligere prosjekter
-    | {{#previous_projects}}
-    |   {{>project}}
-    | {{/previous_projects}}
-    | {{^gotall}}
     .row
-      .columns.text-center.dtborder
-        a.getmore(on-click="fetchProjects") Hent mer
-    | {{/gotall}}
+      .columns.medium-6
+        | {{#projects.length}}
+        h1 Kommende prosjekter
+        | {{#projects}}
+        |   {{>project}}
+        | {{/projects}}
+        | {{/projects.length}}
+
+      .columns.medium-6
+        h1 Tidligere prosjekter
+        | {{#previous_projects}}
+        |   {{>project}}
+        | {{/previous_projects}}
+        | {{^gotall}}
+        .row
+          .columns.text-center.dtborder
+            a.getmore(on-click="fetchProjects") Hent mer
+        | {{/gotall}}
 
     // {{>project}}
     .project(data-id="{{_id}}")
-      h2
-        a(href="/{{year}}/{{tag}}") {{title}}
-      .meta
-        .row
-          .columns.small-9
-            | {{{daterange(start, end)}}}
-          .columns.small-3.text-right
-            permissionicons(permissions="{{permissions}}")
-      | {{{snippify(public_mdtext)}}}
+      .row
+        .columns
+          | {{#if .poster}}
+          a(href="/{{.year}}/{{.tag}}")
+            img(src="{{.poster.path}}" alt="")
+          | {{/if}}
+          h2
+            a(href="/{{.year}}/{{.tag}}") {{title}}
+          .meta
+            .row
+              .columns.small-9
+                | {{{daterange(start, end)}}}
+              .columns.small-3.text-right
+                permissionicons(permissions="{{permissions}}")
+          | {{{snippify(public_mdtext)}}}
+
     // {{/project}}
 
 block javascript

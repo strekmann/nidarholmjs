@@ -29,7 +29,8 @@ module.exports.index = function (req, res, next) {
     }
     query.where({end: {$gte: moment().startOf('day')}});
     query.sort('end')
-        .populate('creator', 'username name');
+        .populate('creator', 'username name')
+        .populate('poster', 'hash filename');
     query.exec(function (err, projects) {
         if (err) { return next(err); }
 
@@ -48,7 +49,8 @@ module.exports.index = function (req, res, next) {
                 }
                 query.where({end: {$lt: moment().startOf('day')}});
                 query.sort('-end')
-                    .populate('creator', 'username name');
+                    .populate('creator', 'username name')
+                    .populate('poster', 'hash filename');
 
                 query.exec(function (err, previous_projects) {
                     if (err) { return next(err); }

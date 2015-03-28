@@ -51,34 +51,39 @@ block content
                 header
                   h1
                     a(href="/"+project.year+"/"+project.tag)= project.title
-                  .meta
-                    .row
-                      .columns
-                        span.byline
-                          if project.start
-                            = shortdate(project.start)
-                            | – 
-                          = shortdate(project.end)
-                    .row
-                      .columns
-                        if project.concerts
-                          for concert in project.concerts
-                            time.start(datetime=concert.start)= longdate(concert.start)
-                            if concert.location
-                              span.location= concert.location
-                    .row
-                      if project.conductors.length
-                        .columns.medium-6
-                          b Dirigent:
-                          for conductor in project.conductors
-                            |  
-                            a(href="/users/"+conductor.username)= conductor.name
-                      if project.managers.length
-                        .columns.medium-6
-                          b Prosjektleder:
-                          for manager in project.managers
-                            |  
-                            a(href="/users/"+manager.username)= manager.name
+                  .row
+                    .columns.medium-9
+                      .meta
+                        .row
+                          .columns
+                            span.byline
+                              if project.start
+                                = shortdate(project.start)
+                                | – 
+                              = shortdate(project.end)
+                        .row
+                          .columns
+                            if project.concerts
+                              for concert in project.concerts
+                                time.start(datetime=concert.start)= longdate(concert.start)
+                                if concert.location
+                                  span.location= concert.location
+                        .row
+                          if project.conductors.length
+                            .columns
+                              b Dirigent:
+                              for conductor in project.conductors
+                                |  
+                                a(href="/users/"+conductor.username)= conductor.name
+                          if project.managers.length
+                            .columns
+                              b Prosjektleder:
+                              for manager in project.managers
+                                |  
+                                a(href="/users/"+manager.username)= manager.name
+                    .columns.medium-3.show-for-medium-up
+                      if project.poster
+                        img(src=project.poster.path alt="")
                 .row
                   .columns
                     .content
