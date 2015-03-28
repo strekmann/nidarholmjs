@@ -17,8 +17,10 @@ var Files = Ractive.extend({
                 if (old_tags.length === 2) {
                     // we have tags
                     var tags = old_tags[1].split("/");
-                    tags.push(tag);
-                    return prefix + tags.uniq.join("/");
+                    if (!_.contains(tags, tag)) {
+                        tags.push(tag);
+                    }
+                    return prefix + tags.join("/");
 
                 }
                 return prefix + tag;
@@ -75,12 +77,13 @@ module.exports.fileDetailView = function (f) {
     });
 };
 
-module.exports.fileListView = function (f, active_user, admin_group) {
+module.exports.fileListView = function (f, _tags, active_user, admin_group) {
     var files = new Files({
         el: '#files',
         template: '#template',
         data: {
             files: f,
+            tags: _tags,
             active_user: active_user,
             is_admin: function () {
                 var is_member_of_group = _.find(active_user.groups, function (group) {

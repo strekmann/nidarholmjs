@@ -10,7 +10,7 @@ var _ = require('underscore'),
     File = require('../models/files').File,
     Activity = require('../models').Activity;
 
-router.get('/', function (req, res) {
+router.get('/', function (req, res, next) {
     var query;
     if (req.user) {
         query = File.find().or([
@@ -31,12 +31,21 @@ router.get('/', function (req, res) {
         query = query.skip(20 * req.query.page);
     }
     query.exec(function (err, files) {
-        if (err) {
-            throw err;
-        }
+        if (err) { return next(err); }
         res.format({
             html: function () {
-                res.render('files/index', {files: files, meta: {title: 'Filer'}});
+                File.aggregate([
+                    {$match: {tags: {$ne: ''}}},
+                    {$project: {tags: 1}},
+                    {$unwind: '$tags'},
+                    {$group: {_id: '$tags', count: {$sum: 1}}},
+                    {$sort: {count: -1}},
+                    {$limit: 20},
+                    {$project: {'_id': 1}}
+                ], function (err, tags) {
+                    if (err) { return next(err); }
+                    res.render('files/index', {files: files, tags: _.map(tags, function (tag) { return tag._id; }), meta: {title: 'Filer'}});
+                });
             },
             json: function () {
                 res.json(files);
@@ -45,7 +54,7 @@ router.get('/', function (req, res) {
     });
 });
 
-router.get('/t/*', function (req, res) {
+router.get('/t/*', function (req, res, next) {
     var tagstring = req.params[0];
     var query;
     if (req.user) {
@@ -63,6 +72,7 @@ router.get('/t/*', function (req, res) {
     _.each(tagstring.split("/"), function (tag) {
         query.find({'tags': tag});
     });
+    var tags = tagstring.split("/");
 
     query = query
         .sort('-created')
@@ -77,7 +87,26 @@ router.get('/t/*', function (req, res) {
         }
         res.format({
             html: function () {
-                res.render('files/index', {files: files, meta: {title: 'Filer'}});
+                File.aggregate([
+                    {$match: {tags: {$in: tags}}},
+                    {$project: {tags: 1}},
+                    {$unwind: '$tags'},
+                    {$match: {tags: {$nin: tags}}},
+                    {$group: {_id: '$tags', count: {$sum: 1}}},
+                    {$sort: {count: -1}},
+                    {$limit: 20},
+                    {$project: {'_id': 1}}
+                ], function (err, tags) {
+                    if (err) { return next(err); }
+                    res.format({
+                        html: function () {
+                            res.render('files/index', {files: files, tags: _.map(tags, function (tag) { return tag._id; }), meta: {title: 'Filer'}});
+                        },
+                        json: function () {
+                            res.json(files);
+                        }
+                    });
+                });
             },
             json: function () {
                 res.json(files);

@@ -3,8 +3,8 @@ extends ../layouts/main
 block content
   section#files
     noscript
-      div.row
-        div.columns.medium-10.large-8.medium-centered
+      .row
+        .columns.medium-8
           if active_user
             form#upload(method="post" action="/files/upload" enctype="multipart/form-data")
               h1 Last opp filer
@@ -39,7 +39,7 @@ block content
 
   script#template(type="text/ractive")
     .row
-      .columns.large-8.medium-10.large-centered.medium-centered
+      .columns.medium-8
         if active_user
           form#upload(action="/files/upload")
             h1 Last opp filer
@@ -116,10 +116,30 @@ block content
             a.getmore(on-click="fetchMore") Hent mer
         | {{/gotall}}
 
+      .columns.medium-4
+        h1 Finn filer
+
+        ul
+          li
+            a(href="/files/t/styremøte/referat") Styremøtereferater
+
+        h2 Mest brukte merkelapper
+
+        ul
+          | {{#each tags}}
+          li
+            a(href="{{taglink(.)}}") {{.}}
+          | {{else}}
+          li
+            i Ingen flere
+          | {{/each}}
+
 block javascript
   script
     | var ractive = require('s7n').files.fileListView(
     != JSON.stringify(files)
+    |,
+    != JSON.stringify(tags)
     | ,
     != JSON.stringify(active_user) || "null"
     | ,
