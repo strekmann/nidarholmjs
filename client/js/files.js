@@ -188,6 +188,7 @@ module.exports.fileListView = function (f, _tags, active_user, admin_group) {
     else {
         tags = [];
     }
+    tags = _.map(tags, function (tag) { return decodeURIComponent(tag); });
     $('#filter').val(tags.join(","));
     $('#tags').val(tags.join(","));
 
