@@ -399,9 +399,10 @@ block content
 
     // {{>event}}
     .event
-      h3
-        a(href="/events/{{_id}}") {{.title}}
       .toggler(on-click="toggleEvent")
+        | {{{calendarday(.start)}}}
+        h2
+          a(href="/events/{{_id}}") {{.title}}
         .meta
           | {{{daterange(.start, .end)}}}
 

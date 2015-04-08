@@ -115,6 +115,11 @@ var Project = Ractive.extend({
                 return moment(date).format('YYYY-MM-DD HH:mm');
             }
         },
+        calendarday: function(date) {
+            if (date) {
+                return '<div class="daypage"><div class="day">' + moment(date).format("D") + '</div><div class="month">' + moment(date).format("MMMM") + '</div></div>';
+            }
+        },
         daterange: function (start, end) {
             var startm, endm, startd, endd;
             if (start && end) {

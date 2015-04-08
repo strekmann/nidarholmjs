@@ -10,9 +10,13 @@ block content
               h1 Neste aktiviteter
               ul.small-block-grid-1
                 for event in events
-                  li
+                  li.event
+                    .daypage
+                      .day= moment(event.start).format("D")
+                      .month= moment(event.start).format("MMMM")
                     h2
-                      a.event(href="/events/"+event.id)= event.title
+                      a.event(href="/events/"+event.id)
+                        = event.title
                     .meta
                       != daterange(event.start, event.end)
 
