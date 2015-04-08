@@ -50,7 +50,7 @@ block content
                           i.fa.fa-exclamation-circle.unimportant(title="Mottar ikke epost")
                       .large-2.columns.small-4.large-pull-4
                         if member.user.phone
-                          a(href='tel:'+member.user.phone)
+                          a.phone(href='tel:'+member.user.phone)
                             = phoneformat(member.user.phone)
 
 block javascript
