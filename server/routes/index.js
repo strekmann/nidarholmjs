@@ -40,6 +40,9 @@ router.get('/', function(req, res, next) {
                 meta.description = req.organization.description[locale];
             }
             else {
+                // it seems like this is not necessary: firefox falls back
+                // to setting en if no languages are matched. chrome does not
+                // let me remove nb.
                 meta.description = req.organization.description[config.default_locale];
             }
         }
