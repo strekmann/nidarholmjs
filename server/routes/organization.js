@@ -322,7 +322,7 @@ module.exports.update_organization = function (req, res, next) {
         org.tracking_code = tracking_code;
 
         // could probably take what we get, or should we check it?
-        _.each(config.languages, function (locale) {
+        _.each(config.locales, function (locale) {
             org.description[locale] = description[locale];
         });
 
