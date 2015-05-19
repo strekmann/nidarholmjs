@@ -29,8 +29,17 @@ router.get('/', function(req, res, next) {
             type: 'website'
         };
 
-    if (req.organization.description && _.has(req.organization.description, req.lang)) {
-        meta.description = req.organization.description[req.lang];
+    if (req.organization.description) {
+        var locale = req.locale;
+        if (_.has(req.organization.description, locale)) {
+            meta.description = req.organization.description[locale];
+        }
+        else {
+            locale = locale.replace(/_.*$/, '');
+            if (_.has(req.organization.description, locale)) {
+                meta.description = req.organization.description[locale];
+            }
+        }
     }
     var now = moment.utc().startOf('day').toDate();
 
