@@ -35,7 +35,7 @@ router.get('/', is_admin, function (req, res) {
 });
 
 router.get('/:username', function (req, res) {
-    if (!req.is_member && req.params.username !== req.user.username) {
+    if (!req.is_member || req.params.username !== req.user.username) {
         res.send(403, 'Forbidden');
     }
     else {
