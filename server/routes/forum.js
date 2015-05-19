@@ -204,6 +204,9 @@ router.delete('/:id', function (req, res, next) {
 });
 
 router.get('/:id', function (req, res, next) {
+    if (!req.user) {
+        res.send(403, 'Forbidden');
+    }
     ForumPost.findById(req.params.id)
     .or([
         {creator: req.user._id},
