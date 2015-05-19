@@ -41,7 +41,7 @@ module.exports = {
         replset: null
     },
     locales: ['en'],
-    defaultLocale: 'en',
+    default_locale: 'en',
     files: {
         raw_prefix: '/tmp/uploaded_files',
         normal_prefix: '/tmp/uploaded_files/normal',

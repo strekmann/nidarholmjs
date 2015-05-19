@@ -39,6 +39,9 @@ router.get('/', function(req, res, next) {
             if (_.has(req.organization.description, locale)) {
                 meta.description = req.organization.description[locale];
             }
+            else {
+                meta.description = req.organization.description[config.default_locale];
+            }
         }
     }
     var now = moment.utc().startOf('day').toDate();
