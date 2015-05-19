@@ -408,6 +408,7 @@ module.exports.projectListView = function (projects, previous_projects) {
                 projectlist.set('gotall', true);
             }
             projectlist.get('previous_projects').push.apply(projectlist.get('previous_projects'), data);
+            //ractive.push.apply(ractive, ['posts'].concat(data));
         });
     });
 };
