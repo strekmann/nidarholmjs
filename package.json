@@ -30,7 +30,7 @@
     "mkdirp": "0.3.x",
     "mmmagic": "^0.3.6",
     "moment": "^2.8.1",
-    "mongoose": "^3.8.17",
+    "mongoose": "3.8.16",
     "multer": "0.0.x",
     "node-uuid": "^1.4.1",
     "nodemailer": "^1.1.1",
