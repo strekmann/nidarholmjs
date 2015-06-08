@@ -8,6 +8,7 @@ var express = require('express'),
     util = require('../lib/util'),
     upload_file = util.upload_file,
     is_admin = require('../lib/middleware').is_admin,
+    is_member = require('../lib/middleware').is_member,
     config = require('../settings'),
     User = require('../models').User,
     Group = require('../models').Group,
@@ -34,27 +35,22 @@ router.get('/', is_admin, function (req, res) {
     });
 });
 
-router.get('/:username', function (req, res) {
-    if (!req.is_member || req.params.username !== req.user.username) {
-        res.send(403, 'Forbidden');
-    }
-    else {
-        User
-        .findOne({username: req.params.username})
-        .select('-password -friends')
-        .populate({path: 'groups', model: 'Group', select: 'name'})
-        .lean()
-        .exec(function (err, user) {
+router.get('/:username', is_member, function (req, res) {
+    User
+    .findOne({username: req.params.username})
+    .select('-password -friends')
+    .populate({path: 'groups', model: 'Group', select: 'name'})
+    .lean()
+    .exec(function (err, user) {
+        if (err) { throw err; }
+        if (!user) {
+            res.render('404', {error: "Fant ikke personen"});
+        }
+        Group.find({organization: 'nidarholm'}, function (err, groups) {
             if (err) { throw err; }
-            if (!user) {
-                res.render('404', {error: "Fant ikke personen"});
-            }
-            Group.find({organization: 'nidarholm'}, function (err, groups) {
-                if (err) { throw err; }
-                res.render('organization/user', {user: user, groups: groups, meta: {title: user.name}});
-            });
+            res.render('organization/user', {user: user, groups: groups, meta: {title: user.name}});
         });
-    }
+    });
 });
 
 router.get('/:username/edit', function (req, res, next) {
