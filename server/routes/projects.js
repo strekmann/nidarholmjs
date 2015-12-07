@@ -27,7 +27,7 @@ module.exports.index = function (req, res, next) {
     else {
         query = Project.find().or({'permissions.public': true});
     }
-    query.where({end: {$gte: moment().startOf('day')}});
+    query.where({end: {$gte: moment().startOf('day').toDate()}});
     query.sort('end')
         .populate('creator', 'username name')
         .populate('poster', 'hash filename');
