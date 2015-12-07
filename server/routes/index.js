@@ -76,7 +76,8 @@ router.get('/', function(req, res, next) {
             query.exec(function (err, events) {
                 if (err) { return next(err); }
                 query = Project.find({
-                    end: {$gte: moment().startOf('day').toDate()},
+                    end: {$gte: now},
+                    start: {$or: [{$exists: false}, {$lt: now}]},
                     $or: [
                         {'permissions.public': true},
                         {'permissions.users': req.user._id},
