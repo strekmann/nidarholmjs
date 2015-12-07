@@ -18,7 +18,7 @@ module.exports.index = function (req, res, next) {
     var query;
     if (req.user) {
         query = Project.find().or([
-            {creator: req.user},
+            {creator: req.user._id},
             {'permissions.public': true},
             {'permissions.users': req.user._id},
             {'permissions.groups': { $in: req.user.groups }}

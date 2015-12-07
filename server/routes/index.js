@@ -77,8 +77,11 @@ router.get('/', function(req, res, next) {
                 if (err) { return next(err); }
                 query = Project.find({
                     end: {$gte: moment().startOf('day').toDate()},
-                    $or: [{'permissions.public': true}, {'permissions.users': req.user._id}, {'permissions.groups': { $in: req.user.groups }} ],
-                }).where({
+                    $or: [
+                        {'permissions.public': true},
+                        {'permissions.users': req.user._id},
+                        {'permissions.groups': { $in: req.user.groups }}
+                    ],
                     $or: [{start: {$exists: false}}, {start: {$lt: now}}]
                 });
                 /* for some reason this does not work. maybe the multiple or?
@@ -94,7 +97,7 @@ router.get('/', function(req, res, next) {
                 ]);
                 */
                 query.sort('end')
-                .limit(2);
+                .limit(3);
                 query
                 .populate('creator', 'name username')
                 .populate('conductors', 'name username')
