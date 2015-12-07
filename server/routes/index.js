@@ -81,8 +81,7 @@ router.get('/', function(req, res, next) {
                         {'permissions.public': true},
                         {'permissions.users': req.user._id},
                         {'permissions.groups': { $in: req.user.groups }}
-                    ],
-                    $or: [{start: {$exists: false}}, {start: {$lt: now}}]
+                    ]
                 });
                 /* for some reason this does not work. maybe the multiple or?
                 query = Project.find({end: {$gte: now}})
