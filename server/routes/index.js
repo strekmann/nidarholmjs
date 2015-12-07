@@ -77,7 +77,7 @@ router.get('/', function(req, res, next) {
                 if (err) { return next(err); }
                 query = Project.find({
                     end: {$gte: now},
-                    start: {$or: [{$exists: false}, {$lt: now}]},
+                    // cannot use $or with date: start: {$or: [{$exists: false}, {$lt: now}]},
                     $or: [
                         {'permissions.public': true},
                         {'permissions.users': req.user._id},
