@@ -76,13 +76,13 @@ block content
                                 if concert.location
                                   span.location= concert.location
                         .row
-                          if project.conductors and project.conductors.length
+                          if project.conductors && project.conductors.length
                             .columns
                               b Dirigent:
                               for conductor in project.conductors
                                 |  
                                 a(href="/users/"+conductor.username)= conductor.name
-                          if project.managers and project.managers.length
+                          if project.managers && project.managers.length
                             .columns
                               b Prosjektleder:
                               for manager in project.managers
