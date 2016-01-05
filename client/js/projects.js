@@ -1,5 +1,5 @@
 /*jslint todo: true*/
-/*globals $, _, window, document, Ractive, moment, marked, Dropzone, flash, Editor, uslug*/
+/*globals $, _, window, document, Ractive, moment, marked, Dropzone, flash, SimpleMDE, uslug*/
 
 // from http://stackoverflow.com/questions/901115/how-can-i-get-query-string-values-in-javascript
 function getParameterByName(name) {
@@ -344,7 +344,7 @@ var Project = Ractive.extend({
 });
 
 var setup_editor = function (element_id) {
-    return new Editor({element: $(element_id)[0]});
+    return new SimpleMDE({element: $(element_id)[0]});
 };
 
 module.exports.projectListView = function (projects, previous_projects) {
@@ -384,8 +384,7 @@ module.exports.projectListView = function (projects, previous_projects) {
 
     projectlist.on('createProject', function (event) {
         event.original.preventDefault();
-        internal_editor.codemirror.save();
-        event.context.project.private_mdtext = $('#private_mdtext').val();
+        event.context.project.private_mdtext = internal_editor.value();
         event.context.project.permissions = $('#permissions').val();
 
         /*jslint unparam: true*/
@@ -542,10 +541,10 @@ module.exports.projectDetailView = function (p, events, posts, files) {
     projectmodal.on('updateProject', function (event) {
         event.original.preventDefault();
         if (project_internal_editor) {
-            event.context.project.private_mdtext = project_internal_editor.codemirror.getValue() || event.context.project.private_mdtext;
+            event.context.project.private_mdtext = project_internal_editor.value() || event.context.project.private_mdtext;
         }
         if (project_external_editor) {
-            event.context.project.public_mdtext = project_external_editor.codemirror.getValue() || event.context.project.public_mdtext;
+            event.context.project.public_mdtext = project_external_editor.value() || event.context.project.public_mdtext;
         }
         event.context.project.permissions = $('#permissions').val();
 
@@ -610,8 +609,7 @@ module.exports.projectDetailView = function (p, events, posts, files) {
 
     postmodal.on('create', function (event) {
         event.original.preventDefault();
-        post_editor.codemirror.save(); //toTextArea();
-        event.context.post.mdtext = $('#post_mdtext').val();
+        event.context.post.mdtext = post_editor.value();
 
         /*jslint unparam: true*/
         projects.createPost(event.context.post, '/projects/' + projects.get('project._id') + '/forum')
@@ -927,8 +925,7 @@ module.exports.eventView = function (event, active_user) {
 
     project.on('updateEvent', function (event) {
         event.original.preventDefault();
-        editor.codemirror.save();
-        event.context.event.mdtext = $('#mdtext').val();
+        event.context.event.mdtext = editor.value();
         event.context.event.permissions = $('#permissions').val();
         event.context.event.tags = $('#tags').select2('val');
 

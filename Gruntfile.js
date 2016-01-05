@@ -74,6 +74,7 @@ module.exports = function(grunt) {
                     'bower_components/pickadate/lib/themes/default.time.css',
                     'bower_components/select2/select2.css',
                     'bower_components/dropzone/downloads/css/dropzone.css',
+                    'bower_components/simplemde/dist/simplemde.min.css',
                     '/tmp/styles.css'
                 ],
                 dest: 'public/css/site.css'
@@ -102,6 +103,7 @@ module.exports = function(grunt) {
                     'bower_components/uslug/lib/uslug.js',
                     'bower_components/iscroll/build/iscroll.js',
                     'bower_components/select2/select2.js',
+                    'bower_components/simplemde/dist/simplemde.min.js',
                     '/tmp/chosen.js',
                     'client/vendor/js/*.js',
                     'bower_components/dropzone/downloads/dropzone.js'
@@ -129,7 +131,6 @@ module.exports = function(grunt) {
                 filter: 'isFile',
                 src: [
                     'bower_components/font-awesome/fonts/*',
-                    'bower_components/leptureeditor/vendor/icomoon/fonts/*',
                     'client/fonts/*'
                 ],
                 dest: 'public/fonts/'
