@@ -348,7 +348,8 @@ var setup_editor = function (element_id) {
 };
 
 module.exports.projectListView = function (projects, previous_projects) {
-    var internal_editor;
+    var internal_editor,
+        external_editor;
 
     var projectlist = new Project({
         el: '#projects',
@@ -371,6 +372,7 @@ module.exports.projectListView = function (projects, previous_projects) {
         setTimeout(function(){
             if (projectlist.get('expanded')) {
                 internal_editor = setup_editor('#private_mdtext');
+                external_editor = setup_editor('#public_mdtext');
                 $('.chosen-permissions').chosen({width: '100%'});
                 $('#startdate').pickadate({format: 'yyyy-mm-dd', formatSubmit: 'yyyy-mm-dd', onSet: function (context) {
                     projectlist.set('project.start', moment(context.select).startOf('day').toISOString());
@@ -385,6 +387,7 @@ module.exports.projectListView = function (projects, previous_projects) {
     projectlist.on('createProject', function (event) {
         event.original.preventDefault();
         event.context.project.private_mdtext = internal_editor.value();
+        event.context.project.public_mdtext = external_editor.value();
         event.context.project.permissions = $('#permissions').val();
 
         /*jslint unparam: true*/
