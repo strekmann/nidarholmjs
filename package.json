@@ -57,7 +57,6 @@
     "grunt-browserify": "",
     "grunt-cli": "",
     "grunt-concurrent": "",
-    "grunt-contrib-coffee": "",
     "grunt-contrib-concat": "",
     "grunt-contrib-copy": "",
     "grunt-contrib-jshint": "",
