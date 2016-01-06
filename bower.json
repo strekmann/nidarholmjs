@@ -15,9 +15,9 @@
     "ractive-transitions-fade": "~0.1.1",
     "ractive-transitions-slide": "~0.1.1",
     "ace-builds": "~1.1.3",
-    "leptureeditor": "*",
     "iscroll": "~5.1.1",
     "pickadate": "sigurdga/pickadate.js#dev",
-    "select2": "~3.5.1"
+    "select2": "~3.5.1",
+    "simplemde": "~1.9.0"
   }
 }

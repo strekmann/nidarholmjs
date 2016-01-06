@@ -4,6 +4,8 @@ var _ = require('underscore'),
     path = require('path'),
     fs = require('fs'),
     moment= require('moment'),
+    multer = require('multer'),
+    upload = multer({ storage: multer.diskStorage({}) }).single('file'),
     util = require('../lib/util'),
     config = require('../settings'),
     is_member = require('../lib/middleware').is_member,
@@ -115,9 +117,9 @@ router.get('/t/*', function (req, res, next) {
     });
 });
 
-router.post('/upload', is_member, function (req, res) {
-    var filename = req.files.file.originalname,
-        tmp_path = req.files.file.path,
+router.post('/upload', is_member, upload, function (req, res) {
+    var filename = req.file.originalname,
+        tmp_path = req.file.path,
         user = req.user._id,
         tags = req.body.tags;
 

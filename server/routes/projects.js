@@ -185,11 +185,18 @@ module.exports.update_project = function (req, res, next) {
 };
 
 module.exports.delete_project = function (req, res, next) {
-    var id = req.params.id;
-
-    Project.findByIdAndRemove(id, function (err, project) {
+    Project.findById(req.params.id, function (err, project) {
         if (err) { return next(err); }
-        res.json(project);
+
+        if (project.creator === req.user || req.is_admin) {
+            project.remove(function (err) {
+                if (err) { return next(err); }
+                res.json(project);
+            });
+        }
+        else {
+            return res.sendStatus(403);
+        }
     });
 };
 

@@ -2,6 +2,8 @@ var express = require('express'),
     router = express.Router(),
     _ = require('underscore'),
     shortid = require('short-mongo-id'),
+    multer = require('multer'),
+    upload = multer({ storage: multer.diskStorage({}) }).single('file'),
     util = require('../lib/util'),
     is_member = require('../lib/middleware').is_member,
     is_musicscoreadmin = require('../lib/middleware').is_musicscoreadmin,
@@ -101,7 +103,7 @@ router.post('/', function (req, res, next) {
     }
 });
 
-router.post('/:id/scores', is_member, is_musicscoreadmin, function (req, res, next) {
+router.post('/:id/scores', is_member, is_musicscoreadmin, upload, function (req, res, next) {
     var options = {
         permissions: {
             'public': false,
@@ -113,8 +115,8 @@ router.post('/:id/scores', is_member, is_musicscoreadmin, function (req, res, ne
     Piece.findById(req.params.id, function (err, piece) {
         if (err) { return next(err); }
 
-        var filename = req.files.file.originalname,
-            tmp_path = req.files.file.path;
+        var filename = req.file.originalname,
+            tmp_path = req.file.path;
 
         util.upload_file(tmp_path, filename, req.user, options, function (err, file) {
             if (err) { return next(err); }

@@ -1,4 +1,4 @@
-/*globals $, _,  Editor*/
+/* globals $, _,  SimpleMDE */
 
 var Forum = require('./ractive/forum');
 
@@ -22,7 +22,7 @@ var checkAreaSize = function(openSize) {
 };
 
 var setup_editor = function (element_id) {
-    return new Editor({element: $(element_id)[0]});
+    return new SimpleMDE({element: $(element_id)[0]});
 };
 
 module.exports.threadView = function(post, active_user){
@@ -104,11 +104,10 @@ module.exports.threadView = function(post, active_user){
 
     forum.on('updatePost', function (event) {
         event.original.preventDefault();
-        md_editor.codemirror.save();
 
         var p = {
             title: $('#title').val(),
-            mdtext: $('#mdtext').val(),
+            mdtext: md_editor.value(),
             tags: $('#tags').select2('val'),
             permissions: $('#permissions').val()
         };
@@ -209,10 +208,9 @@ module.exports.forumView = function (posts) {
 
     forum.on('addPost', function (event) {
         event.original.preventDefault();
-        md_editor.codemirror.save();
 
         event.context.post.title = $('#title').val(); // FIXME: should not be necessary
-        event.context.post.mdtext = $('#mdtext').val();
+        event.context.post.mdtext = md_editor.value();
         event.context.post.permissions = $('#permissions').val();
         event.context.post.tags = $('#tags').select2('val');
 

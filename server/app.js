@@ -1,10 +1,11 @@
 var _           = require('underscore'),
     express     = require('express'),
     path        = require('path'),
-    multer      = require('multer'),
     marked      = require('marked'),
     moment      = require('moment'),
     mongoose    = require('mongoose'),
+    multer = require('multer'), // for project_routes
+    upload = multer({ storage: multer.diskStorage({}) }).single('file'),
     settings    = require('./settings'),
     util        = require('./lib/util'),
     persistentLogin = require('./lib/middleware').persistentLogin,
@@ -171,7 +172,6 @@ app.use(function (req, res, next) {
     }
 });
 
-app.use(multer());
 app.use(express.static(path.join(__dirname, '..' ,'public')));
 
 // routes
@@ -253,7 +253,7 @@ app.delete('/projects/:id', project_routes.delete_project);
 app.post('/projects/:id/events', project_routes.project_create_event);
 app.post('/projects/:id/forum', project_routes.project_create_post);
 app.delete('/projects/:project_id/forum/:post_id', project_routes.project_delete_post);
-app.post('/projects/:id/files', project_routes.project_create_file);
+app.post('/projects/:id/files', upload, project_routes.project_create_file);
 app.put('/projects/:id/poster', project_routes.set_poster);
 app.put('/projects/:project_id/music', project_routes.add_piece);
 app.delete('/projects/:project_id/music', project_routes.remove_piece);

@@ -5,6 +5,8 @@ var express = require('express'),
     router = express.Router(),
     _ = require('underscore'),
     countries = require('country-list/country/cldr/nb/country'),
+    multer = require('multer'),
+    upload = multer({ storage: multer.diskStorage({}) }).single('file'),
     util = require('../lib/util'),
     upload_file = util.upload_file,
     is_admin = require('../lib/middleware').is_admin,
@@ -157,11 +159,11 @@ router.get('/:username/pictures', function (req, res) {
     }
 });
 
-router.post('/:username/pictures', function (req, res) {
+router.post('/:username/pictures', upload, function (req, res) {
     if (req.user.username === req.params.username || req.is_admin) {
         var username = req.params.username,
-            filepath = req.files.file.path,
-            filename = req.files.file.originalname,
+            filepath = req.file.path,
+            filename = req.file.originalname,
             options = {
                 tags: [ config.profile_picture_tag]
             };
