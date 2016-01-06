@@ -144,6 +144,9 @@ module.exports.create_user = function (req, res, next) {
 //};
 
 module.exports.remove_group = function (req, res, next) {
+    if (!req.is_admin) {
+        return res.sendStatus(403);
+    }
     var groupid = req.params.groupid,
         organization = req.body.organization;
 
