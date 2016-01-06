@@ -51,20 +51,6 @@ module.exports = function(grunt) {
                 }
             }
         },
-        coffee: {
-            compile: {
-                options: {
-                    bare: true
-                },
-                files: {
-                    '/tmp/chosen.js': [
-                        'bower_components/chosen/coffee/lib/abstract-chosen.coffee',
-                        'bower_components/chosen/coffee/lib/select-parser.coffee',
-                        'bower_components/chosen/coffee/chosen.jquery.coffee'
-                    ]
-                }
-            }
-        },
         concat: {
             css: {
                 src: [
@@ -104,7 +90,7 @@ module.exports = function(grunt) {
                     'bower_components/iscroll/build/iscroll.js',
                     'bower_components/select2/select2.js',
                     'bower_components/simplemde/dist/simplemde.min.js',
-                    '/tmp/chosen.js',
+                    'bower_components/chosen/chosen.jquery.min.js',
                     'client/vendor/js/*.js',
                     'bower_components/dropzone/dist/dropzone.js'
                 ],
@@ -151,7 +137,7 @@ module.exports = function(grunt) {
             chosen: {
                 expand: true,
                 flatten: true,
-                src: ['bower_components/chosen/public/*.png'],
+                src: ['bower_components/chosen/*.png'],
                 dest: 'public/img/'
             },
             select2: {
