@@ -73,7 +73,7 @@ module.exports = function(grunt) {
                     'bower_components/pickadate/lib/themes/default.date.css',
                     'bower_components/pickadate/lib/themes/default.time.css',
                     'bower_components/select2/select2.css',
-                    'bower_components/dropzone/downloads/css/dropzone.css',
+                    'bower_components/dropzone/dist/dropzone.css',
                     'bower_components/simplemde/dist/simplemde.min.css',
                     '/tmp/styles.css'
                 ],
@@ -106,7 +106,7 @@ module.exports = function(grunt) {
                     'bower_components/simplemde/dist/simplemde.min.js',
                     '/tmp/chosen.js',
                     'client/vendor/js/*.js',
-                    'bower_components/dropzone/downloads/dropzone.js'
+                    'bower_components/dropzone/dist/dropzone.js'
                 ],
                 dest: 'public/js/vendor.js'
             }
