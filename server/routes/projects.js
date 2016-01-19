@@ -381,8 +381,8 @@ module.exports.project_create_file = function (req, res, next) {
             {'permissions.groups': { $in: req.user.groups }}
         ]).exec(function (err, project) {
             if (err) { return next(err); }
-            var filepath = req.files.file.path,
-                filename = req.files.file.originalname,
+            var filepath = req.file.path,
+                filename = req.file.originalname,
                 user = req.user;
 
             var options = {
