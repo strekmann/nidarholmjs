@@ -1036,9 +1036,11 @@ module.exports.piece = function (p, g, us) {
         scores = piece.get('scores')[group];
         _.each(scores, function (file) {
             var mockfile = {
-                name: file.filename
+                name: file.filename,
+                size: file.size
             };
             drop.emit('addedfile', mockfile);
+            drop.emit('complete', mockfile);
             if (file.is_image) {
                 drop.emit('thumbnail', mockfile, file.thumbnail_path);
             }

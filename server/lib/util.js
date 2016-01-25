@@ -269,51 +269,54 @@ var save_file = function (tmp_path, prefix, do_delete) {
     var magic = new Magic(mmm.MAGIC_MIME_TYPE),
         promise = new mongoose.Promise();
 
-    magic.detectFile(tmp_path, function(err, mimetype) {
+    fs.stat(tmp_path, function (err, stats) {
         if (err) { promise.error(err); }
+        magic.detectFile(tmp_path, function(err, mimetype) {
+            if (err) { promise.error(err); }
 
-        var hash = crypto.createHash('sha1');
-        var stream = fs.createReadStream(tmp_path);
-        stream.on('data', function (data) {
-            hash.update(data);
-        });
-        stream.on('end', function () {
-            var hex = hash.digest('hex');
+            var hash = crypto.createHash('sha1');
+            var stream = fs.createReadStream(tmp_path);
+            stream.on('data', function (data) {
+                hash.update(data);
+            });
+            stream.on('end', function () {
+                var hex = hash.digest('hex');
 
-            // compute paths
-            if (prefix[0] !== '/') {
-                prefix = path.join(__dirname, '..', '..', prefix);
-            }
-
-            var directory = path.join(prefix, hex.substr(0,2), hex.substr(2,2));
-            var file_path = path.join(directory, hex);
-
-            fs.exists(file_path, function (exists) {
-                if (exists) {
-                    promise.fulfill(hex, mimetype);
+                // compute paths
+                if (prefix[0] !== '/') {
+                    prefix = path.join(__dirname, '..', '..', prefix);
                 }
-                else {
 
-                    mkdirp(directory, function (err) {
-                        if (err) { promise.error(err); }
+                var directory = path.join(prefix, hex.substr(0,2), hex.substr(2,2));
+                var file_path = path.join(directory, hex);
 
-                        // move file (or copy + unlink)
-                        // fs.rename does not work from tmp to other partition
-                        var is = fs.createReadStream(tmp_path);
-                        var os = fs.createWriteStream(file_path);
+                fs.exists(file_path, function (exists) {
+                    if (exists) {
+                        promise.fulfill(hex, mimetype, stats.size);
+                    }
+                    else {
 
-                        is.pipe(os);
-                        is.on('end',function() {
-                            if (do_delete) {
-                                fs.unlinkSync(tmp_path);
-                            }
+                        mkdirp(directory, function (err) {
+                            if (err) { promise.error(err); }
 
-                            generate_thumbnail_for_image(hex, file_path, mimetype).then(function () {
-                                promise.fulfill(hex, mimetype);
+                            // move file (or copy + unlink)
+                            // fs.rename does not work from tmp to other partition
+                            var is = fs.createReadStream(tmp_path);
+                            var os = fs.createWriteStream(file_path);
+
+                            is.pipe(os);
+                            is.on('end',function() {
+                                if (do_delete) {
+                                    fs.unlinkSync(tmp_path);
+                                }
+
+                                generate_thumbnail_for_image(hex, file_path, mimetype).then(function () {
+                                    promise.fulfill(hex, mimetype, stats.size);
+                                });
                             });
                         });
-                    });
-                }
+                    }
+                });
             });
         });
     });
@@ -329,7 +332,7 @@ module.exports.upload_file = function (tmp_path, filename, user, param_options, 
             do_create_duplicates_in_database: true
         }, param_options);
 
-    save_file(tmp_path, options.prefix, options.do_delete).then(function (hex, mimetype) {
+    save_file(tmp_path, options.prefix, options.do_delete).then(function (hex, mimetype, size) {
         File.findOne({filename: filename, hash: hex}, function (err, file) {
             if (err) {
                 callback(err);
@@ -339,6 +342,7 @@ module.exports.upload_file = function (tmp_path, filename, user, param_options, 
                 file = new File();
                 file._id = shortid();
                 file.hash = hex;
+                file.size = size;
                 file.filename = filename;
                 file.mimetype = mimetype;
                 file.creator = user;

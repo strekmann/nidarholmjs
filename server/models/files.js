@@ -9,6 +9,7 @@ var FileSchema = new mongoose.Schema({
     created: {type: Date, default: Date.now},
     creator: {type: String, ref: 'User'},
     mimetype: {type: String},
+    size: {type: Number},
     permissions: {
         groups: [{type: String, ref: 'Group'}],
         users: [{type: String, ref: 'User'}],
