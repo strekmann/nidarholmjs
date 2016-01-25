@@ -31,7 +31,7 @@ module.exports.persistentLogin = function (req, res, next) {
     token.user = req.user._id;
     token.save(function(err) {
         if (err) { return next(err); }
-        res.cookie('remember_me', token, { path: '/', httpOnly: true, maxAge: 604800000 }); // 7 days
+        res.cookie('remember_me', token, { path: '/', httpOnly: true, maxAge: 2419200000 }); // 28 days
         return next();
     });
 };
