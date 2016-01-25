@@ -190,17 +190,25 @@ block content
     if active_user
       .row
         .columns
-          h2 Finn stykke
+          h2 Finn stykke som allerede er lagret
           form(on-submit="addPiece")
             .row
               .columns
-                input#piece_id(name="piece_id" type="text" value="{{pieceselect}}")
+                p Søk blandt tidligere spilte stykker, og legg dem til. Det kan hende notene allerede er lastet opp.
+                input#piece_id(name="piece_id" type="text" value="{{pieceselect}}" placeholder="Søk…")
             .row
               .columns
-                button Legg til
+                button Legg til i prosjekt
                 button.secondary(on-click="close") Avbryt
 
-          h2 Nytt stykke
+          .row
+            .medium-6.medium-centered.columns.text-center
+              | -
+              | ELLER
+              |  -
+
+          h2 Legg til nytt stykke
+          p Om det ikke kommer fram i søket over
           form(on-submit="createPiece")
             .row
               .columns
@@ -222,7 +230,7 @@ block content
                 input#piece_arrangers(name="arrangers" type="text" value="{{.piece.arrangers}}")
             .row
               .columns
-                button Lagre
+                button Lagre og legg til i prosjekt
                 button.secondary(on-click="close") Avbryt
 
 
@@ -290,7 +298,7 @@ block content
               a.button.tiny(on-click="newPiece")
                 i.fa.fa-music
                 | &nbsp;
-                | Nytt stykke
+                | Legg til stykke
             | {{#music.length}}
             h2 Repertoar
             ul.fa-ul
