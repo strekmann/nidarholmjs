@@ -141,5 +141,14 @@ router.post('/:id/scores', is_member, is_musicscoreadmin, upload, function (req,
 
     });
 });
-
+router.delete('/:id/scores/:file_id', is_member, is_musicscoreadmin, function (req, res, next) {
+    Piece.findById(req.params.id, function (err, piece) {
+        if (err) { return next(err); }
+        piece.scores.pull(req.params.file_id);
+        piece.save(function (err, piece) {
+            if (err) { return next(err); }
+            res.sendStatus(200);
+        });
+    });
+});
 module.exports = router;

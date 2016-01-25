@@ -1031,13 +1031,23 @@ module.exports.piece = function (p, g, us) {
         var group = $(el).find('input[name=group]').val();
         var id = '#' + $(el).attr('id');
         var drop = new Dropzone(id, {
-            url: '/music/' + piece.get('piece._id') + '/scores'
+            url: '/music/' + piece.get('piece._id') + '/scores',
+            addRemoveLinks: true,
+            dictRemoveFile: 'slett'
+        });
+        drop.on('removedfile', function (file) {
+            $.ajax({
+                url: '/music/' + piece.get('piece._id') + '/scores/' + file._id,
+                type: 'DELETE',
+                dataType: 'json'
+            });
         });
         scores = piece.get('scores')[group];
         _.each(scores, function (file) {
             var mockfile = {
                 name: file.filename,
-                size: file.size
+                size: file.size,
+                _id: file._id
             };
             drop.emit('addedfile', mockfile);
             drop.emit('complete', mockfile);
