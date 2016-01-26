@@ -1021,8 +1021,31 @@ module.exports.piece = function (p, g, us) {
             piece: p,
             groups: g,
             scores: scores,
-            user_scores: us
-        }
+            user_scores: us,
+            expanded: false,
+            marked: function(text){
+                if (text) {
+                    return marked(text);
+                }
+            }
+        },
+    });
+
+    piece.on('toggleExpanded', function (event) {
+        piece.toggle('expanded');
+    });
+    piece.on('saveDescription', function (event) {
+        event.original.preventDefault();
+        $.ajax({
+            url: '/music/' + this.get('piece')._id + '/description',
+            type: 'POST',
+            dataType: 'json',
+            data: {description: piece.get('piece.description')}
+        })
+        .then(function (data) {
+            piece.set('expanded', false);
+            piece.set('piece.description', data.description);
+        });
     });
 
     Dropzone.autoDiscover = false;

@@ -51,6 +51,22 @@ block content
                 span {{.piece.acquired}}
                 | {{/.piece.acquired}}
 
+        | {{#if piece.description}}
+        hr
+        h2 Verkbeskrivelse
+        | {{{marked(piece.description)}}}
+        | {{/if}}
+
+        if is_admin
+          | {{#if expanded}}
+          h2 Endre verksbeskrivelse
+          form(on-submit="saveDescription")
+            textarea(name="description" type="textarea" value="{{piece.description}}")
+            button Lagre
+          | {{else}}
+          button(on-click="toggleExpanded") Endre verksbeskrivelse
+          | {{/if expanded}}
+
         | {{#if user_scores.length}}
         h2 Last ned noter
         | {{# user_scores}}

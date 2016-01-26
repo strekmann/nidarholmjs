@@ -4,6 +4,7 @@ var PieceSchema = new mongoose.Schema({
     _id: {type: String, required: true, unique: true},
     title: {type: String, trim: true, required: true},
     subtitle: {type: String, trim: true},
+    description: {type: String, trim: true},
     //part: {type: String, trim: true},
     composers: [{type: String, trim: true}],
     arrangers: [{type: String, trim: true}],
