@@ -1022,7 +1022,6 @@ module.exports.piece = function (p, g, us) {
             groups: g,
             scores: scores,
             user_scores: us,
-            expanded: false,
             marked: function(text){
                 if (text) {
                     return marked(text);
@@ -1031,8 +1030,8 @@ module.exports.piece = function (p, g, us) {
         },
     });
 
-    piece.on('toggleExpanded', function (event) {
-        piece.toggle('expanded');
+    piece.on('toggleDescription', function (event) {
+        piece.toggle('expandedDescription');
     });
     piece.on('saveDescription', function (event) {
         event.original.preventDefault();
@@ -1043,8 +1042,57 @@ module.exports.piece = function (p, g, us) {
             data: {description: piece.get('piece.description')}
         })
         .then(function (data) {
-            piece.set('expanded', false);
+            piece.set('expandedDescription', false);
             piece.set('piece.description', data.description);
+        });
+    });
+
+    piece.on('toggleDescriptionComposer', function (event) {
+        piece.toggle('expandedDescriptionComposer');
+    });
+    piece.on('saveDescriptionComposer', function (event) {
+        event.original.preventDefault();
+        $.ajax({
+            url: '/music/' + this.get('piece')._id + '/description/composer',
+            type: 'POST',
+            dataType: 'json',
+            data: {description_composer: piece.get('piece.description_composer')}
+        })
+        .then(function (data) {
+            piece.set('expandedDescriptionComposer', false);
+            piece.set('piece.description_composer', data.description_composer);
+        });
+    });
+    piece.on('toggleDescriptionArranger', function (event) {
+        piece.toggle('expandedDescriptionArranger');
+    });
+    piece.on('saveDescriptionArranger', function (event) {
+        event.original.preventDefault();
+        $.ajax({
+            url: '/music/' + this.get('piece')._id + '/description/arranger',
+            type: 'POST',
+            dataType: 'json',
+            data: {description_arranger: piece.get('piece.description_arranger')}
+        })
+        .then(function (data) {
+            piece.set('expandedDescriptionArranger', false);
+            piece.set('piece.description_arranger', data.description_arranger);
+        });
+    });
+    piece.on('toggleDescriptionPublisher', function (event) {
+        piece.toggle('expandedDescriptionPublisher');
+    });
+    piece.on('saveDescriptionPublisher', function (event) {
+        event.original.preventDefault();
+        $.ajax({
+            url: '/music/' + this.get('piece')._id + '/description/publisher',
+            type: 'POST',
+            dataType: 'json',
+            data: {description_publisher: piece.get('piece.description_publisher')}
+        })
+        .then(function (data) {
+            piece.set('expandedDescriptionPublisher', false);
+            piece.set('piece.description_publisher', data.description_publisher);
         });
     });
 

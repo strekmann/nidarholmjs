@@ -161,4 +161,31 @@ router.post('/:id/description', is_member, is_musicscoreadmin, function (req, re
         });
     });
 });
+router.post('/:id/description/composer', is_member, is_musicscoreadmin, function (req, res, next) {
+    Piece.findById(req.params.id, function (err, piece) {
+        piece.description_composer = req.body.description_composer;
+        piece.save(function (err) {
+            if (err) { return next(err); }
+            res.json({description_composer: piece.description_composer});
+        });
+    });
+});
+router.post('/:id/description/arranger', is_member, is_musicscoreadmin, function (req, res, next) {
+    Piece.findById(req.params.id, function (err, piece) {
+        piece.description_arranger = req.body.description_arranger;
+        piece.save(function (err) {
+            if (err) { return next(err); }
+            res.json({description_arranger: piece.description_arranger});
+        });
+    });
+});
+router.post('/:id/description/publisher', is_member, is_musicscoreadmin, function (req, res, next) {
+    Piece.findById(req.params.id, function (err, piece) {
+        piece.description_publisher = req.body.description_publisher;
+        piece.save(function (err) {
+            if (err) { return next(err); }
+            res.json({description_publisher: piece.description_publisher});
+        });
+    });
+});
 module.exports = router;

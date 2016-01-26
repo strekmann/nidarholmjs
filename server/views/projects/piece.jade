@@ -51,21 +51,6 @@ block content
                 span {{.piece.acquired}}
                 | {{/.piece.acquired}}
 
-        | {{#if piece.description}}
-        hr
-        h2 Verkbeskrivelse
-        | {{{marked(piece.description)}}}
-        | {{/if}}
-
-        if is_musicscoreadmin
-          | {{#if expanded}}
-          h2 Endre verksbeskrivelse
-          form(on-submit="saveDescription")
-            textarea(name="description" type="textarea" value="{{piece.description}}")
-            button Lagre
-          | {{else}}
-          button(on-click="toggleExpanded") Endre verksbeskrivelse
-          | {{/if expanded}}
 
         | {{#if user_scores.length}}
         h2 Last ned noter
@@ -106,6 +91,83 @@ block content
                 a(href="/files/{{._id}}") {{.filename}}
           | {{/.scores}}
           | {{/groups}}
+
+
+        if is_musicscoreadmin
+          | {{#if expandedDescription}}
+          h2 Endre verksbeskrivelse
+          form(on-submit="saveDescription")
+            textarea(name="description" type="textarea" value="{{piece.description}}")
+            button Lagre
+          | {{else}}
+          button.tiny.right(on-click="toggleDescription")
+            i.fa.fa-fw.fa-edit
+          | {{/if expandedDescription}}
+
+        h2 Verkbeskrivelse
+        | {{#if piece.description}}
+        | {{{marked(piece.description)}}}
+        | {{else}}
+        p
+          em Ingen
+        | {{/if}}
+
+        if is_musicscoreadmin
+          | {{#if expandedDescriptionComposer}}
+          h2 Endre tekst fra komponist
+          form(on-submit="saveDescriptionComposer")
+            textarea(name="description_composer" type="textarea" value="{{piece.description_composer}}")
+            button Lagre
+          | {{else}}
+          button.tiny.right(on-click="toggleDescriptionComposer")
+            i.fa.fa-fw.fa-edit
+          | {{/if expandedDescriptionComposer}}
+
+        h2 Tekst fra komponist
+        | {{#if piece.description_composer}}
+        | {{{marked(piece.description_composer)}}}
+        | {{else}}
+        p
+          em Ingen
+        | {{/if}}
+
+        if is_musicscoreadmin
+          | {{#if expandedDescriptionArranger}}
+          h2 Endre tekst fra arrangør
+          form(on-submit="saveDescriptionArranger")
+            textarea(name="description_arranger" type="textarea" value="{{piece.description_arranger}}")
+            button Lagre
+          | {{else}}
+          button.tiny.right(on-click="toggleDescriptionArranger")
+            i.fa.fa-fw.fa-edit
+          | {{/if expandedDescriptionArranger}}
+
+        h2 Tekst fra arrangør
+        | {{#if piece.description_arranger}}
+        | {{{marked(piece.description_arranger)}}}
+        | {{else}}
+        p
+          em Ingen
+        | {{/if}}
+
+        if is_musicscoreadmin
+          | {{#if expandedDescriptionPublisher}}
+          h2 Endre tekst fra forlag/utgiver
+          form(on-submit="saveDescriptionPublisher")
+            textarea(name="description_publisher" type="textarea" value="{{piece.description_publisher}}")
+            button Lagre
+          | {{else}}
+          button.tiny.right(on-click="toggleDescriptionPublisher")
+            i.fa.fa-fw.fa-edit
+          | {{/if expandedDescriptionPublisher}}
+
+        h2 Tekst fra forlag/utgiver
+        | {{#if piece.description_publisher}}
+        | {{{marked(piece.description_publisher)}}}
+        | {{else}}
+        p
+          em Ingen
+        | {{/if}}
 
 
 block javascript
