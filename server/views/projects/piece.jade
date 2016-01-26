@@ -57,7 +57,7 @@ block content
         | {{{marked(piece.description)}}}
         | {{/if}}
 
-        if is_admin
+        if is_musicscoreadmin
           | {{#if expanded}}
           h2 Endre verksbeskrivelse
           form(on-submit="saveDescription")

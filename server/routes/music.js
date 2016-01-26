@@ -6,7 +6,6 @@ var express = require('express'),
     upload = multer({ storage: multer.diskStorage({}) }).single('file'),
     util = require('../lib/util'),
     is_member = require('../lib/middleware').is_member,
-    is_admin = require('../lib/middleware').is_admin,
     is_musicscoreadmin = require('../lib/middleware').is_musicscoreadmin,
     Project = require('../models/projects').Project,
     Piece = require('../models/projects').Piece;
@@ -153,7 +152,7 @@ router.delete('/:id/scores/:file_id', is_member, is_musicscoreadmin, function (r
     });
 });
 
-router.post('/:id/description', is_member, is_admin, function (req, res, next) {
+router.post('/:id/description', is_member, is_musicscoreadmin, function (req, res, next) {
     Piece.findById(req.params.id, function (err, piece) {
         piece.description = req.body.description;
         piece.save(function (err) {
