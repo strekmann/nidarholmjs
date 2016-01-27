@@ -280,7 +280,7 @@ router.get('/:id', function (req, res, next) {
         ]);
     }
     else {
-        query = query.where('permissions.public', true);
+        query = query.find('permissions.public', true);
     }
     query.populate('creator', 'name username').exec(function (err, file) {
         if (err) { return next(err); }
