@@ -65,7 +65,7 @@ router.get('/t/*', function (req, res, next) {
     var criteria;
     var tags = tagstring.split("/");
     if (req.user) {
-        criteria = {tags: {$ne: ''}, '$or': [
+        criteria = {'$or': [
             {creator: req.user._id},
             {'permissions.public': true},
             {'permissions.users': req.user._id},
@@ -75,15 +75,11 @@ router.get('/t/*', function (req, res, next) {
         ]};
     }
     else {
-        criteria = {tags: {$ne: ''}, 'permissions.public': true};
+        criteria = {'permissions.public': true};
     }
+    criteria.tags = {'$all': tags};
 
     query = File.find(criteria)
-    _.each(tags, function (tag) {
-        query.find({'tags': tag});
-    });
-
-    query = query
         .sort('-created')
         .populate('creator', 'username name')
         .limit(20);
@@ -97,7 +93,7 @@ router.get('/t/*', function (req, res, next) {
         res.format({
             html: function () {
                 File.aggregate([
-                    {$match: {tags: {$in: tags}}},
+                    {$match: {tags: {$all: tags}}},
                     {$project: {tags: 1}},
                     {$unwind: '$tags'},
                     {$match: {tags: {$nin: tags}}},
