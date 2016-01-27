@@ -14,18 +14,21 @@ var _ = require('underscore'),
 
 router.get('/', function (req, res, next) {
     var query;
+    var criteria;
     if (req.user) {
-        query = File.find().or([
+        criteria = {tags: {$ne: ''}, '$or': [
             {creator: req.user._id},
             {'permissions.public': true},
             {'permissions.users': req.user._id},
-            {'permissions.groups': { $in: req.user.groups }}
-        ]);
+            {'permissions.groups': { '$in': _.map(req.user.groups, function (group) {
+                return group.id;
+            })}}
+        ]};
     }
     else {
-        query = File.find({'permissions.public': true});
+        criteria = {tags: {$ne: ''}, 'permissions.public': true};
     }
-    query = query
+    query = File.find(criteria)
         .sort('-created')
         .populate('creator', 'username name')
         .limit(20);
@@ -37,7 +40,7 @@ router.get('/', function (req, res, next) {
         res.format({
             html: function () {
                 File.aggregate([
-                    {$match: {tags: {$ne: ''}}},
+                    {$match: criteria},
                     {$project: {tags: 1}},
                     {$unwind: '$tags'},
                     {$group: {_id: '$tags', count: {$sum: 1}}},
