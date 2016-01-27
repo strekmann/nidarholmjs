@@ -37,7 +37,7 @@ block content
               .right
                 button.small Lagre
           | {{else}}
-          if file.creator._id === active_user._id || is_admin
+          if active_user && file.creator._id === active_user._id || is_admin
             .right
               button.small(on-click="toggleEdit")
                 i.fa.fa-edit
