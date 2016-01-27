@@ -270,18 +270,23 @@ router.delete('/:id', function (req, res, next) {
 });
 
 router.get('/:id', function (req, res, next) {
-    var query = File.findById(req.params.id);
+    var criteria;
     if (req.user) {
-        query = query.or([
+        criteria = {'$or': [
             {creator: req.user._id},
             {'permissions.public': true},
             {'permissions.users': req.user._id},
-            {'permissions.groups': { $in: req.user.groups }}
-        ]);
+            {'permissions.groups': { '$in': _.map(req.user.groups, function (group) {
+                return group.id;
+            })}}
+        ]};
     }
     else {
-        query = query.find('permissions.public', true);
+        criteria = {'permissions.public': true};
     }
+    criteria._id = req.params.id;
+
+    var query = File.findOne(criteria);
     query.populate('creator', 'name username').exec(function (err, file) {
         if (err) { return next(err); }
         if (!file) {
