@@ -130,7 +130,8 @@ block content
         ul
           | {{#each tags}}
           li
-            a(href="{{taglink(.)}}") {{.}}
+            a(href="{{taglink(.id)}}") {{.id}}
+            span.count {{.count}}
           | {{else}}
           li
             i Ingen flere

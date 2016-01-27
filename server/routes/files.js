@@ -46,10 +46,10 @@ router.get('/', function (req, res, next) {
                     {$group: {_id: '$tags', count: {$sum: 1}}},
                     {$sort: {count: -1}},
                     {$limit: 20},
-                    {$project: {'_id': 1}}
+                    {$project: {'_id': 1, 'count': 1}}
                 ], function (err, tags) {
                     if (err) { return next(err); }
-                    res.render('files/index', {files: files, tags: _.map(tags, function (tag) { return tag._id; }), meta: {title: 'Filer'}});
+                    res.render('files/index', {files: files, tags: _.map(tags, function (tag) { return { id: tag._id, count: tag.count }; }), meta: {title: 'Filer'}});
                 });
             },
             json: function () {
