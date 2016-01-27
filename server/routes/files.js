@@ -62,22 +62,26 @@ router.get('/', function (req, res, next) {
 router.get('/t/*', function (req, res, next) {
     var tagstring = req.params[0];
     var query;
+    var criteria;
+    var tags = tagstring.split("/");
     if (req.user) {
-        query = File.find().or([
+        criteria = {tags: {$ne: ''}, '$or': [
             {creator: req.user._id},
             {'permissions.public': true},
             {'permissions.users': req.user._id},
-            {'permissions.groups': { $in: req.user.groups }}
-        ]);
+            {'permissions.groups': { '$in': _.map(req.user.groups, function (group) {
+                return group.id;
+            })}}
+        ]};
     }
     else {
-        query = File.find({'permissions.public': true});
+        criteria = {tags: {$ne: ''}, 'permissions.public': true};
     }
 
-    _.each(tagstring.split("/"), function (tag) {
+    query = File.find(criteria)
+    _.each(tags, function (tag) {
         query.find({'tags': tag});
     });
-    var tags = tagstring.split("/");
 
     query = query
         .sort('-created')
@@ -100,12 +104,12 @@ router.get('/t/*', function (req, res, next) {
                     {$group: {_id: '$tags', count: {$sum: 1}}},
                     {$sort: {count: -1}},
                     {$limit: 20},
-                    {$project: {'_id': 1}}
+                    {$project: {'_id': 1, 'count': 1}}
                 ], function (err, tags) {
                     if (err) { return next(err); }
                     res.format({
                         html: function () {
-                            res.render('files/index', {files: files, tags: _.map(tags, function (tag) { return tag._id; }), meta: {title: 'Filer'}});
+                            res.render('files/index', {files: files, tags: _.map(tags, function (tag) { return { id: tag._id, count: tag.count }; }), meta: {title: 'Filer'}});
                         },
                         json: function () {
                             res.json(files);
