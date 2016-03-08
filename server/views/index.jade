@@ -54,7 +54,8 @@ block content
               article.project
                 header
                   if project.poster
-                    img(src=project.poster.path alt="")
+                    a(href="/"+project.year+"/"+project.tag)
+                      img(src=project.poster.path alt="")
                   h1
                     a(href="/"+project.year+"/"+project.tag)= project.title
                   .row
