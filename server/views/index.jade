@@ -106,14 +106,13 @@ block content
             for project in projects
               article.project
                 header
+                  if project.poster
+                    a(href="/"+project.year+"/"+project.tag)
+                      img(src=project.poster.path alt="")
                   h1
                     a(href="/"+project.year+"/"+project.tag)= project.title
                   .row
-                    .columns.medium-4.push-8
-                      if project.poster
-                        img(src=project.poster.path alt="")
-
-                    .columns.medium-8.pull-4
+                    .columns
                       .meta
                         .row
                           .columns
