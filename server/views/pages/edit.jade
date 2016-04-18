@@ -1,0 +1,27 @@
+extends ../layouts/main
+
+block content
+  section#page
+
+    .row
+      .columns
+        if is_member
+          h1 Rediger innhold
+          form(action='/' + page.slug + '/edit' method='post')
+            .row
+              .columns
+                label Innhold
+                  textarea(name='mdtext')= page.mdtext
+            .row
+              .columns
+                label Nettadresse
+                  input(name='slug' value=page.slug)
+            .row
+              .columns
+                button(type='submit') Lagre
+
+block javascript
+  script
+    | require('s7n').pages.pageEditView(
+    != JSON.stringify(page)
+    | );

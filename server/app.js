@@ -257,10 +257,8 @@ app.post('/projects/:id/files', upload, project_routes.project_create_file);
 app.put('/projects/:id/poster', project_routes.set_poster);
 app.put('/projects/:project_id/music', project_routes.add_piece);
 app.delete('/projects/:project_id/music', project_routes.remove_piece);
-/*jslint unparam: true*/
-app.get('/foundation', function(req, res){
-    res.render('foundation');
-});
+
+app.use('/', require('./routes/pages'));
 
 // 500 status
 /*jshint unused: vars*/

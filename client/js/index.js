@@ -1,4 +1,4 @@
-/*globals $, _, Ractive, moment*/
+/*global $, _, Ractive, moment*/
 
 moment.locale($('html').attr('locale'));
 
@@ -159,6 +159,7 @@ module.exports = {
     user: require('./user'),
     projects: require('./projects'),
     files: require('./files'),
+    pages: require('./pages'),
     flash: flash,
     tagify: tagify,
     userify: userify
