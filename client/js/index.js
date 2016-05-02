@@ -129,7 +129,7 @@ var tagify = function (first_var) {
             }
         },
         ajax: {
-            url: "/tags",
+            url: "/search/tags",
             dataType: "json",
             quietMillis: 100,
             data: function (term) { // , page

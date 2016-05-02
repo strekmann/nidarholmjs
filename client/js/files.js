@@ -29,7 +29,7 @@ var Files = Ractive.extend({
     },
     search: function (query) {
         return $.ajax({
-            url: '/tags',
+            url: '/search/tags',
             dataType: 'json',
             type: 'get',
             data: {

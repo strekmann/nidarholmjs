@@ -219,7 +219,7 @@ router.get('/search/users', is_member, function (req, res, next) {
     }
 });
 
-router.get('/tags', is_member, function (req, res) {
+router.get('/search/tags', is_member, function (req, res) {
     if (req.query.q) {
         var pattern = RegExp('^' + req.query.q);
         async.parallel({
