@@ -201,7 +201,7 @@ router.post('/login/check_email', function (req, res, next) {
     });
 });
 
-router.get('/users', is_member, function (req, res, next) {
+router.get('/search/users', is_member, function (req, res, next) {
     if (req.query.q) {
         var pattern = RegExp('^' + req.query.q, 'i');
         User.find().select('username name').exec(function (err, users) {

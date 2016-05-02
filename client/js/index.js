@@ -69,7 +69,7 @@ var userify = function (selector, data, callback) {
             callback(d);
         },
         ajax: {
-            url: "/users",
+            url: "/search/users",
             dataType: "json",
             quietMillis: 100,
             data: function (term) { // , page

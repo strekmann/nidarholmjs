@@ -187,7 +187,7 @@ module.exports.addUser = function () {
         var name = event.context.name;
         if (name.length > 1) {
             var promise = $.ajax({
-                url: '/users',
+                url: '/search/users',
                 type: 'GET',
                 dataType: 'json',
                 data: {

@@ -1,6 +1,6 @@
 /*globals $, Ractive*/
 
-module.exports.memberlistView = undefined;
+module.exports.memberlistView = function () {};
 
 module.exports.editOrganizationView = function () {
     $("#postcode").keyup(function () {
