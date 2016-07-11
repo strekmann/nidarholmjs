@@ -26,6 +26,7 @@ var GroupSchema = new mongoose.Schema({
     }],
     group_email: {type: String, lowercase: true, trim: true},
     group_leader_email: {type: String, lowercase: true, trim: true},
+    externally_hidden: {type: Boolean, default: false},
     old_id: {type: Number}
 });
 

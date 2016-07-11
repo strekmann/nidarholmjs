@@ -19,7 +19,7 @@ block content
         h1 Instrumentgrupper
 
         for group in org.instrument_groups
-          if group.members.length > 0
+          if group.members.length > 0 && !group.externally_hidden
             .group(data-id=group.id)
               h2
                 if is_admin
