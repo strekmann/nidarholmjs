@@ -222,8 +222,8 @@ router.get('/search/users', is_member, function (req, res, next) {
 router.get('/search/tags', is_member, function (req, res) {
     if (req.query.q) {
         var pattern = RegExp('^' + req.query.q);
-        async.parallel({
-            project_tags: function (callback) {
+        async.parallel([
+            function (callback) {
                 Project.find().select('tag').exec(function (err, projects) {
                     var matches = _.reduce(projects, function (memo, project) {
                         if (project.tag && project.tag.match(pattern)) {
@@ -234,7 +234,7 @@ router.get('/search/tags', is_member, function (req, res) {
                     callback(err, matches);
                 });
             },
-            forum_tags: function (callback) {
+            function (callback) {
                 ForumPost.distinct('tags', function (err, tags) {
                     var matches = _.filter(tags, function (tag) {
                         return tag.match(pattern);
@@ -242,15 +242,15 @@ router.get('/search/tags', is_member, function (req, res) {
                     callback(err, matches);
                 });
             },
-            files_tags: function (callback) {
+            function (callback) {
                 File.distinct('tags', function (err, tags) {
                     var matches = _.filter(tags, function (tag) {
                         return tag.match(pattern);
                     });
-                    callback(err, matches);
+                    return callback(err, matches);
                 });
             }
-        }, function (err, results) {
+        ], function (err, results) {
             if (err) {
                 console.error(err);
                 res.sendStatus(500);
