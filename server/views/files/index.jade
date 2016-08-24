@@ -58,15 +58,6 @@ block content
               span.meter(style="width: {{uploading.progress}}%")
           | {{/uploading_files}}
 
-          .row
-            .right.columns.small-12
-              form(on-submit="filter")
-                .row
-                  .columns.small-4
-                    label.right.inline(for="filter") Søk i merkelapper (tags)
-                  .columns.small-8
-                    input#filter(name="filter" type="text")
-
         | {{#files}}
         .row(intro-outro="slide")
           .small-2.columns
@@ -124,6 +115,10 @@ block content
             a(href="/files/t/styremøte") Styremøtereferater
           li
             a(href="/files/t/årsmøter") Årsmøtereferater
+
+        h2 Søk i merkelapper
+        form(on-submit="filter")
+          input#filter(name="filter" type="text")
 
         h2 Mest brukte merkelapper
 
