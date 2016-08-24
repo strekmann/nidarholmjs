@@ -59,12 +59,12 @@ block content
           | {{/uploading_files}}
 
           .row
-            .right.columns.medium-8
+            .right.columns.small-12
               form(on-submit="filter")
                 .row
-                  .columns.small-2
+                  .columns.small-4
                     label.right.inline(for="filter") Søk i merkelapper (tags)
-                  .columns.small-10
+                  .columns.small-8
                     input#filter(name="filter" type="text")
 
         | {{#files}}
