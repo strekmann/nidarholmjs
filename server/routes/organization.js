@@ -7,7 +7,7 @@ var _ = require('underscore'),
     Organization = require('../models').Organization;
 
 module.exports.memberlist = function (req, res) {
-    req.organization.populate('instrument_groups', 'name members', function (err, organization) {
+    req.organization.populate('instrument_groups', 'name members externally_hidden', function (err, organization) {
         if (err) { throw err; }
         User.populate(organization.instrument_groups, {
             path: 'members.user',
