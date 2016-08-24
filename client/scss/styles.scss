@@ -312,9 +312,6 @@ nav.top-bar {
 
 #next-events,
 #next-projects {
-    h1 {
-        font-size: rem-calc(20px);
-    }
     a.project,
     a.event {
         display: inline-block;
@@ -604,13 +601,15 @@ nav.top-bar {
         padding: 0.4rem 0.625rem;
     }
 
-    h1 {
-        font-size: rem-calc(22px);
+    .activity {
+        margin-bottom: rem-calc(25px);
+    }
+
+    h2 {
         font-style: normal;
-        margin-top: rem-calc(20px);
-        margin-bottom: rem-calc(5px);
+        margin-bottom: 0;
         i {
-            margin-right: 11px;
+            color: #999999;
         }
     }
     p {

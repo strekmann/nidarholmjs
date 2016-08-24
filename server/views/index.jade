@@ -148,15 +148,19 @@ block content
 
   script#activity-template(type="text/ractive")
     | {{#activities}}
-    li
+    li.activity
       | {{#content_type == "upload"}}
       h2
-        i.fa.fa-upload.fa-fw.left
+        i.fa.fa-upload.fa-fw.right
+        | {{#.project.title}}
+        a(href="/{{.project.year}}/{{.project.tag}}") {{.project.title}}
+        | {{else}}
         a(href='/files/{{content_ids.0}}')
           | {{title}}
         small
           | &emsp;  
           a(href="/{{.project.year}}/{{.project.tag}}") {{.project.title}}
+        | {{/.project}}
       | {{#content.images.length}}
       .row
         .columns
@@ -167,7 +171,7 @@ block content
                 img.th(src="{{.thumbnail_path}}" alt="")
             | {{/content.images}}
       | {{/content.images.length}}
-      | {{#content.non_images.length > 1}}
+      | {{#title !== .project.title || content.non_images.length > 1}}
       .row
         .columns
           ul
@@ -175,11 +179,11 @@ block content
             li
               a(href="/files/{{._id}}") {{.filename}}
             | {{/content.non_images}}
-      | {{/content.non_images.length}}
+      | {{/title}}
       | {{/content_type}}
       | {{#content_type == "forum"}}
-      h1
-        i.fa.fa-comments-o.fa-fw.left
+      h2
+        i.fa.fa-comments-o.fa-fw.right
         a(href='/forum/{{content_ids.0}}')
           | {{title}}
       .row
