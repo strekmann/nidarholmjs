@@ -171,7 +171,7 @@ block content
                 img.th(src="{{.thumbnail_path}}" alt="")
             | {{/content.images}}
       | {{/content.images.length}}
-      | {{#title !== .project.title || content.non_images.length > 1}}
+      | {{#content.non_images.length > 1 || .project && title !== .project.title}}
       .row
         .columns
           ul
@@ -179,7 +179,7 @@ block content
             li
               a(href="/files/{{._id}}") {{.filename}}
             | {{/content.non_images}}
-      | {{/title}}
+      | {{/content.non_images.length}}
       | {{/content_type}}
       | {{#content_type == "forum"}}
       h2
