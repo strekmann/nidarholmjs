@@ -11,9 +11,6 @@ block content
               ul.small-block-grid-1
                 for event in events
                   li.event
-                    .daypage
-                      .day= moment(event.start).format("D")
-                      .month= moment(event.start).format("MMMM")
                     h2
                       a.event(href="/events/"+event.id)
                         = event.title
@@ -66,7 +63,7 @@ block content
                             span.byline
                               if project.start
                                 = shortdate(project.start)
-                                | – 
+                                |  – 
                               = shortdate(project.end)
                         .row
                           .columns
