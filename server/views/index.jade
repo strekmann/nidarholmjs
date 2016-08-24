@@ -167,7 +167,7 @@ block content
                 img.th(src="{{.thumbnail_path}}" alt="")
             | {{/content.images}}
       | {{/content.images.length}}
-      | {{#content.non_images.length}}
+      | {{#content.non_images.length > 1}}
       .row
         .columns
           ul
