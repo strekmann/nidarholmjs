@@ -24,7 +24,7 @@ module.exports = {
         pass: undefined
     },
     mongodb: {
-        servers: ['mongodb://localhost/ros'],
+        servers: ['mongodb://localhost/nidarholm-dev'],
         replset: null
     },
     siteName: 'nidarholm',
@@ -46,14 +46,6 @@ module.exports = {
             clientSecret: 'EzcmNycN1E50JFZKcRF8SyYW1s1bSgs6eztTqv8VQukO2ZxxUc',
             callbackURL: 'http://localhost:3000/auth/twitter/callback'
         },
-    },
-    redis: {
-        host: '127.0.0.1',
-        port: 6379
-    },
-    mongo: {
-        servers: ['mongodb://localhost/nidarholm-test'],
-        replset: null
     },
     files: {
         raw_prefix: '/home/sigurdga/Prosjekter/nidarholm/uploaded_files',
