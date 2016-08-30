@@ -720,6 +720,7 @@ article.project {
             padding: rem-calc(4) 0;
         }
         .day {
+            line-height: 1.9rem;
             font-size: rem-calc(26);
         }
     }
@@ -741,6 +742,7 @@ article.project {
 
         time {
             font-weight: 300;
+            white-space: nowrap;
         }
 
         i.fa {

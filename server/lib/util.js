@@ -67,9 +67,9 @@ module.exports.daterange = function (start, end) {
         }
         // saving dates should always set startOf('day') AND later wholeday
         if (startm.isSame(startd) && endm.isSame(endd)) {
-            return '<time class="start" datetime="' + startm.format() + '">' + startm.format('ll') + '</time> – <time class="end" datetime="' + endm.format() + '">' + endm.format('LL') + '</time>';
+            return '<time class="start" datetime="' + startm.format() + '">' + startm.format('ll') + '</time> – <time class="end" datetime="' + endm.format() + '">' + endm.format('ll') + '</time>';
         }
-        return '<time class="start" datetime="' + startm.format() + '">' + startm.format('lll') + '</time> – <time class="end" datetime="' + endm.format() + '">' + endm.format('LLL') + '</time>';
+        return '<time class="start" datetime="' + startm.format() + '">' + startm.format('lll') + '</time> – <time class="end" datetime="' + endm.format() + '">' + endm.format('lll') + '</time>';
     }
     if (start) {
         // only start
