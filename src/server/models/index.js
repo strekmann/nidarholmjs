@@ -1,5 +1,6 @@
 var mongoose = require('mongoose'),
-    marked = require('marked');
+    marked = require('marked'),
+    crypto = require('crypto');
 
 var PasswordCode = new mongoose.Schema({
     _id: {type: String, unique: true, required: true}, //uuid
@@ -74,6 +75,16 @@ var UserSchema = new mongoose.Schema({
         instagram: {type: String}
     }
 });
+
+UserSchema.methods.authenticate = function authenticateUser(candidate, callback) {
+    const hashedPassword = crypto.createHash(this.algorithm);
+    hashedPassword.update(this.salt);
+    hashedPassword.update(candidate);
+    if (this.password === hashedPassword.digest('hex')) {
+        return callback(null, this);
+    }
+    return callback('Bad password', null);
+};
 
 var OrganizationSchema = new mongoose.Schema({
     _id: {type: String, lowercase: true, trim: true, required: true, unique: true},

@@ -26,7 +26,7 @@ class App extends React.Component {
                 />
                 {this.props.children}
                 {this.props.viewer ?
-                    <Footer viewer={this.props.viewer} qrkey={this.props.viewer.key} />
+                    <Footer viewer={this.props.viewer} />
                     : <Footer viewer={this.props.viewer} />
                     }
             </div>

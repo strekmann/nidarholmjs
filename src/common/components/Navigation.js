@@ -48,16 +48,14 @@ class Navigation extends React.Component {
         return (
             <div>
                 <AppBar
-                    iconStyleRight={{ padding: 10 }}
-                    iconElementRight={menubutton}
+                    iconStyleLeft={{ padding: 10 }}
+                    iconElementLeft={menubutton}
                 />
                 <Drawer
                     width={120}
-                    openSecondary
                     docked={false}
                     open={this.state.open}
                     onRequestChange={this.handleOpen}
-                    overlayStyle={{ backgroundColor: 'rgba(255, 255, 255, 0.3)' }}
                 >
                     Element
                 </Drawer>

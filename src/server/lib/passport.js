@@ -26,7 +26,10 @@ passport.serializeUser((user, done) => done(null, user._id));
 
 passport.deserializeUser((userId, done) => fetchUser(userId, done));
 
-passport.passportLocal = new LocalStrategy((email, password, done) => {
+passport.passportLocal = new LocalStrategy({
+    usernameField: 'email',
+},
+(email, password, done) => {
     // Log in using either email or username
     User.findOne()
     .or([{ email }, { username: email.toLowerCase() }])
@@ -44,15 +47,6 @@ passport.passportLocal = new LocalStrategy((email, password, done) => {
             }
             return done(null, false, { message: 'Galt passord' });
         });
-        /*
-        var hashedPassword = crypto.createHash(user.algorithm);
-        hashedPassword.update(user.salt);
-        hashedPassword.update(password);
-        if (user.password === hashedPassword.digest('hex')) {
-            return done(null, user);
-        }
-        return done(null, false, {message: 'Galt passord'});
-        */
     });
 });
 
