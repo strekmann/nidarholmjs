@@ -1,40 +1,25 @@
-REPORTER = spec
-
 build:
-	@./node_modules/.bin/grunt
-
-production:
-	@./node_modules/.bin/grunt prod
+	npm run build
 
 watch:
-	@./node_modules/.bin/grunt watch
+	npm run watch
 
-concurrent:
-	@./node_modules/.bin/grunt concurrent
+lint:
+	npm run lint
 
-hint:
-	@./node_modules/.bin/grunt hint
-
-locales:
-	@./node_modules/.bin/grunt locales
-
-test: hint
-	@NODE_ENV=test ./node_modules/.bin/mocha \
-		--reporter $(REPORTER) \
-		--ui bdd
-
-test-w:
-	@NODE_ENV=test ./node_modules/.bin/mocha \
-		--reporter $(REPORTER) \
-		--growl \
-		--ui bdd \
-		--watch
+schema:
+	npm run schema
 
 install:
 	npm install
-	./node_modules/.bin/bower install
 
-doc:
-	./node_modules/.bin/groc
+update:
+	npm update
 
-.PHONY: build production watch concurrent test test-w hint locales install
+run:
+	npm run nodemon
+
+clean:
+	rm -r ./node_modules ./public
+
+.PHONY: build watch lint schema install update run clean
