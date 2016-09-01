@@ -6,6 +6,8 @@ import RaisedButton from 'material-ui/RaisedButton';
 import getMuiTheme from 'material-ui/styles/getMuiTheme';
 import theme from '../theme';
 
+import NextProjects from '../components/NextProjects';
+
 class Home extends React.Component {
     static contextTypes = {
         relay: Relay.PropTypes.Environment,
@@ -26,7 +28,7 @@ class Home extends React.Component {
 
     render() {
         const viewer = this.props.viewer;
-        const organization = this.props.organization;
+        const org = this.props.organization;
         if (!viewer) {
             return (
                 <Grid>
@@ -76,8 +78,10 @@ class Home extends React.Component {
             <Grid>
                 <Row>
                     <Col xs={12}>
-                        <h1>Hei {viewer.name} at {organization.name}</h1>
+                        <h1>Hei {viewer.name} at {org.name}</h1>
                         <p>Du har logga inn</p>
+
+                        <NextProjects projects={org.nextProjects} />
                     </Col>
                 </Row>
             </Grid>
@@ -105,6 +109,10 @@ export default Relay.createContainer(Home, {
         fragment on Organization {
             id,
             name,
+            nextProjects {
+                title,
+                start,
+            },
         }`,
     },
 });

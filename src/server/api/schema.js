@@ -91,10 +91,12 @@ const organizationType = new GraphQLObjectType({
         website: { type: GraphQLString },
         twitter: { type: GraphQLString },
         facebook: { type: GraphQLString },
-        projectsUpcoming: {
+        nextProjects: {
             type: new GraphQLList(projectType),
             resolve: () => Project
             .find({ start: { $gt: moment.utc().toDate() } })
+            .sort({ start: 1 })
+            .limit(4)
             .exec(),
         },
     },

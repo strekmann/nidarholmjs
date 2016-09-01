@@ -1,5 +1,3 @@
-/* eslint "react/prop-types": 0 */
-
 import React from 'react';
 import getMuiTheme from 'material-ui/styles/getMuiTheme';
 import theme from '../theme';
