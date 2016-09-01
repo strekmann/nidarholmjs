@@ -18,9 +18,9 @@ import {
 } from 'graphql-relay';
 
 import moment from 'moment';
-import { find } from 'lodash';
 
 import { User } from '../models';
+import { Project } from '../models/projects';
 
 import config from 'config';
 import nodemailer from 'nodemailer';
@@ -55,6 +55,33 @@ const { nodeInterface, nodeField } = nodeDefinitions(
     }
 );
 
+const projectType = new GraphQLObjectType({
+    name: 'Project',
+    fields: {
+        id: { type: GraphQLString },
+        title: { type: GraphQLString },
+        tag: { type: GraphQLString },
+        start: { type: GraphQLString },
+        end: { type: GraphQLString },
+    },
+});
+
+const organizationType = new GraphQLObjectType({
+    name: 'Organization',
+    description: 'Organization and site info',
+    fields: {
+        id: { type: GraphQLString },
+        name: { type: GraphQLString },
+        webdomain: { type: GraphQLString },
+        projectsUpcoming: {
+            type: new GraphQLList(projectType),
+            resolve: () => Project
+            .find({ start: { $gt: moment.utc().toDate() } })
+            .exec(),
+        },
+    },
+});
+
 const userType = new GraphQLObjectType({
     name: 'User',
     description: 'A person',
@@ -65,6 +92,10 @@ const userType = new GraphQLObjectType({
         email: { type: GraphQLString },
         created: { type: GraphQLString },
         updated: { type: GraphQLString },
+        organization: {
+            type: organizationType,
+            resolve: (viewer) => viewer.organization,
+        },
     },
     interfaces: [nodeInterface],
 });

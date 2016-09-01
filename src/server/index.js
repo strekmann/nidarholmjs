@@ -22,7 +22,7 @@ import api from './api';
 import universal from './app';
 //import socketRoutes from './socket';
 import log from './lib/logger';
-import { User } from './models';
+import { User, Organization } from './models';
 import './lib/db';
 
 import graphqlHTTP from 'express-graphql';
@@ -99,6 +99,18 @@ app.use(passport.session());
 if (config.auth.remember_me) {
     app.use(passport.authenticate('remember-me'));
 }
+
+app.use((req, res, next) => {
+    // TODO: Change this part for samklang.
+    Organization.findById('nidarholm')
+    .populate('member_group')
+    .populate('administration_group')
+    .exec((err, organization) => {
+        if (err) { return next(err); }
+        req.user.organization = organization;
+        return next();
+    });
+});
 
 app.use('/graphql', graphqlHTTP(req => ({
     schema,

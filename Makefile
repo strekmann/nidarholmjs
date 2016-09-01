@@ -8,7 +8,7 @@ lint:
 	npm run lint
 
 schema:
-	npm run schema
+	npm run build:schema
 
 install:
 	npm install
