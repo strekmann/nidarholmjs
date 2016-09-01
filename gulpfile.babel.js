@@ -60,12 +60,11 @@ var prodConfig = {
 };
 
 gulp.task("default", ["build-dev"]);
-gulp.task("build", ["sass", "icons", "images", "schema", "fonts", "about", "webpack:build"]);
-gulp.task("build-dev", ["schema", "webpack:build-dev", "sass", "icons", "images", "fonts", "about"], function () {
+gulp.task("build", ["sass", "icons", "images", "fonts", "about", "webpack:build"]);
+gulp.task("build-dev", ["webpack:build-dev", "sass", "icons", "images", "fonts", "about"], function () {
     gulp.watch("src/**/*.js", ["webpack:build-dev"]);
     gulp.watch("src/client/scss/*.scss", ["sass"]);
     gulp.watch("src/client/img/*.*", ["images"]);
-    gulp.watch("src/server/api/schema.js", ["schema"]);
     gulp.watch("src/client/*.*", ["about"]);
 });
 
@@ -85,13 +84,13 @@ gulp.task("sass", function () {
     .pipe(gulp.dest("dist/public/css"));
 });
 
-gulp.task("webpack:build-dev", function () {
+gulp.task("webpack:build-dev", ["schema"], function () {
     return gulp.src("src/client/app.js")
     .pipe(webpack(devConfig))
     .pipe(gulp.dest("dist/public/js"));
 });
 
-gulp.task("webpack:build", function (callback) {
+gulp.task("webpack:build", ["schema"], function (callback) {
     return gulp.src("src/client/app.js")
     .pipe(webpack(prodConfig))
     .pipe(gulp.dest("dist/public/js"));
