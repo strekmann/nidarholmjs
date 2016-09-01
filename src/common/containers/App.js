@@ -9,6 +9,7 @@ class App extends React.Component {
     static propTypes = {
         children: React.PropTypes.element,
         viewer: React.PropTypes.object,
+        organization: React.PropTypes.object,
         users: React.PropTypes.array,
     }
 
@@ -37,6 +38,7 @@ class App extends React.Component {
 App.propTypes = {
     children: React.PropTypes.element,
     viewer: React.PropTypes.object,
+    organization: React.PropTypes.object,
     socket: React.PropTypes.object,
     users: React.PropTypes.object,
 };
@@ -47,7 +49,11 @@ export default Relay.createContainer(App, {
         fragment on User {
             name,
             email,
-        }
-        `,
+        }`,
+        organization: () => Relay.QL`
+        fragment on Organization {
+            id,
+            name,
+        }`,
     },
 });

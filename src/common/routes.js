@@ -7,6 +7,7 @@ import Home from './containers/Home';
 
 export const queries = {
     viewer: () => Relay.QL`query { viewer }`,
+    organization: () => Relay.QL`query { organization }`,
 };
 
 export default createRoutes(

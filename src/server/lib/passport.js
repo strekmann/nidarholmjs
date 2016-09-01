@@ -11,7 +11,7 @@ import { Strategy as TwitterStrategy } from 'passport-twitter';
 import { User, RememberMeToken } from '../models';
 
 function fetchUser(userId, callback) {
-    return User.findById(userId, 'name username profile_picture_path groups friends', (err, user) => {
+    return User.findById(userId, 'name username profile_picture_path groups friends').lean().exec((err, user) => {
         if (err) {
             return callback(err.message, null);
         }

@@ -69,7 +69,7 @@ gulp.task("build-dev", ["sass", "icons", "images", "fonts", "about"], function (
 
 gulp.task("schema", function () {
     return gulp.src("src/server/api/schema.js")
-    .pipe(shell("npm run schema"))
+    .pipe(shell("npm run build:schema"))
     .pipe(gulp.dest("src/server/api"));
 });
 

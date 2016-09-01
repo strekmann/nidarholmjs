@@ -19,7 +19,7 @@ import {
 
 import moment from 'moment';
 
-import { User } from '../models';
+import { User, Organization } from '../models';
 import { Project } from '../models/projects';
 
 import config from 'config';
@@ -38,6 +38,7 @@ else {
 }
 
 class UserDTO { constructor(obj) { for (const k of Object.keys(obj)) { this[k] = obj[k]; } } }
+class OrganizationDTO { constructor(obj) { for (const k of Object.keys(obj)) { this[k] = obj[k]; } } }
 
 const { nodeInterface, nodeField } = nodeDefinitions(
     (globalId) => {
@@ -45,11 +46,17 @@ const { nodeInterface, nodeField } = nodeDefinitions(
         if (type === 'User') {
             return User.findById(id).exec().then((user) => new UserDTO(user.toObject()));
         }
+        if (type === 'Organization') {
+            return Organization.findById(id).exec().then((organization) => new OrganizationDTO(organization.toObject()));
+        }
         return null;
     },
     (obj) => {
         if (obj instanceof UserDTO) {
             return userType;
+        }
+        if (obj instanceof OrganizationDTO) {
+            return organizationType;
         }
         return null;
     }
@@ -70,7 +77,7 @@ const organizationType = new GraphQLObjectType({
     name: 'Organization',
     description: 'Organization and site info',
     fields: {
-        id: { type: GraphQLString },
+        id: globalIdField('Organization'),
         name: { type: GraphQLString },
         webdomain: { type: GraphQLString },
         projectsUpcoming: {
@@ -80,6 +87,7 @@ const organizationType = new GraphQLObjectType({
             .exec(),
         },
     },
+    interfaces: [nodeInterface],
 });
 
 const userType = new GraphQLObjectType({
@@ -108,15 +116,17 @@ const queryType = new GraphQLObjectType({
             type: userType,
             resolve: ({ viewer }) => viewer,
         },
-        user: {
-            type: userType,
+        organization: {
+            /*
             args: {
                 username: {
                     name: 'username',
                     type: new GraphQLNonNull(GraphQLString),
                 },
             },
-            resolve: ({ viewer }, { username }) => User.findOne({ username }).exec(),
+            */
+            type: organizationType,
+            resolve: ({ organization }) => organization,
         },
     },
 });

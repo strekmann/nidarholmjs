@@ -100,29 +100,24 @@ if (config.auth.remember_me) {
     app.use(passport.authenticate('remember-me'));
 }
 
+app.use((req, res, next) => {
+    // TODO: Change this part for samklang.
+    Organization.findById('nidarholm')
+    .populate('member_group')
+    .populate('administration_group')
+    .exec((err, organization) => {
+        if (err) { return next(err); }
+        req.organization = organization.toObject();
+        return next();
+    });
+});
+
 app.use('/graphql', graphqlHTTP(req => ({
     schema,
-    rootValue: { viewer: req.user },
+    rootValue: { viewer: req.user, organization: req.organization },
     pretty: process.env.NODE_ENV !== 'production',
     graphiql: process.env.NODE_ENV !== 'production',
 })));
-
-app.use((req, res, next) => {
-    // TODO: Change this part for samklang.
-    if (req.user) {
-        Organization.findById('nidarholm')
-        .populate('member_group')
-        .populate('administration_group')
-        .exec((err, organization) => {
-            if (err) { return next(err); }
-            req.user.organization = organization;
-            return next();
-        });
-    }
-    else {
-        return next();
-    }
-});
 
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
@@ -207,21 +202,6 @@ app.use('/api/1/auth', api.auth);
 
 /** Static stuff **/
 app.use(serveStatic(path.join(__dirname, '..', '..', 'dist', 'public')));
-
-/** Initial store data **/
-app.use((req, res, next) => {
-    res.store = {};
-    res.store.viewer = {};
-    res.store.viewer.formErrors = [];
-
-    // Using JSON stringify and parse to make sure server data is similar to client data.
-    if (req.user) {
-        res.store.viewer = Immutable.fromJS(req.user.toObject());
-        res.store.users = {};
-        res.store.users[req.user.id] = JSON.parse(JSON.stringify(req.user));
-    }
-    next();
-});
 
 /** Universal app endpoint **/
 app.get('*', universal);

@@ -26,6 +26,7 @@ class Home extends React.Component {
 
     render() {
         const viewer = this.props.viewer;
+        const organization = this.props.organization;
         if (!viewer) {
             return (
                 <Grid>
@@ -75,7 +76,7 @@ class Home extends React.Component {
             <Grid>
                 <Row>
                     <Col xs={12}>
-                        <h1>Hei</h1>
+                        <h1>Hei {viewer.name} at {organization.name}</h1>
                         <p>Du har logga inn</p>
                     </Col>
                 </Row>
@@ -85,6 +86,7 @@ class Home extends React.Component {
 }
 Home.propTypes = {
     viewer: React.PropTypes.object,
+    organization: React.PropTypes.object,
 };
 
 Home.childContextTypes = {
@@ -98,7 +100,11 @@ export default Relay.createContainer(Home, {
             id,
             name,
             email,
-        }
-        `,
+        }`,
+        organization: () => Relay.QL`
+        fragment on Organization {
+            id,
+            name,
+        }`,
     },
 });
