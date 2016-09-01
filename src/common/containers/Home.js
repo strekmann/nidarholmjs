@@ -110,6 +110,7 @@ export default Relay.createContainer(Home, {
             id,
             name,
             nextProjects {
+                id,
                 title,
                 start,
             },

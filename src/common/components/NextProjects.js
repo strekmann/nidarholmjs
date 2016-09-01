@@ -12,7 +12,7 @@ class NextProjects extends React.Component {
         return (
             <div>
                 <h2>Neste prosjekter</h2>
-                {this.props.projects.map(project => <Project {...project} />)}
+                {this.props.projects.map(project => <Project key={project.id} {...project} />)}
             </div>
         );
     }
