@@ -100,6 +100,8 @@ if (config.auth.remember_me) {
     app.use(passport.authenticate('remember-me'));
 }
 
+// Fetch active organization from hostname, config override
+// or pick the default.
 app.use((req, res, next) => {
     let organizationId = req.hostname;
     if (config.override && config.override.site) {
