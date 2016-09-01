@@ -27,7 +27,6 @@ module.exports = {
         servers: ['mongodb://localhost/nidarholm-dev'],
         replset: null
     },
-    siteName: 'nidarholm',
     uri: 'http://localhost:3000/',
     sessionSecret: 'wS89da1kCq1ml6yYYPapxX6jReh9Kho1nnBxsI8QGo536iOiTo3xts3tppCUdZLl',
     auth: {

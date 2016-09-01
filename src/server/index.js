@@ -101,8 +101,15 @@ if (config.auth.remember_me) {
 }
 
 app.use((req, res, next) => {
-    // TODO: Change this part for samklang.
-    Organization.findById('nidarholm')
+    let organizationId = req.hostname;
+    if (config.override && config.override.site) {
+        organizationId = config.override.site;
+    }
+    if (organizationId === 'localhost') {
+        // TODO: Change this part for samklang.
+        organizationId = 'nidarholm';
+    }
+    Organization.findById(organizationId)
     .populate('member_group')
     .populate('administration_group')
     .exec((err, organization) => {
