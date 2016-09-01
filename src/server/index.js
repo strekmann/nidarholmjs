@@ -6,6 +6,7 @@ import session from 'express-session';
 import errorHandler from 'errorhandler';
 import express from 'express';
 import http from 'http';
+import httpProxy from 'http-proxy';
 import expressBunyan from 'express-bunyan-logger';
 import path from 'path';
 //import socketIO from 'socket.io';
@@ -111,6 +112,15 @@ app.use(bodyParser.json());
 
 /** Socket.io routes **/
 //socketRoutes(io);
+
+if (process.env.NODE_ENV !== 'production') {
+    const proxy = httpProxy.createProxyServer();
+    app.all('/js/*', (req, res) => {
+        proxy.web(req, res, {
+            target: 'http://localhost:3001',
+        });
+    });
+}
 
 /** Authentication stuff **/
 app.get('/auth/google',

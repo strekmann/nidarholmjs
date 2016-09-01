@@ -3,8 +3,8 @@ import Relay from 'react-relay';
 import { Grid, Row, Col } from 'react-bootstrap';
 import TextField from 'material-ui/TextField';
 import RaisedButton from 'material-ui/RaisedButton';
-import theme from '../theme';
 import getMuiTheme from 'material-ui/styles/getMuiTheme';
+import theme from '../theme';
 
 class Home extends React.Component {
     static contextTypes = {

@@ -61,8 +61,7 @@ var prodConfig = {
 
 gulp.task("default", ["build-dev"]);
 gulp.task("build", ["sass", "icons", "images", "fonts", "about", "webpack:build"]);
-gulp.task("build-dev", ["webpack:build-dev", "sass", "icons", "images", "fonts", "about"], function () {
-    gulp.watch("src/**/*.js", ["webpack:build-dev"]);
+gulp.task("build-dev", ["sass", "icons", "images", "fonts", "about"], function () {
     gulp.watch("src/client/scss/*.scss", ["sass"]);
     gulp.watch("src/client/img/*.*", ["images"]);
     gulp.watch("src/client/*.*", ["about"]);
