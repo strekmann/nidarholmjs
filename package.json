@@ -13,11 +13,16 @@
     "node": "0.12"
   },
   "scripts": {
+    "env": "env",
     "test": "NODE_ENV=test mocha require test/setup",
     "build": "gulp build",
+    "build:sass": "node-sass --output-style compressed --include-path node_modules/bootstrap-sass/assets/stylesheets --include-path node_modules/font-awesome/scss --include-path node_modules/foundation-sites/scss --output dist/public/css src/client/scss/styles.scss",
+    "build:schema": "babel-node ./setup/build-schema.js",
+    "build:img": "imagemin src/client/img/*.* --out-dir dist/public/img",
+    "build:fonts": "mkdir -p dist/public/fonts && cp -r client/fonts/**/*.* dist/public/fonts",
+    "build:icons": "mkdir -p dist/public/fonts && cp -r node_modules/font-awesome/fonts/*.* dist/public/fonts",
     "watch": "gulp",
     "lint": "eslint \"src/**/*.js\" || :",
-    "schema": "babel-node ./setup/build-schema.js",
     "nodemon": "nodemon src/dev.js | bunyan -o short"
   },
   "metadata": {
@@ -128,6 +133,7 @@
     "gulp-sass": "^2.3.2",
     "gulp-shell": "^0.5.2",
     "gulp-util": "^3.0.7",
+    "imagemin-cli": "^3.0.0",
     "mocha": "",
     "pg": "",
     "supertest": "",
