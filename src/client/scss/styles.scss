@@ -231,12 +231,12 @@ a:focus {
 
 footer {
     font-size: rem-calc(12px);
-    font-weight: 300;
     margin-top: 2rem;
     line-height: 1.4;
 
     i.fa {
         min-width: 1rem;
+        color: $primary-color;
     }
 
     .bystrekmann {
@@ -249,6 +249,7 @@ footer {
     p {
         display: inline;
         font-size: inherit;
+        line-height: inherit;
     }
 }
 

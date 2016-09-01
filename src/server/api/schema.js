@@ -18,6 +18,7 @@ import {
 } from 'graphql-relay';
 
 import moment from 'moment';
+import marked from 'marked';
 
 import { User, Organization } from '../models';
 import { Project } from '../models/projects';
@@ -84,7 +85,12 @@ const organizationType = new GraphQLObjectType({
         postcode: { type: GraphQLString },
         city: { type: GraphQLString },
         email: { type: GraphQLString },
+        public_bank_account: { type: GraphQLString },
         organization_number: { type: GraphQLString },
+        encoded_email: { type: GraphQLString },
+        website: { type: GraphQLString },
+        twitter: { type: GraphQLString },
+        facebook: { type: GraphQLString },
         projectsUpcoming: {
             type: new GraphQLList(projectType),
             resolve: () => Project

@@ -57,8 +57,11 @@ export default Relay.createContainer(App, {
             mail_address,
             postcode,
             city,
-            email,
+            public_bank_account,
             organization_number,
+            encoded_email,
+            twitter,
+            facebook,
         }`,
     },
 });

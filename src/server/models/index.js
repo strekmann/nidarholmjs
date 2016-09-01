@@ -117,9 +117,21 @@ var OrganizationSchema = new mongoose.Schema({
 });
 
 OrganizationSchema.virtual('encoded_email').get(function () {
-    return marked('<'+this.email+'>');
+    return marked(`<${this.email}>`);
+});
+OrganizationSchema.virtual('website').get(function () {
+    return this.social_media.website;
+});
+OrganizationSchema.virtual('twitter').get(function() {
+    return this.social_media.twitter;
+});
+OrganizationSchema.virtual('facebook').get(function () {
+    return this.social_media.facebook;
 });
 
+OrganizationSchema.set('toObject', {
+    virtuals: true
+});
 OrganizationSchema.set('toJSON', {
     virtuals: true
 });
