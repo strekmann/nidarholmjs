@@ -80,6 +80,11 @@ const organizationType = new GraphQLObjectType({
         id: globalIdField('Organization'),
         name: { type: GraphQLString },
         webdomain: { type: GraphQLString },
+        mail_address: { type: GraphQLString },
+        postcode: { type: GraphQLString },
+        city: { type: GraphQLString },
+        email: { type: GraphQLString },
+        organization_number: { type: GraphQLString },
         projectsUpcoming: {
             type: new GraphQLList(projectType),
             resolve: () => Project

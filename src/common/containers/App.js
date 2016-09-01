@@ -26,10 +26,10 @@ class App extends React.Component {
                     users={this.props.users}
                 />
                 {this.props.children}
-                {this.props.viewer ?
-                    <Footer viewer={this.props.viewer} />
-                    : <Footer viewer={this.props.viewer} />
-                    }
+                <Footer
+                    viewer={this.props.viewer}
+                    organization={this.props.organization}
+                />
             </div>
         );
     }
@@ -54,6 +54,11 @@ export default Relay.createContainer(App, {
         fragment on Organization {
             id,
             name,
+            mail_address,
+            postcode,
+            city,
+            email,
+            organization_number,
         }`,
     },
 });

@@ -3,17 +3,17 @@
 import React from 'react';
 import { Grid, Row, Col } from 'react-bootstrap';
 
-export default ({ id }) => {
+export default ({ viewer, organization }) => {
     return (
         <footer>
             <hr />
             <Grid>
                 <Row>
-                    <Col sm={9}>
-                        { id ? <a href="/auth/logout">Logg ut</a> : null }
+                    <Col sm={4}>
+                        { viewer ? <a href="/auth/logout">Logg ut</a> : null }
                     </Col>
-                    <Col sm={3}>
-                        Strekmann
+                    <Col sm={4}>
+                        { organization.name }
                     </Col>
                 </Row>
             </Grid>
