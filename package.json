@@ -50,6 +50,7 @@
     "express-session": "^1.14.1",
     "graphql": "^0.6.2",
     "graphql-relay": "^0.4.2",
+    "http-proxy": "^1.14.0",
     "i18n-abide": "",
     "icalendar": "tritech/node-icalendar",
     "immutable": "^3.8.1",

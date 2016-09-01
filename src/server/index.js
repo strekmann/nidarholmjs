@@ -100,24 +100,29 @@ if (config.auth.remember_me) {
     app.use(passport.authenticate('remember-me'));
 }
 
-app.use((req, res, next) => {
-    // TODO: Change this part for samklang.
-    Organization.findById('nidarholm')
-    .populate('member_group')
-    .populate('administration_group')
-    .exec((err, organization) => {
-        if (err) { return next(err); }
-        req.user.organization = organization;
-        return next();
-    });
-});
-
 app.use('/graphql', graphqlHTTP(req => ({
     schema,
     rootValue: { viewer: req.user },
     pretty: process.env.NODE_ENV !== 'production',
     graphiql: process.env.NODE_ENV !== 'production',
 })));
+
+app.use((req, res, next) => {
+    // TODO: Change this part for samklang.
+    if (req.user) {
+        Organization.findById('nidarholm')
+        .populate('member_group')
+        .populate('administration_group')
+        .exec((err, organization) => {
+            if (err) { return next(err); }
+            req.user.organization = organization;
+            return next();
+        });
+    }
+    else {
+        return next();
+    }
+});
 
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
@@ -168,6 +173,7 @@ app.post('/auth/login', passport.authenticate('local'), (req, res, next) => {
 app.post('/auth/register', (req, res, next) => {
     const name = req.body.name.trim();
     const email = req.body.email.trim();
+    const username = req.body.username.trim();
     const password = req.body.password;  // should not trim this
 
     // simple validation
@@ -176,8 +182,10 @@ app.post('/auth/register', (req, res, next) => {
     }
 
     const user = new User();
+    user._id = Date.now() + ""; // hahahah
     user.name = name;
     user.email = email;
+    user.username = username;
     user.password = password;
     return user.save((err, createdUser) => {
         if (err) { return next(err); }

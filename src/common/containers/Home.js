@@ -45,6 +45,28 @@ class Home extends React.Component {
                             </form>
                         </Col>
                     </Row>
+                    <Row>
+                        <Col xs={12}>
+                            <h1>Register</h1>
+                            <form method="post" action="/auth/register">
+                                <div>
+                                    <TextField floatingLabelText="Name" id="name" name="name" />
+                                </div>
+                                <div>
+                                    <TextField floatingLabelText="Username" id="username" name="username" />
+                                </div>
+                                <div>
+                                    <TextField floatingLabelText="E-post" id="email" name="email" />
+                                </div>
+                                <div>
+                                    <TextField floatingLabelText="Passord" id="password" name="password" type="password" />
+                                </div>
+                                <div>
+                                    <RaisedButton type="submit" primary>Registrer</RaisedButton>
+                                </div>
+                            </form>
+                        </Col>
+                    </Row>
                 </Grid>
             );
         }
