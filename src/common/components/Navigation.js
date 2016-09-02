@@ -1,6 +1,8 @@
 import React from 'react';
 import AppBar from 'material-ui/AppBar';
 import Drawer from 'material-ui/Drawer';
+import Menu from 'material-ui/Menu';
+import MenuItem from 'material-ui/MenuItem';
 import MenuIcon from 'material-ui/svg-icons/navigation/menu';
 import getMuiTheme from 'material-ui/styles/getMuiTheme';
 import { Link } from 'react-router';
@@ -60,14 +62,14 @@ class Navigation extends React.Component {
                     open={this.state.open}
                     onRequestChange={this.handleOpen}
                 >
-                    <ul>
-                        <li>
-                            <Link to="/">Home</Link>
-                        </li>
-                        <li>
-                            <Link to="about">About</Link>
-                        </li>
-                    </ul>
+                    <Menu>
+                        <MenuItem>
+                            <Link to="/" onTouchTap={this.handleClose}>Home</Link>
+                        </MenuItem>
+                        <MenuItem>
+                            <Link to="about" onTouchTap={this.handleClose}>About</Link>
+                        </MenuItem>
+                    </Menu>
                 </Drawer>
             </div>
         );
