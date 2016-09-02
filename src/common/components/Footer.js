@@ -44,6 +44,9 @@ class Footer extends React.Component {
                         <div>{ this.props.viewer ? <a href="/auth/logout">Logg ut</a> : null }</div>
                     </div>
                 </div>
+                <div className="bystrekmann">
+                    <a href="https://github.com/strekmann/nidarholm.js">Nidarholm.js</a> by <a href="https://strekmann.no/">Strekmann AS</a>
+                </div>
             </footer>
         );
     }

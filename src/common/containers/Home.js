@@ -67,7 +67,7 @@ class Home extends React.Component {
 
         return (
             <section>
-                <h1>Hei {viewer.name} at {org.name}</h1>
+                <h1>Hei {viewer.name}</h1>
                 <p>Du har logga inn</p>
 
                 <NextProjects projects={org.nextProjects} />

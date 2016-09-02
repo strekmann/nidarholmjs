@@ -23,7 +23,7 @@ class App extends React.Component {
             <div>
                 <Navigation
                     viewer={this.props.viewer}
-                    users={this.props.users}
+                    organization={this.props.organization}
                 />
                 {this.props.children}
                 <Footer

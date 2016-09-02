@@ -53,8 +53,10 @@ class Navigation extends React.Component {
         return (
             <div>
                 <AppBar
+                    title={<Link to="/" style={{ fontFamily: 'Merriweather, serif', color: 'white', textDecoration: 'none' }}>{this.props.organization.name}</Link>}
                     iconStyleLeft={{ padding: 10 }}
                     iconElementLeft={menubutton}
+                    style={{ backgroundColor: '#024059' }}
                 />
                 <Drawer
                     width={120}
@@ -78,7 +80,7 @@ class Navigation extends React.Component {
 
 Navigation.propTypes = {
     viewer: React.PropTypes.object,
-    users: React.PropTypes.object,
+    organization: React.PropTypes.object,
     socket: React.PropTypes.object,
 };
 
