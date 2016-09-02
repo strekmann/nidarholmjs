@@ -30,7 +30,7 @@ class Home extends React.Component {
         const org = this.props.organization;
         if (!viewer) {
             return (
-                <div style={{ margin: 'auto', maxWidth: 1000 }}>
+                <section>
                     <h1>Logg inn</h1>
                     <form method="post" action="/auth/login">
                         <div>
@@ -61,17 +61,17 @@ class Home extends React.Component {
                             <RaisedButton type="submit" primary>Registrer</RaisedButton>
                         </div>
                     </form>
-                </div>
+                </section>
             );
         }
 
         return (
-            <div style={{ margin: 'auto', maxWidth: 1000 }}>
+            <section>
                 <h1>Hei {viewer.name} at {org.name}</h1>
                 <p>Du har logga inn</p>
 
                 <NextProjects projects={org.nextProjects} />
-            </div>
+            </section>
         );
     }
 }

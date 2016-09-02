@@ -4,6 +4,7 @@ import { Route, IndexRoute, createRoutes } from 'react-router';
 
 import App from './containers/App';
 import Home from './containers/Home';
+import About from './components/About';
 
 export const queries = {
     viewer: () => Relay.QL`query { viewer }`,
@@ -13,6 +14,7 @@ export const queries = {
 export default createRoutes(
     <Route path="/" component={App} queries={queries}>
         <IndexRoute component={Home} queries={queries} />
+        <Route path="about" component={About} />
     </Route>
 );
 

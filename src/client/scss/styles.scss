@@ -651,6 +651,10 @@ nav.top-bar {
         }
     }
 }
+section {
+    max-width: 1000px;
+    margin: 0 auto;
+}
 article.project {
     margin-top: rem-calc(15px);
 }
