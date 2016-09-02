@@ -3,6 +3,7 @@ import AppBar from 'material-ui/AppBar';
 import Drawer from 'material-ui/Drawer';
 import MenuIcon from 'material-ui/svg-icons/navigation/menu';
 import getMuiTheme from 'material-ui/styles/getMuiTheme';
+import { Link } from 'react-router';
 
 import theme from '../theme';
 
@@ -59,7 +60,14 @@ class Navigation extends React.Component {
                     open={this.state.open}
                     onRequestChange={this.handleOpen}
                 >
-                    Element
+                    <ul>
+                        <li>
+                            <Link to="/">Home</Link>
+                        </li>
+                        <li>
+                            <Link to="about">About</Link>
+                        </li>
+                    </ul>
                 </Drawer>
             </div>
         );
