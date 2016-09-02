@@ -1,8 +1,10 @@
 import React from 'react';
-import { AppBar, Drawer } from 'material-ui';
+import AppBar from 'material-ui/AppBar';
+import Drawer from 'material-ui/Drawer';
 import MenuIcon from 'material-ui/svg-icons/navigation/menu';
-import theme from '../theme';
 import getMuiTheme from 'material-ui/styles/getMuiTheme';
+
+import theme from '../theme';
 
 class Navigation extends React.Component {
     constructor(props) {
