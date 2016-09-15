@@ -163,6 +163,7 @@ export default Relay.createContainer(Home, {
                         id
                         title
                         start
+                        end
                     }
                 }
                 pageInfo {
@@ -175,6 +176,7 @@ export default Relay.createContainer(Home, {
                         id
                         title
                         start
+                        end
                     }
                 }
                 pageInfo {

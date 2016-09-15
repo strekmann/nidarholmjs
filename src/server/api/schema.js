@@ -109,8 +109,8 @@ const organizationType = new GraphQLObjectType({
             async resolve(term, { ...args }) { // term here is unused for now, coming from server
                 return await connectionFromMongooseQuery(
                     Project.find({
-                        start: { $gt: moment.utc().toDate() },
-                    }).sort({ start: 1 }),
+                        end: { $gte: moment().startOf('day').toDate() },
+                    }).sort({ end: 1 }),
                     args,
                 );
             },
@@ -121,8 +121,8 @@ const organizationType = new GraphQLObjectType({
             async resolve(term, { ...args }) { // term here is unused for now, coming from server
                 return await connectionFromMongooseQuery(
                     Project.find({
-                        start: { $lt: moment.utc().toDate() },
-                    }).sort({ start: -1 }),
+                        end: { $lt: moment().startOf('day').toDate() },
+                    }).sort({ end: -1 }),
                     args,
                 );
             },
