@@ -19,6 +19,8 @@ import {
     nodeDefinitions,
 } from 'graphql-relay';
 
+import GraphQLDate from 'graphql-custom-datetype';
+
 import connectionFromMongooseQuery from 'relay-mongoose-connection';
 import marked from 'marked';
 import moment from 'moment';
@@ -80,8 +82,8 @@ const projectType = new GraphQLObjectType({
         id: globalIdField('Organization'),
         title: { type: GraphQLString },
         tag: { type: GraphQLString },
-        start: { type: GraphQLString },
-        end: { type: GraphQLString },
+        start: { type: GraphQLDate },
+        end: { type: GraphQLDate },
     },
     interfaces: [nodeInterface],
 });

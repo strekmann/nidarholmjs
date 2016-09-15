@@ -3,11 +3,11 @@ import React from 'react';
 
 export default class Date extends React.Component {
     static propTypes = {
-        date: React.PropTypes.object,
+        date: React.PropTypes.string,
     }
 
     render() {
-        const date = moment(this.props.date);
+        const date = moment.isMoment(this.props.date) ? this.props.date : moment(this.props.date);
         return (
             <time dateTime={date}>{date.format('LL')}</time>
         );
