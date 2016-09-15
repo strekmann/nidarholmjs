@@ -1,11 +1,17 @@
 import React from 'react';
 import Relay from 'react-relay';
+import SwipeableViews from 'react-swipeable-views';
 import TextField from 'material-ui/TextField';
 import RaisedButton from 'material-ui/RaisedButton';
 import getMuiTheme from 'material-ui/styles/getMuiTheme';
+import { Tabs, Tab } from 'material-ui/Tabs';
+
 import theme from '../theme';
 
-import NextProjects from '../components/NextProjects';
+import ProjectList from '../components/ProjectList';
+
+const showUpcomingProjects = 4;
+const projectsPerPage = 10;
 
 class Home extends React.Component {
     static contextTypes = {
@@ -15,14 +21,41 @@ class Home extends React.Component {
     constructor(props) {
         super(props);
         this.muiTheme = getMuiTheme(theme);
-        if (props.viewer) {
-            this.state = {
-            };
-        }
+    }
+
+    state = {
+        slideIndex: 0,
     }
 
     getChildContext() {
         return { muiTheme: this.muiTheme };
+    }
+
+    changeTab = (value) => {
+        this.setState({
+            slideIndex: value,
+        });
+    }
+
+    loadMorePreviousProjects = () => {
+        const projects = this.props.organization.previousProjects;
+        this.props.relay.setVariables({
+            showProjects: projects.edges.length + projectsPerPage,
+        });
+    }
+
+    loadMoreUpcomongProjects = () => {
+        const projects = this.props.organization.nextProjects;
+        let next = projects.edges.length + projectsPerPage;
+
+        // upcoming list has just a couple of projects, so at first refill,
+        // use default page size
+        if (projects.edges.length < projectsPerPage) {
+            next = projectsPerPage;
+        }
+        this.props.relay.setVariables({
+            showUpcomingProjects: next,
+        });
     }
 
     render() {
@@ -70,7 +103,30 @@ class Home extends React.Component {
                 <h1>Hei {viewer.name}</h1>
                 <p>Du har logga inn</p>
 
-                <NextProjects projects={org.nextProjects} />
+                <Tabs
+                    onChange={this.changeTab}
+                    value={this.state.slideIndex}
+                >
+                    <Tab label="Neste prosjekter" value={0} />
+                    <Tab label="Tidligere prosjekter" value={1} />
+                </Tabs>
+                <SwipeableViews
+                    index={this.state.slideIndex}
+                    onChangeIndex={this.changeTab}
+                >
+                    <div>
+                        <ProjectList
+                            projects={org.nextProjects}
+                        />
+                        {org.nextProjects.pageInfo.hasNextPage ? <RaisedButton primary onClick={this.loadMoreUpcomongProjects}>Mer</RaisedButton> : null }
+                    </div>
+                    <div>
+                        <ProjectList
+                            projects={org.previousProjects}
+                        />
+                        {org.previousProjects.pageInfo.hasNextPage ? <RaisedButton primary onClick={this.loadMorePreviousProjects}>Mer</RaisedButton> : null }
+                    </div>
+                </SwipeableViews>
             </section>
         );
     }
@@ -85,22 +141,46 @@ Home.childContextTypes = {
 };
 
 export default Relay.createContainer(Home, {
+    initialVariables: {
+        showUpcomingProjects,
+        showProjects: projectsPerPage,
+        projectsPerPage,
+    },
     fragments: {
         viewer: () => Relay.QL`
         fragment on User {
-            id,
-            name,
-            email,
+            id
+            name
+            email
         }`,
         organization: () => Relay.QL`
         fragment on Organization {
-            id,
-            name,
-            nextProjects {
-                id,
-                title,
-                start,
-            },
+            id
+            name
+            nextProjects(first:$showUpcomingProjects) {
+                edges {
+                    node {
+                        id
+                        title
+                        start
+                    }
+                }
+                pageInfo {
+                    hasNextPage
+                }
+            }
+            previousProjects(first:$showProjects) {
+                edges {
+                    node {
+                        id
+                        title
+                        start
+                    }
+                }
+                pageInfo {
+                    hasNextPage
+                }
+            }
         }`,
     },
 });

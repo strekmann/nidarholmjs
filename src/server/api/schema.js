@@ -11,14 +11,17 @@ import {
 } from 'graphql';
 
 import {
-  fromGlobalId,
-  globalIdField,
-  mutationWithClientMutationId,
-  nodeDefinitions,
+    connectionArgs,
+    connectionDefinitions,
+    fromGlobalId,
+    globalIdField,
+    mutationWithClientMutationId,
+    nodeDefinitions,
 } from 'graphql-relay';
 
-import moment from 'moment';
+import connectionFromMongooseQuery from 'relay-mongoose-connection';
 import marked from 'marked';
+import moment from 'moment';
 
 import { User, Organization } from '../models';
 import { Project } from '../models/projects';
@@ -40,6 +43,7 @@ else {
 
 class UserDTO { constructor(obj) { for (const k of Object.keys(obj)) { this[k] = obj[k]; } } }
 class OrganizationDTO { constructor(obj) { for (const k of Object.keys(obj)) { this[k] = obj[k]; } } }
+class ProjectDTO { constructor(obj) { for (const k of Object.keys(obj)) { this[k] = obj[k]; } } }
 
 const { nodeInterface, nodeField } = nodeDefinitions(
     (globalId) => {
@@ -50,6 +54,9 @@ const { nodeInterface, nodeField } = nodeDefinitions(
         if (type === 'Organization') {
             return Organization.findById(id).exec().then((organization) => new OrganizationDTO(organization.toObject()));
         }
+        if (type === 'Project') {
+            return Project.findById(id).exec().then((project) => new ProjectDTO(project.toObject()));
+        }
         return null;
     },
     (obj) => {
@@ -59,6 +66,9 @@ const { nodeInterface, nodeField } = nodeDefinitions(
         if (obj instanceof OrganizationDTO) {
             return organizationType;
         }
+        if (obj instanceof ProjectDTO) {
+            return projectType;
+        }
         return null;
     }
 );
@@ -66,12 +76,14 @@ const { nodeInterface, nodeField } = nodeDefinitions(
 const projectType = new GraphQLObjectType({
     name: 'Project',
     fields: {
-        id: { type: GraphQLString },
+        //id: { type: GraphQLString },
+        id: globalIdField('Organization'),
         title: { type: GraphQLString },
         tag: { type: GraphQLString },
         start: { type: GraphQLString },
         end: { type: GraphQLString },
     },
+    interfaces: [nodeInterface],
 });
 
 const organizationType = new GraphQLObjectType({
@@ -92,12 +104,28 @@ const organizationType = new GraphQLObjectType({
         twitter: { type: GraphQLString },
         facebook: { type: GraphQLString },
         nextProjects: {
-            type: new GraphQLList(projectType),
-            resolve: () => Project
-            .find({ start: { $gt: moment.utc().toDate() } })
-            .sort({ start: 1 })
-            .limit(4)
-            .exec(),
+            type: connectionDefinitions({ name: 'UpcomingProject', nodeType: projectType }).connectionType,
+            args: connectionArgs,
+            async resolve(term, { ...args }) { // term here is unused for now, coming from server
+                return await connectionFromMongooseQuery(
+                    Project.find({
+                        start: { $gt: moment.utc().toDate() },
+                    }).sort({ start: 1 }),
+                    args,
+                );
+            },
+        },
+        previousProjects: {
+            type: connectionDefinitions({ name: 'Project', nodeType: projectType }).connectionType,
+            args: connectionArgs,
+            async resolve(term, { ...args }) { // term here is unused for now, coming from server
+                return await connectionFromMongooseQuery(
+                    Project.find({
+                        start: { $lt: moment.utc().toDate() },
+                    }).sort({ start: -1 }),
+                    args,
+                );
+            },
         },
     },
     interfaces: [nodeInterface],

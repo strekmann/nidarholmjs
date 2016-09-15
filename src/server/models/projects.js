@@ -100,6 +100,22 @@ var ProjectSchema = new mongoose.Schema({
     managers: [{type: String, ref: 'User'}]
 });
 
+ProjectSchema.set('toJSON', {
+    versionKey: false,
+    transform: (document, ret) => {
+        ret.id = ret._id;
+        delete ret._id;
+    },
+});
+
+ProjectSchema.set('toObject', {
+    versionKey: false,
+    transform: (document, ret) => {
+        ret.id = ret._id;
+        delete ret._id;
+    },
+});
+
 module.exports = {
     Piece: mongoose.model('Piece', PieceSchema),
     Event: mongoose.model('Event', EventSchema),
