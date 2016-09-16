@@ -36,6 +36,7 @@ class Project extends React.Component {
                 <div className="meta">
                     {project.start ? <span><Date date={project.start} /> – </span> : null}
                     <Date date={project.end} />
+                    {project.conductors.map(conductor => conductor.name)}
                 </div>
                 <Text text={project.public_mdtext} />
             </div>
@@ -59,6 +60,9 @@ export default Relay.createContainer(Project, {
                 end
                 year
                 public_mdtext
+                conductors {
+                    name
+                }
             }
         }`,
     },

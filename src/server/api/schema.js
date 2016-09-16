@@ -75,6 +75,20 @@ const { nodeInterface, nodeField } = nodeDefinitions(
     }
 );
 
+const userType = new GraphQLObjectType({
+    name: 'User',
+    description: 'A person',
+    fields: {
+        id: globalIdField('User'),
+        name: { type: GraphQLString },
+        username: { type: GraphQLString },
+        email: { type: GraphQLString },
+        created: { type: GraphQLString },
+        updated: { type: GraphQLString },
+    },
+    interfaces: [nodeInterface],
+});
+
 const projectType = new GraphQLObjectType({
     name: 'Project',
     fields: {
@@ -86,6 +100,7 @@ const projectType = new GraphQLObjectType({
         end: { type: GraphQLDate },
         year: { type: GraphQLString },
         public_mdtext: { type: GraphQLString },
+        conductors: { type: new GraphQLList(userType) },
     },
     interfaces: [nodeInterface],
 });
@@ -138,24 +153,6 @@ const organizationType = new GraphQLObjectType({
                     args,
                 );
             },
-        },
-    },
-    interfaces: [nodeInterface],
-});
-
-const userType = new GraphQLObjectType({
-    name: 'User',
-    description: 'A person',
-    fields: {
-        id: globalIdField('User'),
-        name: { type: GraphQLString },
-        username: { type: GraphQLString },
-        email: { type: GraphQLString },
-        created: { type: GraphQLString },
-        updated: { type: GraphQLString },
-        organization: {
-            type: organizationType,
-            resolve: (viewer) => viewer.organization,
         },
     },
     interfaces: [nodeInterface],
