@@ -5,6 +5,7 @@ import { Route, IndexRoute, createRoutes } from 'react-router';
 import App from './containers/App';
 import Home from './containers/Home';
 import Projects from './containers/Projects';
+import Project from './containers/Project';
 
 import About from './components/About';
 
@@ -21,6 +22,9 @@ export default createRoutes(
     <Route path="/" component={App} queries={queries}>
         <IndexRoute component={Home} queries={queries} />
         <Route path="projects" component={Projects} queries={organizationQueries} />
+        <Route path=":year">
+            <Route path=":tag" component={Project} queries={organizationQueries} />
+        </Route>
         <Route path="about" component={About} />
     </Route>
 );

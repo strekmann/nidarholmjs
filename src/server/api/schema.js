@@ -85,6 +85,7 @@ const projectType = new GraphQLObjectType({
         start: { type: GraphQLDate },
         end: { type: GraphQLDate },
         year: { type: GraphQLString },
+        public_mdtext: { type: GraphQLString },
     },
     interfaces: [nodeInterface],
 });
@@ -106,6 +107,14 @@ const organizationType = new GraphQLObjectType({
         website: { type: GraphQLString },
         twitter: { type: GraphQLString },
         facebook: { type: GraphQLString },
+        project: {
+            type: projectType,
+            args: {
+                year: { name: 'year', type: GraphQLString },
+                tag: { name: 'tag', type: GraphQLString },
+            },
+            resolve: (_, args) => Project.findOne({ tag: args.tag, year: args.year }).exec(),
+        },
         nextProjects: {
             type: connectionDefinitions({ name: 'UpcomingProject', nodeType: projectType }).connectionType,
             args: connectionArgs,

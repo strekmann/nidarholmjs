@@ -89,6 +89,7 @@ export default Relay.createContainer(Projects, {
                         end
                         year
                         tag
+                        public_mdtext
                     }
                 }
                 pageInfo {

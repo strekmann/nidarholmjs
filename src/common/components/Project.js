@@ -1,6 +1,7 @@
 import React from 'react';
 
 import Date from './Date';
+import Text from './Text';
 
 class Project extends React.Component {
     static propTypes = {
@@ -9,6 +10,7 @@ class Project extends React.Component {
         end: React.PropTypes.string,
         tag: React.PropTypes.string,
         year: React.PropTypes.string,
+        mdtext: React.PropTypes.string,
     }
 
     render() {
@@ -21,9 +23,7 @@ class Project extends React.Component {
                     {this.props.start ? <span><Date date={this.props.start} /> – </span>: null}
                     <Date date={this.props.end} />
                 </div>
-                <div>
-                    {this.props.mdtext}
-                </div>
+                <Text text={this.props.public_mdtext} />
             </div>
         );
     }
