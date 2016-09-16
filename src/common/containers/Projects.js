@@ -56,12 +56,12 @@ class Projects extends React.Component {
         const org = this.props.organization;
         return (
             <div>
-                <h2>Kommende prosjekter</h2>
+                <h1>Kommende prosjekter</h1>
                 <ProjectList
                     projects={org.nextProjects}
                 />
                 {org.nextProjects.pageInfo.hasNextPage ? <RaisedButton primary onClick={this.loadMoreUpcomongProjects}>Mer</RaisedButton> : null }
-                <h2>Tidligere prosjekter</h2>
+                <h1>Tidligere prosjekter</h1>
                 <ProjectList
                     projects={org.previousProjects}
                 />
@@ -87,6 +87,8 @@ export default Relay.createContainer(Projects, {
                         title
                         start
                         end
+                        year
+                        tag
                     }
                 }
                 pageInfo {
@@ -100,6 +102,8 @@ export default Relay.createContainer(Projects, {
                         title
                         start
                         end
+                        year
+                        tag
                     }
                 }
                 pageInfo {

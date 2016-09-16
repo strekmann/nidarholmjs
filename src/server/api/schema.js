@@ -84,6 +84,7 @@ const projectType = new GraphQLObjectType({
         tag: { type: GraphQLString },
         start: { type: GraphQLDate },
         end: { type: GraphQLDate },
+        year: { type: GraphQLString },
     },
     interfaces: [nodeInterface],
 });
