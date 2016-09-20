@@ -9,7 +9,7 @@ var _ = require('underscore'),
     uuid = require('node-uuid'),
     nodemailer = require('nodemailer'),
     shortid = require('short-mongo-id'),
-    config = require('../settings'),
+    config = require('config'),
     is_member = require('../lib/middleware').is_member,
     User = require('../models').User,
     PasswordCode = require('../models').PasswordCode,
@@ -21,6 +21,7 @@ var _ = require('underscore'),
 
 // core routes - base is /
 
+/*
 router.get('/', function(req, res, next) {
     var query,
         meta = {
@@ -30,22 +31,7 @@ router.get('/', function(req, res, next) {
         };
 
     if (req.organization.description) {
-        var locale = req.locale;
-        if (_.has(req.organization.description, locale)) {
-            meta.description = req.organization.description[locale];
-        }
-        else {
-            locale = locale.replace(/_.*$/, '');
-            if (_.has(req.organization.description, locale)) {
-                meta.description = req.organization.description[locale];
-            }
-            else {
-                // it seems like this is not necessary: firefox falls back
-                // to setting en if no languages are matched. chrome does not
-                // let me remove nb.
-                meta.description = req.organization.description[config.default_locale];
-            }
-        }
+        meta.description = req.organization.description['nb'];
     }
     var now = moment.utc().startOf('day').toDate();
 
@@ -84,18 +70,6 @@ router.get('/', function(req, res, next) {
                         {'permissions.groups': { $in: req.user.groups }}
                     ]
                 });
-                /* for some reason this does not work. maybe the multiple or?
-                query = Project.find({end: {$gte: now}})
-                .or([
-                    {start: {$exists: false}},
-                    {start: {$lte: now}}
-                ])
-                .or([
-                    {'permissions.public': true},
-                    {'permissions.users': req.user._id},
-                    {'permissions.groups': { $in: req.user.groups }}
-                ]);
-                */
                 query.sort('end')
                 .limit(3);
                 query
@@ -173,6 +147,7 @@ router.get('/', function(req, res, next) {
         });
     }
 });
+*/
 
 /*jslint unparam: true*/
 router.get('/login', function(req, res){

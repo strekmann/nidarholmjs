@@ -14,7 +14,7 @@ module.exports = {
         new webpack.ContextReplacementPlugin(/moment[\\\/]locale$/, /^\.\/(en|nb|nn|zh-cn)$/),
     ],
     output: {
-        filename: 'site.js',
+        filename: 'javascript.js',
         publicPath: 'http://localhost:3001/js/',
     },
     module: {

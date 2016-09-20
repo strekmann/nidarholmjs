@@ -14,7 +14,7 @@ var moment = require('moment'),
     request = require('superagent'),
     mmm = require('mmmagic'),
     Magic = mmm.Magic,
-    config = require('../settings'),
+    config = require('config'),
     File = require('../models/files').File;
 
 module.exports.slug = function (text) {

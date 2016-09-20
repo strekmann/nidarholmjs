@@ -1,40 +1,11 @@
 module.exports = function(grunt) {
     grunt.initConfig({
-        jshint: {
-            server: {
-                src: ['server/**/*.js'],
-                options: {
-                    curly: true,
-                    undef: true,
-                    unused: true,
-                    eqeqeq: true,
-                    eqnull: true,
-                    node: true
-                }
-            },
-            client: {
-                src: ['client/js/**/*.js'],
-                options: {
-                    curly: true,
-                    undef: true,
-                    unused: 'vars',
-                    eqeqeq: true,
-                    eqnull: true,
-                    browser: true,
-                    globals: {
-                        module: false,
-                        require: false,
-                        console: false
-                    }
-                }
-            }
-        },
         browserify: {
             build: {
-                dest: 'public/js/site.js',
-                src: ['client/js/index.js'],
+                dest: 'dist/public/js/site.js',
+                src: ['src/client/js/index.js'],
                 options: {
-                    alias: ['./client/js/index.js:s7n']
+                    alias: ['./src/client/js/index.js:s7n']
                 }
             }
         },
@@ -47,14 +18,14 @@ module.exports = function(grunt) {
             },
             dest: {
                 files: {
-                    '/tmp/styles.css': 'client/scss/styles.scss'
+                    '/tmp/styles.css': 'src/client/scss/styles.scss'
                 }
             }
         },
         concat: {
             css: {
                 src: [
-                    'client/vendor/css/**/*.css',
+                    'src/client/vendor/css/**/*.css',
                     'bower_components/pickadate/lib/themes/default.css',
                     'bower_components/pickadate/lib/themes/default.date.css',
                     'bower_components/pickadate/lib/themes/default.time.css',
@@ -63,7 +34,7 @@ module.exports = function(grunt) {
                     'bower_components/simplemde/dist/simplemde.min.css',
                     '/tmp/styles.css'
                 ],
-                dest: 'public/css/site.css'
+                dest: 'dist/public/css/site.css'
             },
             vendor: {
                 src: [
@@ -91,25 +62,25 @@ module.exports = function(grunt) {
                     'bower_components/select2/select2.js',
                     'bower_components/simplemde/dist/simplemde.min.js',
                     'bower_components/chosen/chosen.jquery.min.js',
-                    'client/vendor/js/*.js',
+                    'src/client/vendor/js/*.js',
                     'bower_components/dropzone/dist/dropzone.js'
                 ],
-                dest: 'public/js/vendor.js'
+                dest: 'dist/public/js/vendor.js'
             }
         },
         copy: {
             favicon: {
                 expand: true,
                 flatten: true,
-                src: ['client/img/apple-touch-icon-precomposed.png', 'client/img/favicon.ico'],
-                dest: 'public/'
+                src: ['src/client/img/apple-touch-icon-precomposed.png', 'src/client/img/favicon.ico'],
+                dest: 'dist/public/'
             },
             js: {
                 expand: true,
                 flatten: true,
                 filter: 'isFile',
                 src: ['bower_components/modernizr/modernizr.js'],
-                dest: 'public/js/'
+                dest: 'dist/public/js/'
             },
             font: {
                 expand: true,
@@ -117,34 +88,34 @@ module.exports = function(grunt) {
                 filter: 'isFile',
                 src: [
                     'bower_components/font-awesome/fonts/*',
-                    'client/fonts/*'
+                    'src/client/fonts/*'
                 ],
-                dest: 'public/fonts/'
+                dest: 'dist/public/fonts/'
             },
             img: {
                 expand: true,
-                cwd: 'client/img',
+                cwd: 'src/client/img',
                 src: ['**'],
-                dest: 'public/img/'
+                dest: 'dist/public/img/'
             },
             dropzone: {
                 expand: true,
                 flatten: true,
                 cwd: 'bower_components',
                 src: ['dropzone/**/*.png'],
-                dest: 'public/img/'
+                dest: 'dist/public/img/'
             },
             chosen: {
                 expand: true,
                 flatten: true,
                 src: ['bower_components/chosen/*.png'],
-                dest: 'public/img/'
+                dest: 'dist/public/img/'
             },
             select2: {
                 expand: true,
                 flatten: true,
                 src: ['bower_components/select2/*.png', 'bower_components/select2/*.gif'],
-                dest: 'public/css/' // FIXME: this is not css
+                dest: 'dist/public/css/' // FIXME: this is not css
             }
         },
         uglify: {
@@ -154,22 +125,22 @@ module.exports = function(grunt) {
             },
             vendor: {
                 files: {
-                    'public/js/vendor.js': ['public/js/vendor.js']
+                    'dist/public/js/vendor.js': ['dist/public/js/vendor.js']
                 }
             },
             client: {
                 files: {
-                    'public/js/site.js': ['public/js/site.js']
+                    'dist/public/js/site.js': ['dist/public/js/site.js']
                 }
             }
         },
         watch: {
             clientjs: {
-                files: ['client/js/**/*.js'],
-                tasks: ['jshint', 'browserify']
+                files: ['src/client/js/**/*.js'],
+                tasks: ['browserify']
             },
             scss: {
-                files: ['client/scss/**/*.scss'],
+                files: ['src/client/scss/**/*.scss'],
                 tasks: ['sass', 'concat:css']
             }
         },
@@ -191,12 +162,12 @@ module.exports = function(grunt) {
         },
         abideExtract: {
             js: {
-                src: 'server/**/*.js',
-                dest: 'server/locale/templates/LC_MESSAGES/messages.pot'
+                src: 'src/server/**/*.js',
+                dest: 'src/server/locale/templates/LC_MESSAGES/messages.pot'
             },
             jade: {
-                src: 'server/views/**/*.jade',
-                dest: 'server/locale/templates/LC_MESSAGES/messages.pot',
+                src: 'src/server/views/**/*.jade',
+                dest: 'src/server/locale/templates/LC_MESSAGES/messages.pot',
                 options: {
                     language: 'jade',
                     keyword: '__'
@@ -206,17 +177,17 @@ module.exports = function(grunt) {
         abideMerge: {
             messages: {
                 options: {
-                    template: 'server/locale/templates/LC_MESSAGES/messages.pot',
-                    localeDir: 'server/locale'
+                    template: 'src/server/locale/templates/LC_MESSAGES/messages.pot',
+                    localeDir: 'src/server/locale'
                 }
             }
         },
         abideCompile: {
             json: {
-                dest: 'public/js/',
+                dest: 'dist/public/js/',
                 options: {
                     type: 'json',
-                    localeDir: 'server/locale'
+                    localeDir: 'src/server/locale'
                 }
             }
         }
@@ -225,7 +196,6 @@ module.exports = function(grunt) {
     //grunt.loadTasks('tasks');
 
     grunt.loadNpmTasks('grunt-sass');
-    grunt.loadNpmTasks('grunt-contrib-jshint');
     grunt.loadNpmTasks('grunt-contrib-concat');
     grunt.loadNpmTasks('grunt-contrib-copy');
     grunt.loadNpmTasks('grunt-contrib-uglify');
@@ -235,8 +205,7 @@ module.exports = function(grunt) {
     grunt.loadNpmTasks('grunt-concurrent');
     grunt.loadNpmTasks('grunt-i18n-abide');
 
-    grunt.registerTask('default', ['jshint', 'sass', 'concat', 'copy', 'browserify', 'abideCompile']);
+    grunt.registerTask('default', ['sass', 'concat', 'copy', 'browserify', 'abideCompile']);
     grunt.registerTask('prod', ['default', 'uglify']);
-    grunt.registerTask('hint', ['jshint']);
     grunt.registerTask('locales', ['abideExtract', 'abideMerge']);
 };

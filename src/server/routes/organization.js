@@ -1,7 +1,7 @@
 var _ = require('underscore'),
     async = require('async'),
     slug = require('slug'),
-    config = require('../settings'),
+    config = require('config'),
     User = require('../models').User,
     Group = require('../models').Group,
     Organization = require('../models').Organization;

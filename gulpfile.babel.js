@@ -17,7 +17,7 @@ var devConfig = {
         }),
     ],
     output: {
-        filename: "site.js",
+        filename: "javascript.js",
     },
     module: {
         loaders: [
@@ -46,7 +46,7 @@ var prodConfig = {
         new webpack.webpack.optimize.UglifyJsPlugin()
     ],
     output: {
-        filename: "site.js",
+        filename: "javascript.js",
     },
     module: {
         loaders: [
