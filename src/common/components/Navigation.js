@@ -69,6 +69,9 @@ class Navigation extends React.Component {
                             <Link to="/" onTouchTap={this.handleClose}>Home</Link>
                         </MenuItem>
                         <MenuItem>
+                            <Link to="projects" onTouchTap={this.handleClose}>Prosjekter</Link>
+                        </MenuItem>
+                        <MenuItem>
                             <Link to="about" onTouchTap={this.handleClose}>About</Link>
                         </MenuItem>
                     </Menu>

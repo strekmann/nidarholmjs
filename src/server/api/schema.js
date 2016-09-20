@@ -21,6 +21,8 @@ import {
     nodeDefinitions,
 } from 'graphql-relay';
 
+import GraphQLDate from 'graphql-custom-datetype';
+
 import connectionFromMongooseQuery from 'relay-mongoose-connection';
 import marked from 'marked';
 import moment from 'moment';
@@ -75,6 +77,20 @@ const { nodeInterface, nodeField } = nodeDefinitions(
     }
 );
 
+const userType = new GraphQLObjectType({
+    name: 'User',
+    description: 'A person',
+    fields: {
+        id: globalIdField('User'),
+        name: { type: GraphQLString },
+        username: { type: GraphQLString },
+        email: { type: GraphQLString },
+        created: { type: GraphQLString },
+        updated: { type: GraphQLString },
+    },
+    interfaces: [nodeInterface],
+});
+
 const projectType = new GraphQLObjectType({
     name: 'Project',
     fields: {
@@ -84,6 +100,9 @@ const projectType = new GraphQLObjectType({
         tag: { type: GraphQLString },
         start: { type: GraphQLDate },
         end: { type: GraphQLDate },
+        year: { type: GraphQLString },
+        public_mdtext: { type: GraphQLString },
+        conductors: { type: new GraphQLList(userType) },
     },
     interfaces: [nodeInterface],
 });
@@ -105,6 +124,14 @@ const organizationType = new GraphQLObjectType({
         website: { type: GraphQLString },
         twitter: { type: GraphQLString },
         facebook: { type: GraphQLString },
+        project: {
+            type: projectType,
+            args: {
+                year: { name: 'year', type: GraphQLString },
+                tag: { name: 'tag', type: GraphQLString },
+            },
+            resolve: (_, args) => Project.findOne({ tag: args.tag, year: args.year }).exec(),
+        },
         nextProjects: {
             type: connectionDefinitions({ name: 'UpcomingProject', nodeType: projectType }).connectionType,
             args: connectionArgs,
@@ -128,24 +155,6 @@ const organizationType = new GraphQLObjectType({
                     args,
                 );
             },
-        },
-    },
-    interfaces: [nodeInterface],
-});
-
-const userType = new GraphQLObjectType({
-    name: 'User',
-    description: 'A person',
-    fields: {
-        id: globalIdField('User'),
-        name: { type: GraphQLString },
-        username: { type: GraphQLString },
-        email: { type: GraphQLString },
-        created: { type: GraphQLString },
-        updated: { type: GraphQLString },
-        organization: {
-            type: organizationType,
-            resolve: (viewer) => viewer.organization,
         },
     },
     interfaces: [nodeInterface],

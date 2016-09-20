@@ -86,6 +86,28 @@ UserSchema.methods.authenticate = function authenticateUser(candidate, callback)
     return callback('Bad password', null);
 };
 
+UserSchema.set('toJSON', {
+    versionKey: false,
+    transform: (document, ret) => {
+        ret.id = ret._id;
+        delete ret._id;
+        delete ret.password;
+        delete ret.algorithm;
+        delete ret.hash;
+    },
+});
+
+UserSchema.set('toObject', {
+    versionKey: false,
+    transform: (document, ret) => {
+        ret.id = ret._id;
+        delete ret._id;
+        delete ret.password;
+        delete ret.algorithm;
+        delete ret.hash;
+    },
+});
+
 var OrganizationSchema = new mongoose.Schema({
     _id: {type: String, lowercase: true, trim: true, required: true, unique: true},
     name: {type: String},
