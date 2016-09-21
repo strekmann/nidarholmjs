@@ -21,13 +21,12 @@ import {
     nodeDefinitions,
 } from 'graphql-relay';
 
-import GraphQLDate from 'graphql-custom-datetype';
-
 import connectionFromMongooseQuery from 'relay-mongoose-connection';
 import marked from 'marked';
 import moment from 'moment';
 
 import { User, Organization } from '../models';
+import { File } from '../models/files';
 import { Project } from '../models/projects';
 
 import config from 'config';
@@ -48,6 +47,7 @@ else {
 class UserDTO { constructor(obj) { for (const k of Object.keys(obj)) { this[k] = obj[k]; } } }
 class OrganizationDTO { constructor(obj) { for (const k of Object.keys(obj)) { this[k] = obj[k]; } } }
 class ProjectDTO { constructor(obj) { for (const k of Object.keys(obj)) { this[k] = obj[k]; } } }
+class FileDTO { constructor(obj) { for (const k of Object.keys(obj)) { this[k] = obj[k]; } } }
 
 const { nodeInterface, nodeField } = nodeDefinitions(
     (globalId) => {
@@ -61,6 +61,9 @@ const { nodeInterface, nodeField } = nodeDefinitions(
         if (type === 'Project') {
             return Project.findById(id).exec().then((project) => new ProjectDTO(project.toObject()));
         }
+        if (type === 'File') {
+            return File.findById(id).exec().then((file) => new FileDTO(project.toObject()));
+        }
         return null;
     },
     (obj) => {
@@ -72,6 +75,9 @@ const { nodeInterface, nodeField } = nodeDefinitions(
         }
         if (obj instanceof ProjectDTO) {
             return projectType;
+        }
+        if (obj instanceof FileDTO) {
+            return fileType;
         }
         return null;
     }
@@ -91,6 +97,15 @@ const userType = new GraphQLObjectType({
     interfaces: [nodeInterface],
 });
 
+const fileType = new GraphQLObjectType({
+    name: 'File',
+    fields: {
+        id: globalIdField('File'),
+        filename: { type: GraphQLString },
+    },
+    interfaces: [nodeInterface],
+});
+
 const projectType = new GraphQLObjectType({
     name: 'Project',
     fields: {
@@ -103,6 +118,13 @@ const projectType = new GraphQLObjectType({
         year: { type: GraphQLString },
         public_mdtext: { type: GraphQLString },
         conductors: { type: new GraphQLList(userType) },
+        poster: {
+            type: fileType,
+            resolve: (a, b) => {
+                // TODO: Fix
+                return File.findById(a.id).exec();
+            },
+        },
     },
     interfaces: [nodeInterface],
 });
@@ -124,6 +146,9 @@ const organizationType = new GraphQLObjectType({
         website: { type: GraphQLString },
         twitter: { type: GraphQLString },
         facebook: { type: GraphQLString },
+        description_nb: { type: GraphQLString }, // TODO: Migrate
+        map_url: { type: GraphQLString },
+        contact_text: { type: GraphQLString },
         project: {
             type: projectType,
             args: {

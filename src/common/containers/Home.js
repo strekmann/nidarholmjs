@@ -1,10 +1,12 @@
 import React from 'react';
 import Relay from 'react-relay';
 import SwipeableViews from 'react-swipeable-views';
-import TextField from 'material-ui/TextField';
 import RaisedButton from 'material-ui/RaisedButton';
 import getMuiTheme from 'material-ui/styles/getMuiTheme';
 import { Tabs, Tab } from 'material-ui/Tabs';
+import { Card, CardMedia, CardTitle, CardText } from 'material-ui/Card';
+import Text from '../components/Text';
+import Date from '../components/Date';
 
 import theme from '../theme';
 
@@ -61,40 +63,85 @@ class Home extends React.Component {
     render() {
         const viewer = this.props.viewer;
         const org = this.props.organization;
+        let nextProject;
+        if (org.nextProjects.edges.length) {
+            nextProject = org.nextProjects.edges[0].node;
+        }
         if (!viewer) {
             return (
-                <section>
-                    <h1>Logg inn</h1>
-                    <form method="post" action="/auth/login">
-                        <div>
-                            <TextField floatingLabelText="E-post" id="email" name="email" />
+                <main>
+                    <div
+                        style={{
+                            backgroundImage: 'url(/img/Musikkforeningen-Nidarholm-dir-Trond-Madsen-1.jpg)',
+                            backgroundPosition: 'top center',
+                            backgroundSize: 'cover',
+                            height: '30vw',
+                            width: '100%',
+                        }}
+                    >
+                        <h1
+                            style={{
+                                marginTop: 0,
+                                paddingTop: '3vw',
+                                textAlign: 'center',
+                                color: 'rgba(255,255,255,0.6)',
+                                fontSize: '2rem',
+                            }}
+                        >
+                            {org.name}
+                        </h1>
+                    </div>
+                    {nextProject ?
+                        <section>
+                            <h2>Neste konsert</h2>
+                            <div style={{ display: 'flex', flexWrap: 'wrap', maxWidth: 970, margin: 'auto' }}>
+                                <div style={{ width: '75%', minWidth: 700, paddingRight: 20 }}>
+                                    <span
+                                        style={{
+                                            fontSize: '3rem',
+                                        }}
+                                    >
+                                        {nextProject.title}
+                                    </span>
+                                    <div className="meta" style={{ fontWeight: 'bold' }}>
+                                        <Date date={nextProject.end} />
+                                    </div>
+                                    <Text text="Natus dolor atque est hic voluptatum. Dolor aut iste aliquam eius et reiciendis. Qui reiciendis dolor soluta. Et molestias temporibus qui consequatur illo quos magnam vel. Ipsa dolor laudantium sunt iusto qui qui doloribus." />
+                                </div>
+                                <div style={{ width: '25%', minWidth: 200 }}>
+                                    <Card>
+                                        <CardMedia>
+                                            <img src="//placehold.it/300x300" />
+                                        </CardMedia>
+                                    </Card>
+                                </div>
+                            </div>
+                        </section>
+                        : null
+                    }
+                    <section>
+                        <h2>Kort om korpset</h2>
+                        {org.description_nb}
+                    </section>
+                    <section>
+                        <h2>Kontakt</h2>
+                        <div style={{ display: 'flex', flexWrap: 'wrap', maxWidth: 970, margin: 'auto' }}>
+                            <div style={{ width: '50%', minWidth: 450, paddingRight: 10 }}>
+                                <Card>
+                                    <CardMedia>
+                                        <iframe width="100%" height="300px" frameBorder="0" src={org.map_url} />
+                                    </CardMedia>
+                                </Card>
+                            </div>
+                            <div style={{ width: '50%', minWidth: 450, paddingLeft: 10 }}>
+                                <h3>E-post</h3>
+                                <Text text={`<${org.email}>`} />
+                                <h3>Øvelser</h3>
+                                <Text text={org.contact_text} />
+                            </div>
                         </div>
-                        <div>
-                            <TextField floatingLabelText="Passord" id="password" name="password" type="password" />
-                        </div>
-                        <div>
-                            <RaisedButton type="submit" primary>Logg inn</RaisedButton>
-                        </div>
-                    </form>
-                    <h1>Register</h1>
-                    <form method="post" action="/auth/register">
-                        <div>
-                            <TextField floatingLabelText="Name" id="name" name="name" />
-                        </div>
-                        <div>
-                            <TextField floatingLabelText="Username" id="username" name="username" />
-                        </div>
-                        <div>
-                            <TextField floatingLabelText="E-post" id="email" name="email" />
-                        </div>
-                        <div>
-                            <TextField floatingLabelText="Passord" id="password" name="password" type="password" />
-                        </div>
-                        <div>
-                            <RaisedButton type="submit" primary>Registrer</RaisedButton>
-                        </div>
-                    </form>
-                </section>
+                    </section>
+                </main>
             );
         }
 
@@ -157,6 +204,10 @@ export default Relay.createContainer(Home, {
         fragment on Organization {
             id
             name
+            email
+            description_nb
+            map_url
+            contact_text
             nextProjects(first:$showUpcomingProjects) {
                 edges {
                     node {
@@ -164,6 +215,10 @@ export default Relay.createContainer(Home, {
                         title
                         start
                         end
+                        public_mdtext
+                        poster {
+                            filename
+                        }
                     }
                 }
                 pageInfo {

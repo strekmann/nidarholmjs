@@ -135,6 +135,7 @@ var OrganizationSchema = new mongoose.Schema({
         instagram: {type: String}
     },
     description: {}, // mixed hash of locale keys and values
+    description_nb: { type: String },
     tracking_code: {type: String}
 });
 

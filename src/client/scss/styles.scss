@@ -99,7 +99,7 @@ h1 {
     color: #999999;
 }
 
-h2 {
+h2, h3 {
     font-family: $serif-font;
 }
 
@@ -649,6 +649,7 @@ nav.top-bar {
 section {
     max-width: 1000px;
     margin: 0 auto;
+    padding: 0 15px;
 }
 article.project {
     margin-top: rem-calc(15px);
@@ -851,4 +852,21 @@ span.permissions {
 .CodeMirror,
 .CodeMirror-scroll {
     min-height: 100px;
+}
+
+nav.main {
+    margin-top: 15px;
+    a {
+        padding: 15px 0 20px 10px;
+        font-size: 1.2rem;
+        font-family: 'Merriweather', serif;
+        color: white;
+        text-decoration: none;
+    }
+}
+
+section h2 {
+    border-top: 1px solid #dddddd;
+    margin-top: 2rem;
+    padding-top: 1rem;
 }

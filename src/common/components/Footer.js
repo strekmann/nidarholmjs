@@ -12,40 +12,18 @@ class Footer extends React.Component {
         return (
             <footer>
                 <hr />
-                <div style={{ display: 'flex', flexWrap: 'wrap', maxWidth: 1000, margin: 'auto' }}>
-                    <div style={{ width: '25%', minWidth: 100 }}>
-                        <div>{ org.name }</div>
-                        <div>{ org.mail_address }</div>
-                        <div>{ org.postcode } { org.city }</div>
-                    </div>
-                    <div style={{ width: '25%', minWidth: 100 }}>
-                        <div>Bank: { org.public_bank_account }</div>
-                        <div>Org: { org.organization_number }</div>
-                    </div>
-                    <div style={{ width: '25%', minWidth: 100 }}>
-                        <div>
-                            <i className="fa fa-fw fa-envelope" />
-                            <span dangerouslySetInnerHTML={{ __html: org.encoded_email }} />
-                        </div>
-                        { org.facebook ?
-                            <div>
-                                <i className="fa fa-fw fa-facebook" />
-                                <a href={`https://twitter.com/${org.facebook}`}>{org.facebook}</a>
-                            </div>
-                        : null }
-                        { org.twitter ?
-                            <div>
-                                <i className="fa fa-fw fa-twitter" />
-                                <a href={`https://twitter.com/${org.twitter}`}>{org.twitter}</a>
-                            </div>
-                        : null }
-                    </div>
-                    <div style={{ width: '25%', minWidth: 100 }}>
-                        <div>{ this.props.viewer ? <a href="/auth/logout">Logg ut</a> : null }</div>
-                    </div>
-                </div>
-                <div className="bystrekmann">
-                    <a href="https://github.com/strekmann/nidarholm.js">Nidarholm.js</a> by <a href="https://strekmann.no/">Strekmann AS</a>
+                <div style={{ textAlign: 'center', marginTop: 50, marginBottom: 80 }}>
+                    <a href={`https://facebook.com/${org.facebook}`}>
+                        <i className="fa fa-fw fa-envelope fa-3x" />
+                    </a>
+                    <a href={`https://facebook.com/${org.facebook}`}>
+                        <i className="fa fa-fw fa-facebook fa-3x" />
+                    </a>
+                    <i className="fa fa-fw fa-instagram fa-3x" />
+                    <a href={`https://twitter.com/${org.twitter}`}>
+                        <i className="fa fa-fw fa-twitter fa-3x" />
+                    </a>
+                    <div style={{ fontFamily: 'Merriweather, serif', fontSize: '1.0rem', marginTop: 20 }}>© Musikkforeningen Nidarholm</div>
                 </div>
             </footer>
         );
