@@ -868,13 +868,13 @@ section h2 {
     padding-top: 1rem;
 }
 
-.flexy {
+.flex-menu {
     a {
         padding: 1rem;
         font-size: 1.2rem;
     }
 }
-.flexy-handi {
+.flex-menu-mobile {
     display: none;
 }
 .giant-image-text {
@@ -884,24 +884,23 @@ section h2 {
     .giant-image-text {
         font-size: 1.5rem;
     }
-    .flexy {
+    .flex-menu {
         flex-direction: column;
         &> div {
             flex-direction: column;
-            //flex-wrap: 'wrap';
             a {
-                min-width: 300px;
+                min-width: 270px;
                 width: 100%;
             }
         }
     }
-    .flexy-handi {
+    .flex-menu-mobile {
         display: block;
     }
-    .flexy-maxi {
+    .flex-menu-desktop {
         display: none;
     }
-    .flexy-handler {
+    .flex-menu-handler {
         display: block;
     }
 }

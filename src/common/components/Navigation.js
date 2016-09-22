@@ -64,9 +64,9 @@ class Navigation extends React.Component {
 
         return (
             <div style={{ backgroundColor: lightBlue900 }}>
-                <div className="flexy-maxi">
+                <div className="flex-menu-desktop">
                     <div
-                        className="flexy"
+                        className="flex-menu"
                         style={{
                             display: 'flex',
                             flexWrap: 'wrap',
@@ -114,10 +114,10 @@ class Navigation extends React.Component {
                         </div>
                     </div>
                 </div>
-                <div className="flexy-handi" style={{ position: 'relative' }}>
+                <div className="flex-menu-mobile" style={{ position: 'relative' }}>
                     {logo}
                     <button
-                        className="flexy-handler"
+                        className="flex-menu-handler"
                         onClick={this.handleToggle}
                         style={{
                             position: 'absolute',
@@ -132,7 +132,7 @@ class Navigation extends React.Component {
                         <NavigationMenu color={fullWhite} />
                     </button>
                     {this.state.open ?
-                        <div className="flexy" style={{ display: 'flex', flexWrap: 'wrap', minWidth: 270, width: '100%' }}>
+                        <div className="flex-menu" style={{ display: 'flex', flexWrap: 'wrap', minWidth: 270, width: '100%' }}>
                             <div style={{ display: 'flex', flexWrap: 'wrap' }}>
                             </div>
                             <div style={{ display: 'flex', flexWrap: 'wrap' }}>
@@ -151,7 +151,7 @@ class Navigation extends React.Component {
                                 <RaisedButton
                                     label="Logg inn"
                                     icon={<ActionLock />}
-                                    style={{ padding: '1rem' }}
+                                    style={{ margin: '1rem' }}
                                 />
                             </div>
                         </div>
