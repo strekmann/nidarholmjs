@@ -102,6 +102,9 @@ const fileType = new GraphQLObjectType({
     fields: {
         id: globalIdField('File'),
         filename: { type: GraphQLString },
+        thumbnail_path: { type: GraphQLString },
+        normal_path: { type: GraphQLString },
+        large_path: { type: GraphQLString },
     },
     interfaces: [nodeInterface],
 });
@@ -120,9 +123,8 @@ const projectType = new GraphQLObjectType({
         conductors: { type: new GraphQLList(userType) },
         poster: {
             type: fileType,
-            resolve: (a, b) => {
-                // TODO: Fix
-                return File.findById(a.id).exec();
+            resolve: (a) => {
+                return File.findById(a.poster).exec();
             },
         },
     },

@@ -79,15 +79,17 @@ class Home extends React.Component {
                                     <div className="meta" style={{ fontWeight: 'bold' }}>
                                         <Date date={nextProject.end} />
                                     </div>
-                                    <Text text="Natus dolor atque est hic voluptatum. Dolor aut iste aliquam eius et reiciendis. Qui reiciendis dolor soluta. Et molestias temporibus qui consequatur illo quos magnam vel. Ipsa dolor laudantium sunt iusto qui qui doloribus." />
+                                    <Text text={nextProject.public_mdtext} />
                                 </div>
+                                {nextProject.poster ?
                                 <div style={{ width: '25%', minWidth: 200 }}>
                                     <Card>
                                         <CardMedia>
-                                            <img src="//placehold.it/300x300" />
+                                            <img src={nextProject.poster.normal_path} />
                                         </CardMedia>
                                     </Card>
                                 </div>
+                                : null }
                             </div>
                         </section>
                         : null
@@ -176,10 +178,14 @@ export default Relay.createContainer(Home, {
             description_nb
             map_url
             contact_text
-            nextProject {
+            nextProjects(first:1) {
                 title
                 start
                 end
+                poster {
+                    filename
+                    normal_path
+                }
             }
         }`,
     },

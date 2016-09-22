@@ -39,6 +39,7 @@ class Project extends React.Component {
                     {project.conductors.map(conductor => conductor.name)}
                 </div>
                 <Text text={project.public_mdtext} />
+                {project.poster ? <img src={project.poster.large_path} /> : null }
             </div>
         );
     }
@@ -62,6 +63,9 @@ export default Relay.createContainer(Project, {
                 public_mdtext
                 conductors {
                     name
+                }
+                poster {
+                    filename
                 }
             }
         }`,

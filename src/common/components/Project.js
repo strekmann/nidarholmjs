@@ -17,14 +17,17 @@ class Project extends React.Component {
     render() {
         return (
             <div>
-                <Link to={`/${this.props.year}/${this.props.tag}`}>
-                    <h2>{this.props.title}</h2>
-                </Link>
+                <h2>
+                    <Link to={`/${this.props.year}/${this.props.tag}`}>
+                        {this.props.title}
+                    </Link>
+                </h2>
                 <div className="meta">
                     {this.props.start ? <span><Date date={this.props.start} /> – </span>: null}
                     <Date date={this.props.end} />
                 </div>
                 <Text text={this.props.public_mdtext} />
+                {this.props.poster ? <img src={this.props.poster.thumbnail_path} /> : null }
             </div>
         );
     }

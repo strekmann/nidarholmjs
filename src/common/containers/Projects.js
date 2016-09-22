@@ -55,7 +55,7 @@ class Projects extends React.Component {
     render() {
         const org = this.props.organization;
         return (
-            <div>
+            <section>
                 <h1>Kommende prosjekter</h1>
                 <ProjectList
                     projects={org.nextProjects}
@@ -66,7 +66,7 @@ class Projects extends React.Component {
                     projects={org.previousProjects}
                 />
                 {org.previousProjects.pageInfo.hasNextPage ? <RaisedButton primary onClick={this.loadMorePreviousProjects}>Mer</RaisedButton> : null }
-            </div>
+            </section>
         );
     }
 }
@@ -90,6 +90,10 @@ export default Relay.createContainer(Projects, {
                         year
                         tag
                         public_mdtext
+                        poster {
+                            filename
+                            thumbnail_path
+                        }
                     }
                 }
                 pageInfo {
@@ -105,6 +109,10 @@ export default Relay.createContainer(Projects, {
                         end
                         year
                         tag
+                        poster {
+                            filename
+                            thumbnail_path
+                        }
                     }
                 }
                 pageInfo {
