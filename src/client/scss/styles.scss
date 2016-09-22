@@ -870,3 +870,22 @@ section h2 {
 .mainToolbar {
     white-space: nowrap;
 }
+.flexy {
+    a {
+        padding: 1rem;
+        font-size: 1.2rem;
+    }
+}
+@media all and (max-width: 700px) {
+    .flexy {
+        flex-direction: column;
+        &> div {
+            flex-direction: column;
+            //flex-wrap: 'wrap';
+            a {
+                min-width: 300px;
+                width: 100%;
+            }
+        }
+    }
+}

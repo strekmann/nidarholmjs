@@ -1,5 +1,4 @@
 import React from 'react';
-import { Toolbar, ToolbarGroup, ToolbarTitle } from 'material-ui/Toolbar';
 import RaisedButton from 'material-ui/RaisedButton';
 import ActionLock from 'material-ui/svg-icons/action/lock';
 import getMuiTheme from 'material-ui/styles/getMuiTheme';
@@ -45,45 +44,39 @@ class Navigation extends React.Component {
         const viewer = this.props.viewer;
 
         return (
-            <Toolbar style={{ backgroundColor: lightBlue900 }} className="mainToolbar">
-                <ToolbarGroup firstChild>
-                    <ToolbarTitle
-                        text={
-                            <Link
-                                to="/"
-                                style={{
-                                    fontFamily: 'Merriweather, serif',
-                                    color: 'white',
-                                    textDecoration: 'none',
-                                }}
-                            >
-                                <img
-                                    src="/img/btn.png"
-                                    alt="Nidarholm-logo"
-                                    style={{ marginLeft: -10 }}
-                                />
-                            </Link>
-                            }
+            <div className="flexy" style={{ backgroundColor: lightBlue900, display: 'flex', flexWrap: 'wrap', minWidth: 300, width: '100%' }}>
+                <Link
+                    to="/"
+                    style={{
+                        fontFamily: 'Merriweather, serif',
+                        color: 'white',
+                        textDecoration: 'none',
+                        padding: 0,
+                    }}
+                >
+                    <img
+                        src="/img/btn.png"
+                        alt="Nidarholm-logo"
+                        style={{ marginLeft: -10 }}
                     />
-                </ToolbarGroup>
-                <ToolbarGroup lastChild>
-                    <nav className="main">
-                        <Link to="about" style={{ color: 'white' }}>
-                            Om oss
-                        </Link>
-                        <Link to="/projects" style={{ color: 'white' }}>
-                            Konserter
-                        </Link>
-                        <a href="/members" style={{ color: 'white' }}>
-                            Medlemmer
-                        </a>
-                        <a href="/stott-oss" style={{ color: 'white' }}>
-                            Støtt oss
-                        </a>
-                    </nav>
-                    <RaisedButton label="Logg inn" icon={<ActionLock />} style={{ marginRight: 10 }}/>
-                </ToolbarGroup>
-            </Toolbar>
+                </Link>
+                <div style={{ display: 'flex', flexWrap: 'wrap' }}>
+                    <Link to="about" style={{ color: 'white' }}>
+                        Om oss
+                    </Link>
+                    <Link to="/projects" style={{ color: 'white' }}>
+                        Konserter
+                    </Link>
+                </div>
+                <div style={{ display: 'flex', flexWrap: 'wrap' }}>
+                    <a href="/members" style={{ color: 'white' }}>
+                        Medlemmer
+                    </a>
+                    <a href="/stott-oss" style={{ color: 'white' }}>
+                        Støtt oss
+                    </a>
+                </div>
+            </div>
         );
     }
 }
