@@ -53,12 +53,12 @@ class Home extends React.Component {
                         }}
                     >
                         <h1
+                            className="giant-image-text"
                             style={{
                                 marginTop: 0,
                                 paddingTop: '3vw',
                                 textAlign: 'center',
                                 color: 'rgba(255,255,255,0.6)',
-                                fontSize: '2rem',
                             }}
                         >
                             {org.name}
@@ -67,8 +67,8 @@ class Home extends React.Component {
                     {nextProject ?
                         <section>
                             <h2>Neste konsert</h2>
-                            <div style={{ display: 'flex', flexWrap: 'wrap', maxWidth: 970, margin: 'auto' }}>
-                                <div style={{ width: '75%', minWidth: 700, paddingRight: 20 }}>
+                            <div style={{ display: 'flex', flexWrap: 'wrap', maxWidth: 1000, margin: '0 -15px' }}>
+                                <div style={{ width: '75%', minWidth: 270, padding: '0 15px' }}>
                                     <span
                                         style={{
                                             fontSize: '3rem',
@@ -82,7 +82,7 @@ class Home extends React.Component {
                                     <Text text={nextProject.public_mdtext} />
                                 </div>
                                 {nextProject.poster ?
-                                <div style={{ width: '25%', minWidth: 200 }}>
+                                <div style={{ width: '25%', minWidth: 270, padding: '0 15px' }}>
                                     <Card>
                                         <CardMedia>
                                             <img src={nextProject.poster.normal_path} />
@@ -100,15 +100,15 @@ class Home extends React.Component {
                     </section>
                     <section>
                         <h2>Kontakt</h2>
-                        <div style={{ display: 'flex', flexWrap: 'wrap', maxWidth: 970, margin: 'auto' }}>
-                            <div style={{ width: '50%', minWidth: 450, paddingRight: 10 }}>
+                        <div style={{ display: 'flex', flexWrap: 'wrap', maxWidth: 1000, margin: 'auto' }}>
+                            <div style={{ width: '50%', minWidth: 270, padding: '0 15px' }}>
                                 <Card>
                                     <CardMedia>
                                         <iframe width="100%" height="300px" frameBorder="0" src={org.map_url} />
                                     </CardMedia>
                                 </Card>
                             </div>
-                            <div style={{ width: '50%', minWidth: 450, paddingLeft: 10 }}>
+                            <div style={{ width: '50%', minWidth: 270, padding: '0 15px' }}>
                                 <h3>E-post</h3>
                                 <Text text={`<${org.email}>`} />
                                 <h3>Øvelser</h3>

@@ -51,13 +51,13 @@ class Navigation extends React.Component {
                     fontFamily: 'Merriweather, serif',
                     color: 'white',
                     textDecoration: 'none',
-                    padding: '19px 10px 20px 0',
+                    padding: '19px 10px 20px 9px',
                 }}
             >
                 <img
                     src="/img/btn.png"
                     alt="Nidarholm-logo"
-                    style={{ marginLeft: -10 }}
+                    style={{ marginLeft: -15 }}
                 />
             </Link>
         );
@@ -65,13 +65,35 @@ class Navigation extends React.Component {
         return (
             <div style={{ backgroundColor: lightBlue900 }}>
                 <div className="flexy-maxi">
-                    <div className="flexy" style={{ display: 'flex', flexWrap: 'wrap', minWidth: 300, width: '100%', justifyContent: 'space-between' }}>
+                    <div
+                        className="flexy"
+                        style={{
+                            display: 'flex',
+                            flexWrap: 'wrap',
+                            minWidth: 300,
+                            width: '100%',
+                            justifyContent: 'space-between',
+                        }}
+                    >
                         <div style={{ flexBasis: 'auto' }}>
                             {logo}
                         </div>
-                        <div style={{ display: 'flex', flexWrap: 'wrap', flexGrow: 1 }}>
-                        </div>
-                        <div style={{ display: 'flex', flexWrap: 'wrap', flexGrow: 1, justifyContent: 'flex-end' }}>
+                        <div
+                            style={{
+                                display: 'flex',
+                                flexWrap: 'wrap',
+                                flexGrow: 1,
+                                justifyContent: 'flex-start',
+                            }}
+                        />
+                        <div
+                            style={{
+                                display: 'flex',
+                                flexWrap: 'wrap',
+                                flexGrow: 1,
+                                justifyContent: 'flex-end',
+                            }}
+                        >
                             <Link to="about" style={{ color: 'white' }}>
                                 Om oss
                             </Link>
@@ -94,11 +116,23 @@ class Navigation extends React.Component {
                 </div>
                 <div className="flexy-handi" style={{ position: 'relative' }}>
                     {logo}
-                    <div className="flexy-handler" style={{ position: 'absolute', top: 0, right: 0, padding: '16px 15px', cursor: 'pointer' }}>
-                        <NavigationMenu color={fullWhite} onClick={this.handleToggle} />
-                    </div>
+                    <button
+                        className="flexy-handler"
+                        onClick={this.handleToggle}
+                        style={{
+                            position: 'absolute',
+                            top: 0,
+                            right: 0,
+                            padding: '16px 15px 15px 1rem',
+                            outline: 'none',
+                            backgroundColor: lightBlue900,
+                            margin: 0,
+                        }}
+                    >
+                        <NavigationMenu color={fullWhite} />
+                    </button>
                     {this.state.open ?
-                        <div className="flexy" style={{ display: 'flex', flexWrap: 'wrap', minWidth: 300, width: '100%' }}>
+                        <div className="flexy" style={{ display: 'flex', flexWrap: 'wrap', minWidth: 270, width: '100%' }}>
                             <div style={{ display: 'flex', flexWrap: 'wrap' }}>
                             </div>
                             <div style={{ display: 'flex', flexWrap: 'wrap' }}>
@@ -117,7 +151,7 @@ class Navigation extends React.Component {
                                 <RaisedButton
                                     label="Logg inn"
                                     icon={<ActionLock />}
-                                    style={{ margin: 10 }}
+                                    style={{ padding: '1rem' }}
                                 />
                             </div>
                         </div>
