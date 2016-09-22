@@ -178,7 +178,7 @@ export default Relay.createContainer(Home, {
             description_nb
             map_url
             contact_text
-            nextProjects(first:1) {
+            nextProject {
                 title
                 start
                 end
