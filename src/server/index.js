@@ -357,6 +357,7 @@ app.get(
 );
 
 app.get('/', universal);
+app.get('/about', universal);
 app.use('/', require('./routes/index'));
 app.use('/proxy', require('./routes/proxy'));
 app.use('/forum', require('./routes/forum'));
@@ -389,10 +390,12 @@ app.get(
 app.put('/organization/admin/admin_group', organization_routes.set_admin_group);
 app.put('/organization/admin/musicscoreadmin_group', organization_routes.set_musicscoreadmin_group);
 
-app.get('/projects', project_routes.index);
+// app.get('/projects', project_routes.index);
+app.get('/projects', universal);
 app.post('/projects', project_routes.create_project);
 // app.get('/:year(\\d{4})', project_routes.year);
-app.get('/:year(\\d{4})/:tag', project_routes.project);
+// app.get('/:year(\\d{4})/:tag', project_routes.project);
+app.get('/:year(\\d{4})/:tag', universal);
 app.put('/projects/:id', project_routes.update_project);
 app.delete('/projects/:id', project_routes.delete_project);
 app.post('/projects/:id/events', project_routes.project_create_event);

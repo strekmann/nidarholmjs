@@ -157,6 +157,15 @@ const organizationType = new GraphQLObjectType({
             },
             resolve: (_, args) => Project.findOne({ tag: args.tag, year: args.year }).exec(),
         },
+        nextProject: {
+            type: projectType,
+            async resolve() {
+                return await Project
+                .findOne({ end: { $gte: moment().startOf('day').toDate() } })
+                .sort({ end: 1 })
+                .exec();
+            },
+        },
         nextProjects: {
             type: connectionDefinitions({ name: 'UpcomingProject', nodeType: projectType }).connectionType,
             args: connectionArgs,

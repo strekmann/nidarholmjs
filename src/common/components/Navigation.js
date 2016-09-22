@@ -45,7 +45,7 @@ class Navigation extends React.Component {
         const viewer = this.props.viewer;
 
         return (
-            <Toolbar style={{ backgroundColor: lightBlue900 }}>
+            <Toolbar style={{ backgroundColor: lightBlue900 }} className="mainToolbar">
                 <ToolbarGroup firstChild>
                     <ToolbarTitle
                         text={
@@ -68,18 +68,18 @@ class Navigation extends React.Component {
                 </ToolbarGroup>
                 <ToolbarGroup lastChild>
                     <nav className="main">
-                        <Link to="about" onTouchTap={this.handleClose} style={{ color: 'white' }}>
+                        <Link to="about" style={{ color: 'white' }}>
                             Om oss
                         </Link>
-                        <Link to="projects" onTouchTap={this.handleClose} style={{ color: 'white' }}>
+                        <Link to="/projects" style={{ color: 'white' }}>
                             Konserter
                         </Link>
-                        <Link to="/" onTouchTap={this.handleClose} style={{ color: 'white' }}>
+                        <a href="/members" style={{ color: 'white' }}>
                             Medlemmer
-                        </Link>
-                        <Link to="/" onTouchTap={this.handleClose} style={{ color: 'white' }}>
+                        </a>
+                        <a href="/stott-oss" style={{ color: 'white' }}>
                             Støtt oss
-                        </Link>
+                        </a>
                     </nav>
                     <RaisedButton label="Logg inn" icon={<ActionLock />} style={{ marginRight: 10 }}/>
                 </ToolbarGroup>

@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router';
 
 import Date from './Date';
 import Text from './Text';
@@ -16,9 +17,9 @@ class Project extends React.Component {
     render() {
         return (
             <div>
-                <a href={`/${this.props.year}/${this.props.tag}`}>
+                <Link to={`/${this.props.year}/${this.props.tag}`}>
                     <h2>{this.props.title}</h2>
-                </a>
+                </Link>
                 <div className="meta">
                     {this.props.start ? <span><Date date={this.props.start} /> – </span>: null}
                     <Date date={this.props.end} />

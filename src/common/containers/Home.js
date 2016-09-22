@@ -12,9 +12,6 @@ import theme from '../theme';
 
 import ProjectList from '../components/ProjectList';
 
-const showUpcomingProjects = 4;
-const projectsPerPage = 10;
-
 class Home extends React.Component {
     static contextTypes = {
         relay: Relay.PropTypes.Environment,
@@ -39,34 +36,10 @@ class Home extends React.Component {
         });
     }
 
-    loadMorePreviousProjects = () => {
-        const projects = this.props.organization.previousProjects;
-        this.props.relay.setVariables({
-            showProjects: projects.edges.length + projectsPerPage,
-        });
-    }
-
-    loadMoreUpcomongProjects = () => {
-        const projects = this.props.organization.nextProjects;
-        let next = projects.edges.length + projectsPerPage;
-
-        // upcoming list has just a couple of projects, so at first refill,
-        // use default page size
-        if (projects.edges.length < projectsPerPage) {
-            next = projectsPerPage;
-        }
-        this.props.relay.setVariables({
-            showUpcomingProjects: next,
-        });
-    }
-
     render() {
         const viewer = this.props.viewer;
         const org = this.props.organization;
-        let nextProject;
-        if (org.nextProjects.edges.length) {
-            nextProject = org.nextProjects.edges[0].node;
-        }
+        const nextProject = org.nextProject;
         if (!viewer) {
             return (
                 <main>
@@ -121,7 +94,7 @@ class Home extends React.Component {
                     }
                     <section>
                         <h2>Kort om korpset</h2>
-                        {org.description_nb}
+                        <Text text={org.description_nb} />
                     </section>
                     <section>
                         <h2>Kontakt</h2>
@@ -188,11 +161,6 @@ Home.childContextTypes = {
 };
 
 export default Relay.createContainer(Home, {
-    initialVariables: {
-        showUpcomingProjects,
-        showProjects: projectsPerPage,
-        projectsPerPage,
-    },
     fragments: {
         viewer: () => Relay.QL`
         fragment on User {
@@ -208,35 +176,10 @@ export default Relay.createContainer(Home, {
             description_nb
             map_url
             contact_text
-            nextProjects(first:$showUpcomingProjects) {
-                edges {
-                    node {
-                        id
-                        title
-                        start
-                        end
-                        public_mdtext
-                        poster {
-                            filename
-                        }
-                    }
-                }
-                pageInfo {
-                    hasNextPage
-                }
-            }
-            previousProjects(first:$showProjects) {
-                edges {
-                    node {
-                        id
-                        title
-                        start
-                        end
-                    }
-                }
-                pageInfo {
-                    hasNextPage
-                }
+            nextProject {
+                title
+                start
+                end
             }
         }`,
     },
