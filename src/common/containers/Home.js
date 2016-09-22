@@ -100,7 +100,7 @@ class Home extends React.Component {
                     </section>
                     <section>
                         <h2>Kontakt</h2>
-                        <div style={{ display: 'flex', flexWrap: 'wrap', maxWidth: 1000, margin: 'auto' }}>
+                        <div style={{ display: 'flex', flexWrap: 'wrap', maxWidth: 1000, margin: '0 -15px' }}>
                             <div style={{ width: '50%', minWidth: 270, padding: '0 15px' }}>
                                 <Card>
                                     <CardMedia>

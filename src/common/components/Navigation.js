@@ -48,9 +48,6 @@ class Navigation extends React.Component {
                 to="/"
                 onClick={this.handleClose}
                 style={{
-                    fontFamily: 'Merriweather, serif',
-                    color: 'white',
-                    textDecoration: 'none',
                     padding: '19px 10px 20px 9px',
                 }}
             >
@@ -106,11 +103,12 @@ class Navigation extends React.Component {
                             <a href="/stott-oss" style={{ color: 'white' }}>
                                 Støtt oss
                             </a>
-                            <RaisedButton
-                                label="Logg inn"
-                                icon={<ActionLock />}
-                                style={{ margin: '12px 15px 12px 10px' }}
-                            />
+                            <Link to="/login" style={{ padding: 0, margin: '12px 15px 12px 10px' }}>
+                                <RaisedButton
+                                    label="Logg inn"
+                                    icon={<ActionLock />}
+                                />
+                            </Link>
                         </div>
                     </div>
                 </div>
