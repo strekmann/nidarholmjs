@@ -867,14 +867,14 @@ section h2 {
     padding-top: 1rem;
 }
 
-.mainToolbar {
-    white-space: nowrap;
-}
 .flexy {
     a {
         padding: 1rem;
         font-size: 1.2rem;
     }
+}
+.flexy-handi {
+    display: none;
 }
 @media all and (max-width: 700px) {
     .flexy {
@@ -887,5 +887,14 @@ section h2 {
                 width: 100%;
             }
         }
+    }
+    .flexy-handi {
+        display: block;
+    }
+    .flexy-maxi {
+        display: none;
+    }
+    .flexy-handler {
+        display: block;
     }
 }

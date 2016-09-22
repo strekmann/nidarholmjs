@@ -1,8 +1,9 @@
 import React from 'react';
-import RaisedButton from 'material-ui/RaisedButton';
 import ActionLock from 'material-ui/svg-icons/action/lock';
+import NavigationMenu from 'material-ui/svg-icons/navigation/menu';
+import RaisedButton from 'material-ui/RaisedButton';
 import getMuiTheme from 'material-ui/styles/getMuiTheme';
-import { lightBlue900 } from 'material-ui/styles/colors';
+import { fullWhite, lightBlue900 } from 'material-ui/styles/colors';
 import { Link } from 'react-router';
 
 import theme from '../theme';
@@ -42,39 +43,86 @@ class Navigation extends React.Component {
 
     render() {
         const viewer = this.props.viewer;
+        const logo = (
+            <Link
+                to="/"
+                onClick={this.handleClose}
+                style={{
+                    fontFamily: 'Merriweather, serif',
+                    color: 'white',
+                    textDecoration: 'none',
+                    padding: '19px 10px 20px 0',
+                }}
+            >
+                <img
+                    src="/img/btn.png"
+                    alt="Nidarholm-logo"
+                    style={{ marginLeft: -10 }}
+                />
+            </Link>
+        );
 
         return (
-            <div className="flexy" style={{ backgroundColor: lightBlue900, display: 'flex', flexWrap: 'wrap', minWidth: 300, width: '100%' }}>
-                <Link
-                    to="/"
-                    style={{
-                        fontFamily: 'Merriweather, serif',
-                        color: 'white',
-                        textDecoration: 'none',
-                        padding: 0,
-                    }}
-                >
-                    <img
-                        src="/img/btn.png"
-                        alt="Nidarholm-logo"
-                        style={{ marginLeft: -10 }}
-                    />
-                </Link>
-                <div style={{ display: 'flex', flexWrap: 'wrap' }}>
-                    <Link to="about" style={{ color: 'white' }}>
-                        Om oss
-                    </Link>
-                    <Link to="/projects" style={{ color: 'white' }}>
-                        Konserter
-                    </Link>
+            <div style={{ backgroundColor: lightBlue900 }}>
+                <div className="flexy-maxi">
+                    <div className="flexy" style={{ display: 'flex', flexWrap: 'wrap', minWidth: 300, width: '100%', justifyContent: 'space-between' }}>
+                        <div style={{ flexBasis: 'auto' }}>
+                            {logo}
+                        </div>
+                        <div style={{ display: 'flex', flexWrap: 'wrap', flexGrow: 1 }}>
+                        </div>
+                        <div style={{ display: 'flex', flexWrap: 'wrap', flexGrow: 1, justifyContent: 'flex-end' }}>
+                            <Link to="about" style={{ color: 'white' }}>
+                                Om oss
+                            </Link>
+                            <Link to="/projects" style={{ color: 'white' }}>
+                                Konserter
+                            </Link>
+                            <a href="/members" style={{ color: 'white' }}>
+                                Medlemmer
+                            </a>
+                            <a href="/stott-oss" style={{ color: 'white' }}>
+                                Støtt oss
+                            </a>
+                            <RaisedButton
+                                label="Logg inn"
+                                icon={<ActionLock />}
+                                style={{ margin: '12px 15px 12px 10px' }}
+                            />
+                        </div>
+                    </div>
                 </div>
-                <div style={{ display: 'flex', flexWrap: 'wrap' }}>
-                    <a href="/members" style={{ color: 'white' }}>
-                        Medlemmer
-                    </a>
-                    <a href="/stott-oss" style={{ color: 'white' }}>
-                        Støtt oss
-                    </a>
+                <div className="flexy-handi" style={{ position: 'relative' }}>
+                    {logo}
+                    <div className="flexy-handler" style={{ position: 'absolute', top: 0, right: 0, padding: '16px 15px', cursor: 'pointer' }}>
+                        <NavigationMenu color={fullWhite} onClick={this.handleToggle} />
+                    </div>
+                    {this.state.open ?
+                        <div className="flexy" style={{ display: 'flex', flexWrap: 'wrap', minWidth: 300, width: '100%' }}>
+                            <div style={{ display: 'flex', flexWrap: 'wrap' }}>
+                            </div>
+                            <div style={{ display: 'flex', flexWrap: 'wrap' }}>
+                                <Link to="about" style={{ color: 'white' }} onClick={this.handleClose}>
+                                    Om oss
+                                </Link>
+                                <Link to="/projects" style={{ color: 'white' }} onClick={this.handleClose}>
+                                    Konserter
+                                </Link>
+                                <a href="/members" style={{ color: 'white' }} onClick={this.handleClose}>
+                                    Medlemmer
+                                </a>
+                                <a href="/stott-oss" style={{ color: 'white' }} onClick={this.handleClose}>
+                                    Støtt oss
+                                </a>
+                                <RaisedButton
+                                    label="Logg inn"
+                                    icon={<ActionLock />}
+                                    style={{ margin: 10 }}
+                                />
+                            </div>
+                        </div>
+                        : null
+                    }
                 </div>
             </div>
         );
