@@ -103,12 +103,12 @@ class Navigation extends React.Component {
                             <a href="/stott-oss" style={{ color: 'white' }}>
                                 Støtt oss
                             </a>
-                            <Link to="/login" style={{ padding: 0, margin: '12px 15px 12px 10px' }}>
+                            <a href="/login" style={{ padding: 0, margin: '12px 15px 12px 10px' }}>
                                 <RaisedButton
                                     label="Logg inn"
                                     icon={<ActionLock />}
                                 />
-                            </Link>
+                            </a>
                         </div>
                     </div>
                 </div>
@@ -146,11 +146,12 @@ class Navigation extends React.Component {
                                 <a href="/stott-oss" style={{ color: 'white' }} onClick={this.handleClose}>
                                     Støtt oss
                                 </a>
-                                <RaisedButton
-                                    label="Logg inn"
-                                    icon={<ActionLock />}
-                                    style={{ margin: '1rem' }}
-                                />
+                                <a href="/login" style={{ padding: 0, margin: '1rem' }}>
+                                    <RaisedButton
+                                        label="Logg inn"
+                                        icon={<ActionLock />}
+                                    />
+                                </a>
                             </div>
                         </div>
                         : null
