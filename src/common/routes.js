@@ -7,6 +7,7 @@ import Home from './containers/Home';
 import Projects from './containers/Projects';
 import Project from './containers/Project';
 import About from './containers/About';
+import NoMatch from './components/NoMatch';
 
 export const queries = {
     viewer: () => Relay.QL`query { viewer }`,
@@ -22,8 +23,7 @@ export default createRoutes(
         <IndexRoute component={Home} queries={queries} />
         <Route path="about" component={About} queries={organizationQueries} />
         <Route path="projects" component={Projects} queries={organizationQueries} />
-        <Route path=":year">
-            <Route path=":tag" component={Project} queries={organizationQueries} />
-        </Route>
+        <Route path=":year/:tag" component={Project} queries={organizationQueries} />
+        <Route path="*" component={NoMatch} />
     </Route>
 );
