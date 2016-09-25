@@ -22,15 +22,13 @@ import {
 } from 'graphql-relay';
 
 import connectionFromMongooseQuery from 'relay-mongoose-connection';
-import marked from 'marked';
 import moment from 'moment';
+import config from 'config';
+import nodemailer from 'nodemailer';
 
 import { User, Organization } from '../models';
 import { File } from '../models/files';
-import { Project } from '../models/projects';
-
-import config from 'config';
-import nodemailer from 'nodemailer';
+import { Project, Event } from '../models/projects';
 
 let transporter;
 if (config.mail && config.mail.auth && config.mail.host) {
@@ -46,6 +44,7 @@ else {
 
 class UserDTO { constructor(obj) { for (const k of Object.keys(obj)) { this[k] = obj[k]; } } }
 class OrganizationDTO { constructor(obj) { for (const k of Object.keys(obj)) { this[k] = obj[k]; } } }
+class EventDTO { constructor(obj) { for (const k of Object.keys(obj)) { this[k] = obj[k]; } } }
 class ProjectDTO { constructor(obj) { for (const k of Object.keys(obj)) { this[k] = obj[k]; } } }
 class FileDTO { constructor(obj) { for (const k of Object.keys(obj)) { this[k] = obj[k]; } } }
 
@@ -58,11 +57,14 @@ const { nodeInterface, nodeField } = nodeDefinitions(
         if (type === 'Organization') {
             return Organization.findById(id).exec().then((organization) => new OrganizationDTO(organization.toObject()));
         }
+        if (type === 'Event') {
+            return Event.findById(id).exec().then((event) => new EventDTO(event.toObject()));
+        }
         if (type === 'Project') {
             return Project.findById(id).exec().then((project) => new ProjectDTO(project.toObject()));
         }
         if (type === 'File') {
-            return File.findById(id).exec().then((file) => new FileDTO(project.toObject()));
+            return File.findById(id).exec().then((file) => new FileDTO(file.toObject()));
         }
         return null;
     },
@@ -72,6 +74,9 @@ const { nodeInterface, nodeField } = nodeDefinitions(
         }
         if (obj instanceof OrganizationDTO) {
             return organizationType;
+        }
+        if (obj instanceof EventDTO) {
+            return eventType;
         }
         if (obj instanceof ProjectDTO) {
             return projectType;
@@ -109,11 +114,22 @@ const fileType = new GraphQLObjectType({
     interfaces: [nodeInterface],
 });
 
+const eventType = new GraphQLObjectType({
+    name: 'Event',
+    fields: {
+        id: globalIdField('Event'),
+        title: { type: GraphQLString },
+        start: { type: GraphQLDate },
+        end: { type: GraphQLDate },
+        mdtext: { type: GraphQLString },
+    },
+    interfaces: [nodeInterface],
+});
+
 const projectType = new GraphQLObjectType({
     name: 'Project',
     fields: {
-        //id: { type: GraphQLString },
-        id: globalIdField('Organization'),
+        id: globalIdField('Project'),
         title: { type: GraphQLString },
         tag: { type: GraphQLString },
         start: { type: GraphQLDate },
@@ -123,9 +139,7 @@ const projectType = new GraphQLObjectType({
         conductors: { type: new GraphQLList(userType) },
         poster: {
             type: fileType,
-            resolve: (a) => {
-                return File.findById(a.poster).exec();
-            },
+            resolve: (a) => File.findById(a.poster).exec(),
         },
     },
     interfaces: [nodeInterface],
@@ -188,6 +202,28 @@ const organizationType = new GraphQLObjectType({
                     Project.find({
                         end: { $lt: moment().startOf('day').toDate() },
                     }).sort({ end: -1 }),
+                    args,
+                );
+            },
+        },
+        event: {
+            type: eventType,
+            args: {
+                id: { name: 'id', type: GraphQLString },
+            },
+            resolve: (_, args) => Event.findById(args.id).exec(),
+        },
+        nextEvents: {
+            type: connectionDefinitions({ name: 'Event', nodeType: eventType }).connectionType,
+            args: connectionArgs,
+            async resolve(term, { ...args }) {
+                return await connectionFromMongooseQuery(
+                    Event.find({
+                        start: {
+                            $gte: moment().startOf('day').toDate(),
+                            $lt: moment().add(2, 'months').startOf('day').toDate(),
+                        },
+                    }).sort({ start: 1 }),
                     args,
                 );
             },

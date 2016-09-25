@@ -12,6 +12,7 @@ import Date from '../components/Date';
 import theme from '../theme';
 
 import ProjectList from '../components/ProjectList';
+import EventList from '../components/EventList';
 
 class Home extends React.Component {
     static contextTypes = {
@@ -67,9 +68,9 @@ class Home extends React.Component {
                     </div>
                     {nextProject ?
                         <section>
-                            <h2>Neste konsert</h2>
                             <div style={{ display: 'flex', flexWrap: 'wrap', maxWidth: 1000, margin: '0 -15px' }}>
-                                <div style={{ width: '75%', minWidth: 270, padding: '0 15px' }}>
+                                <div style={{ width: nextProject.poster ? '50%' : '75%', minWidth: 270, padding: '0 15px', position: 'relative' }}>
+                                    <h2>Neste konsert</h2>
                                     <span
                                         style={{
                                             fontSize: '3rem',
@@ -81,21 +82,29 @@ class Home extends React.Component {
                                         <Date date={nextProject.end} />
                                     </div>
                                     <Text text={nextProject.public_mdtext} />
+                                    <Link to="projects" style={{ position: 'absolute', bottom: 0 }}>
+                                        Alle konserter
+                                    </Link>
                                 </div>
                                 {nextProject.poster ?
-                                <div style={{ width: '25%', minWidth: 270, padding: '0 15px' }}>
-                                    <Card>
-                                        <CardMedia>
-                                            <img src={nextProject.poster.normal_path} />
-                                        </CardMedia>
-                                    </Card>
-                                </div>
+                                    <div style={{ width: '25%', minWidth: 270, padding: '0 15px' }}>
+                                        <Card>
+                                            <CardMedia>
+                                                <img
+                                                    alt="Konsertplakat"
+                                                    src={nextProject.poster.normal_path}
+                                                />
+                                            </CardMedia>
+                                        </Card>
+                                    </div>
                                 : null }
-                            </div>
-                            <div style={{ textAlign: 'right' }}>
-                                <Link to="projects">
-                                    Alle konserter
-                                </Link>
+                                <div style={{ width: '25%', minWidth: 230, padding: '0 15px' }}>
+                                    <h2>Neste aktiviteter</h2>
+                                    <EventList events={org.nextEvents} />
+                                    <Link to="projects">
+                                        Aktivitetskalender
+                                    </Link>
+                                </div>
                             </div>
                         </section>
                         : null
@@ -191,6 +200,16 @@ export default Relay.createContainer(Home, {
                 poster {
                     filename
                     normal_path
+                }
+            }
+            nextEvents(first:4) {
+                edges {
+                    node {
+                        title
+                        start
+                        end
+                        mdtext
+                    }
                 }
             }
         }`,

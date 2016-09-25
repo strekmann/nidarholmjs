@@ -65,6 +65,22 @@ var EventSchema = new mongoose.Schema({
     mdtext: {type: String}
 });
 
+EventSchema.set('toJSON', {
+    versionKey: false,
+    transform: (document, ret) => {
+        ret.id = ret._id;
+        delete ret._id;
+    },
+});
+
+EventSchema.set('toObject', {
+    versionKey: false,
+    transform: (document, ret) => {
+        ret.id = ret._id;
+        delete ret._id;
+    },
+});
+
 var ProjectSchema = new mongoose.Schema({
     //_id: {type: String, lowercase: true, required: true, unique: true, trim: true},
     tag: {type: String, trim: true, required: true},
