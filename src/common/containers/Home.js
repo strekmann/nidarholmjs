@@ -5,6 +5,7 @@ import RaisedButton from 'material-ui/RaisedButton';
 import getMuiTheme from 'material-ui/styles/getMuiTheme';
 import { Tabs, Tab } from 'material-ui/Tabs';
 import { Card, CardMedia, CardTitle, CardText } from 'material-ui/Card';
+import { Link } from 'react-router';
 import Text from '../components/Text';
 import Date from '../components/Date';
 
@@ -90,6 +91,11 @@ class Home extends React.Component {
                                     </Card>
                                 </div>
                                 : null }
+                            </div>
+                            <div style={{ textAlign: 'right' }}>
+                                <Link to="projects">
+                                    Alle konserter
+                                </Link>
                             </div>
                         </section>
                         : null
