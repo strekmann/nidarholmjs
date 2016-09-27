@@ -175,36 +175,32 @@ const organizationType = new GraphQLObjectType({
         },
         nextProject: {
             type: projectType,
-            async resolve() {
-                return await Project
+            resolve: () => Project
                 .findOne({ end: { $gte: moment().startOf('day').toDate() } })
                 .sort({ end: 1 })
-                .exec();
-            },
+                .exec(),
         },
         nextProjects: {
             type: connectionDefinitions({ name: 'UpcomingProject', nodeType: projectType }).connectionType,
             args: connectionArgs,
-            async resolve(term, { ...args }) { // term here is unused for now, coming from server
-                return await connectionFromMongooseQuery(
+            resolve: (term, { ...args }) => // term here is unused for now, coming from server
+                connectionFromMongooseQuery(
                     Project.find({
                         end: { $gte: moment().startOf('day').toDate() },
                     }).sort({ end: 1 }),
                     args,
-                );
-            },
+                ),
         },
         previousProjects: {
             type: connectionDefinitions({ name: 'Project', nodeType: projectType }).connectionType,
             args: connectionArgs,
-            async resolve(term, { ...args }) { // term here is unused for now, coming from server
-                return await connectionFromMongooseQuery(
+            resolve: (term, { ...args }) => //{ // term here is unused for now, coming from server
+                connectionFromMongooseQuery(
                     Project.find({
                         end: { $lt: moment().startOf('day').toDate() },
                     }).sort({ end: -1 }),
                     args,
-                );
-            },
+                ),
         },
         event: {
             type: eventType,
@@ -216,7 +212,7 @@ const organizationType = new GraphQLObjectType({
         nextEvents: {
             type: connectionDefinitions({ name: 'Event', nodeType: eventType }).connectionType,
             args: connectionArgs,
-            async resolve(root, { ...args }) {
+            resolve: (root, { ...args }) => {
                 const query = Event
                 .find({
                     start: {
@@ -237,7 +233,7 @@ const organizationType = new GraphQLObjectType({
                     query.where({ 'permissions.public': true });
                     query.select({ mdtext: 0 });
                 }
-                return await connectionFromMongooseQuery(
+                return connectionFromMongooseQuery(
                     query,
                     args,
                 );
