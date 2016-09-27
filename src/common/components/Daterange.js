@@ -5,7 +5,8 @@ import Date from './Date';
 
 export default class Daterange extends React.Component {
     static propTypes = {
-        date: React.PropTypes.node,
+        start: React.PropTypes.node,
+        end: React.PropTypes.node,
     }
 
     render() {

@@ -170,6 +170,7 @@ export default Relay.createContainer(Home, {
             nextEvents(first:4) {
                 edges {
                     node {
+                        id
                         title
                         start
                         end
