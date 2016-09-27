@@ -2,10 +2,12 @@ import React from 'react';
 import Relay from 'react-relay';
 import RaisedButton from 'material-ui/RaisedButton';
 import getMuiTheme from 'material-ui/styles/getMuiTheme';
+import TextField from 'material-ui/TextField';
 import { Card, CardMedia, CardTitle, CardText } from 'material-ui/Card';
 import { Link } from 'react-router';
 import Text from '../components/Text';
 import Date from '../components/Date';
+import EditDescriptionMutation from '../mutations/editDescription';
 
 import theme from '../theme';
 
@@ -31,16 +33,33 @@ class Home extends React.Component {
     }
 
     state = {
-        slideIndex: 0,
+        editDescription: false,
+        description_nb: this.props.organization.description_nb,
     }
 
     getChildContext() {
         return { muiTheme: this.muiTheme };
     }
 
-    changeTab = (value) => {
-        this.setState({
-            slideIndex: value,
+    onChangeDescription = (event) => {
+        this.setState({ description_nb: event.target.value });
+    }
+
+    toggleEditDescription = () => {
+        this.setState({ editDescription: !this.state.editDescription });
+    }
+
+    saveDescription = () => {
+        this.context.relay.commitUpdate(new EditDescriptionMutation({
+            viewer: this.props.viewer,
+            organization: this.props.organization,
+            description_nb: this.state.description_nb,
+        }), {
+            onSuccess: () => {
+                this.setState({
+                    editDescription: false,
+                });
+            },
         });
     }
 
@@ -117,6 +136,22 @@ class Home extends React.Component {
                 <section>
                     <h2>Kort om korpset</h2>
                     <Text text={org.description_nb} />
+                    <RaisedButton onClick={this.toggleEditDescription} label="Rediger" />
+                    {this.state.editDescription ?
+                        <form>
+                            <TextField
+                                floatingLabelText="Introduksjonstekst"
+                                name="description_nb"
+                                value={this.state.description_nb}
+                                onChange={this.onChangeDescription}
+                                multiLine
+                                style={{ width: '100%' }}
+                            />
+                            <RaisedButton onClick={this.saveDescription} label="Lagre" />
+                        </form>
+                        :
+                        null
+                    }
                 </section>
                 <section>
                     <h2>Kontakt</h2>
@@ -149,6 +184,7 @@ export default Relay.createContainer(Home, {
             name
             email
             username
+            ${EditDescriptionMutation.getFragment('viewer')},
         }`,
         organization: () => Relay.QL`
         fragment on Organization {

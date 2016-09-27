@@ -252,17 +252,39 @@ const queryType = new GraphQLObjectType({
             resolve: ({ viewer }) => viewer,
         },
         organization: {
+            type: organizationType,
             /*
-            args: {
-                username: {
-                    name: 'username',
-                    type: new GraphQLNonNull(GraphQLString),
-                },
+            resolve: ({ organization, viewer }) => {
+                console.log(organization, viewer);
+                return { organization, viewer };
             },
             */
-            type: organizationType,
-            resolve: ({ organization, viewer }) => ({ organization, viewer }),
         },
+    },
+});
+
+const mutationEditDescription = mutationWithClientMutationId({
+    name: 'EditDescription',
+    inputFields: {
+        userid: { type: new GraphQLNonNull(GraphQLID) },
+        orgid: { type: new GraphQLNonNull(GraphQLID) },
+        description_nb: { type: GraphQLString },
+    },
+    outputFields: {
+        organization: {
+            type: organizationType,
+            resolve: (payload) => payload,
+        },
+    },
+    mutateAndGetPayload: ({ userid, orgid, description_nb }) => {
+        const id = fromGlobalId(orgid).id;
+        return Organization.findByIdAndUpdate(
+            id, {
+                description_nb,
+            }, {
+                new: true,
+            },
+        ).exec();
     },
 });
 
@@ -309,6 +331,7 @@ const mutationType = new GraphQLObjectType({
     name: 'Mutation',
     fields: () => ({
         updateUser: mutationUserUpdate,
+        editDescription: mutationEditDescription,
     }),
 });
 
