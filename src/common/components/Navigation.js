@@ -82,6 +82,7 @@ class Navigation extends React.Component {
                                 flexWrap: 'wrap',
                                 flexGrow: 1,
                                 justifyContent: 'flex-start',
+                                alignItems: 'center',
                             }}
                         />
                         <div
@@ -90,6 +91,7 @@ class Navigation extends React.Component {
                                 flexWrap: 'wrap',
                                 flexGrow: 1,
                                 justifyContent: 'flex-end',
+                                alignItems: 'center',
                             }}
                         >
                             <Link to="about" style={{ color: 'white' }}>
@@ -105,9 +107,9 @@ class Navigation extends React.Component {
                                 Støtt oss
                             </a>
                             {viewer ?
-                                <a href={`/users/${viewer.username}`} style={{ lineHeight: 1 }}>
-                                    <Avatar src={viewer.profile_picture_path} style={{ margin: '-10px 5px -20px 0' }}/>
-                                    <span style={{ color: 'white' }}>{viewer.name}</span>
+                                <a href={`/users/${viewer.username}`} style={{ display: 1, display: 'flex', alignItems: 'center', margin: '-5px 0', color: 'white' }}>
+                                    <Avatar src={viewer.profile_picture_path} style={{ margin: '0 5px' }} />
+                                    <span>{viewer.name}</span>
                                 </a>
                                 :
                                 <Link to="/login" style={{ padding: 0, margin: '12px 15px 12px 10px' }}>

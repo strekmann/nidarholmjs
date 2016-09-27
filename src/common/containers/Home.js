@@ -74,7 +74,7 @@ class Home extends React.Component {
                 {nextProject ?
                     <section>
                         <div style={{ display: 'flex', flexWrap: 'wrap', maxWidth: 1000, margin: '0 -15px' }}>
-                            <div style={{ width: nextProject.poster ? '50%' : '75%', minWidth: 270, padding: '0 15px', position: 'relative' }}>
+                            <div style={{ width: nextProject.poster ? '50%' : '75%', minWidth: 270, padding: '0 15px', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
                                 <h2>Neste konsert</h2>
                                 <span
                                     style={{
@@ -87,7 +87,7 @@ class Home extends React.Component {
                                     <Date date={nextProject.end} />
                                 </div>
                                 <Text text={nextProject.public_mdtext} />
-                                <Link to="projects" style={{ position: 'absolute', bottom: 0 }}>
+                                <Link to="projects" style={{ alignSelf: 'end' }}>
                                     Alle konserter
                                 </Link>
                             </div>
