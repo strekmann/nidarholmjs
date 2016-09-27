@@ -3,6 +3,7 @@ import Relay from 'react-relay';
 import { Route, IndexRoute, createRoutes } from 'react-router';
 
 import App from './containers/App';
+import Login from './containers/Login';
 import Home from './containers/Home';
 import Projects from './containers/Projects';
 import Project from './containers/Project';
@@ -21,6 +22,7 @@ export const organizationQueries = {
 export default createRoutes(
     <Route path="/" component={App} queries={queries}>
         <IndexRoute component={Home} queries={queries} />
+        <Route path="login" component={Login} queryies={queries} />
         <Route path="about" component={About} queries={organizationQueries} />
         <Route path="projects" component={Projects} queries={organizationQueries} />
         <Route path=":year/:tag" component={Project} queries={organizationQueries} />

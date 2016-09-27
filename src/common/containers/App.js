@@ -49,6 +49,7 @@ export default Relay.createContainer(App, {
         fragment on User {
             name,
             email,
+            username,
         }`,
         organization: () => Relay.QL`
         fragment on Organization {

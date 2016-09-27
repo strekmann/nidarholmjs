@@ -358,6 +358,8 @@ app.get(
 
 app.get('/', universal);
 app.get('/about', universal);
+app.get('/login', universal);
+
 app.use('/', require('./routes/index'));
 app.use('/proxy', require('./routes/proxy'));
 app.use('/forum', require('./routes/forum'));

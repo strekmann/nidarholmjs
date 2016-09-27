@@ -1,5 +1,6 @@
 import React from 'react';
 import ActionLock from 'material-ui/svg-icons/action/lock';
+import Avatar from 'material-ui/Avatar';
 import NavigationMenu from 'material-ui/svg-icons/navigation/menu';
 import RaisedButton from 'material-ui/RaisedButton';
 import getMuiTheme from 'material-ui/styles/getMuiTheme';
@@ -103,12 +104,19 @@ class Navigation extends React.Component {
                             <a href="/stott-oss" style={{ color: 'white' }}>
                                 Støtt oss
                             </a>
-                            <a href="/login" style={{ padding: 0, margin: '12px 15px 12px 10px' }}>
-                                <RaisedButton
-                                    label="Logg inn"
-                                    icon={<ActionLock />}
-                                />
-                            </a>
+                            {viewer ?
+                                <a href={`/users/${viewer.username}`} style={{ lineHeight: 1 }}>
+                                    <Avatar src={viewer.profile_picture_path} style={{ margin: '-10px 5px -20px 0' }}/>
+                                    <span style={{ color: 'white' }}>{viewer.name}</span>
+                                </a>
+                                :
+                                <Link to="/login" style={{ padding: 0, margin: '12px 15px 12px 10px' }}>
+                                    <RaisedButton
+                                        label="Logg inn"
+                                        icon={<ActionLock />}
+                                    />
+                                </Link>
+                            }
                         </div>
                     </div>
                 </div>
@@ -146,12 +154,19 @@ class Navigation extends React.Component {
                                 <a href="/stott-oss" style={{ color: 'white' }} onClick={this.handleClose}>
                                     Støtt oss
                                 </a>
-                                <a href="/login" style={{ padding: 0, margin: '1rem' }}>
-                                    <RaisedButton
-                                        label="Logg inn"
-                                        icon={<ActionLock />}
-                                    />
-                                </a>
+                                {this.props.viewer ?
+                                    <a href={`/users/${viewer.username}`} style={{ lineHeight: 1 }}>
+                                        <Avatar src={viewer.profile_picture_path} style={{ margin: '-10px 5px -20px 0' }} />
+                                        <span style={{ color: 'white' }}>{viewer.name}</span>
+                                    </a>
+                                    :
+                                    <a href="/login" style={{ padding: 0, margin: '1rem' }}>
+                                        <RaisedButton
+                                            label="Logg inn"
+                                            icon={<ActionLock />}
+                                        />
+                                    </a>
+                                }
                             </div>
                         </div>
                         : null
