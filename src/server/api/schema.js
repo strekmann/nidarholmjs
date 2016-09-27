@@ -216,14 +216,29 @@ const organizationType = new GraphQLObjectType({
         nextEvents: {
             type: connectionDefinitions({ name: 'Event', nodeType: eventType }).connectionType,
             args: connectionArgs,
-            async resolve(term, { ...args }) {
+            async resolve(root, { ...args }) {
+                const query = Event
+                .find({
+                    start: {
+                        $gte: moment().startOf('day').toDate(),
+                        $lt: moment().add(2, 'months').startOf('day').toDate(),
+                    },
+                })
+                .sort({ start: 1 });
+                if (root.viewer) {
+                    query.or([
+                        { creator: root.viewer },
+                        { 'permissions.public': true },
+                        { 'permissions.users': root.viewer._id },
+                        { 'permissions.groups': { $in: root.viewer.groups } },
+                    ]);
+                }
+                else {
+                    query.where({ 'permissions.public': true });
+                    query.select({ mdtext: 0 });
+                }
                 return await connectionFromMongooseQuery(
-                    Event.find({
-                        start: {
-                            $gte: moment().startOf('day').toDate(),
-                            $lt: moment().add(2, 'months').startOf('day').toDate(),
-                        },
-                    }).sort({ start: 1 }),
+                    query,
                     args,
                 );
             },
@@ -250,7 +265,7 @@ const queryType = new GraphQLObjectType({
             },
             */
             type: organizationType,
-            resolve: ({ organization }) => organization,
+            resolve: ({ organization, viewer }) => ({ organization, viewer }),
         },
     },
 });
