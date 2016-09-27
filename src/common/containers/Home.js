@@ -3,9 +3,11 @@ import Relay from 'react-relay';
 import RaisedButton from 'material-ui/RaisedButton';
 import getMuiTheme from 'material-ui/styles/getMuiTheme';
 import { Card, CardMedia, CardTitle, CardText } from 'material-ui/Card';
+import TextField from 'material-ui/TextField';
 import { Link } from 'react-router';
 import Text from '../components/Text';
 import Date from '../components/Date';
+import Editor from '../components/Editor';
 
 import theme from '../theme';
 
@@ -31,16 +33,18 @@ class Home extends React.Component {
     }
 
     state = {
-        slideIndex: 0,
+        editDescription: false,
+        description: this.props.organization.description,
     }
 
     getChildContext() {
         return { muiTheme: this.muiTheme };
     }
 
-    changeTab = (value) => {
+    toggleEditDescription = (event) => {
+        event.preventDefault();
         this.setState({
-            slideIndex: value,
+            editDescription: !this.state.editDescription,
         });
     }
 
@@ -115,8 +119,23 @@ class Home extends React.Component {
                     : null
                 }
                 <section>
-                    <h2>Kort om korpset</h2>
-                    <Text text={org.description_nb} />
+                    <RaisedButton label="Rediger" onClick={this.toggleEditDescription} />
+                    {this.state.editDescription ?
+                        <div>
+                            <Editor />
+                            <TextField
+                                value={this.state.description}
+                                placeholder="Skriv inn beskrivelse her"
+                                multiLine
+                                floatingLabelText="Introduksjonstekst"
+                            />
+                        </div>
+                        :
+                        <div>
+                            <h2>Kort om korpset</h2>
+                            <Text text={org.description_nb} />
+                        </div>
+                    }
                 </section>
                 <section>
                     <h2>Kontakt</h2>
