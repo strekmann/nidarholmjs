@@ -3,7 +3,7 @@ import Relay from 'react-relay';
 import RaisedButton from 'material-ui/RaisedButton';
 import getMuiTheme from 'material-ui/styles/getMuiTheme';
 import TextField from 'material-ui/TextField';
-import { Card, CardMedia, CardTitle, CardText } from 'material-ui/Card';
+import { Card, CardMedia } from 'material-ui/Card';
 import { Link } from 'react-router';
 import Text from '../components/Text';
 import Date from '../components/Date';
@@ -208,8 +208,10 @@ export default Relay.createContainer(Home, {
                     node {
                         id
                         title
+                        location
                         start
                         end
+                        tags
                         mdtext
                     }
                 }

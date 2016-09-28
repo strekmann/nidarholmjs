@@ -119,8 +119,10 @@ const eventType = new GraphQLObjectType({
     fields: {
         id: globalIdField('Event'),
         title: { type: GraphQLString },
+        location: { type: GraphQLString },
         start: { type: GraphQLDate },
         end: { type: GraphQLDate },
+        tags: { type: new GraphQLList(GraphQLString) },
         mdtext: { type: GraphQLString },
     },
     interfaces: [nodeInterface],

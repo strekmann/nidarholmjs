@@ -28,20 +28,24 @@ class Login extends React.Component {
                             <div>
                                 <TextField
                                     name="email"
-                                    placeholder="email"
+                                    placeholder="E-post eller brukernavn"
                                 />
                             </div>
                             <div>
                                 <TextField
                                     type="password"
                                     name="password"
-                                    placeholder="password"
+                                    placeholder="Passord"
                                 />
                             </div>
                         </CardText>
                         <CardActions>
                             <div>
-                                <RaisedButton type="submit" bsStyle="primary" label="Logg inn" />
+                                <RaisedButton
+                                    type="submit"
+                                    primary
+                                    label="Logg inn"
+                                />
                             </div>
                         </CardActions>
                     </Card>
