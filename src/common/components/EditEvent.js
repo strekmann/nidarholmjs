@@ -9,6 +9,7 @@ import Chip from 'material-ui/Chip';
 
 export default class EditEvent extends React.Component {
     static propTypes = {
+        id: React.PropTypes.string,
         title: React.PropTypes.string,
         location: React.PropTypes.string,
         start: React.PropTypes.string,
@@ -63,6 +64,11 @@ export default class EditEvent extends React.Component {
                 {data}
             </Chip>
         );
+    }
+
+    saveEvent = () => {
+        console.log("save", this.props);
+        this.props.saveEvent(this.props, this.props.closeEdit);
     }
 
     render() {
@@ -123,7 +129,7 @@ export default class EditEvent extends React.Component {
                     />
                 </div>
                 <div>
-                    <RaisedButton onClick={this.props.saveEvent} label="Lagre" />
+                    <RaisedButton onClick={this.saveEvent} label="Lagre" />
                 </div>
             </form>
         );

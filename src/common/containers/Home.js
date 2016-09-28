@@ -8,6 +8,7 @@ import { Link } from 'react-router';
 import Text from '../components/Text';
 import Date from '../components/Date';
 import EditDescriptionMutation from '../mutations/editDescription';
+import EditEventMutation from '../mutations/editEvent';
 
 import theme from '../theme';
 
@@ -59,6 +60,29 @@ class Home extends React.Component {
                 this.setState({
                     editDescription: false,
                 });
+            },
+        });
+    }
+
+    saveEvent = (event, closeEdit) => {
+        console.log("thajaj", event.id, event, typeof(event.id));
+        this.context.relay.commitUpdate(new EditEventMutation({
+            viewer: this.props.viewer,
+            organization: this.props.organization,
+            eid: event.id,
+            title: event.title,
+            location: event.location,
+            start: event.start,
+            end: event.end,
+            mdtext: event.mdtext,
+        }), {
+            onSuccess: () => {
+                closeEdit();
+                /*
+                event.setState({
+                    edit: false,
+                });
+                */
             },
         });
     }
@@ -124,7 +148,7 @@ class Home extends React.Component {
                             : null }
                             <div style={{ width: '25%', minWidth: 230, padding: '0 15px' }}>
                                 <h2>Neste aktiviteter</h2>
-                                <EventList events={org.nextEvents} />
+                                <EventList events={org.nextEvents} saveEvent={this.saveEvent} />
                                 <Link to="projects">
                                     Aktivitetskalender
                                 </Link>
@@ -185,6 +209,7 @@ export default Relay.createContainer(Home, {
             email
             username
             ${EditDescriptionMutation.getFragment('viewer')},
+            ${EditEventMutation.getFragment('viewer')},
         }`,
         organization: () => Relay.QL`
         fragment on Organization {

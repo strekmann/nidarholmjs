@@ -295,50 +295,39 @@ const mutationEditDescription = mutationWithClientMutationId({
     },
 });
 
-const mutationUserUpdate = mutationWithClientMutationId({
-    name: 'UpdateUser',
+const mutationEditEvent = mutationWithClientMutationId({
+    name: 'EditEvent',
     inputFields: {
-        userid: { type: new GraphQLNonNull(GraphQLID) },
-        email: { type: new GraphQLNonNull(GraphQLString) },
-        message: { type: GraphQLString },
+        // userid: { type: new GraphQLNonNull(GraphQLID) },
+        // orgid: { type: new GraphQLNonNull(GraphQLID) },
+        eid: { type: new GraphQLNonNull(GraphQLID) },
+        title: { type: new GraphQLNonNull(GraphQLString) },
+        location: { type: GraphQLString },
+        start: { type: new GraphQLNonNull(GraphQLString) }, // Possible to send date in mutation? no?
+        end: { type: GraphQLString },
+        mdtext: { type: GraphQLString },
     },
     outputFields: {
-        viewer: {
-            type: userType,
+        event: {
+            type: eventType,
             resolve: (payload) => payload,
         },
     },
-    mutateAndGetPayload: ({ userid, email, message, participants }) => {
-        const id = fromGlobalId(userid).id;
-        return User.findByIdAndUpdate(
+    mutateAndGetPayload: ({ userid, orgid, eid, title, location, start, end, mdtext }) => {
+        const id = fromGlobalId(eid).id;
+        return Event.findByIdAndUpdate(
             id,
-            { email, message, participants, updated: moment.utc().toDate() },
+            { title, location, start, end, mdtext },
             { new: true },
-        ).exec().then(user => {
-            if (message && config.mail && user) {
-                transporter.sendMail({
-                    to: config.mail.to || 'sigurdga-nidarholm-test@sigurdga.no',
-                    from: config.mail.from || 'drangen@nidarholm.no',
-                    subject: `Ny kommentar fra ${user.name}`,
-                    text: message,
-                }, (error, info) => {
-                    if (error) {
-                        return console.error(error);
-                    }
-                    console.log(`Message sent: ${info.response}`);
-                    return false;
-                });
-            }
-            return JSON.parse(JSON.stringify(user));
-        });
+        ).exec();
     },
 });
 
 const mutationType = new GraphQLObjectType({
     name: 'Mutation',
     fields: () => ({
-        updateUser: mutationUserUpdate,
         editDescription: mutationEditDescription,
+        editEvent: mutationEditEvent,
     }),
 });
 

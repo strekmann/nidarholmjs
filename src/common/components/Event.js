@@ -19,6 +19,7 @@ class Event extends React.Component {
         tag: React.PropTypes.string,
         year: React.PropTypes.string,
         mdtext: React.PropTypes.string,
+        saveEvent: React.PropTypes.func,
     }
 
     state = {
@@ -60,7 +61,11 @@ class Event extends React.Component {
                     open={this.state.edit}
                     onRequestClose={this.closeEdit}
                 >
-                    <EditEvent saveEvent={this.saveEvent} {...this.props} />
+                    <EditEvent
+                        saveEvent={this.props.saveEvent}
+                        closeEdit={this.closeEdit}
+                        {...this.props}
+                    />
                 </Dialog>
             </div>
         );
