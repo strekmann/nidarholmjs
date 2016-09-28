@@ -266,12 +266,16 @@ app.use((req, res, next) => {
 app.use(serveStatic(path.join(__dirname, '..', '..', 'dist', 'public')));
 
 /** GraphQL **/
-app.use('/graphql', graphqlHTTP(req => ({
-    schema,
-    rootValue: { viewer: req.user, organization: req.organization },
-    pretty: process.env.NODE_ENV !== 'production',
-    graphiql: process.env.NODE_ENV !== 'production',
-})));
+app.use('/graphql', graphqlHTTP(req => {
+    const contextValue = { viewer: req.user, organization: req.organization };
+    return {
+        schema,
+        rootValue: contextValue,
+        context: contextValue,
+        pretty: process.env.NODE_ENV !== 'production',
+        graphiql: process.env.NODE_ENV !== 'production',
+    };
+}));
 
 /** Socket.io routes **/
 // socketRoutes(io);

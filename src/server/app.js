@@ -46,15 +46,16 @@ export default function render(req, res, next) {
         else if (renderProps) {
             moment.locale('nb');
 
-            const rootValue = {};
-            rootValue.organization = req.organization.toObject();
+            const contextValue = {};
+            contextValue.organization = req.organization.toObject();
 
             if (req.user) {
-                rootValue.viewer = req.user.toObject();
+                contextValue.viewer = req.user.toObject();
             }
             const networkLayer = new RelayLocalSchema.NetworkLayer({
                 schema,
-                rootValue,
+                contextValue, // the same values in root and context for now
+                rootValue: contextValue, // context should be an authentication token or similar
                 onError: (errors, request) => next(new Error(errors)),
             });
             return Router.prepareData(renderProps, networkLayer).then(({ data, props }) => {

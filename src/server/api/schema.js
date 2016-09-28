@@ -212,7 +212,7 @@ const organizationType = new GraphQLObjectType({
         nextEvents: {
             type: connectionDefinitions({ name: 'Event', nodeType: eventType }).connectionType,
             args: connectionArgs,
-            resolve: (root, { ...args }) => {
+            resolve: (parent, { ...args }, context) => {
                 const query = Event
                 .find({
                     start: {
@@ -221,12 +221,13 @@ const organizationType = new GraphQLObjectType({
                     },
                 })
                 .sort({ start: 1 });
-                if (root.viewer) {
+                if (context.viewer) {
+                    const viewer = context.viewer;
                     query.or([
-                        { creator: root.viewer },
+                        { creator: viewer.id },
                         { 'permissions.public': true },
-                        { 'permissions.users': root.viewer._id },
-                        { 'permissions.groups': { $in: root.viewer.groups } },
+                        { 'permissions.users': viewer.id },
+                        { 'permissions.groups': { $in: viewer.groups } },
                     ]);
                 }
                 else {
@@ -254,8 +255,12 @@ const queryType = new GraphQLObjectType({
         organization: {
             type: organizationType,
             /*
+            resolve: ((a, args, context, root) => {
+                //console.log("A", context);
+                return context;
+            }),
             resolve: ({ organization, viewer }) => {
-                console.log(organization, viewer);
+                console.log("ORG", organization, viewer);
                 return { organization, viewer };
             },
             */
