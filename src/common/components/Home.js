@@ -5,14 +5,14 @@ import getMuiTheme from 'material-ui/styles/getMuiTheme';
 import TextField from 'material-ui/TextField';
 import { Card, CardMedia } from 'material-ui/Card';
 import { Link } from 'react-router';
-import Text from '../components/Text';
-import Date from '../components/Date';
+import Text from './Text';
+import Date from './Date';
 import EditDescriptionMutation from '../mutations/editDescription';
 import EditEventMutation from '../mutations/editEvent';
 
 import theme from '../theme';
 
-import EventList from '../components/EventList';
+import EventList from './EventList';
 
 class Home extends React.Component {
     static contextTypes = {

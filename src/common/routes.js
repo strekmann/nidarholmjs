@@ -2,12 +2,12 @@ import React from 'react';
 import Relay from 'react-relay';
 import { Route, IndexRoute, createRoutes } from 'react-router';
 
-import App from './containers/App';
-import Login from './containers/Login';
-import Home from './containers/Home';
-import Projects from './containers/Projects';
-import Project from './containers/Project';
-import About from './containers/About';
+import App from './components/App';
+import Login from './components/Login';
+import Home from './components/Home';
+import Projects from './components/Projects';
+import Project from './components/Project';
+import About from './components/About';
 import NoMatch from './components/NoMatch';
 
 export const queries = {

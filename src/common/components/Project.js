@@ -1,36 +1,74 @@
+import getMuiTheme from 'material-ui/styles/getMuiTheme';
 import React from 'react';
-import { Link } from 'react-router';
+import Relay from 'react-relay';
 
 import Date from './Date';
 import Text from './Text';
+import theme from '../theme';
 
 class Project extends React.Component {
+    static contextTypes = {
+        relay: Relay.PropTypes.Environment,
+    };
+
     static propTypes = {
-        title: React.PropTypes.string,
-        start: React.PropTypes.string,
-        end: React.PropTypes.string,
-        tag: React.PropTypes.string,
-        year: React.PropTypes.string,
-        mdtext: React.PropTypes.string,
+        organization: React.PropTypes.object,
+    }
+
+    static childContextTypes = {
+        muiTheme: React.PropTypes.object.isRequired,
+    }
+
+    constructor(props) {
+        super(props);
+        this.muiTheme = getMuiTheme(theme);
+    }
+
+    getChildContext() {
+        return { muiTheme: this.muiTheme };
     }
 
     render() {
+        const project = this.props.organization.project;
         return (
             <div>
-                <h2>
-                    <Link to={`/${this.props.year}/${this.props.tag}`}>
-                        {this.props.title}
-                    </Link>
-                </h2>
+                <h1>{project.title}</h1>
                 <div className="meta">
-                    {this.props.start ? <span><Date date={this.props.start} /> – </span>: null}
-                    <Date date={this.props.end} />
+                    {project.start ? <span><Date date={project.start} /> – </span> : null}
+                    <Date date={project.end} />
+                    {project.conductors.map(conductor => conductor.name)}
                 </div>
-                <Text text={this.props.public_mdtext} />
-                {this.props.poster ? <img src={this.props.poster.thumbnail_path} /> : null }
+                <Text text={project.public_mdtext} />
+                {project.poster ? <img src={project.poster.large_path} /> : null }
             </div>
         );
     }
 }
 
-export default Project;
+export default Relay.createContainer(Project, {
+    initialVariables: {
+        year: '',
+        tag: '',
+    },
+    fragments: {
+        organization: () => Relay.QL`
+        fragment on Organization {
+            name
+            project(year:$year, tag:$tag) {
+                title
+                tag
+                start
+                end
+                year
+                public_mdtext
+                conductors {
+                    name
+                }
+                poster {
+                    filename
+                }
+            }
+        }`,
+    },
+});
+

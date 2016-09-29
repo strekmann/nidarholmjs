@@ -1,6 +1,6 @@
 import React from 'react';
 
-import Project from './Project';
+import Project from './ProjectItem';
 
 export default class ProjectList extends React.Component {
     static propTypes = {

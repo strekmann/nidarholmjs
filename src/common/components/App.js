@@ -1,9 +1,9 @@
 import React from 'react';
 import Relay from 'react-relay';
-import Footer from '../components/Footer';
-import Navigation from '../components/Navigation';
-import theme from '../theme';
 import getMuiTheme from 'material-ui/styles/getMuiTheme';
+import Footer from './Footer';
+import Navigation from './Navigation';
+import theme from '../theme';
 
 class App extends React.Component {
     static propTypes = {

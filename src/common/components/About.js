@@ -1,6 +1,6 @@
 import React from 'react';
 import Relay from 'react-relay';
-import Text from '../components/Text';
+import Text from './Text';
 
 class About extends React.Component {
     static propTypes = {

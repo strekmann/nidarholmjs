@@ -4,7 +4,7 @@ import React from 'react';
 import Relay from 'react-relay';
 
 import theme from '../theme';
-import ProjectList from '../components/ProjectList';
+import ProjectList from './ProjectList';
 
 const showUpcomingProjects = 4;
 const projectsPerPage = 10;
