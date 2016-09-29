@@ -61,6 +61,10 @@ export default class EditEvent extends React.Component {
         });
     }
 
+    onChangeDescription = (event, mdtext) => {
+        this.setState({ mdtext });
+    }
+
     renderChip(data, key) {
         return (
             <Chip
@@ -122,6 +126,7 @@ export default class EditEvent extends React.Component {
                         value={this.state.mdtext}
                         floatingLabelText="Beskrivelse"
                         multiLine
+                        onChange={this.onChangeDescription}
                     />
                 </div>
                 <div>

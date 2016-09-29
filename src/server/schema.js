@@ -196,14 +196,31 @@ const organizationType = new GraphQLObjectType({
         event: {
             type: eventType,
             args: {
-                id: { name: 'id', type: GraphQLString },
+                eventid: { name: 'eventid', type: GraphQLID },
             },
-            resolve: (_, args) => Event.findById(args.id).exec(),
+            resolve: (_, { eventid }, { viewer }) => {
+                const id = fromGlobalId(eventid).id;
+                console.log(eventid, id, "id");
+                const query = Event.findById(id);
+                if (viewer) {
+                    query.or([
+                        { creator: viewer.id },
+                        { 'permissions.public': true },
+                        { 'permissions.users': viewer.id },
+                        { 'permissions.groups': { $in: viewer.groups } },
+                    ]);
+                }
+                else {
+                    query.where({ 'permissions.public': true });
+                    query.select({ mdtext: 0 });
+                }
+                return query.exec();
+            },
         },
         nextEvents: {
             type: connectionDefinitions({ name: 'Event', nodeType: eventType }).connectionType,
             args: connectionArgs,
-            resolve: (parent, { ...args }, context) => {
+            resolve: (parent, { ...args }, { viewer }) => {
                 const query = Event
                 .find({
                     start: {
@@ -212,8 +229,7 @@ const organizationType = new GraphQLObjectType({
                     },
                 })
                 .sort({ start: 1 });
-                if (context.viewer) {
-                    const viewer = context.viewer;
+                if (viewer) {
                     query.or([
                         { creator: viewer.id },
                         { 'permissions.public': true },

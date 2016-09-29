@@ -8,7 +8,6 @@ import { Link } from 'react-router';
 import Text from './Text';
 import Date from './Date';
 import EditDescriptionMutation from '../mutations/editDescription';
-import EditEventMutation from '../mutations/editEvent';
 
 import theme from '../theme';
 
@@ -60,26 +59,6 @@ class Home extends React.Component {
                 this.setState({
                     editDescription: false,
                 });
-            },
-        });
-    }
-
-    saveEvent = (event, closeEdit) => {
-        this.context.relay.commitUpdate(new EditEventMutation({
-            viewer: this.props.viewer,
-            organization: this.props.organization,
-            eventid: event.id,
-            title: event.title,
-            location: event.location,
-            start: event.start,
-            end: event.end,
-            mdtext: event.mdtext,
-        }), {
-            onSuccess: () => {
-                closeEdit();
-            },
-            onFailure: (error, ost, kake) => {
-                console.error("AD", error, ost, kake);
             },
         });
     }
@@ -206,7 +185,6 @@ export default Relay.createContainer(Home, {
             email
             username
             ${EditDescriptionMutation.getFragment('viewer')},
-            ${EditEventMutation.getFragment('viewer')},
         }`,
         organization: () => Relay.QL`
         fragment on Organization {

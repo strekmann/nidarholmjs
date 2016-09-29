@@ -374,6 +374,7 @@ app.use('/music', require('./routes/music'));
 
 app.get('/events/public.ics', project_routes.ical_events);
 app.get('/events/export.ics', project_routes.ical_events);
+app.get('/events/:eventid', universal);
 app.use('/events', require('./routes/events'));
 
 app.get('/members', organization_routes.memberlist);
