@@ -14,9 +14,8 @@ export default class EditEventMutation extends Relay.Mutation {
     }
 
     getVariables() {
-        console.log("VARS", this.props);
         return {
-            eid: this.props.id,
+            eventid: this.props.eventid,
             title: this.props.title,
             location: this.props.location,
             start: this.props.start,
@@ -43,7 +42,7 @@ export default class EditEventMutation extends Relay.Mutation {
         return [{
             type: 'FIELDS_CHANGE',
             fieldIDs: {
-                event: this.props.id,
+                event: this.props.eventid,
             },
         }];
     }

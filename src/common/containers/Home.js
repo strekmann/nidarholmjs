@@ -65,11 +65,10 @@ class Home extends React.Component {
     }
 
     saveEvent = (event, closeEdit) => {
-        console.log("thajaj", event.id, event, typeof(event.id));
         this.context.relay.commitUpdate(new EditEventMutation({
             viewer: this.props.viewer,
             organization: this.props.organization,
-            eid: event.id,
+            eventid: event.id,
             title: event.title,
             location: event.location,
             start: event.start,
@@ -78,11 +77,6 @@ class Home extends React.Component {
         }), {
             onSuccess: () => {
                 closeEdit();
-                /*
-                event.setState({
-                    edit: false,
-                });
-                */
             },
         });
     }

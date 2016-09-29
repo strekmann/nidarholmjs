@@ -21,12 +21,17 @@ export default class EditEvent extends React.Component {
     }
 
     state = {
+        id: this.props.id,
         title: this.props.title,
         location: this.props.location,
         start: moment(this.props.start).toDate(),
         end: moment(this.props.end).toDate(),
         tags: this.props.tags,
         mdtext: this.props.mdtext,
+    }
+
+    onChangeTitle = (event, title) => {
+        this.setState({ title });
     }
 
     onChangeStart = (event, date) => {
@@ -67,8 +72,7 @@ export default class EditEvent extends React.Component {
     }
 
     saveEvent = () => {
-        console.log("save", this.props);
-        this.props.saveEvent(this.props, this.props.closeEdit);
+        this.props.saveEvent(this.state, this.props.closeEdit);
     }
 
     render() {
@@ -78,6 +82,7 @@ export default class EditEvent extends React.Component {
                     <TextField
                         value={this.state.title}
                         floatingLabelText="Tittel"
+                        onChange={this.onChangeTitle}
                     />
                 </div>
                 <div>

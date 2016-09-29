@@ -4,7 +4,6 @@ import IconMenu from 'material-ui/IconMenu';
 import MenuItem from 'material-ui/MenuItem';
 import IconButton from 'material-ui/IconButton';
 import ArrowDown from 'material-ui/svg-icons/navigation/arrow-drop-down';
-import { Link } from 'react-router';
 
 import Daterange from './Daterange';
 import Text from './Text';
@@ -60,6 +59,7 @@ class Event extends React.Component {
                     title="Rediger aktivitet"
                     open={this.state.edit}
                     onRequestClose={this.closeEdit}
+                    autoScrollBodyContent
                 >
                     <EditEvent
                         saveEvent={this.props.saveEvent}

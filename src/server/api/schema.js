@@ -300,7 +300,7 @@ const mutationEditEvent = mutationWithClientMutationId({
     inputFields: {
         // userid: { type: new GraphQLNonNull(GraphQLID) },
         // orgid: { type: new GraphQLNonNull(GraphQLID) },
-        eid: { type: new GraphQLNonNull(GraphQLID) },
+        eventid: { type: new GraphQLNonNull(GraphQLID) },
         title: { type: new GraphQLNonNull(GraphQLString) },
         location: { type: GraphQLString },
         start: { type: new GraphQLNonNull(GraphQLString) }, // Possible to send date in mutation? no?
@@ -313,8 +313,8 @@ const mutationEditEvent = mutationWithClientMutationId({
             resolve: (payload) => payload,
         },
     },
-    mutateAndGetPayload: ({ userid, orgid, eid, title, location, start, end, mdtext }) => {
-        const id = fromGlobalId(eid).id;
+    mutateAndGetPayload: ({ userid, orgid, eventid, title, location, start, end, mdtext }) => {
+        const id = fromGlobalId(eventid).id;
         return Event.findByIdAndUpdate(
             id,
             { title, location, start, end, mdtext },
