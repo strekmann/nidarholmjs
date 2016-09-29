@@ -7,7 +7,6 @@ import {
     GraphQLSchema,
     GraphQLString,
     GraphQLInt,
-    GraphQLInputObjectType,
 } from 'graphql';
 
 import GraphQLDate from 'graphql-custom-datetype';
@@ -23,24 +22,10 @@ import {
 
 import connectionFromMongooseQuery from 'relay-mongoose-connection';
 import moment from 'moment';
-import config from 'config';
-import nodemailer from 'nodemailer';
 
 import { User, Organization } from './models';
 import { File } from './models/files';
 import { Project, Event } from './models/projects';
-
-let transporter;
-if (config.mail && config.mail.auth && config.mail.host) {
-    transporter = nodemailer.createTransport({
-        secure: true,
-        host: config.mail.host,
-        auth: config.mail.auth,
-    });
-}
-else {
-    transporter = nodemailer.createTransport();
-}
 
 class UserDTO { constructor(obj) { for (const k of Object.keys(obj)) { this[k] = obj[k]; } } }
 class OrganizationDTO { constructor(obj) { for (const k of Object.keys(obj)) { this[k] = obj[k]; } } }
@@ -183,26 +168,30 @@ const organizationType = new GraphQLObjectType({
                 .exec(),
         },
         nextProjects: {
-            type: connectionDefinitions({ name: 'UpcomingProject', nodeType: projectType }).connectionType,
+            type: connectionDefinitions({
+                name: 'UpcomingProject',
+                nodeType: projectType,
+            }).connectionType,
             args: connectionArgs,
-            resolve: (term, { ...args }) => // term here is unused for now, coming from server
-                connectionFromMongooseQuery(
-                    Project.find({
-                        end: { $gte: moment().startOf('day').toDate() },
-                    }).sort({ end: 1 }),
-                    args,
-                ),
+            resolve: (_, { ...args }) => connectionFromMongooseQuery(
+                Project.find({
+                    end: { $gte: moment().startOf('day').toDate() },
+                }).sort({ end: 1 }),
+                args,
+            ),
         },
         previousProjects: {
-            type: connectionDefinitions({ name: 'Project', nodeType: projectType }).connectionType,
+            type: connectionDefinitions({
+                name: 'Project',
+                nodeType: projectType,
+            }).connectionType,
             args: connectionArgs,
-            resolve: (term, { ...args }) => //{ // term here is unused for now, coming from server
-                connectionFromMongooseQuery(
-                    Project.find({
-                        end: { $lt: moment().startOf('day').toDate() },
-                    }).sort({ end: -1 }),
-                    args,
-                ),
+            resolve: (_, { ...args }) => connectionFromMongooseQuery(
+                Project.find({
+                    end: { $lt: moment().startOf('day').toDate() },
+                }).sort({ end: -1 }),
+                args,
+            ),
         },
         event: {
             type: eventType,
@@ -303,7 +292,7 @@ const mutationEditEvent = mutationWithClientMutationId({
         eventid: { type: new GraphQLNonNull(GraphQLID) },
         title: { type: new GraphQLNonNull(GraphQLString) },
         location: { type: GraphQLString },
-        start: { type: new GraphQLNonNull(GraphQLString) }, // Possible to send date in mutation? no?
+        start: { type: new GraphQLNonNull(GraphQLString) }, // Would prefer date object
         end: { type: GraphQLString },
         mdtext: { type: GraphQLString },
     },
@@ -313,13 +302,28 @@ const mutationEditEvent = mutationWithClientMutationId({
             resolve: (payload) => payload,
         },
     },
-    mutateAndGetPayload: ({ userid, orgid, eventid, title, location, start, end, mdtext }) => {
+    mutateAndGetPayload: ({ userid, orgid, eventid, title, location, start, end, mdtext }, { viewer }) => {
         const id = fromGlobalId(eventid).id;
-        return Event.findByIdAndUpdate(
+        if (!viewer) {
+            throw new Error('Nobody!');
+        }
+        const query = Event.findByIdAndUpdate(
             id,
             { title, location, start, end, mdtext },
             { new: true },
-        ).exec();
+        );
+        query.or([
+            { creator: viewer.id },
+            { 'permissions.public': true },
+            { 'permissions.users': viewer.id },
+            { 'permissions.groups': { $in: viewer.groups } },
+        ]);
+        return query.exec().then(event => {
+            if (!event) {
+                throw new Error('Nothing!');
+            }
+            return event;
+        });
     },
 });
 

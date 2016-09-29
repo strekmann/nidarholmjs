@@ -78,6 +78,9 @@ class Home extends React.Component {
             onSuccess: () => {
                 closeEdit();
             },
+            onFailure: (error, ost, kake) => {
+                console.error("AD", error, ost, kake);
+            },
         });
     }
 
