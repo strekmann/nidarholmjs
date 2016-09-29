@@ -12,5 +12,5 @@ tmp
 /data
 /ssl
 /dist
-/src/server/api/schema.json
-/src/server/api/schema.graphql
+/src/server/schema.json
+/src/server/schema.graphql

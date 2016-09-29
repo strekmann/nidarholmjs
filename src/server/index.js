@@ -46,7 +46,7 @@ import project_routes from './routes/projects';
 import organization_routes from './routes/organization';
 import { persistentLogin } from './lib/middleware';
 
-import schema from './api/schema';
+import schema from './schema';
 
 // import * as profileAPI from './server/api/profile';
 

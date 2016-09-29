@@ -1,13 +1,13 @@
 import ReactDOMServer from 'react-dom/server';
 import Router from 'isomorphic-relay-router';
 import RelayLocalSchema from 'relay-local-schema';
+import 'cookie-parser';
+import moment from 'moment';
 // import Helmet from 'react-helmet';
 import { match } from 'react-router';
 import routes from '../common/routes';
 // import headconfig from '../common/components/Meta';
-import schema from './api/schema';
-import 'cookie-parser';
-import moment from 'moment';
+import schema from './schema';
 
 function renderFullPage(renderedContent, initialState, head = {
     title: '<title>Nidarholm</title>',

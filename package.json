@@ -28,7 +28,7 @@
   },
   "metadata": {
     "graphql": {
-      "schema": "./src/server/api/schema.json"
+      "schema": "./src/server/schema.json"
     }
   },
   "dependencies": {

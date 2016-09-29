@@ -26,9 +26,9 @@ import moment from 'moment';
 import config from 'config';
 import nodemailer from 'nodemailer';
 
-import { User, Organization } from '../models';
-import { File } from '../models/files';
-import { Project, Event } from '../models/projects';
+import { User, Organization } from './models';
+import { File } from './models/files';
+import { Project, Event } from './models/projects';
 
 let transporter;
 if (config.mail && config.mail.auth && config.mail.host) {
