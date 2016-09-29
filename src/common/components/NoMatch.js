@@ -1,6 +1,6 @@
 import React from 'react';
 
-export default class Date extends React.Component {
+export default class NoMatch extends React.Component {
     static propTypes = {
         date: React.PropTypes.node,
     }
