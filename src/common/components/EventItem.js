@@ -9,7 +9,7 @@ import Daterange from './Daterange';
 import Text from './Text';
 import EditEvent from './EditEvent';
 
-class Event extends React.Component {
+export default class EventItem extends React.Component {
     static propTypes = {
         title: React.PropTypes.string,
         location: React.PropTypes.string,
@@ -71,5 +71,3 @@ class Event extends React.Component {
         );
     }
 }
-
-export default Event;

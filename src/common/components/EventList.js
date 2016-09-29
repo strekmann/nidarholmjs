@@ -1,6 +1,6 @@
 import React from 'react';
 
-import Event from './Event';
+import EventItem from './EventItem';
 
 export default class EventList extends React.Component {
     static propTypes = {
@@ -11,7 +11,7 @@ export default class EventList extends React.Component {
         return (
             <div>
                 {this.props.events.edges.map(edge => (
-                    <Event key={edge.node.id} {...edge.node} saveEvent={this.props.saveEvent} />
+                    <EventItem key={edge.node.id} {...edge.node} saveEvent={this.props.saveEvent} />
                     ))
                 }
             </div>
