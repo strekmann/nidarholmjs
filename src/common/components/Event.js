@@ -55,6 +55,7 @@ class Event extends React.Component {
 
     saveEvent = (event, closeEdit) => {
         this.context.relay.commitUpdate(new EditEventMutation({
+            viewer: null,
             eventid: event.id,
             title: event.title,
             location: event.location,
