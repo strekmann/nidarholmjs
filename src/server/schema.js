@@ -73,6 +73,30 @@ const { nodeInterface, nodeField } = nodeDefinitions(
     }
 );
 
+function authenticate(query, viewer, options) {
+    if (viewer) {
+        query.or([
+            { creator: viewer.id },
+            { 'permissions.public': true },
+            { 'permissions.users': viewer.id },
+            { 'permissions.groups': { $in: viewer.groups } },
+        ]);
+    }
+    else {
+        query.where({ 'permissions.public': true });
+        const select = {};
+        if (options.exclude) {
+            options.exclude.forEach(exclude => { select[exclude] = 0; });
+        }
+        if (options.include) {
+            options.include.forEach(include => { select[include] = 1; });
+        }
+
+        query.select(select);
+    }
+    return query;
+}
+
 const userType = new GraphQLObjectType({
     name: 'User',
     description: 'A person',
@@ -162,10 +186,13 @@ const organizationType = new GraphQLObjectType({
         },
         nextProject: {
             type: projectType,
-            resolve: () => Project
+            resolve: (_, args, { viewer }) => authenticate(
+                Project
                 .findOne({ end: { $gte: moment().startOf('day').toDate() } })
-                .sort({ end: 1 })
-                .exec(),
+                .sort({ end: 1 }),
+                viewer,
+                { exclude: ['private_mdtext'] },
+            ),
         },
         nextProjects: {
             type: connectionDefinitions({
@@ -200,21 +227,8 @@ const organizationType = new GraphQLObjectType({
             },
             resolve: (_, { eventid }, { viewer }) => {
                 const id = fromGlobalId(eventid).id;
-                console.log(eventid, id, "id");
                 const query = Event.findById(id);
-                if (viewer) {
-                    query.or([
-                        { creator: viewer.id },
-                        { 'permissions.public': true },
-                        { 'permissions.users': viewer.id },
-                        { 'permissions.groups': { $in: viewer.groups } },
-                    ]);
-                }
-                else {
-                    query.where({ 'permissions.public': true });
-                    query.select({ mdtext: 0 });
-                }
-                return query.exec();
+                return authenticate(query, viewer, { exclude: ['mdtext'] });
             },
         },
         nextEvents: {
@@ -229,20 +243,8 @@ const organizationType = new GraphQLObjectType({
                     },
                 })
                 .sort({ start: 1 });
-                if (viewer) {
-                    query.or([
-                        { creator: viewer.id },
-                        { 'permissions.public': true },
-                        { 'permissions.users': viewer.id },
-                        { 'permissions.groups': { $in: viewer.groups } },
-                    ]);
-                }
-                else {
-                    query.where({ 'permissions.public': true });
-                    query.select({ mdtext: 0 });
-                }
                 return connectionFromMongooseQuery(
-                    query,
+                    authenticate(query, viewer, { exclude: ['mdtext'] }),
                     args,
                 );
             },
@@ -303,8 +305,6 @@ const mutationEditDescription = mutationWithClientMutationId({
 const mutationEditEvent = mutationWithClientMutationId({
     name: 'EditEvent',
     inputFields: {
-        // userid: { type: new GraphQLNonNull(GraphQLID) },
-        // orgid: { type: new GraphQLNonNull(GraphQLID) },
         eventid: { type: new GraphQLNonNull(GraphQLID) },
         title: { type: new GraphQLNonNull(GraphQLString) },
         location: { type: GraphQLString },
@@ -318,7 +318,7 @@ const mutationEditEvent = mutationWithClientMutationId({
             resolve: (payload) => payload,
         },
     },
-    mutateAndGetPayload: ({ userid, orgid, eventid, title, location, start, end, mdtext }, { viewer }) => {
+    mutateAndGetPayload: ({ eventid, title, location, start, end, mdtext }, { viewer }) => {
         const id = fromGlobalId(eventid).id;
         if (!viewer) {
             throw new Error('Nobody!');
@@ -328,13 +328,7 @@ const mutationEditEvent = mutationWithClientMutationId({
             { title, location, start, end, mdtext },
             { new: true },
         );
-        query.or([
-            { creator: viewer.id },
-            { 'permissions.public': true },
-            { 'permissions.users': viewer.id },
-            { 'permissions.groups': { $in: viewer.groups } },
-        ]);
-        return query.exec().then(event => {
+        return authenticate(query, viewer).exec().then(event => {
             if (!event) {
                 throw new Error('Nothing!');
             }
