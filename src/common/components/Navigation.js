@@ -100,9 +100,9 @@ class Navigation extends React.Component {
                             <Link to="/projects" style={{ color: 'white' }}>
                                 Konserter
                             </Link>
-                            <a href="/members" style={{ color: 'white' }}>
+                            <Link to="/members" style={{ color: 'white' }}>
                                 Medlemmer
-                            </a>
+                            </Link>
                             <a href="/stott-oss" style={{ color: 'white' }}>
                                 Støtt oss
                             </a>
@@ -150,9 +150,9 @@ class Navigation extends React.Component {
                                 <Link to="/projects" style={{ color: 'white' }} onClick={this.handleClose}>
                                     Konserter
                                 </Link>
-                                <a href="/members" style={{ color: 'white' }} onClick={this.handleClose}>
+                                <Link to="/members" style={{ color: 'white' }} onClick={this.handleClose}>
                                     Medlemmer
-                                </a>
+                                </Link>
                                 <a href="/stott-oss" style={{ color: 'white' }} onClick={this.handleClose}>
                                     Støtt oss
                                 </a>
