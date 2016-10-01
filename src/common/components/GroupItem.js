@@ -5,8 +5,8 @@ import MemberItem from './MemberItem';
 
 export default class GroupItem extends React.Component {
     static propTypes = {
-        id: React.PropTypes.string,
         name: React.PropTypes.string,
+        members: React.PropTypes.array,
     }
 
     render() {
