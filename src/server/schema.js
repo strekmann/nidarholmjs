@@ -232,7 +232,10 @@ const organizationType = new GraphQLObjectType({
             type: new GraphQLList(groupType),
             resolve: (_, args, { organization }) => Organization
             .findById(organization.id)
-            .populate('instrument_groups')
+            .populate({
+                path: 'instrument_groups',
+                match: { externally_hidden: { $ne: true } },
+            })
             .exec()
             .then(
                 _organization => _organization.instrument_groups
