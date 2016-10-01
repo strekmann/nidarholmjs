@@ -1,10 +1,8 @@
 import React from 'react';
-import { Link } from 'react-router';
 
 export default class Phone extends React.Component {
     static propTypes = {
-        id: React.PropTypes.string,
-        name: React.PropTypes.string,
+        phone: React.PropTypes.string,
     }
 
     render() {
