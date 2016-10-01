@@ -414,7 +414,8 @@ app.put('/projects/:id/poster', project_routes.set_poster);
 app.put('/projects/:project_id/music', project_routes.add_piece);
 app.delete('/projects/:project_id/music', project_routes.remove_piece);
 
-app.use('/', require('./routes/pages'));
+// app.use('/', require('./routes/pages'));
+app.use('/', universal);
 
 /** API endpoints **/
 // app.use('/api/1/auth', api.auth);

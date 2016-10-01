@@ -26,6 +26,7 @@ import moment from 'moment';
 import { User, Group, Organization } from './models';
 import { File } from './models/files';
 import { Project, Event } from './models/projects';
+import { Page } from './models/pages';
 
 class UserDTO { constructor(obj) { for (const k of Object.keys(obj)) { this[k] = obj[k]; } } }
 class GroupDTO { constructor(obj) { for (const k of Object.keys(obj)) { this[k] = obj[k]; } } }
@@ -33,6 +34,7 @@ class OrganizationDTO { constructor(obj) { for (const k of Object.keys(obj)) { t
 class EventDTO { constructor(obj) { for (const k of Object.keys(obj)) { this[k] = obj[k]; } } }
 class ProjectDTO { constructor(obj) { for (const k of Object.keys(obj)) { this[k] = obj[k]; } } }
 class FileDTO { constructor(obj) { for (const k of Object.keys(obj)) { this[k] = obj[k]; } } }
+class PageDTO { constructor(obj) { for (const k of Object.keys(obj)) { this[k] = obj[k]; } } }
 
 const { nodeInterface, nodeField } = nodeDefinitions(
     (globalId) => {
@@ -55,6 +57,9 @@ const { nodeInterface, nodeField } = nodeDefinitions(
         if (type === 'File') {
             return File.findById(id).exec().then((file) => new FileDTO(file.toObject()));
         }
+        if (type === 'Page') {
+            return Page.findById(id).exec().then((page) => new PageDTO(page.toObject()));
+        }
         return null;
     },
     (obj) => {
@@ -75,6 +80,9 @@ const { nodeInterface, nodeField } = nodeDefinitions(
         }
         if (obj instanceof FileDTO) {
             return fileType;
+        }
+        if (obj instanceof PageDTO) {
+            return pageType;
         }
         return null;
     }
@@ -208,6 +216,23 @@ const groupType = new GraphQLObjectType({
     interfaces: [nodeInterface],
 });
 
+const pageType = new GraphQLObjectType({
+    name: 'Page',
+    description: 'Wiki page',
+    fields: {
+        id: globalIdField('Page'),
+        slug: { type: GraphQLString },
+        mdtext: { type: GraphQLString },
+        created: { type: GraphQLDate },
+        updated: { type: GraphQLDate },
+        updator: {
+            type: userType,
+            resolve: (page) => User.findById(page.creator).exec(),
+        },
+    },
+    interfaces: [nodeInterface],
+});
+
 const organizationType = new GraphQLObjectType({
     name: 'Organization',
     description: 'Organization and site info',
@@ -312,6 +337,16 @@ const organizationType = new GraphQLObjectType({
                     authenticate(query, viewer, { exclude: ['mdtext'] }),
                     args,
                 );
+            },
+        },
+        page: {
+            type: pageType,
+            args: {
+                slug: { name: 'slug', type: GraphQLString },
+            },
+            resolve: (_, { slug }, { viewer }) => {
+                const query = Page.findOne({ slug });
+                return authenticate(query, viewer);
             },
         },
     },
