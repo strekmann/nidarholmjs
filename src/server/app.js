@@ -47,10 +47,10 @@ export default function render(req, res, next) {
             moment.locale('nb');
 
             const contextValue = {};
-            contextValue.organization = req.organization.toObject();
+            contextValue.organization = req.organization;
 
             if (req.user) {
-                contextValue.viewer = req.user.toObject();
+                contextValue.viewer = req.user;
             }
             const networkLayer = new RelayLocalSchema.NetworkLayer({
                 schema,
