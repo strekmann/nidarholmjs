@@ -179,7 +179,11 @@ const groupType = new GraphQLObjectType({
                     id: { type: GraphQLString },
                     user: {
                         type: userType,
-                        resolve: (member) => User.findById(member.user).exec(),
+                        resolve: (member) => User.findById(member.user).where({
+                            on_leave: false,
+                            in_list: true,
+                            membership_status: { $lt: 5 },
+                        }).exec(),
                     },
                     role: { type: new GraphQLObjectType({
                         name: 'Role',
