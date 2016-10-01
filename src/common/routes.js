@@ -5,6 +5,7 @@ import { Route, IndexRoute, createRoutes } from 'react-router';
 import App from './components/App';
 import Login from './components/Login';
 import Home from './components/Home';
+import Members from './components/Members';
 import Projects from './components/Projects';
 import Project from './components/Project';
 import Event from './components/Event';
@@ -25,6 +26,7 @@ export default createRoutes(
         <IndexRoute component={Home} queries={queries} />
         <Route path="login" component={Login} queryies={queries} />
         <Route path="about" component={About} queries={organizationQueries} />
+        <Route path="members" component={Members} queries={organizationQueries} />
         <Route path="projects" component={Projects} queries={organizationQueries} />
         <Route path="events/:eventid" component={Event} queries={queries} />
         <Route path=":year/:tag" component={Project} queries={organizationQueries} />

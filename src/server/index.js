@@ -377,7 +377,8 @@ app.get('/events/export.ics', project_routes.ical_events);
 app.get('/events/:eventid', universal);
 app.use('/events', require('./routes/events'));
 
-app.get('/members', organization_routes.memberlist);
+// app.get('/members', organization_routes.memberlist);
+app.get('/members', universal);
 // app.get('/organization/fill_dummy', organization_routes.fill_dummy);
 app.get('/members/new', organization_routes.add_user);
 app.post('/members/new', organization_routes.create_user);

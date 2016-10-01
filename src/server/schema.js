@@ -23,11 +23,12 @@ import {
 import connectionFromMongooseQuery from 'relay-mongoose-connection';
 import moment from 'moment';
 
-import { User, Organization } from './models';
+import { User, Group, Organization } from './models';
 import { File } from './models/files';
 import { Project, Event } from './models/projects';
 
 class UserDTO { constructor(obj) { for (const k of Object.keys(obj)) { this[k] = obj[k]; } } }
+class GroupDTO { constructor(obj) { for (const k of Object.keys(obj)) { this[k] = obj[k]; } } }
 class OrganizationDTO { constructor(obj) { for (const k of Object.keys(obj)) { this[k] = obj[k]; } } }
 class EventDTO { constructor(obj) { for (const k of Object.keys(obj)) { this[k] = obj[k]; } } }
 class ProjectDTO { constructor(obj) { for (const k of Object.keys(obj)) { this[k] = obj[k]; } } }
@@ -38,6 +39,9 @@ const { nodeInterface, nodeField } = nodeDefinitions(
         const { type, id } = fromGlobalId(globalId);
         if (type === 'User') {
             return User.findById(id).exec().then((user) => new UserDTO(user.toObject()));
+        }
+        if (type === 'Group') {
+            return Group.findById(id).exec().then((group) => new GroupDTO(group.toObject()));
         }
         if (type === 'Organization') {
             return Organization.findById(id).exec().then((organization) => new OrganizationDTO(organization.toObject()));
@@ -56,6 +60,9 @@ const { nodeInterface, nodeField } = nodeDefinitions(
     (obj) => {
         if (obj instanceof UserDTO) {
             return userType;
+        }
+        if (obj instanceof GroupDTO) {
+            return groupType;
         }
         if (obj instanceof OrganizationDTO) {
             return organizationType;
@@ -105,6 +112,9 @@ const userType = new GraphQLObjectType({
         name: { type: GraphQLString },
         username: { type: GraphQLString },
         email: { type: GraphQLString },
+        phone: { type: GraphQLString },
+        instrument: { type: GraphQLString },
+        membership_status: { type: GraphQLInt },
         created: { type: GraphQLString },
         updated: { type: GraphQLString },
     },
@@ -156,6 +166,44 @@ const projectType = new GraphQLObjectType({
     interfaces: [nodeInterface],
 });
 
+const groupType = new GraphQLObjectType({
+    name: 'Group',
+    fields: {
+        id: globalIdField('Group'),
+        name: { type: GraphQLString },
+        externally_hidden: { type: GraphQLBoolean },
+        members: {
+            type: new GraphQLList(new GraphQLObjectType({
+                name: 'Member',
+                fields: {
+                    id: { type: GraphQLString },
+                    user: {
+                        type: userType,
+                        resolve: (member) => User.findById(member.user).exec(),
+                    },
+                    role: { type: new GraphQLObjectType({
+                        name: 'Role',
+                        fields: {
+                            title: { type: GraphQLString },
+                            email: { type: GraphQLString },
+                        },
+                    }) },
+                },
+            })),
+            resolve: (group, args, { organization }) => {
+                const members = organization.member_group.members.map(member => member.user);
+                return group.members.filter(member => {
+                    if (members.includes(member.user)) {
+                        return true;
+                    }
+                    return false;
+                });
+            },
+        },
+    },
+    interfaces: [nodeInterface],
+});
+
 const organizationType = new GraphQLObjectType({
     name: 'Organization',
     description: 'Organization and site info',
@@ -176,6 +224,16 @@ const organizationType = new GraphQLObjectType({
         description_nb: { type: GraphQLString }, // TODO: Migrate
         map_url: { type: GraphQLString },
         contact_text: { type: GraphQLString },
+        instrument_groups: {
+            type: new GraphQLList(groupType),
+            resolve: (_, args, { organization }) => Organization
+            .findById(organization.id)
+            .populate('instrument_groups')
+            .exec()
+            .then(
+                _organization => _organization.instrument_groups
+            ),
+        },
         project: {
             type: projectType,
             args: {

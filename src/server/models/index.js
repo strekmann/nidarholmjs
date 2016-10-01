@@ -31,6 +31,13 @@ var GroupSchema = new mongoose.Schema({
     old_id: {type: Number}
 });
 
+GroupSchema.set('toObject', {
+    virtuals: true
+});
+GroupSchema.set('toJSON', {
+    virtuals: true
+});
+
 var UserSchema = new mongoose.Schema({
     _id: {type: String, lowercase: true, trim: true, required: true, unique: true},
     username: {type: String, lowercase: true, trim: true, required: true, unique: true},
