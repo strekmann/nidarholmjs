@@ -222,6 +222,7 @@ const pageType = new GraphQLObjectType({
     fields: {
         id: globalIdField('Page'),
         slug: { type: GraphQLString },
+        summary: { type: GraphQLString },
         mdtext: { type: GraphQLString },
         created: { type: GraphQLDate },
         updated: { type: GraphQLDate },
@@ -437,11 +438,47 @@ const mutationEditEvent = mutationWithClientMutationId({
     },
 });
 
+const mutationEditPage = mutationWithClientMutationId({
+    name: 'EditPage',
+    inputFields: {
+        pageid: { type: new GraphQLNonNull(GraphQLID) },
+        slug: { type: GraphQLString },
+        mdtext: { type: GraphQLString },
+        summary: { type: new GraphQLNonNull(GraphQLString) },
+    },
+    outputFields: {
+        page: {
+            type: pageType,
+            resolve: (payload) => payload,
+        },
+    },
+    mutateAndGetPayload: ({ pageid, mdtext, summary }, { viewer }) => {
+        const id = fromGlobalId(pageid).id;
+        console.log(pageid, mdtext, summary, viewer);
+        if (!viewer) {
+            throw new Error('Nobody!');
+        }
+        const query = Page.findByIdAndUpdate(
+            id,
+            { mdtext, summary },
+            { new: true },
+        );
+        return authenticate(query, viewer).exec().then(page => {
+            if (!page) {
+                throw new Error('Nothing!');
+            }
+            return page;
+        });
+    },
+});
+
+
 const mutationType = new GraphQLObjectType({
     name: 'Mutation',
     fields: () => ({
         editDescription: mutationEditDescription,
         editEvent: mutationEditEvent,
+        editPage: mutationEditPage,
     }),
 });
 

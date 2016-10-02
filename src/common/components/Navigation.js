@@ -103,7 +103,7 @@ class Navigation extends React.Component {
                             <Link to="/members" style={{ color: 'white' }}>
                                 Medlemmer
                             </Link>
-                            <Link href="/stott-oss" style={{ color: 'white' }}>
+                            <Link to="/stott-oss" style={{ color: 'white' }}>
                                 Støtt oss
                             </Link>
                             {viewer ?
@@ -190,7 +190,7 @@ class Navigation extends React.Component {
                                     Medlemmer
                                 </Link>
                                 <Link
-                                    href="/stott-oss"
+                                    to="/stott-oss"
                                     style={{ color: 'white' }}
                                     onClick={this.handleClose}
                                 >
