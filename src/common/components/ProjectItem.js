@@ -12,6 +12,8 @@ class Project extends React.Component {
         tag: React.PropTypes.string,
         year: React.PropTypes.string,
         mdtext: React.PropTypes.string,
+        public_mdtext: React.PropTypes.string,
+        poster: React.PropTypes.string,
     }
 
     render() {
@@ -27,7 +29,11 @@ class Project extends React.Component {
                     <Date date={this.props.end} />
                 </div>
                 <Text text={this.props.public_mdtext} />
-                {this.props.poster ? <img src={this.props.poster.thumbnail_path} /> : null }
+                {this.props.poster ?
+                    <img alt="Konsertplakat" src={this.props.poster.thumbnail_path} />
+                    :
+                    null
+                }
             </div>
         );
     }

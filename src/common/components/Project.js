@@ -39,7 +39,11 @@ class Project extends React.Component {
                     {project.conductors.map(conductor => conductor.name)}
                 </div>
                 <Text text={project.public_mdtext} />
-                {project.poster ? <img src={project.poster.large_path} /> : null }
+                {project.poster ?
+                    <img alt="Konsertplakat" src={project.poster.large_path} />
+                    :
+                    null
+                }
             </div>
         );
     }

@@ -1,6 +1,6 @@
-let mongoose = require('mongoose'),
-    moment = require('moment'),
-    path = require('path');
+import mongoose from 'mongoose';
+import moment from 'moment';
+import path from 'path';
 
 const FileSchema = new mongoose.Schema({
     _id: { type: String, required: true, unique: true },
@@ -18,37 +18,42 @@ const FileSchema = new mongoose.Schema({
     tags: [{ type: String }],
 });
 
-FileSchema.virtual('is_image').get(function () {
+FileSchema.virtual('is_image').get(function isImage() {
     if (this.mimetype && this.mimetype.match(/^image\/(png|jpeg|gif)/)) {
         return true;
     }
+    return false;
 });
 
-FileSchema.virtual('path').get(function () {
+FileSchema.virtual('path').get(function filePath() {
     if (this.hash && this.filename) { // useful until implementation stabilizes
         return path.join('/files', this.hash, this.filename);
     }
+    return null;
 });
 
-FileSchema.virtual('large_path').get(function () {
+FileSchema.virtual('large_path').get(function largePath() {
     if (this.hash && this.filename) { // useful until implementation stabilizes
         return path.join('/files/l', this.hash, this.filename);
     }
+    return null;
 });
 
-FileSchema.virtual('normal_path').get(function () {
+FileSchema.virtual('normal_path').get(function normalPath() {
     if (this.hash && this.filename) { // useful until implementation stabilizes
         return path.join('/files/n', this.hash, this.filename);
     }
+    return null;
 });
 
-FileSchema.virtual('thumbnail_path').get(function () {
+FileSchema.virtual('thumbnail_path').get(function thumbnailPath() {
     if (this.hash && this.filename) { // useful until implementation stabilizes
         return path.join('/files/th', this.hash, this.filename);
     }
+    return null;
 });
 
-FileSchema.virtual('shortdate').get(function () {
+FileSchema.virtual('shortdate').get(function shortdate() {
     return moment(this.created).format('LL');
 });
 

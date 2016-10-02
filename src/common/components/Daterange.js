@@ -12,7 +12,10 @@ export default class Daterange extends React.Component {
     render() {
         const start = this.props.start;
         const end = this.props.end;
-        let startm, endm, startd, endd;
+        let startm;
+        let endm;
+        let startd;
+        let endd;
         if (start && end) {
             startm = moment.isMoment(start) ? start : moment(start);
             endm = moment.isMoment(end) ? end : moment(end);
@@ -24,15 +27,27 @@ export default class Daterange extends React.Component {
                     return <Date date={startm} format="ll" />;
                 }
                 // same day, different times: show one date an one time
-                return <span><Date date={startm} format="lll" /> – <Date date={endm} format="LT" /></span>;
+                return (
+                    <span>
+                        <Date date={startm} format="lll" /> – <Date date={endm} format="LT" />
+                    </span>
+                );
             }
             // saving dates should always set startOf('day') AND later wholeday
             // different dates, no time: show both dates no time
             if (startm.isSame(startd) && endm.isSame(endd)) {
-                return <span><Date date={startm} format="ll" /> – <Date date={endm} format="ll" /></span>;
+                return (
+                    <span>
+                        <Date date={startm} format="ll" /> – <Date date={endm} format="ll" />
+                    </span>
+                );
             }
             // different dates, and times: show both dates and times
-            return <span><Date date={startm} format="lll" /> – <Date date={endm} format="lll" /></span>;
+            return (
+                <span>
+                    <Date date={startm} format="lll" /> – <Date date={endm} format="lll" />
+                </span>
+            );
         }
         if (start) {
             // only start

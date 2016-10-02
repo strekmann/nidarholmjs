@@ -64,7 +64,6 @@ class Home extends React.Component {
     }
 
     render() {
-        const viewer = this.props.viewer;
         const org = this.props.organization;
         const nextProject = org.nextProject;
         return (
@@ -92,8 +91,24 @@ class Home extends React.Component {
                 </div>
                 {nextProject ?
                     <section>
-                        <div style={{ display: 'flex', flexWrap: 'wrap', maxWidth: 1000, margin: '0 -15px' }}>
-                            <div style={{ width: nextProject.poster ? '50%' : '75%', minWidth: 270, padding: '0 15px', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+                        <div
+                            style={{
+                                display: 'flex',
+                                flexWrap: 'wrap',
+                                maxWidth: 1000,
+                                margin: '0 -15px',
+                            }}
+                        >
+                            <div
+                                style={{
+                                    width: nextProject.poster ? '50%' : '75%',
+                                    minWidth: 270,
+                                    padding: '0 15px',
+                                    display: 'flex',
+                                    flexDirection: 'column',
+                                    justifyContent: 'space-between',
+                                }}
+                            >
                                 <h2>Neste konsert</h2>
                                 <span
                                     style={{
@@ -155,11 +170,23 @@ class Home extends React.Component {
                 </section>
                 <section>
                     <h2>Kontakt</h2>
-                    <div style={{ display: 'flex', flexWrap: 'wrap', maxWidth: 1000, margin: '0 -15px' }}>
+                    <div
+                        style={{
+                            display: 'flex',
+                            flexWrap: 'wrap',
+                            maxWidth: 1000,
+                            margin: '0 -15px',
+                        }}
+                    >
                         <div style={{ width: '50%', minWidth: 270, padding: '0 15px' }}>
                             <Card>
                                 <CardMedia>
-                                    <iframe width="100%" height="300px" frameBorder="0" src={org.map_url} />
+                                    <iframe
+                                        width="100%"
+                                        height="300px"
+                                        frameBorder="0"
+                                        src={org.map_url}
+                                    />
                                 </CardMedia>
                             </Card>
                         </div>

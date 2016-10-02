@@ -1,6 +1,6 @@
 import React from 'react';
 import { TextField, RaisedButton } from 'material-ui';
-import { Card, CardMedia, CardTitle, CardText, CardActions } from 'material-ui/Card';
+import { Card, CardTitle, CardText, CardActions } from 'material-ui/Card';
 import getMuiTheme from 'material-ui/styles/getMuiTheme';
 
 import theme from '../theme';

@@ -18,6 +18,7 @@ export default class EditEvent extends React.Component {
         year: React.PropTypes.string,
         mdtext: React.PropTypes.string,
         saveEvent: React.PropTypes.func,
+        closeEdit: React.PropTypes.func,
     }
 
     state = {
@@ -65,6 +66,10 @@ export default class EditEvent extends React.Component {
         this.setState({ mdtext });
     }
 
+    saveEvent = () => {
+        this.props.saveEvent(this.state, this.props.closeEdit);
+    }
+
     renderChip(data, key) {
         return (
             <Chip
@@ -73,10 +78,6 @@ export default class EditEvent extends React.Component {
                 {data}
             </Chip>
         );
-    }
-
-    saveEvent = () => {
-        this.props.saveEvent(this.state, this.props.closeEdit);
     }
 
     render() {

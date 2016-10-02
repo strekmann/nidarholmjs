@@ -1,17 +1,17 @@
-let mongoose = require('mongoose'),
-    marked = require('marked'),
-    crypto = require('crypto');
+import mongoose from 'mongoose';
+import marked from 'marked';
+import crypto from 'crypto';
 
 const PasswordCode = new mongoose.Schema({
     _id: { type: String, unique: true, required: true }, // uuid
     user: { type: String, required: true },
-    created: { type: Date, required: true, 'default': Date.now },
+    created: { type: Date, required: true, default: Date.now },
 });
 
 const RememberMeToken = new mongoose.Schema({
     _id: { type: String, unique: true, required: true }, // uuid
     user: { type: String, required: true },
-    created: { type: Date, required: true, 'default': Date.now },
+    created: { type: Date, required: true, default: Date.now },
 });
 
 const GroupSchema = new mongoose.Schema({
@@ -48,9 +48,9 @@ const UserSchema = new mongoose.Schema({
     salt: { type: String },
     groups: [{ type: String, ref: 'Group' }],
     friends: [{ type: String, ref: 'User' }],
-    is_active: { type: Boolean, 'default': true }, // just for blocking users
-    is_admin: { type: Boolean, 'default': false },
-    created: { type: Date, required: true, 'default': Date.now },
+    is_active: { type: Boolean, default: true }, // just for blocking users
+    is_admin: { type: Boolean, default: false },
+    created: { type: Date, required: true, default: Date.now },
     nmf_id: { type: String },
     facebook_id: { type: String, unique: true, sparse: true },
     google_id: { type: String, unique: true, sparse: true },
@@ -121,7 +121,7 @@ const OrganizationSchema = new mongoose.Schema({
     webdomain: { type: String, trim: true },
     instrument_groups: [{ type: String, ref: 'Group' }],
     contact_groups: [{ type: String, ref: 'Group' }], // contacts page
-    administration_group: { type: String, ref: 'Group' }, // temporary. privileges will be split later
+    administration_group: { type: String, ref: 'Group' }, // temp
     musicscoreadmin_group: { type: String, ref: 'Group' },
     member_group: { type: String, ref: 'Group' },
     contact_text: { type: String, trim: true },
@@ -146,16 +146,16 @@ const OrganizationSchema = new mongoose.Schema({
     tracking_code: { type: String },
 });
 
-OrganizationSchema.virtual('encoded_email').get(function () {
+OrganizationSchema.virtual('encoded_email').get(function email() {
     return marked(`<${this.email}>`);
 });
-OrganizationSchema.virtual('website').get(function () {
+OrganizationSchema.virtual('website').get(function website() {
     return this.social_media.website;
 });
-OrganizationSchema.virtual('twitter').get(function () {
+OrganizationSchema.virtual('twitter').get(function twitter() {
     return this.social_media.twitter;
 });
-OrganizationSchema.virtual('facebook').get(function () {
+OrganizationSchema.virtual('facebook').get(function facebook() {
     return this.social_media.facebook;
 });
 

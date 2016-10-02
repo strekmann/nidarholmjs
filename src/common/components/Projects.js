@@ -16,6 +16,9 @@ class Projects extends React.Component {
 
     static propTypes = {
         organization: React.PropTypes.object,
+        relay: {
+            setVariables: React.PropTypes.func,
+        },
     }
 
     static childContextTypes = {
@@ -60,12 +63,20 @@ class Projects extends React.Component {
                 <ProjectList
                     projects={org.nextProjects}
                 />
-                {org.nextProjects.pageInfo.hasNextPage ? <RaisedButton primary onClick={this.loadMoreUpcomongProjects}>Mer</RaisedButton> : null }
+                {org.nextProjects.pageInfo.hasNextPage ?
+                    <RaisedButton primary onClick={this.loadMoreUpcomongProjects}>Mer</RaisedButton>
+                    :
+                    null
+                }
                 <h1>Tidligere prosjekter</h1>
                 <ProjectList
                     projects={org.previousProjects}
                 />
-                {org.previousProjects.pageInfo.hasNextPage ? <RaisedButton primary onClick={this.loadMorePreviousProjects}>Mer</RaisedButton> : null }
+                {org.previousProjects.pageInfo.hasNextPage ?
+                    <RaisedButton primary onClick={this.loadMorePreviousProjects}>Mer</RaisedButton>
+                    :
+                    null
+                }
             </section>
         );
     }

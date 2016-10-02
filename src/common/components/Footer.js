@@ -23,7 +23,15 @@ class Footer extends React.Component {
                     <a href={`https://twitter.com/${org.twitter}`}>
                         <i className="fa fa-fw fa-twitter fa-3x" />
                     </a>
-                    <div style={{ fontFamily: 'Merriweather, serif', fontSize: '1.0rem', marginTop: 20 }}>© Musikkforeningen Nidarholm</div>
+                    <div
+                        style={{
+                            fontFamily: 'Merriweather, serif',
+                            fontSize: '1.0rem',
+                            marginTop: 20,
+                        }}
+                    >
+                        © Musikkforeningen Nidarholm
+                    </div>
                 </div>
             </footer>
         );

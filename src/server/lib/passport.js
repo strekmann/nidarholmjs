@@ -88,7 +88,8 @@ if (config.auth.facebook) {
         }
         User.findOne({ facebook_id: profile.id }, (err, user) => {
             if (!user) {
-                req.flash('error', 'Facebook-konto er ikke koblet mot Nidarholm-konto. Dette kan gjøres fra brukersiden etter at du har logget inn.');
+                req.flash('error', `Facebook-konto er ikke koblet mot Nidarholm-konto.
+                          Dette kan gjøres fra brukersiden etter at du har logget inn.`);
             }
             return done(err, user);
         });
@@ -114,7 +115,8 @@ if (config.auth.google) {
         }
         User.findOne({ google_id: profile.id }, (err, user) => {
             if (!user) {
-                req.flash('error', 'Google-konto er ikke koblet mot Nidarholm-konto. Dette kan gjøres fra brukersiden etter at du har logget inn.');
+                req.flash('error', `Google-konto er ikke koblet mot Nidarholm-konto.
+                          Dette kan gjøres fra brukersiden etter at du har logget inn.`);
             }
             return done(err, user);
         });
@@ -140,7 +142,8 @@ if (config.auth.twitter) {
         }
         User.findOne({ twitter_id: profile.id }, (err, user) => {
             if (!user) {
-                req.flash('error', 'Twitter-konto er ikke koblet mot Nidarholm-konto. Dette kan gjøres fra brukersiden etter at du har logget inn.');
+                req.flash('error', `Twitter-konto er ikke koblet mot Nidarholm-konto.
+                          Dette kan gjøres fra brukersiden etter at du har logget inn.`);
             }
             return done(err, user);
         });

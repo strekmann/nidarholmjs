@@ -22,14 +22,14 @@ import moment from 'moment';
 import multer from 'multer';
 import marked from 'marked';
 import graphqlHTTP from 'express-graphql';
-import _, { some } from 'lodash';
+import _ from 'lodash';
 
 import passport from './lib/passport';
 // import api from './api';
 import universal from './app';
 // import socketRoutes from './socket';
 import log from './lib/logger';
-import { User, Organization, Group } from './models';
+import { Organization } from './models';
 import './lib/db';
 import {
     isodate,
@@ -57,6 +57,7 @@ const upload = multer({ storage: multer.diskStorage({}) }).single('file');
 
 // const io = socketIO(httpServer, { path: '/s' });
 
+/*
 function get_member_group() {
     return Group.findOne({ name: 'Medlemmer' })
     .then((group) => {
@@ -69,6 +70,7 @@ function get_member_group() {
         return group;
     });
 }
+*/
 
 if (config.get('express.trust_proxy')) {
     app.enable('trust proxy');
