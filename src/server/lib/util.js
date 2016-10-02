@@ -1,4 +1,4 @@
-var moment = require('moment'),
+let moment = require('moment'),
     _ = require('underscore'),
     slug = require('slug'),
     uslug = require('uslug'),
@@ -21,14 +21,14 @@ module.exports.slug = function (text) {
     return slug(text.toLowerCase());
 };
 
-module.exports.isodate = function(date) {
+module.exports.isodate = function (date) {
     if (date) {
         return moment(date).format();
     }
 };
-module.exports.simpledate = function(date) {
+module.exports.simpledate = function (date) {
     if (date) {
-        return moment(date).format("YYYY-MM-DD");
+        return moment(date).format('YYYY-MM-DD');
     }
 };
 
@@ -52,7 +52,7 @@ module.exports.ago = function (date) {
 };
 
 module.exports.daterange = function (start, end) {
-    var startm, endm, startd, endd;
+    let startm, endm, startd, endd;
     if (start && end) {
         startm = moment(start);
         endm = moment(end);
@@ -92,13 +92,13 @@ module.exports.daterange = function (start, end) {
 };
 
 // lowercases words, removes spaces and punctuation to avoid tag duplicates
-var normalize = function (string) {
-    return uslug(string, {allowedChars: '-'}).replace(/-/g, '');
+const normalize = function (string) {
+    return uslug(string, { allowedChars: '-' }).replace(/-/g, '');
 };
 module.exports.normalize = normalize;
 
 module.exports.tagify = function (tagstring) {
-    return _.map(tagstring.split(","), function (tag) {
+    return _.map(tagstring.split(','), (tag) => {
         return normalize(tag);
     });
 };
@@ -107,16 +107,16 @@ module.exports.snippetify = function (text, wanted_length) {
     if (!wanted_length) {
         wanted_length = 500;
     }
-    text = marked(text).replace(/(<([^>]+)>)/ig,"");
-    var snippet = text;
+    text = marked(text).replace(/(<([^>]+)>)/ig, '');
+    let snippet = text;
     if (text.length > wanted_length) {
         snippet = text.slice(0, wanted_length);
 
-        var last_space = snippet.lastIndexOf(" ");
+        const last_space = snippet.lastIndexOf(' ');
         snippet = text.slice(0, last_space);
 
         if (snippet.length < text.length) {
-            snippet += "…";
+            snippet += '…';
         }
     }
     return snippet;
@@ -127,21 +127,21 @@ module.exports.fetch_city = function (postcode, callback) {
     if (postcode && postcode.match(/\d{4}/)) {
         request
         .get('http://adressesok.posten.no/api/v1/postal_codes.json?postal_code=' + postcode)
-        .end(function (error, result) {
+        .end((error, result) => {
             if (error) {
                 callback(error);
             }
             else {
-                var data = result.body;
-                if (data.status !== "ok") {
-                    callback("notfound");
+                const data = result.body;
+                if (data.status !== 'ok') {
+                    callback('notfound');
                 } else {
                     callback(null, data.postal_codes[0].city);
                 }
             }
         });
     } else {
-        callback("notvalid");
+        callback('notvalid');
     }
 };
 
@@ -150,35 +150,35 @@ module.exports.fetch_city = function (postcode, callback) {
 // Was trying to do this in pre-save, but mongoose should get the kind of
 // objects it expects, or it gets too magic.
 module.exports.parse_web_permissions = function (permissions) {
-    var perm = {public: false, groups: [], users: []};
+    const perm = { public: false, groups: [], users: [] };
     if (_.isArray(permissions)) {
-        _.each(permissions, function (permission) {
-            if (permission === "p") {
+        _.each(permissions, (permission) => {
+            if (permission === 'p') {
                 perm.public = true;
             } else {
-                var type_id = permission.split("-"),
+                let type_id = permission.split('-'),
                     type = type_id[0],
                     id = type_id[1];
 
-                if (type === "g") {
+                if (type === 'g') {
                     perm.groups.push(id);
-                } else if (type === "u") {
+                } else if (type === 'u') {
                     perm.users.push(id);
                 }
             }
         });
     } else if (_.isString(permissions)) {
-        var permission = permissions;
-        if (permission === "p") {
+        const permission = permissions;
+        if (permission === 'p') {
             perm.public = true;
         } else {
-            var type_id = permission.split("-"),
+            let type_id = permission.split('-'),
                 type = type_id[0],
                 id = type_id[1];
 
-            if (type === "g") {
+            if (type === 'g') {
                 perm.groups.push(id);
-            } else if (type === "u") {
+            } else if (type === 'u') {
                 perm.users.push(id);
             }
         }
@@ -186,20 +186,20 @@ module.exports.parse_web_permissions = function (permissions) {
     return perm;
 };
 
-var generate_thumbnail_for_image = function (hex, filepath, mimetype) {
-    var promise = new mongoose.Promise();
+const generate_thumbnail_for_image = function (hex, filepath, mimetype) {
+    const promise = new mongoose.Promise();
 
     if (mimetype.match(/^image\/(png|jpeg|gif)/)) {
         async.parallel({
-            large: function (callback) {
+            large(callback) {
                 // generate "large" sized image: 1024x640 max
-                var directory = path.join(config.files.large_prefix, hex.substr(0,2), hex.substr(2,2));
-                mkdirp(directory, function (err) {
+                const directory = path.join(config.files.large_prefix, hex.substr(0, 2), hex.substr(2, 2));
+                mkdirp(directory, (err) => {
                     if (err) { callback(err); }
                     else {
-                        var large_path = path.join(directory, hex);
-                        var command = 'convert ' + filepath + ' -resize 1024x640\\> -auto-orient ' + large_path;
-                        exec(command, function(err, stdout, stderr) {
+                        const large_path = path.join(directory, hex);
+                        const command = 'convert ' + filepath + ' -resize 1024x640\\> -auto-orient ' + large_path;
+                        exec(command, (err, stdout, stderr) => {
                             if (err) {
                                 console.error(err, stderr);
                                 callback(err);
@@ -211,15 +211,15 @@ var generate_thumbnail_for_image = function (hex, filepath, mimetype) {
                     }
                 });
             },
-            normal: function (callback) {
+            normal(callback) {
                 // generate "normal" sized image: 600px wide
-                var directory = path.join(config.files.normal_prefix, hex.substr(0,2), hex.substr(2,2));
-                mkdirp(directory, function (err) {
+                const directory = path.join(config.files.normal_prefix, hex.substr(0, 2), hex.substr(2, 2));
+                mkdirp(directory, (err) => {
                     if (err) { callback(err); }
                     else {
-                        var normal_path = path.join(directory, hex);
-                        var command = 'convert ' + filepath + ' -resize 600x\\> -auto-orient ' + normal_path;
-                        exec(command, function(err, stdout, stderr) {
+                        const normal_path = path.join(directory, hex);
+                        const command = 'convert ' + filepath + ' -resize 600x\\> -auto-orient ' + normal_path;
+                        exec(command, (err, stdout, stderr) => {
                             if (err) {
                                 console.error(err, stderr);
                                 callback(err);
@@ -231,15 +231,15 @@ var generate_thumbnail_for_image = function (hex, filepath, mimetype) {
                     }
                 });
             },
-            thumbnail: function (callback) {
+            thumbnail(callback) {
                 // generate thumbnail
-                var directory = path.join(config.files.thumbnail_prefix, hex.substr(0,2), hex.substr(2,2));
-                mkdirp(directory, function (err) {
+                const directory = path.join(config.files.thumbnail_prefix, hex.substr(0, 2), hex.substr(2, 2));
+                mkdirp(directory, (err) => {
                     if (err) { callback(err); }
                     else {
-                        var thumbnail_path = path.join(directory, hex);
-                        var command = 'convert ' + filepath + ' -resize 220x220^ -gravity center -extent 220x220 -strip -auto-orient ' + thumbnail_path;
-                        exec(command, function(err, stdout, stderr) {
+                        const thumbnail_path = path.join(directory, hex);
+                        const command = 'convert ' + filepath + ' -resize 220x220^ -gravity center -extent 220x220 -strip -auto-orient ' + thumbnail_path;
+                        exec(command, (err, stdout, stderr) => {
                             if (err) {
                                 console.error(err, stderr);
                                 callback(err);
@@ -250,8 +250,8 @@ var generate_thumbnail_for_image = function (hex, filepath, mimetype) {
                         });
                     }
                 });
-            }
-        }, function (err) {
+            },
+        }, (err) => {
             if (err) {
                 promise.error(err);
             }
@@ -265,52 +265,51 @@ var generate_thumbnail_for_image = function (hex, filepath, mimetype) {
     return promise;
 };
 
-var save_file = function (tmp_path, prefix, do_delete) {
-    var magic = new Magic(mmm.MAGIC_MIME_TYPE),
+const save_file = function (tmp_path, prefix, do_delete) {
+    let magic = new Magic(mmm.MAGIC_MIME_TYPE),
         promise = new mongoose.Promise();
 
-    fs.stat(tmp_path, function (err, stats) {
+    fs.stat(tmp_path, (err, stats) => {
         if (err) { promise.error(err); }
-        magic.detectFile(tmp_path, function(err, mimetype) {
+        magic.detectFile(tmp_path, (err, mimetype) => {
             if (err) { promise.error(err); }
 
-            var hash = crypto.createHash('sha1');
-            var stream = fs.createReadStream(tmp_path);
-            stream.on('data', function (data) {
+            const hash = crypto.createHash('sha1');
+            const stream = fs.createReadStream(tmp_path);
+            stream.on('data', (data) => {
                 hash.update(data);
             });
-            stream.on('end', function () {
-                var hex = hash.digest('hex');
+            stream.on('end', () => {
+                const hex = hash.digest('hex');
 
                 // compute paths
                 if (prefix[0] !== '/') {
                     prefix = path.join(__dirname, '..', '..', prefix);
                 }
 
-                var directory = path.join(prefix, hex.substr(0,2), hex.substr(2,2));
-                var file_path = path.join(directory, hex);
+                const directory = path.join(prefix, hex.substr(0, 2), hex.substr(2, 2));
+                const file_path = path.join(directory, hex);
 
-                fs.exists(file_path, function (exists) {
+                fs.exists(file_path, (exists) => {
                     if (exists) {
                         promise.fulfill(hex, mimetype, stats.size);
                     }
                     else {
-
-                        mkdirp(directory, function (err) {
+                        mkdirp(directory, (err) => {
                             if (err) { promise.error(err); }
 
                             // move file (or copy + unlink)
                             // fs.rename does not work from tmp to other partition
-                            var is = fs.createReadStream(tmp_path);
-                            var os = fs.createWriteStream(file_path);
+                            const is = fs.createReadStream(tmp_path);
+                            const os = fs.createWriteStream(file_path);
 
                             is.pipe(os);
-                            is.on('end',function() {
+                            is.on('end', () => {
                                 if (do_delete) {
                                     fs.unlinkSync(tmp_path);
                                 }
 
-                                generate_thumbnail_for_image(hex, file_path, mimetype).then(function () {
+                                generate_thumbnail_for_image(hex, file_path, mimetype).then(() => {
                                     promise.fulfill(hex, mimetype, stats.size);
                                 });
                             });
@@ -324,16 +323,16 @@ var save_file = function (tmp_path, prefix, do_delete) {
 };
 
 module.exports.upload_file = function (tmp_path, filename, user, param_options, callback) {
-    var options = _.extend({
-            prefix: config.files.raw_prefix,
-            permissions: {public: false, groups: [], users: []},
-            tags: [],
-            do_delete: true,
-            do_create_duplicates_in_database: true
-        }, param_options);
+    const options = _.extend({
+        prefix: config.files.raw_prefix,
+        permissions: { public: false, groups: [], users: [] },
+        tags: [],
+        do_delete: true,
+        do_create_duplicates_in_database: true,
+    }, param_options);
 
-    save_file(tmp_path, options.prefix, options.do_delete).then(function (hex, mimetype, size) {
-        File.findOne({filename: filename, hash: hex}, function (err, file) {
+    save_file(tmp_path, options.prefix, options.do_delete).then((hex, mimetype, size) => {
+        File.findOne({ filename, hash: hex }, (err, file) => {
             if (err) {
                 callback(err);
             }
@@ -350,11 +349,11 @@ module.exports.upload_file = function (tmp_path, filename, user, param_options, 
                     file.permissions = options.permissions;
                 }
                 if (options.tags) {
-                    _.each(options.tags, function (tag) {
+                    _.each(options.tags, (tag) => {
                         file.tags.addToSet(tag.trim().toLowerCase());
                     });
                 }
-                file.save(function (err) {
+                file.save((err) => {
                     callback(err, file);
                 });
             }
@@ -371,16 +370,16 @@ module.exports.prettyhost = function (url) {
 };
 
 module.exports.phoneformat = function (number) {
-    var original = number;
+    const original = number;
     number = number.replace(/^\+47/).trim();
     if (number.length === 8) {
         // let's say it's a norwegian number
         if (number.match(/^(?:4|9)/)) {
             // mobile xxx xx xxx
-            return number.substr(0, 3) + " " + number.substr(3, 2) + " " + number.substr(5, 3);
+            return number.substr(0, 3) + ' ' + number.substr(3, 2) + ' ' + number.substr(5, 3);
         }
         else {
-            return number.substr(0, 2) + " " + number.substr(2, 2) + " " + number.substr(4 ,2) + " " + number.substr(6, 2);
+            return number.substr(0, 2) + ' ' + number.substr(2, 2) + ' ' + number.substr(4, 2) + ' ' + number.substr(6, 2);
         }
     }
     else {

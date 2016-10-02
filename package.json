@@ -23,7 +23,7 @@
     "build:icons": "mkdir -p dist/public/fonts && cp -r node_modules/font-awesome/fonts/*.* dist/public/fonts",
     "webpack": "babel-node ./node_modules/.bin/webpack-dev-server --progress --port 3001 --inline --hot",
     "watch": "gulp",
-    "lint": "eslint \"src/**/*.js\" || :",
+    "lint": "eslint --ignore-pattern \"src/server/routes/*\" --ignore-pattern \"src/client/**/*.js\" src/client \"src/**/*.js\" || :",
     "nodemon": "nodemon src/dev.js | bunyan -o short"
   },
   "metadata": {

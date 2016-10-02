@@ -28,9 +28,17 @@ import { File } from './models/files';
 import { Project, Event } from './models/projects';
 import { Page } from './models/pages';
 
+let userType;
+let groupType;
+let organizationType;
+let eventType;
+let projectType;
+let fileType;
+let pageType;
+
 class UserDTO { constructor(obj) { for (const k of Object.keys(obj)) { this[k] = obj[k]; } } }
 class GroupDTO { constructor(obj) { for (const k of Object.keys(obj)) { this[k] = obj[k]; } } }
-class OrganizationDTO { constructor(obj) { for (const k of Object.keys(obj)) { this[k] = obj[k]; } } }
+class OrganizationDTO { constructor(o) { for (const k of Object.keys(o)) { this[k] = o[k]; } } }
 class EventDTO { constructor(obj) { for (const k of Object.keys(obj)) { this[k] = obj[k]; } } }
 class ProjectDTO { constructor(obj) { for (const k of Object.keys(obj)) { this[k] = obj[k]; } } }
 class FileDTO { constructor(obj) { for (const k of Object.keys(obj)) { this[k] = obj[k]; } } }
@@ -46,13 +54,17 @@ const { nodeInterface, nodeField } = nodeDefinitions(
             return Group.findById(id).exec().then((group) => new GroupDTO(group.toObject()));
         }
         if (type === 'Organization') {
-            return Organization.findById(id).exec().then((organization) => new OrganizationDTO(organization.toObject()));
+            return Organization.findById(id).exec().then(
+                (organization) => new OrganizationDTO(organization.toObject())
+            );
         }
         if (type === 'Event') {
             return Event.findById(id).exec().then((event) => new EventDTO(event.toObject()));
         }
         if (type === 'Project') {
-            return Project.findById(id).exec().then((project) => new ProjectDTO(project.toObject()));
+            return Project.findById(id).exec().then(
+                (project) => new ProjectDTO(project.toObject())
+            );
         }
         if (type === 'File') {
             return File.findById(id).exec().then((file) => new FileDTO(file.toObject()));
@@ -112,7 +124,7 @@ function authenticate(query, viewer, options) {
     return query;
 }
 
-const userType = new GraphQLObjectType({
+userType = new GraphQLObjectType({
     name: 'User',
     description: 'A person',
     fields: {
@@ -129,7 +141,7 @@ const userType = new GraphQLObjectType({
     interfaces: [nodeInterface],
 });
 
-const fileType = new GraphQLObjectType({
+fileType = new GraphQLObjectType({
     name: 'File',
     fields: {
         id: globalIdField('File'),
@@ -141,7 +153,7 @@ const fileType = new GraphQLObjectType({
     interfaces: [nodeInterface],
 });
 
-const eventType = new GraphQLObjectType({
+eventType = new GraphQLObjectType({
     name: 'Event',
     fields: {
         id: globalIdField('Event'),
@@ -155,7 +167,7 @@ const eventType = new GraphQLObjectType({
     interfaces: [nodeInterface],
 });
 
-const projectType = new GraphQLObjectType({
+projectType = new GraphQLObjectType({
     name: 'Project',
     fields: {
         id: globalIdField('Project'),
@@ -174,7 +186,7 @@ const projectType = new GraphQLObjectType({
     interfaces: [nodeInterface],
 });
 
-const groupType = new GraphQLObjectType({
+groupType = new GraphQLObjectType({
     name: 'Group',
     fields: {
         id: globalIdField('Group'),
@@ -216,7 +228,7 @@ const groupType = new GraphQLObjectType({
     interfaces: [nodeInterface],
 });
 
-const pageType = new GraphQLObjectType({
+pageType = new GraphQLObjectType({
     name: 'Page',
     description: 'Wiki page',
     fields: {
@@ -234,7 +246,7 @@ const pageType = new GraphQLObjectType({
     interfaces: [nodeInterface],
 });
 
-const organizationType = new GraphQLObjectType({
+organizationType = new GraphQLObjectType({
     name: 'Organization',
     description: 'Organization and site info',
     fields: {
@@ -381,7 +393,6 @@ const queryType = new GraphQLObjectType({
 const mutationEditDescription = mutationWithClientMutationId({
     name: 'EditDescription',
     inputFields: {
-        userid: { type: new GraphQLNonNull(GraphQLID) },
         orgid: { type: new GraphQLNonNull(GraphQLID) },
         description_nb: { type: GraphQLString },
     },
@@ -391,7 +402,7 @@ const mutationEditDescription = mutationWithClientMutationId({
             resolve: (payload) => payload,
         },
     },
-    mutateAndGetPayload: ({ userid, orgid, description_nb }) => {
+    mutateAndGetPayload: ({ orgid, description_nb }) => {
         const id = fromGlobalId(orgid).id;
         return Organization.findByIdAndUpdate(
             id, {
@@ -454,7 +465,6 @@ const mutationEditPage = mutationWithClientMutationId({
     },
     mutateAndGetPayload: ({ pageid, mdtext, summary }, { viewer }) => {
         const id = fromGlobalId(pageid).id;
-        console.log(pageid, mdtext, summary, viewer);
         if (!viewer) {
             throw new Error('Nobody!');
         }

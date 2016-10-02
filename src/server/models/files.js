@@ -1,21 +1,21 @@
-var mongoose = require('mongoose'),
+let mongoose = require('mongoose'),
     moment = require('moment'),
     path = require('path');
 
-var FileSchema = new mongoose.Schema({
-    _id: {type: String, required: true, unique: true},
-    filename: {type: String, trim: true, required: true},
-    hash: {type: String, required: true},
-    created: {type: Date, default: Date.now},
-    creator: {type: String, ref: 'User'},
-    mimetype: {type: String},
-    size: {type: Number},
+const FileSchema = new mongoose.Schema({
+    _id: { type: String, required: true, unique: true },
+    filename: { type: String, trim: true, required: true },
+    hash: { type: String, required: true },
+    created: { type: Date, default: Date.now },
+    creator: { type: String, ref: 'User' },
+    mimetype: { type: String },
+    size: { type: Number },
     permissions: {
-        groups: [{type: String, ref: 'Group'}],
-        users: [{type: String, ref: 'User'}],
-        public: {type: Boolean, default: false}
+        groups: [{ type: String, ref: 'Group' }],
+        users: [{ type: String, ref: 'User' }],
+        public: { type: Boolean, default: false },
     },
-    tags: [{type: String}]
+    tags: [{ type: String }],
 });
 
 FileSchema.virtual('is_image').get(function () {
@@ -53,9 +53,9 @@ FileSchema.virtual('shortdate').get(function () {
 });
 
 FileSchema.set('toJSON', {
-    virtuals: true
+    virtuals: true,
 });
 
 module.exports = {
-    File: mongoose.model('File', FileSchema)
+    File: mongoose.model('File', FileSchema),
 };

@@ -15,7 +15,6 @@ export default class EditDescriptionMutation extends Relay.Mutation {
 
     getVariables() {
         return {
-            userid: this.props.viewer.id,
             orgid: this.props.organization.id,
             description_nb: this.props.description_nb,
         };

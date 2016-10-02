@@ -86,7 +86,7 @@ class Page extends React.Component {
                 this.closeEdit();
             },
             onFailure: (error, ost, kake) => {
-                console.error("AD", error, ost, kake);
+                console.error('AD', error, ost, kake);
             },
         });
     }

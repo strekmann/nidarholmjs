@@ -1,9 +1,9 @@
 // express middleware
-var _ = require('underscore'),
+let _ = require('underscore'),
     uuid = require('node-uuid'),
     RememberMeToken = require('../models').RememberMeToken;
 
-module.exports.ensureAuthenticated = function(req, res, next) {
+module.exports.ensureAuthenticated = function (req, res, next) {
     // Simple route middleware to ensure user is authenticated.
     //   Use this route middleware on any resource that needs to be protected.  If
     //   the request is authenticated (typically via a persistent login session),
@@ -26,10 +26,10 @@ module.exports.is_member = function (req, res, next) {
 
 module.exports.persistentLogin = function (req, res, next) {
     if (req.body.username && !req.body.remember_me) { return next(); }
-    var token = new RememberMeToken();
+    const token = new RememberMeToken();
     token._id = uuid.v4();
     token.user = req.user._id;
-    token.save(function(err) {
+    token.save((err) => {
         if (err) { return next(err); }
         res.cookie('remember_me', token, { path: '/', httpOnly: true, maxAge: 2419200000 }); // 28 days
         return next();
@@ -37,12 +37,12 @@ module.exports.persistentLogin = function (req, res, next) {
 };
 
 module.exports.is_musicscoreadmin = function (req, res, next) {
-    var organization = req.organization;
+    const organization = req.organization;
     if (!organization.musicscoreadmin_group) {
         organization.musicscoreadmin_group = organization.admin_group;
     }
-    organization.populate('musicscoreadmin_group', function () {
-        req.is_musicscoreadmin = res.locals.is_musicscoreadmin = _.some(organization.musicscoreadmin_group.members, function (member) {
+    organization.populate('musicscoreadmin_group', () => {
+        req.is_musicscoreadmin = res.locals.is_musicscoreadmin = _.some(organization.musicscoreadmin_group.members, (member) => {
             return member.user === req.user._id;
         });
         return next();

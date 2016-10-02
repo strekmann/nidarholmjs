@@ -23,7 +23,7 @@ class Project extends React.Component {
                     </Link>
                 </h2>
                 <div className="meta">
-                    {this.props.start ? <span><Date date={this.props.start} /> – </span>: null}
+                    {this.props.start ? <span><Date date={this.props.start} /> – </span> : null}
                     <Date date={this.props.end} />
                 </div>
                 <Text text={this.props.public_mdtext} />
