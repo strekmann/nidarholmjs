@@ -47,10 +47,10 @@ module.exports = {
         },
     },
     files: {
-        raw_prefix: '/home/sigurdga/Prosjekter/nidarholm/uploaded_files',
-        normal_prefix: '/home/sigurdga/Prosjekter/nidarholm/uploaded_files/normal',
-        large_prefix: '/home/sigurdga/Prosjekter/nidarholm/uploaded_files/large',
-        thumbnail_prefix: '/home/sigurdga/Prosjekter/nidarholm/uploaded_files/thumbnail'
+        raw_prefix: '/home/sigurdga/Prosjekter/nidarholmjs/uploaded_files',
+        normal_prefix: '/home/sigurdga/Prosjekter/nidarholmjs/uploaded_files/normal',
+        large_prefix: '/home/sigurdga/Prosjekter/nidarholmjs/uploaded_files/large',
+        thumbnail_prefix: '/home/sigurdga/Prosjekter/nidarholmjs/uploaded_files/thumbnail'
     },
     organization: 'nidarholm',
     profile_picture_tag: 'profilbilde',

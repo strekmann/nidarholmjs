@@ -51,6 +51,7 @@ export default Relay.createContainer(Members, {
                     id
                     user {
                         name
+                        username
                         email
                         phone
                         membership_status

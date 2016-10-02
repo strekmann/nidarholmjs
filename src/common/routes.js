@@ -6,6 +6,7 @@ import App from './components/App';
 import Login from './components/Login';
 import Home from './components/Home';
 import Members from './components/Members';
+import Member from './components/Member';
 import Projects from './components/Projects';
 import Project from './components/Project';
 import Event from './components/Event';
@@ -28,6 +29,7 @@ export default createRoutes(
         <Route path="login" component={Login} queryies={queries} />
         <Route path="about" component={About} queries={organizationQueries} />
         <Route path="members" component={Members} queries={organizationQueries} />
+        <Route path="users/:username" component={Member} queries={queries} />
         <Route path="projects" component={Projects} queries={organizationQueries} />
         <Route path="events/:eventid" component={Event} queries={queries} />
         <Route path=":slug" component={Page} queries={queries} />

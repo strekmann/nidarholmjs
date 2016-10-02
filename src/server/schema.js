@@ -100,6 +100,17 @@ const { nodeInterface, nodeField } = nodeDefinitions(
     }
 );
 
+function member(organization, user) {
+    let organizationMember;
+    organization.member_group.members.forEach(_member => {
+        if (user && user.id === _member.user) {
+            _member.user = user;
+            organizationMember = _member;
+        }
+    });
+    return organizationMember;
+}
+
 function authenticate(query, viewer, options) {
     if (viewer) {
         query.or([
@@ -127,17 +138,48 @@ function authenticate(query, viewer, options) {
 userType = new GraphQLObjectType({
     name: 'User',
     description: 'A person',
-    fields: {
+    fields: () => ({
         id: globalIdField('User'),
-        name: { type: GraphQLString },
         username: { type: GraphQLString },
+        name: { type: GraphQLString },
         email: { type: GraphQLString },
+        is_active: { type: GraphQLBoolean },
+        is_admin: { type: GraphQLBoolean },
+        created: { type: GraphQLDate },
+        facebook_id: { type: GraphQLString },
+        google_id: { type: GraphQLString },
+        twitter_id: { type: GraphQLString },
+        nmf_id: { type: GraphQLString },
         phone: { type: GraphQLString },
+        address: { type: GraphQLString },
+        postcode: { type: GraphQLString },
+        city: { type: GraphQLString },
+        country: { type: GraphQLString },
+        born: { type: GraphQLDate },
+        joined: { type: GraphQLDate },
         instrument: { type: GraphQLString },
+        instrument_insurance: { type: GraphQLBoolean },
+        reskontro: { type: GraphQLString },
+        profile_picture: { type: GraphQLString },
+        profile_picture_path: { type: GraphQLString },
         membership_status: { type: GraphQLInt },
-        created: { type: GraphQLString },
-        updated: { type: GraphQLString },
-    },
+        membership_history: { type: GraphQLString },
+        in_list: { type: GraphQLBoolean },
+        on_leave: { type: GraphQLBoolean },
+        no_email: { type: GraphQLBoolean },
+        groups: {
+            type: new GraphQLList(groupType),
+            resolve: user => User
+            .findById(user.id)
+            .populate({
+                path: 'groups',
+            })
+            .exec()
+            .then(
+                _user => _user.groups
+            ),
+        },
+    }),
     interfaces: [nodeInterface],
 });
 
@@ -194,7 +236,7 @@ groupType = new GraphQLObjectType({
         externally_hidden: { type: GraphQLBoolean },
         members: {
             type: new GraphQLList(new GraphQLObjectType({
-                name: 'Member',
+                name: 'GroupMember',
                 fields: {
                     id: { type: GraphQLString },
                     user: {
@@ -206,7 +248,7 @@ groupType = new GraphQLObjectType({
                         }).exec(),
                     },
                     role: { type: new GraphQLObjectType({
-                        name: 'Role',
+                        name: 'GroupRole',
                         fields: {
                             title: { type: GraphQLString },
                             email: { type: GraphQLString },
@@ -360,6 +402,37 @@ organizationType = new GraphQLObjectType({
             resolve: (_, { slug }, { viewer }) => {
                 const query = Page.findOne({ slug });
                 return authenticate(query, viewer);
+            },
+        },
+        member: {
+            type: new GraphQLObjectType({
+                name: 'Member',
+                fields: {
+                    id: { type: GraphQLString },
+                    user: {
+                        type: userType,
+                        resolve: (_member) => _member.user,
+                    },
+                    role: { type: new GraphQLObjectType({
+                        name: 'Role',
+                        fields: {
+                            title: { type: GraphQLString },
+                            email: { type: GraphQLString },
+                        },
+                    }) },
+                },
+            }),
+            args: {
+                username: { name: 'username', type: GraphQLString },
+            },
+            resolve: (_, { username }, { organization, viewer }) => {
+                if (!member(organization, viewer)) {
+                    throw new Error('Nobody');
+                }
+                return User
+                .findOne({ username })
+                .exec()
+                .then(user => member(organization, user));
             },
         },
     },

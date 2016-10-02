@@ -11,6 +11,7 @@ export default class MemberItem extends React.Component {
 
     render() {
         if (this.props.user) {
+            const user = this.props.user;
             return (
                 <div>
                     <div
@@ -21,15 +22,15 @@ export default class MemberItem extends React.Component {
                         }}
                     >
                         <div>
-                            <Link>{this.props.user.name}</Link><br />
+                            <Link to={`/users/${user.username}`}>{user.name}</Link><br />
                             <Link
-                                to={`mailto:${this.props.user.email}`}
+                                to={`mailto:${user.email}`}
                             >
-                                {this.props.user.email}
-                            </Link> - <Phone phone={this.props.user.phone} />
+                                {user.email}
+                            </Link> - <Phone phone={user.phone} />
                         </div>
                         <div>
-                            <span>{this.props.role.title} {this.props.user.instrument}</span>
+                            <span>{this.props.role.title} {user.instrument}</span>
                         </div>
                     </div>
                 </div>

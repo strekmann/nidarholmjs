@@ -370,6 +370,8 @@ app.use('/', require('./routes/index'));
 app.use('/proxy', require('./routes/proxy'));
 app.use('/forum', require('./routes/forum'));
 app.use('/files', require('./routes/files'));
+
+app.use('/users/:username', universal);
 app.use('/users', require('./routes/users'));
 app.use('/groups', require('./routes/groups'));
 app.use('/music', require('./routes/music'));

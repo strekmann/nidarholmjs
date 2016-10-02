@@ -50,6 +50,7 @@ export default Relay.createContainer(App, {
             name,
             email,
             username,
+            profile_picture_path,
         }`,
         organization: () => Relay.QL`
         fragment on Organization {
