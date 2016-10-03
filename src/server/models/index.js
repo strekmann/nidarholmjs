@@ -43,18 +43,18 @@ const UserSchema = new mongoose.Schema({
     username: { type: String, lowercase: true, trim: true, required: true, unique: true },
     name: { type: String, required: true },
     email: { type: String },
-    password: { type: String },
-    algorithm: { type: String },
-    salt: { type: String },
+    password: { type: String, select: false },
+    algorithm: { type: String, select: false },
+    salt: { type: String, select: false },
     groups: [{ type: String, ref: 'Group' }],
     friends: [{ type: String, ref: 'User' }],
     is_active: { type: Boolean, default: true }, // just for blocking users
     is_admin: { type: Boolean, default: false },
     created: { type: Date, required: true, default: Date.now },
-    nmf_id: { type: String },
-    facebook_id: { type: String, unique: true, sparse: true },
-    google_id: { type: String, unique: true, sparse: true },
-    twitter_id: { type: String, unique: true, sparse: true },
+    nmf_id: { type: String, select: false },
+    facebook_id: { type: String, unique: true, sparse: true, select: false },
+    google_id: { type: String, unique: true, sparse: true, select: false },
+    twitter_id: { type: String, unique: true, sparse: true, select: false },
     phone: { type: String },
     address: { type: String },
     postcode: { type: String },
@@ -63,9 +63,9 @@ const UserSchema = new mongoose.Schema({
     born: { type: Date },
     joined: { type: Date },
     instrument: { type: String },
-    instrument_insurance: { type: Boolean },
-    reskontro: { type: String },
-    membership_history: { type: String },
+    instrument_insurance: { type: Boolean, select: false },
+    reskontro: { type: String, select: false },
+    membership_history: { type: String, select: false },
     profile_picture: { type: String, ref: 'File' },
     profile_picture_path: { type: String },
     membership_status: { type: Number },
@@ -98,9 +98,6 @@ UserSchema.set('toJSON', {
     transform: (document, ret) => {
         ret.id = ret._id;
         delete ret._id;
-        delete ret.password;
-        delete ret.algorithm;
-        delete ret.hash;
     },
 });
 
@@ -109,9 +106,6 @@ UserSchema.set('toObject', {
     transform: (document, ret) => {
         ret.id = ret._id;
         delete ret._id;
-        delete ret.password;
-        delete ret.algorithm;
-        delete ret.hash;
     },
 });
 

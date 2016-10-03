@@ -101,14 +101,35 @@ const { nodeInterface, nodeField } = nodeDefinitions(
 );
 
 function member(organization, user) {
-    let organizationMember;
-    organization.member_group.members.forEach(_member => {
-        if (user && user.id === _member.user) {
-            _member.user = user;
-            organizationMember = _member;
-        }
-    });
+    let organizationMember = null;
+    if (user) {
+        organization.member_group.members.forEach(_m => {
+            if (
+                (_m.user !== null && typeof _m.user === 'object' && _m.user.id === user.id) ||
+                _m.user === user.id
+            ) {
+                _m.user = user;
+                organizationMember = _m;
+            }
+        });
+    }
     return organizationMember;
+}
+
+function admin(organization, user) {
+    let organizationAdmin = null;
+    if (user) {
+        organization.administration_group.members.forEach(_m => {
+            if (
+                (_m.user !== null && typeof _m.user === 'object' && _m.user.id === user.id) ||
+                _m.user === user.id
+            ) {
+                _m.user = user;
+                organizationAdmin = _m;
+            }
+        });
+    }
+    return organizationAdmin;
 }
 
 function authenticate(query, viewer, options) {
@@ -429,10 +450,12 @@ organizationType = new GraphQLObjectType({
                 if (!member(organization, viewer)) {
                     throw new Error('Nobody');
                 }
-                return User
-                .findOne({ username })
-                .exec()
-                .then(user => member(organization, user));
+                let query = User.findOne({ username });
+                if (admin(organization, viewer)) {
+                    query = query.select('+facebook_id +twitter_id +google_id +nmf_id');
+                    query = query.select('+instrument_insurance +reskontro +membership_history');
+                }
+                return query.exec().then(user => member(organization, user));
             },
         },
     },

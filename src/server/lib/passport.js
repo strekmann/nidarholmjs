@@ -12,7 +12,7 @@ import { User, RememberMeToken } from '../models';
 
 function fetchUser(userId, callback) {
     return User
-    .findById(userId, 'name username profile_picture_path groups friends')
+    .findById(userId, 'name username profile_picture_path groups')
     .exec((err, user) => {
         if (err) {
             return callback(err.message, null);
@@ -35,6 +35,7 @@ passport.passportLocal = new LocalStrategy({
     // Log in using either email or username
     User.findOne()
     .or([{ email }, { username: email.toLowerCase() }])
+    .select('+algorithm +password +salt')
     .exec((err, user) => {
         if (err) {
             return done(err);
