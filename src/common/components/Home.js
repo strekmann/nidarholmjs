@@ -168,6 +168,20 @@ class Home extends React.Component {
                         null
                     }
                 </section>
+                <div style={{ display: 'flex', maxWidth: 1000, margin: '0 auto' }}>
+                    {org.summaries.length > 0 ?
+                        <div style={{ padding: '0 15px', flexGrow: 1 }}>
+                            <Text text={org.summaries[0].summary} />
+                            <Link to={`/${org.summaries[0].slug}`}>Les mer</Link>
+                        </div>
+                    : null }
+                    {org.summaries.length > 0 ?
+                        <div style={{ padding: '0 15px', flexGrow: 1 }}>
+                            <Text text={org.summaries[0].summary} />
+                            <Link to={`/${org.summaries[0].slug}`}>Les mer</Link>
+                        </div>
+                    : null }
+                </div>
                 <section>
                     <h2>Kontakt</h2>
                     <div
@@ -221,6 +235,10 @@ export default Relay.createContainer(Home, {
             description_nb
             map_url
             contact_text
+            summaries {
+                summary
+                slug
+            }
             nextProject {
                 title
                 start

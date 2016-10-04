@@ -138,6 +138,7 @@ const OrganizationSchema = new mongoose.Schema({
     description: {}, // mixed hash of locale keys and values
     description_nb: { type: String },
     tracking_code: { type: String },
+    summaries: [{ type: String, ref: 'Page' }],
 });
 
 OrganizationSchema.virtual('encoded_email').get(function email() {

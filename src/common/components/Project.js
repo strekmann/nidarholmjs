@@ -70,6 +70,7 @@ export default Relay.createContainer(Project, {
                 }
                 poster {
                     filename
+                    large_path
                 }
             }
         }`,

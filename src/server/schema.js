@@ -153,12 +153,7 @@ function authenticate(query, viewer, options = {}) {
 
         query.select(select);
     }
-    return query.exec().then(obj => {
-        if (!obj) {
-            return {};
-        }
-        return obj;
-    });
+    return query;
 }
 
 userType = new GraphQLObjectType({
@@ -429,6 +424,14 @@ organizationType = new GraphQLObjectType({
                 const query = Page.findOne({ slug });
                 return authenticate(query, viewer);
             },
+        },
+        summaries: {
+            type: new GraphQLList(pageType),
+            resolve: (organization) => Organization
+            .findById(organization.id)
+            .populate({ path: 'summaries', select: 'summary slug' })
+            .exec()
+            .then(org => org.summaries),
         },
         member: {
             type: new GraphQLObjectType({
