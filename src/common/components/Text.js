@@ -1,7 +1,7 @@
 import marked from 'marked';
 import React from 'react';
 
-export default class Date extends React.Component {
+export default class Text extends React.Component {
     static propTypes = {
         text: React.PropTypes.string,
     }

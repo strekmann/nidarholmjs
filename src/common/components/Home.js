@@ -7,6 +7,7 @@ import { Card, CardMedia } from 'material-ui/Card';
 import { Link } from 'react-router';
 import Text from './Text';
 import Date from './Date';
+import Email from './Email';
 import EditDescriptionMutation from '../mutations/editDescription';
 
 import theme from '../theme';
@@ -206,7 +207,7 @@ class Home extends React.Component {
                         </div>
                         <div style={{ width: '50%', minWidth: 270, padding: '0 15px' }}>
                             <h3>E-post</h3>
-                            <Text text={`<${org.email}>`} />
+                            <Email email={org.email} />
                             <h3>Øvelser</h3>
                             <Text text={org.contact_text} />
                         </div>
