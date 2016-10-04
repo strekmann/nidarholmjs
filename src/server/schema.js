@@ -132,7 +132,7 @@ function admin(organization, user) {
     return organizationAdmin;
 }
 
-function authenticate(query, viewer, options) {
+function authenticate(query, viewer, options = {}) {
     if (viewer) {
         query.or([
             { creator: viewer.id },
@@ -153,7 +153,12 @@ function authenticate(query, viewer, options) {
 
         query.select(select);
     }
-    return query;
+    return query.exec().then(obj => {
+        if (!obj) {
+            return {};
+        }
+        return obj;
+    });
 }
 
 userType = new GraphQLObjectType({
@@ -303,7 +308,7 @@ pageType = new GraphQLObjectType({
         updated: { type: GraphQLDate },
         updator: {
             type: userType,
-            resolve: (page) => User.findById(page.creator).exec(),
+            resolve: (page) => User.findById(page.updator).exec(),
         },
     },
     interfaces: [nodeInterface],

@@ -19,6 +19,7 @@ class Page extends React.Component {
 
     static propTypes = {
         organization: React.PropTypes.object,
+        location: React.PropTypes.object,
     }
 
     static childContextTypes = {
@@ -93,6 +94,13 @@ class Page extends React.Component {
 
     render() {
         const org = this.props.organization;
+        if (!org.page.slug) {
+            return (
+                <section>
+                    <h1>Not found: {this.props.location.pathname}</h1>
+                </section>
+            );
+        }
         if (this.state.edit) {
             return (
                 <section>
