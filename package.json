@@ -24,7 +24,8 @@
     "webpack": "babel-node ./node_modules/.bin/webpack-dev-server --progress --port 3001 --inline --hot",
     "watch": "gulp",
     "lint": "eslint --ignore-pattern \"src/server/lib/middleware.js\" --ignore-pattern \"src/server/lib/util.js\" --ignore-pattern \"src/server/routes/*\" --ignore-pattern \"src/client/**/*.js\" src/client \"src/**/*.js\" || :",
-    "nodemon": "nodemon src/dev.js | bunyan -o short"
+    "nodemon": "nodemon src/dev.js | bunyan -o short",
+    "retire": "retire || :"
   },
   "metadata": {
     "graphql": {
@@ -147,6 +148,7 @@
     "mocha": "",
     "pg": "",
     "postcss-loader": "^0.13.0",
+    "retire": "^1.2.10",
     "sass-loader": "^4.0.2",
     "style-loader": "^0.13.1",
     "supertest": "",
