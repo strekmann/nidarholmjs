@@ -13,19 +13,16 @@ export default class AddFileMutation extends Relay.Mutation {
         return Relay.QL`mutation {addFile}`;
     }
 
-    getFiles() {
-        return {
-            file: this.props.file,
-        };
-    }
-
     getVariables() {
+        console.log("adf", this.props);
         return {
-            filename: this.props.file.name,
+            filename: this.props.filename,
+            hex: this.props.hex,
         };
     }
 
     getFatQuery() {
+        console.log("adacwaf", this.props);
         return Relay.QL`
         fragment on AddFilePayload {
             organization {
@@ -36,6 +33,7 @@ export default class AddFileMutation extends Relay.Mutation {
     }
 
     getConfigs() {
+        console.log("wasadf", this.props);
         return [{
             type: 'RANGE_ADD',
             parentName: 'organization',

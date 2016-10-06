@@ -35,6 +35,7 @@
   "dependencies": {
     "async": "^1.5.1",
     "async-replace": "^1.0.0",
+    "axios": "^0.14.0",
     "babel-polyfill": "^6.13.0",
     "babel-register": "^6.14.0",
     "bluebird": "^3.4.3",

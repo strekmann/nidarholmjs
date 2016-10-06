@@ -187,116 +187,115 @@ module.exports.parse_web_permissions = function (permissions) {
 };
 
 const generate_thumbnail_for_image = function (hex, filepath, mimetype) {
-    const promise = new mongoose.Promise();
-
-    if (mimetype.match(/^image\/(png|jpeg|gif)/)) {
-        async.parallel({
-            large(callback) {
-                // generate "large" sized image: 1024x640 max
-                const directory = path.join(config.files.large_prefix, hex.substr(0, 2), hex.substr(2, 2));
-                mkdirp(directory, (err) => {
-                    if (err) { callback(err); }
-                    else {
-                        const large_path = path.join(directory, hex);
-                        const command = 'convert ' + filepath + ' -resize 1024x640\\> -auto-orient ' + large_path;
-                        exec(command, (err, stdout, stderr) => {
-                            if (err) {
-                                console.error(err, stderr);
-                                callback(err);
-                            }
+    return new Promise(
+        (resolve, reject) => {
+            if (mimetype.match(/^image\/(png|jpeg|gif)/)) {
+                async.parallel({
+                    large(callback) {
+                        // generate "large" sized image: 1024x640 max
+                        const directory = path.join(config.files.large_prefix, hex.substr(0, 2), hex.substr(2, 2));
+                        mkdirp(directory, (err) => {
+                            if (err) { callback(err); }
                             else {
-                                callback();
+                                const large_path = path.join(directory, hex);
+                                const command = 'convert ' + filepath + ' -resize 1024x640\\> -auto-orient ' + large_path;
+                                exec(command, (err, stdout, stderr) => {
+                                    if (err) {
+                                        console.error(err, stderr);
+                                        callback(err);
+                                    }
+                                    else {
+                                        callback();
+                                    }
+                                });
                             }
                         });
-                    }
-                });
-            },
-            normal(callback) {
-                // generate "normal" sized image: 600px wide
-                const directory = path.join(config.files.normal_prefix, hex.substr(0, 2), hex.substr(2, 2));
-                mkdirp(directory, (err) => {
-                    if (err) { callback(err); }
-                    else {
-                        const normal_path = path.join(directory, hex);
-                        const command = 'convert ' + filepath + ' -resize 600x\\> -auto-orient ' + normal_path;
-                        exec(command, (err, stdout, stderr) => {
-                            if (err) {
-                                console.error(err, stderr);
-                                callback(err);
-                            }
+                    },
+                    normal(callback) {
+                        // generate "normal" sized image: 600px wide
+                        const directory = path.join(config.files.normal_prefix, hex.substr(0, 2), hex.substr(2, 2));
+                        mkdirp(directory, (err) => {
+                            if (err) { callback(err); }
                             else {
-                                callback();
+                                const normal_path = path.join(directory, hex);
+                                const command = 'convert ' + filepath + ' -resize 600x\\> -auto-orient ' + normal_path;
+                                exec(command, (err, stdout, stderr) => {
+                                    if (err) {
+                                        console.error(err, stderr);
+                                        callback(err);
+                                    }
+                                    else {
+                                        callback();
+                                    }
+                                });
                             }
                         });
-                    }
-                });
-            },
-            thumbnail(callback) {
-                // generate thumbnail
-                const directory = path.join(config.files.thumbnail_prefix, hex.substr(0, 2), hex.substr(2, 2));
-                mkdirp(directory, (err) => {
-                    if (err) { callback(err); }
-                    else {
-                        const thumbnail_path = path.join(directory, hex);
-                        const command = 'convert ' + filepath + ' -resize 220x220^ -gravity center -extent 220x220 -strip -auto-orient ' + thumbnail_path;
-                        exec(command, (err, stdout, stderr) => {
-                            if (err) {
-                                console.error(err, stderr);
-                                callback(err);
-                            }
+                    },
+                    thumbnail(callback) {
+                        // generate thumbnail
+                        const directory = path.join(config.files.thumbnail_prefix, hex.substr(0, 2), hex.substr(2, 2));
+                        mkdirp(directory, (err) => {
+                            if (err) { callback(err); }
                             else {
-                                callback();
+                                const thumbnail_path = path.join(directory, hex);
+                                const command = 'convert ' + filepath + ' -resize 220x220^ -gravity center -extent 220x220 -strip -auto-orient ' + thumbnail_path;
+                                exec(command, (err, stdout, stderr) => {
+                                    if (err) {
+                                        console.error(err, stderr);
+                                        callback(err);
+                                    }
+                                    else {
+                                        callback();
+                                    }
+                                });
                             }
                         });
+                    },
+                }, (err) => {
+                    if (err) {
+                        reject(err);
+                    }
+                    else {
+                        resolve();
                     }
                 });
-            },
-        }, (err) => {
-            if (err) {
-                promise.error(err);
             }
             else {
-                promise.fulfill();
+                resolve();
             }
         });
-    } else {
-        promise.fulfill();
-    }
-    return promise;
 };
 
-const save_file = function (tmp_path, prefix, do_delete) {
-    let magic = new Magic(mmm.MAGIC_MIME_TYPE),
-        promise = new Promise();
+module.exports.save_file = function save_file(tmp_path, prefix, do_delete = true) {
+    const magic = new Magic(mmm.MAGIC_MIME_TYPE);
+    return new Promise(
+        (resolve, reject) => fs.stat(tmp_path, (err, stats) => {
+            if (err) { reject(err); }
+            magic.detectFile(tmp_path, (err, mimetype) => {
+                if (err) { reject(err); }
 
-    fs.stat(tmp_path, (err, stats) => {
-        if (err) { promise.error(err); }
-        magic.detectFile(tmp_path, (err, mimetype) => {
-            if (err) { promise.error(err); }
+                const hash = crypto.createHash('sha1');
+                const stream = fs.createReadStream(tmp_path);
+                stream.on('data', (data) => {
+                    hash.update(data);
+                });
+                stream.on('end', () => {
+                    const hex = hash.digest('hex');
 
-            const hash = crypto.createHash('sha1');
-            const stream = fs.createReadStream(tmp_path);
-            stream.on('data', (data) => {
-                hash.update(data);
-            });
-            stream.on('end', () => {
-                const hex = hash.digest('hex');
-
-                // compute paths
-                if (prefix[0] !== '/') {
-                    prefix = path.join(__dirname, '..', '..', prefix);
-                }
-
-                const directory = path.join(prefix, hex.substr(0, 2), hex.substr(2, 2));
-                const file_path = path.join(directory, hex);
-
-                fs.exists(file_path, (exists) => {
-                    if (exists) {
-                        promise.resolve(hex, mimetype, stats.size);
+                    // compute paths
+                    if (prefix[0] !== '/') {
+                        prefix = path.join(__dirname, '..', '..', prefix);
                     }
-                    else {
+
+                    const directory = path.join(prefix, hex.substr(0, 2), hex.substr(2, 2));
+                    const file_path = path.join(directory, hex);
+
+                    fs.exists(file_path, (exists) => {
+                        if (exists) {
+                            resolve({ hex, mimetype, size: stats.size });
+                        }
                         mkdirp(directory, (err) => {
-                            if (err) { promise.error(err); }
+                            if (err) { reject(err); }
 
                             // move file (or copy + unlink)
                             // fs.rename does not work from tmp to other partition
@@ -310,20 +309,48 @@ const save_file = function (tmp_path, prefix, do_delete) {
                                 }
 
                                 generate_thumbnail_for_image(hex, file_path, mimetype).then(() => {
-                                    promise.resolve(hex, mimetype, stats.size);
+                                    resolve({ hex, mimetype, size: stats.size });
                                 });
                             });
                         });
-                    }
+                    });
                 });
+            });
+        })
+    );
+};
+
+module.exports.insert_file = function insert_file(filename, hex, prefix, user) {
+    return new Promise((resolve, reject) => {
+        // compute paths
+        if (prefix[0] !== '/') {
+            prefix = path.join(__dirname, '..', '..', prefix);
+        }
+
+        const directory = path.join(prefix, hex.substr(0, 2), hex.substr(2, 2));
+        const file_path = path.join(directory, hex);
+
+        const magic = new Magic(mmm.MAGIC_MIME_TYPE);
+        fs.stat(file_path, (err, stats) => {
+            if (err) { reject(err); }
+            magic.detectFile(file_path, (err, mimetype) => {
+                if (err) { reject(err); }
+                const file = new File({
+                    _id: shortid(),
+                    filename,
+                    hash: hex,
+                    mimetype,
+                    size: stats.size,
+                    creator: user,
+                });
+
+                resolve(file.save());
             });
         });
     });
-    return promise;
 };
 
 module.exports.upload_file = function (tmp_path, filename, user, param_options, callback) {
-    console.log("ost", arguments);
     const options = _.extend({
         prefix: config.files.raw_prefix,
         permissions: { public: false, groups: [], users: [] },

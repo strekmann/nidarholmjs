@@ -22,13 +22,14 @@ import {
 
 import connectionFromMongooseQuery from 'relay-mongoose-connection';
 import moment from 'moment';
+import config from 'config';
 
 import { User, Group, Organization } from './models';
 import { File } from './models/files';
 import { Project, Event } from './models/projects';
 import { Page } from './models/pages';
 
-import { upload_file as uploadFile } from './lib/util';
+import { insert_file as insertFile } from './lib/util';
 
 let userType;
 let groupType;
@@ -482,8 +483,8 @@ organizationType = new GraphQLObjectType({
         files: {
             type: fileConnection.connectionType,
             args: connectionArgs,
-            resolve: (_, { ...args }) => connectionFromMongooseQuery(
-                authenticate(File.find().sort({ created: -1 })),
+            resolve: (_, { ...args }, { viewer }) => connectionFromMongooseQuery(
+                authenticate(File.find().sort({ created: -1 }), viewer),
                 args,
             ),
         },
@@ -613,8 +614,10 @@ const mutationAddFile = mutationWithClientMutationId({
         filename: {
             type: new GraphQLNonNull(GraphQLString),
         },
+        hex: {
+            type: new GraphQLNonNull(GraphQLString),
+        },
     },
-    /*
     outputFields: {
         organization: {
             type: organizationType,
@@ -623,32 +626,17 @@ const mutationAddFile = mutationWithClientMutationId({
         newFileEdge: {
             type: fileConnection.edgeType,
             resolve: (payload, args, { file, viewer }) => {
-                console.log("received file", file, payload);
-                const filename = payload.filename;
-                const uploaded = uploadFile(file.buffer, filename, viewer, {}, (err, _file) => {
-                    if (err) {
-                        throw err;
-                    }
-                    console.log("got", _file);
-                    return _file;
-                });
+                console.log("want file", file, payload, args);
                 return {
                     cursor: null,
-                    node: uploaded,
+                    node: null,
                 };
             },
         },
     },
-    */
-    mutateAndGetPayload: ({ filename }, { file, viewer }) => {
-        console.log("received file", file, filename);
-        return uploadFile(file.buffer, filename, viewer, {}, (err, _file) => {
-            if (err) {
-                throw err;
-            }
-            console.log("got", _file);
-            return _file;
-        });
+    mutateAndGetPayload: ({ filename, hex }, { viewer }) => {
+        console.log("received file", hex, filename);
+        return insertFile(filename, hex, config.files.raw_prefix, viewer);
     },
 });
 

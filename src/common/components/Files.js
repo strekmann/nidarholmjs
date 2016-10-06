@@ -1,6 +1,9 @@
+/* global FormData */
+
 import React from 'react';
 import Relay from 'react-relay';
 import Dropzone from 'react-dropzone';
+import axios from 'axios';
 
 import getMuiTheme from 'material-ui/styles/getMuiTheme';
 import RaisedButton from 'material-ui/RaisedButton';
@@ -37,19 +40,30 @@ class Files extends React.Component {
     }
 
     onDrop = (files) => {
-        console.log("FA", files);
         files.forEach(file => {
-            this.context.relay.commitUpdate(new AddFileMutation({
-                viewer: null,
-                organization: this.props.organization,
-                file,
-            }), {
-                onSuccess: () => {
-                    console.log("successfile");
-                },
-                onFailure: transaction => {
-                    console.log(transaction.getError().source.errors);
-                },
+            console.log("fada", file);
+            const data = new FormData();
+            data.append('file', file);
+
+            axios.post('/upload', data)
+            .then((response) => {
+                console.log("RES", response);
+                this.context.relay.commitUpdate(new AddFileMutation({
+                    viewer: null,
+                    organization: this.props.organization,
+                    hex: response.data.hex,
+                    filename: file.name,
+                }), {
+                    onSuccess: () => {
+                        console.log("successfile");
+                    },
+                    onFailure: transaction => {
+                        console.log(transaction.getError().source.errors);
+                    },
+                });
+            })
+            .catch(error => {
+                console.log("err", error);
             });
         });
     }
@@ -80,6 +94,7 @@ export default Relay.createContainer(Files, {
     fragments: {
         organization: () => Relay.QL`
         fragment on Organization {
+            id
             files(first:$showFiles) {
                 edges {
                     node {

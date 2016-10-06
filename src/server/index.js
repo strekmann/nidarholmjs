@@ -40,6 +40,7 @@ import {
     daterange,
     prettyhost,
     phoneformat,
+	save_file as saveFile,
 } from './lib/util';
 
 import project_routes from './routes/projects';
@@ -279,6 +280,19 @@ app.use('/graphql', upload, graphqlHTTP(req => {
         graphiql: process.env.NODE_ENV !== 'production',
     };
 }));
+
+app.post('/upload', upload, (req, res, next) => {
+    const file = req.file;
+    // FIXME: Add check on org membership
+    console.log("fdaf da", file);
+    return saveFile(req.file.path, config.files.raw_prefix).then(_file => {
+		console.log("FDADF", _file);
+		return res.json(_file);
+	})
+	.catch(error => {
+		console.error(error);
+	});
+});
 
 /** Socket.io routes **/
 // socketRoutes(io);
