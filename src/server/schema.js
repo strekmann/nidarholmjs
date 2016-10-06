@@ -20,7 +20,7 @@ import {
     nodeDefinitions,
 } from 'graphql-relay';
 
-import connectionFromMongooseQuery from 'relay-mongoose-connection';
+import connectionFromMongooseQuery, { offsetToCursor } from 'relay-mongoose-connection';
 import moment from 'moment';
 import config from 'config';
 
@@ -502,16 +502,6 @@ const queryType = new GraphQLObjectType({
         },
         organization: {
             type: organizationType,
-            /*
-            resolve: ((a, args, context, root) => {
-                //console.log("A", context);
-                return context;
-            }),
-            resolve: ({ organization, viewer }) => {
-                console.log("ORG", organization, viewer);
-                return { organization, viewer };
-            },
-            */
         },
     },
 });
@@ -625,17 +615,15 @@ const mutationAddFile = mutationWithClientMutationId({
         },
         newFileEdge: {
             type: fileConnection.edgeType,
-            resolve: (payload, args, { file, viewer }) => {
-                console.log("want file", file, payload, args);
+            resolve: (payload, args, { viewer }) => {
                 return {
-                    cursor: null,
-                    node: null,
+                    cursor: offsetToCursor(0),
+                    node: payload,
                 };
             },
         },
     },
     mutateAndGetPayload: ({ filename, hex }, { viewer }) => {
-        console.log("received file", hex, filename);
         return insertFile(filename, hex, config.files.raw_prefix, viewer);
     },
 });

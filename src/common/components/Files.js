@@ -41,13 +41,11 @@ class Files extends React.Component {
 
     onDrop = (files) => {
         files.forEach(file => {
-            console.log("fada", file);
             const data = new FormData();
             data.append('file', file);
 
             axios.post('/upload', data)
             .then((response) => {
-                console.log("RES", response);
                 this.context.relay.commitUpdate(new AddFileMutation({
                     viewer: null,
                     organization: this.props.organization,
@@ -55,15 +53,15 @@ class Files extends React.Component {
                     filename: file.name,
                 }), {
                     onSuccess: () => {
-                        console.log("successfile");
+                        // console.log("successfile");
                     },
                     onFailure: transaction => {
-                        console.log(transaction.getError().source.errors);
+                        console.error(transaction.getError().source.errors);
                     },
                 });
             })
             .catch(error => {
-                console.log("err", error);
+                console.error("err", error);
             });
         });
     }
