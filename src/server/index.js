@@ -11,6 +11,7 @@ import express from 'express';
 import http from 'http';
 import flash from 'connect-flash';
 import httpProxy from 'http-proxy';
+import bunyan from 'bunyan';
 import expressBunyan from 'express-bunyan-logger';
 import path from 'path';
 // import socketIO from 'socket.io';
@@ -18,30 +19,16 @@ import path from 'path';
 import config from 'config';
 import serveStatic from 'serve-static';
 import connectRedis from 'connect-redis';
-import moment from 'moment';
 import multer from 'multer';
-import marked from 'marked';
 import graphqlHTTP from 'express-graphql';
-import _ from 'lodash';
 
 import passport from './lib/passport';
 // import api from './api';
 import universal from './app';
 // import socketRoutes from './socket';
-import log from './lib/logger';
 import { Organization } from './models';
 import './lib/db';
-import {
-    isodate,
-    simpledate,
-    shortdate,
-    longdate,
-    ago,
-    daterange,
-    prettyhost,
-    phoneformat,
-	save_file as saveFile,
-} from './lib/util';
+import { save_file as saveFile } from './lib/util';
 
 import project_routes from './routes/projects';
 import organization_routes from './routes/organization';
@@ -80,15 +67,7 @@ if (config.get('express.trust_proxy')) {
 app.use(cookieParser(config.get('session.cookiesecret')));
 app.use(flash());
 
-if (config.util.getEnv('NODE_ENV') !== 'test') {
-    const bunyanOpts = {
-        logger: log,
-        excludes: ['req', 'res', 'req-headers', 'res-headers'],
-    };
-    app.use(expressBunyan(bunyanOpts));
-    app.use(expressBunyan.errorLogger(bunyanOpts));
-}
-else {
+if (config.util.getEnv('NODE_ENV') === 'test') {
     app.use(errorHandler({
         dumpExceptions: true,
         showStack: true,
@@ -116,6 +95,16 @@ app.use(session({
         maxAge: config.get('session.ttl'),
     },
 }));
+
+/* LOGGING */
+const log = bunyan.createLogger(config.get('bunyan'));
+const bunyan_opts = {
+    logger: log,
+    excludes: config.get('bunyan-express').excludes,
+    format: config.get('bunyan-express').format,
+};
+app.use(expressBunyan(bunyan_opts));
+app.use(expressBunyan.errorLogger(bunyan_opts));
 
 /*
 const socketOptions = {
@@ -146,24 +135,6 @@ app.use(bodyParser.json());
 
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'jade');
-
-// utils
-app.use((req, res, next) => {
-    moment.locale('nb'); // has to come before the next functions
-    res.locals.stamp = app.stamp;
-    res.locals._ = _;
-    res.locals.marked = marked;
-    res.locals.moment = moment;
-    res.locals.isodate = isodate;
-    res.locals.simpledate = simpledate;
-    res.locals.shortdate = shortdate;
-    res.locals.longdate = longdate;
-    res.locals.ago = ago;
-    res.locals.daterange = daterange;
-    res.locals.prettyhost = prettyhost;
-    res.locals.phoneformat = phoneformat;
-    return next();
-});
 
 // init org
 // NEW
@@ -270,7 +241,6 @@ app.use(serveStatic(path.join(__dirname, '..', '..', 'dist', 'public')));
 
 /** GraphQL **/
 app.use('/graphql', upload, graphqlHTTP(req => {
-    console.log(req.files, req.file, "REGGG");
     const contextValue = { viewer: req.user, organization: req.organization, file: req.file };
     return {
         schema,
@@ -282,16 +252,13 @@ app.use('/graphql', upload, graphqlHTTP(req => {
 }));
 
 app.post('/upload', upload, (req, res, next) => {
-    const file = req.file;
     // FIXME: Add check on org membership
-    console.log("fdaf da", file);
-    return saveFile(req.file.path, config.files.raw_prefix).then(_file => {
-		console.log("FDADF", _file);
-		return res.json(_file);
-	})
-	.catch(error => {
-		console.error(error);
-	});
+    return saveFile(req.file.path, config.files.raw_prefix).then(
+        _file => res.json(_file)
+    )
+    .catch(error => {
+        console.error(error);
+    });
 });
 
 /** Socket.io routes **/

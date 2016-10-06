@@ -64,7 +64,6 @@
     "isomorphic-relay-router": "^0.8.1",
     "jade": "^1.8.0",
     "libby": "^2.2.2",
-    "lodash": "^4.15.0",
     "marked": "^0.3.0",
     "material-ui": "^0.15.4",
     "mkdirp": "^0.5.1",
