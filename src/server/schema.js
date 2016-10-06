@@ -28,6 +28,8 @@ import { File } from './models/files';
 import { Project, Event } from './models/projects';
 import { Page } from './models/pages';
 
+import { upload_file as uploadFile } from './lib/util';
+
 let userType;
 let groupType;
 let organizationType;
@@ -209,11 +211,22 @@ fileType = new GraphQLObjectType({
     fields: {
         id: globalIdField('File'),
         filename: { type: GraphQLString },
+        created: { type: GraphQLDate },
+        creator: { type: GraphQLString },
+        mimetype: { type: GraphQLString },
+        size: { type: GraphQLInt },
+        tags: { type: new GraphQLList(GraphQLString) },
         thumbnail_path: { type: GraphQLString },
         normal_path: { type: GraphQLString },
         large_path: { type: GraphQLString },
+        is_image: { type: GraphQLBoolean },
     },
     interfaces: [nodeInterface],
+});
+
+const fileConnection = connectionDefinitions({
+    name: 'File',
+    nodeType: fileType,
 });
 
 eventType = new GraphQLObjectType({
@@ -466,6 +479,14 @@ organizationType = new GraphQLObjectType({
                 return query.exec().then(user => member(organization, user));
             },
         },
+        files: {
+            type: fileConnection.connectionType,
+            args: connectionArgs,
+            resolve: (_, { ...args }) => connectionFromMongooseQuery(
+                authenticate(File.find().sort({ created: -1 })),
+                args,
+            ),
+        },
     },
     interfaces: [nodeInterface],
 });
@@ -586,6 +607,51 @@ const mutationEditPage = mutationWithClientMutationId({
     },
 });
 
+const mutationAddFile = mutationWithClientMutationId({
+    name: 'AddFile',
+    inputFields: {
+        filename: {
+            type: new GraphQLNonNull(GraphQLString),
+        },
+    },
+    /*
+    outputFields: {
+        organization: {
+            type: organizationType,
+            resolve: (payload, args, { organization }) => organization,
+        },
+        newFileEdge: {
+            type: fileConnection.edgeType,
+            resolve: (payload, args, { file, viewer }) => {
+                console.log("received file", file, payload);
+                const filename = payload.filename;
+                const uploaded = uploadFile(file.buffer, filename, viewer, {}, (err, _file) => {
+                    if (err) {
+                        throw err;
+                    }
+                    console.log("got", _file);
+                    return _file;
+                });
+                return {
+                    cursor: null,
+                    node: uploaded,
+                };
+            },
+        },
+    },
+    */
+    mutateAndGetPayload: ({ filename }, { file, viewer }) => {
+        console.log("received file", file, filename);
+        return uploadFile(file.buffer, filename, viewer, {}, (err, _file) => {
+            if (err) {
+                throw err;
+            }
+            console.log("got", _file);
+            return _file;
+        });
+    },
+});
+
 
 const mutationType = new GraphQLObjectType({
     name: 'Mutation',
@@ -593,6 +659,7 @@ const mutationType = new GraphQLObjectType({
         editDescription: mutationEditDescription,
         editEvent: mutationEditEvent,
         editPage: mutationEditPage,
+        addFile: mutationAddFile,
     }),
 });
 

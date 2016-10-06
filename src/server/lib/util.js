@@ -267,7 +267,7 @@ const generate_thumbnail_for_image = function (hex, filepath, mimetype) {
 
 const save_file = function (tmp_path, prefix, do_delete) {
     let magic = new Magic(mmm.MAGIC_MIME_TYPE),
-        promise = new mongoose.Promise();
+        promise = new Promise();
 
     fs.stat(tmp_path, (err, stats) => {
         if (err) { promise.error(err); }
@@ -292,7 +292,7 @@ const save_file = function (tmp_path, prefix, do_delete) {
 
                 fs.exists(file_path, (exists) => {
                     if (exists) {
-                        promise.fulfill(hex, mimetype, stats.size);
+                        promise.resolve(hex, mimetype, stats.size);
                     }
                     else {
                         mkdirp(directory, (err) => {
@@ -310,7 +310,7 @@ const save_file = function (tmp_path, prefix, do_delete) {
                                 }
 
                                 generate_thumbnail_for_image(hex, file_path, mimetype).then(() => {
-                                    promise.fulfill(hex, mimetype, stats.size);
+                                    promise.resolve(hex, mimetype, stats.size);
                                 });
                             });
                         });
@@ -323,6 +323,7 @@ const save_file = function (tmp_path, prefix, do_delete) {
 };
 
 module.exports.upload_file = function (tmp_path, filename, user, param_options, callback) {
+    console.log("ost", arguments);
     const options = _.extend({
         prefix: config.files.raw_prefix,
         permissions: { public: false, groups: [], users: [] },

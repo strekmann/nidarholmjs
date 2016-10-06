@@ -268,8 +268,9 @@ app.use((req, res, next) => {
 app.use(serveStatic(path.join(__dirname, '..', '..', 'dist', 'public')));
 
 /** GraphQL **/
-app.use('/graphql', graphqlHTTP(req => {
-    const contextValue = { viewer: req.user, organization: req.organization };
+app.use('/graphql', upload, graphqlHTTP(req => {
+    console.log(req.files, req.file, "REGGG");
+    const contextValue = { viewer: req.user, organization: req.organization, file: req.file };
     return {
         schema,
         rootValue: contextValue,
@@ -369,6 +370,8 @@ app.get('/login', universal);
 app.use('/', require('./routes/index'));
 app.use('/proxy', require('./routes/proxy'));
 app.use('/forum', require('./routes/forum'));
+
+app.get('/files', universal);
 app.use('/files', require('./routes/files'));
 
 app.use('/users/:username', universal);
