@@ -240,7 +240,7 @@ app.use((req, res, next) => {
 app.use(serveStatic(path.join(__dirname, '..', '..', 'dist', 'public')));
 
 /** GraphQL **/
-app.use('/graphql', upload, graphqlHTTP(req => {
+app.use('/graphql', graphqlHTTP(req => {
     const contextValue = { viewer: req.user, organization: req.organization, file: req.file };
     return {
         schema,

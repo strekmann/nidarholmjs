@@ -7,6 +7,7 @@ import axios from 'axios';
 
 import getMuiTheme from 'material-ui/styles/getMuiTheme';
 import RaisedButton from 'material-ui/RaisedButton';
+import AutoComplete from 'material-ui/AutoComplete';
 
 import theme from '../theme';
 import FileList from './FileList';
@@ -20,6 +21,7 @@ class Files extends React.Component {
     };
 
     static propTypes = {
+        viewer: React.PropTypes.object,
         organization: React.PropTypes.object,
         relay: {
             setVariables: React.PropTypes.func,
@@ -33,6 +35,11 @@ class Files extends React.Component {
     constructor(props) {
         super(props);
         this.muiTheme = getMuiTheme(theme);
+    }
+
+    state = {
+        permissions: [],
+        permission: '',
     }
 
     getChildContext() {
@@ -50,6 +57,7 @@ class Files extends React.Component {
                     viewer: null,
                     organization: this.props.organization,
                     hex: response.data.hex,
+                    permissions: this.state.permissions.map(permission => permission.value),
                     filename: file.name,
                 }), {
                     onSuccess: () => {
@@ -66,12 +74,74 @@ class Files extends React.Component {
         });
     }
 
+    onPermissionChange = (value) => {
+        this.setState({
+            permission: value,
+        });
+    }
+
+    addPermission = (chosen) => {
+        const permissions = this.state.permissions;
+        permissions.push(chosen);
+        this.setState({
+            permissions,
+            permission: '',
+        });
+    }
+
+    removePermission = (someting) => {
+        console.log(something);
+    }
+
     render() {
+        const viewer = this.props.viewer;
         const org = this.props.organization;
+        const permissions = [];
+        if (viewer) {
+            permissions.push({ value: 'p', text: 'Verden' });
+            viewer.groups.forEach(group => {
+                permissions.push({ value: group.id, text: group.name });
+            });
+        }
         return (
             <section>
                 <h1>Filer</h1>
-                <Dropzone onDrop={this.onDrop} />
+                {viewer ?
+                    <div>
+                        {this.state.permissions.length ?
+                            <div>
+                                <h3>Rettigheter</h3>
+                                <ul>
+                                    {
+                                        this.state.permissions.map(
+                                            permission => (
+                                                <li key={permission.value}>
+                                                    {permission.text}
+                                                    <RaisedButton
+                                                        onClick={this.removePermission}
+                                                        label="x"
+                                                    />
+                                                </li>
+                                                )
+                                        )
+                                    }
+                                </ul>
+                            </div>
+                        : null}
+
+                        <AutoComplete
+                            id="permissions"
+                            floatingLabelText="Legg til rettigheter"
+                            filter={AutoComplete.fuzzyFilter}
+                            dataSource={permissions}
+                            maxSearchResults={8}
+                            searchText={this.state.permission}
+                            onNewRequest={this.addPermission}
+                            onUpdateInput={this.onPermissionChange}
+                        />
+                        <Dropzone onDrop={this.onDrop} />
+                    </div>
+                : null}
                 <FileList
                     files={org.files}
                 />
@@ -90,6 +160,14 @@ export default Relay.createContainer(Files, {
         showFiles: itemsPerPage,
     },
     fragments: {
+        viewer: () => Relay.QL`
+        fragment on User {
+            groups {
+                id
+                name
+            }
+        }
+        `,
         organization: () => Relay.QL`
         fragment on Organization {
             id

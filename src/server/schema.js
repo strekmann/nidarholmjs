@@ -221,6 +221,7 @@ fileType = new GraphQLObjectType({
         normal_path: { type: GraphQLString },
         large_path: { type: GraphQLString },
         is_image: { type: GraphQLBoolean },
+        permissions: { type: new GraphQLList(GraphQLString) },
     },
     interfaces: [nodeInterface],
 });
@@ -607,6 +608,9 @@ const mutationAddFile = mutationWithClientMutationId({
         hex: {
             type: new GraphQLNonNull(GraphQLString),
         },
+        permissions: {
+            type: new GraphQLList(GraphQLString),
+        },
     },
     outputFields: {
         organization: {
@@ -623,8 +627,21 @@ const mutationAddFile = mutationWithClientMutationId({
             },
         },
     },
-    mutateAndGetPayload: ({ filename, hex }, { viewer }) => {
-        return insertFile(filename, hex, config.files.raw_prefix, viewer);
+    mutateAndGetPayload: ({ filename, hex, permissions }, { viewer }) => {
+        const permissionObj = { public: false, groups: [], users: [] };
+        permissions.forEach(permission => {
+            if (permission === 'p') {
+                permissionObj.public = true;
+            }
+            const idObj = fromGlobalId(permission);
+            if (idObj.type === 'Group') {
+                permissionObj.groups.push(idObj.id);
+            }
+            else if (idObj.type === 'User') {
+                permissionObj.users.push(idObj.id);
+            }
+        });
+        return insertFile(filename, hex, permissionObj, config.files.raw_prefix, viewer);
     },
 });
 

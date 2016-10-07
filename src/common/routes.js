@@ -33,7 +33,7 @@ export default createRoutes(
         <Route path="users/:username" component={Member} queries={queries} />
         <Route path="projects" component={Projects} queries={organizationQueries} />
         <Route path="events/:eventid" component={Event} queries={queries} />
-        <Route path="files" component={Files} queries={organizationQueries} />
+        <Route path="files" component={Files} queries={queries} />
         <Route path=":slug" component={Page} queries={queries} />
         <Route path=":year/:tag" component={Project} queries={organizationQueries} />
         <Route path="*" component={NoMatch} />

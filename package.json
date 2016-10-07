@@ -65,7 +65,7 @@
     "jade": "^1.8.0",
     "libby": "^2.2.2",
     "marked": "^0.3.0",
-    "material-ui": "^0.15.4",
+    "material-ui": "^0.16.0",
     "mkdirp": "^0.5.1",
     "mmmagic": "^0.4.1",
     "moment": "^2.10.0",
