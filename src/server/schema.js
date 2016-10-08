@@ -207,6 +207,18 @@ userType = new GraphQLObjectType({
     interfaces: [nodeInterface],
 });
 
+const permissionsType = new GraphQLObjectType({
+    name: 'Permissions',
+    fields: () => ({
+        public: { type: new GraphQLNonNull(GraphQLBoolean) },
+        groups: {
+            type: new GraphQLList(groupType),
+            resolve: permission => permission.groups.map(groupId => Group.findById(groupId).exec()),
+        },
+        users: { type: new GraphQLList(GraphQLString) },
+    }),
+});
+
 fileType = new GraphQLObjectType({
     name: 'File',
     fields: {
@@ -221,7 +233,7 @@ fileType = new GraphQLObjectType({
         normal_path: { type: GraphQLString },
         large_path: { type: GraphQLString },
         is_image: { type: GraphQLBoolean },
-        permissions: { type: new GraphQLList(GraphQLString) },
+        permissions: { type: permissionsType },
     },
     interfaces: [nodeInterface],
 });
@@ -344,6 +356,7 @@ organizationType = new GraphQLObjectType({
         description_nb: { type: GraphQLString }, // TODO: Migrate
         map_url: { type: GraphQLString },
         contact_text: { type: GraphQLString },
+        member_group: { type: groupType },
         instrument_groups: {
             type: new GraphQLList(groupType),
             resolve: (_, args, { organization }) => Organization

@@ -8,9 +8,13 @@ import axios from 'axios';
 import getMuiTheme from 'material-ui/styles/getMuiTheme';
 import RaisedButton from 'material-ui/RaisedButton';
 import AutoComplete from 'material-ui/AutoComplete';
+import { List } from 'material-ui/List';
+import Subheader from 'material-ui/Subheader';
+import Paper from 'material-ui/Paper';
 
 import theme from '../theme';
 import FileList from './FileList';
+import PermissionItem from './PermissionItem';
 import AddFileMutation from '../mutations/addFile';
 
 const itemsPerPage = 10;
@@ -23,9 +27,7 @@ class Files extends React.Component {
     static propTypes = {
         viewer: React.PropTypes.object,
         organization: React.PropTypes.object,
-        relay: {
-            setVariables: React.PropTypes.func,
-        },
+        relay: React.PropTypes.object,
     }
 
     static childContextTypes = {
@@ -89,8 +91,11 @@ class Files extends React.Component {
         });
     }
 
-    removePermission = (someting) => {
-        console.log(something);
+    removePermission = (permissionId) => {
+        const permissions = this.state.permissions.filter(_p => _p.value !== permissionId);
+        this.setState({
+            permissions,
+        });
     }
 
     render() {
@@ -107,25 +112,21 @@ class Files extends React.Component {
             <section>
                 <h1>Filer</h1>
                 {viewer ?
-                    <div>
+                    <Paper>
                         {this.state.permissions.length ?
                             <div>
-                                <h3>Rettigheter</h3>
-                                <ul>
+                                <List>
+                                    <Subheader>Rettigheter</Subheader>
                                     {
                                         this.state.permissions.map(
-                                            permission => (
-                                                <li key={permission.value}>
-                                                    {permission.text}
-                                                    <RaisedButton
-                                                        onClick={this.removePermission}
-                                                        label="x"
-                                                    />
-                                                </li>
-                                                )
-                                        )
+                                            permission => <PermissionItem
+                                                key={permission.value}
+                                                removePermission={this.removePermission}
+                                                {...permission}
+                                            />
+                                            )
                                     }
-                                </ul>
+                                </List>
                             </div>
                         : null}
 
@@ -140,10 +141,11 @@ class Files extends React.Component {
                             onUpdateInput={this.onPermissionChange}
                         />
                         <Dropzone onDrop={this.onDrop} />
-                    </div>
+                    </Paper>
                 : null}
                 <FileList
                     files={org.files}
+                    memberGroupId={org.member_group.id}
                 />
                 {org.files.pageInfo.hasNextPage ?
                     <RaisedButton primary>Mer</RaisedButton>
@@ -171,6 +173,9 @@ export default Relay.createContainer(Files, {
         organization: () => Relay.QL`
         fragment on Organization {
             id
+            member_group {
+                id
+            }
             files(first:$showFiles) {
                 edges {
                     node {
@@ -179,8 +184,17 @@ export default Relay.createContainer(Files, {
                         created
                         mimetype
                         size
+                        permissions {
+                            public
+                            groups {
+                                id
+                                name
+                            }
+                            users
+                        }
                         tags
                         is_image
+                        normal_path
                     }
                 }
                 pageInfo {
