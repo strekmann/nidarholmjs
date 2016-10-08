@@ -79,9 +79,9 @@ class Page extends React.Component {
         this.context.relay.commitUpdate(new EditPageMutation({
             viewer: null,
             pageid: page.id,
-            slug: page.slug,
-            summary: page.summary,
-            mdtext: page.mdtext,
+            slug: this.state.slug,
+            summary: this.state.summary,
+            mdtext: this.state.mdtext,
         }), {
             onSuccess: () => {
                 this.closeEdit();
