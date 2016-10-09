@@ -26,7 +26,7 @@ import config from 'config';
 
 import { User, Group, Organization } from './models';
 import { File } from './models/files';
-import { Project, Event } from './models/projects';
+import { Project, Event, Piece } from './models/projects';
 import { Page } from './models/pages';
 
 import { insert_file as insertFile } from './lib/util';
@@ -253,8 +253,45 @@ eventType = new GraphQLObjectType({
         end: { type: GraphQLDate },
         tags: { type: new GraphQLList(GraphQLString) },
         mdtext: { type: GraphQLString },
+        permissions: { type: permissionsType },
     },
     interfaces: [nodeInterface],
+});
+const eventConnection = connectionDefinitions({
+    name: 'Event',
+    nodeType: eventType,
+});
+
+const pieceType = new GraphQLObjectType({
+    name: 'Piece',
+    fields: () => ({
+        id: globalIdField('Project'),
+        title: { type: GraphQLString },
+        subtitle: { type: GraphQLString },
+        description: { type: GraphQLString },
+        description_composer: { type: GraphQLString },
+        description_arranger: { type: GraphQLString },
+        description_publisher: { type: GraphQLString },
+        composers: { type: new GraphQLList(GraphQLString) },
+        arrangers: { type: new GraphQLList(GraphQLString) },
+        scores: { type: new GraphQLList(fileType) },
+        unique_number: { type: GraphQLInt },
+        record_number: { type: GraphQLInt },
+        archive_number: { type: GraphQLInt },
+        band_setup: { type: GraphQLString },
+        short_genre: { type: GraphQLString },
+        genre: { type: GraphQLString },
+        published: { type: GraphQLString },
+        acquired: { type: GraphQLString },
+        concerts: { type: GraphQLString },
+        maintenance_status: { type: GraphQLString },
+        nationality: { type: GraphQLString },
+        difficulty: { type: GraphQLInt },
+        publisher: { type: GraphQLString },
+        import_id: { type: GraphQLInt },
+        created: { type: GraphQLDate },
+        creator: { type: userType },
+    }),
 });
 
 projectType = new GraphQLObjectType({
@@ -267,10 +304,40 @@ projectType = new GraphQLObjectType({
         end: { type: GraphQLDate },
         year: { type: GraphQLString },
         public_mdtext: { type: GraphQLString },
+        private_mdtext: { type: GraphQLString },
         conductors: { type: new GraphQLList(userType) },
         poster: {
             type: fileType,
             resolve: (a) => File.findById(a.poster).exec(),
+        },
+        events: {
+            type: eventConnection.connectionType,
+            args: connectionArgs,
+            resolve: (project, args, { viewer }) => connectionFromMongooseQuery(
+                authenticate(Event.find({ tags: project.tag }), viewer),
+                args,
+            ),
+        },
+        files: {
+            type: fileConnection.connectionType,
+            args: connectionArgs,
+            resolve: (project, args, { viewer }) => connectionFromMongooseQuery(
+                authenticate(File.find({ tags: project.tag }), viewer),
+                args,
+            ),
+        },
+        music: {
+            type: new GraphQLList(new GraphQLObjectType({
+                name: 'Music',
+                fields: {
+                    id: { type: GraphQLString },
+                    piece: {
+                        type: pieceType,
+                        resolve: (music) => Piece.findById(music.piece).exec(),
+                    },
+                    parts: { type: GraphQLString },
+                },
+            })),
         },
     },
     interfaces: [nodeInterface],
@@ -357,6 +424,10 @@ organizationType = new GraphQLObjectType({
         map_url: { type: GraphQLString },
         contact_text: { type: GraphQLString },
         member_group: { type: groupType },
+        is_member: {
+            type: GraphQLBoolean,
+            resolve: (_, args, { organization, viewer }) => member(organization, viewer),
+        },
         instrument_groups: {
             type: new GraphQLList(groupType),
             resolve: (_, args, { organization }) => Organization
@@ -426,7 +497,7 @@ organizationType = new GraphQLObjectType({
             },
         },
         nextEvents: {
-            type: connectionDefinitions({ name: 'Event', nodeType: eventType }).connectionType,
+            type: eventConnection.connectionType,
             args: connectionArgs,
             resolve: (parent, { ...args }, { viewer }) => {
                 const query = Event

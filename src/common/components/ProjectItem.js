@@ -4,7 +4,7 @@ import { Link } from 'react-router';
 import Date from './Date';
 import Text from './Text';
 
-class Project extends React.Component {
+export default class ProjectItem extends React.Component {
     static propTypes = {
         title: React.PropTypes.string,
         start: React.PropTypes.string,
@@ -13,7 +13,8 @@ class Project extends React.Component {
         year: React.PropTypes.string,
         mdtext: React.PropTypes.string,
         public_mdtext: React.PropTypes.string,
-        poster: React.PropTypes.string,
+        private_mdtext: React.PropTypes.string,
+        poster: React.PropTypes.object,
     }
 
     render() {
@@ -38,5 +39,3 @@ class Project extends React.Component {
         );
     }
 }
-
-export default Project;
