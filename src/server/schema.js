@@ -38,10 +38,12 @@ let eventType;
 let projectType;
 let fileType;
 let pageType;
+let pieceType;
 
 class UserDTO { constructor(obj) { for (const k of Object.keys(obj)) { this[k] = obj[k]; } } }
 class GroupDTO { constructor(obj) { for (const k of Object.keys(obj)) { this[k] = obj[k]; } } }
 class OrganizationDTO { constructor(o) { for (const k of Object.keys(o)) { this[k] = o[k]; } } }
+class PieceDTO { constructor(obj) { for (const k of Object.keys(obj)) { this[k] = obj[k]; } } }
 class EventDTO { constructor(obj) { for (const k of Object.keys(obj)) { this[k] = obj[k]; } } }
 class ProjectDTO { constructor(obj) { for (const k of Object.keys(obj)) { this[k] = obj[k]; } } }
 class FileDTO { constructor(obj) { for (const k of Object.keys(obj)) { this[k] = obj[k]; } } }
@@ -60,6 +62,9 @@ const { nodeInterface, nodeField } = nodeDefinitions(
             return Organization.findById(id).exec().then(
                 (organization) => new OrganizationDTO(organization.toObject())
             );
+        }
+        if (type === 'Piece') {
+            return Piece.findById(id).exec().then((piece) => new PieceDTO(piece.toObject()));
         }
         if (type === 'Event') {
             return Event.findById(id).exec().then((event) => new EventDTO(event.toObject()));
@@ -86,6 +91,9 @@ const { nodeInterface, nodeField } = nodeDefinitions(
         }
         if (obj instanceof OrganizationDTO) {
             return organizationType;
+        }
+        if (obj instanceof PieceDTO) {
+            return pieceType;
         }
         if (obj instanceof EventDTO) {
             return eventType;
@@ -133,6 +141,16 @@ function admin(organization, user) {
         });
     }
     return organizationAdmin;
+}
+
+// people having permissions to organization music
+function musicscoreadmin(organization, user) {
+    if (user) {
+        return Group.findById(organization.musicscoreadmin_group).exec().then(
+            group => group.members.map(_member => _member.user).includes(user.id)
+        );
+    }
+    return false;
 }
 
 function authenticate(query, viewer, options = {}) {
@@ -229,6 +247,7 @@ fileType = new GraphQLObjectType({
         mimetype: { type: GraphQLString },
         size: { type: GraphQLInt },
         tags: { type: new GraphQLList(GraphQLString) },
+        path: { type: GraphQLString },
         thumbnail_path: { type: GraphQLString },
         normal_path: { type: GraphQLString },
         large_path: { type: GraphQLString },
@@ -262,10 +281,10 @@ const eventConnection = connectionDefinitions({
     nodeType: eventType,
 });
 
-const pieceType = new GraphQLObjectType({
+pieceType = new GraphQLObjectType({
     name: 'Piece',
     fields: () => ({
-        id: globalIdField('Project'),
+        id: globalIdField('Piece'),
         title: { type: GraphQLString },
         subtitle: { type: GraphQLString },
         description: { type: GraphQLString },
@@ -274,7 +293,46 @@ const pieceType = new GraphQLObjectType({
         description_publisher: { type: GraphQLString },
         composers: { type: new GraphQLList(GraphQLString) },
         arrangers: { type: new GraphQLList(GraphQLString) },
-        scores: { type: new GraphQLList(fileType) },
+        scores: {
+            type: new GraphQLList(fileType),
+            resolve: (piece, args, { viewer }) => piece.scores
+            .map(score => authenticate(File.findById(score), viewer))
+            .filter(file => file !== null),
+        },
+        groupscores: {
+            type: new GraphQLList(new GraphQLObjectType({
+                name: 'GroupScores',
+                fields: () => ({
+                    id: {
+                        type: GraphQLString,
+                        resolve: (group) => group.id,
+                    },
+                    name: {
+                        type: GraphQLString,
+                        resolve: (group) => group.name,
+                    },
+                    scores: {
+                        type: new GraphQLList(fileType),
+                        resolve: (group, args, { viewer }) => group.scores
+                        .map(score => File.findById(score).where('permissions.groups', group.id))
+                        .filter(file => file !== null),
+                    },
+                }),
+            })),
+            resolve: (piece, args, { organization, viewer }) => {
+                if (!musicscoreadmin(organization, viewer)) {
+                    throw new Error('Nobody');
+                }
+                return organization.instrument_groups
+                .map(groupId => Group.findById(groupId)
+                     .exec()
+                     .then(_group => {
+                         const group = _group.toObject();
+                         group.scores = piece.scores;
+                         return group;
+                     }));
+            },
+        },
         unique_number: { type: GraphQLInt },
         record_number: { type: GraphQLInt },
         archive_number: { type: GraphQLInt },
@@ -292,6 +350,7 @@ const pieceType = new GraphQLObjectType({
         created: { type: GraphQLDate },
         creator: { type: userType },
     }),
+    interfaces: [nodeInterface],
 });
 
 projectType = new GraphQLObjectType({
@@ -424,9 +483,14 @@ organizationType = new GraphQLObjectType({
         map_url: { type: GraphQLString },
         contact_text: { type: GraphQLString },
         member_group: { type: groupType },
+        musicscore_admins: { type: new GraphQLList(GraphQLString) },
         is_member: {
             type: GraphQLBoolean,
             resolve: (_, args, { organization, viewer }) => member(organization, viewer),
+        },
+        is_musicscoreadmin: {
+            type: GraphQLBoolean,
+            resolve: (_, args, { organization, viewer }) => musicscoreadmin(organization, viewer),
         },
         instrument_groups: {
             type: new GraphQLList(groupType),
@@ -572,6 +636,19 @@ organizationType = new GraphQLObjectType({
                 authenticate(File.find().sort({ created: -1 }), viewer),
                 args,
             ),
+        },
+        piece: {
+            type: pieceType,
+            args: {
+                pieceId: { name: 'pieceId', type: GraphQLString },
+            },
+            resolve: (_, { pieceId }, { viewer, organization }) => {
+                if (!member(organization, viewer)) {
+                    throw new Error('Nobody');
+                }
+                const id = fromGlobalId(pieceId).id;
+                return Piece.findById(id).exec();
+            },
         },
     },
     interfaces: [nodeInterface],

@@ -140,6 +140,7 @@ export default Relay.createContainer(Project, {
                 }
                 music {
                     piece {
+                        id
                         title
                         composers
                     }
@@ -148,4 +149,3 @@ export default Relay.createContainer(Project, {
         }`,
     },
 });
-

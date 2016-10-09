@@ -358,6 +358,8 @@ app.use('/files', require('./routes/files'));
 app.use('/users/:username', universal);
 app.use('/users', require('./routes/users'));
 app.use('/groups', require('./routes/groups'));
+
+app.get('/music/:pieceId', universal);
 app.use('/music', require('./routes/music'));
 
 app.get('/events/public.ics', project_routes.ical_events);

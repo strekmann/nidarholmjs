@@ -12,7 +12,9 @@ export default class MusicItem extends React.Component {
         return (
             <div>
                 <div>
-                    <Link>{piece.title} {piece.composers.map(composer => composer)}</Link>
+                    <Link to={`/music/${piece.id}`}>
+                        {piece.title} {piece.composers.map(composer => composer)}
+                    </Link>
                 </div>
             </div>
         );
