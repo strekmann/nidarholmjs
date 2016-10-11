@@ -350,8 +350,9 @@ module.exports.insert_file = function insert_file(filename, hex, permissions, pr
                     if (piece) {
                         Piece.findByIdAndUpdate(
                             piece,
-                            { scores: { $add: _file.id } },
-                        ).exec().then(() => {
+                            { $addToSet: { scores: _file.id } },
+                            { new: true },
+                        ).exec().then((_piece) => {
                             resolve(_file);
                         });
                     }

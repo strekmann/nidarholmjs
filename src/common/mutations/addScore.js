@@ -25,20 +25,24 @@ export default class AddScoreMutation extends Relay.Mutation {
     getFatQuery() {
         return Relay.QL`
         fragment on AddScorePayload {
-            group {
-                scores
+            organization {
+                piece {
+                    groupscores {
+                        scores
+                    }
+                }
             }
-            scoreEdge
         }`;
     }
 
     getConfigs() {
+        console.log(this.props);
         return [{
             type: 'RANGE_ADD',
-            parentName: 'group',
-            parentID: this.props.groupId,
+            parentName: 'groupscores',
+            parentID: this.props.group.id,
             connectionName: 'scores',
-            edgeName: 'scoreEdge',
+            edgeName: 'newScoreEdge',
             rangeBehaviors: {
                 '': 'prepend',
             },

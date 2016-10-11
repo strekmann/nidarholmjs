@@ -74,9 +74,9 @@ class Piece extends React.Component {
                 <h2>
                     <List items={piece.composers} /> <small><List items={piece.arrangers} /></small>
                 </h2>
-                {piece.scores.map(
-                    file => <div key={file.id}>
-                        <FlatButton href={file.path} label={file.filename} />
+                {piece.scores.edges.map(
+                    edge => <div key={edge.node.id}>
+                        <FlatButton href={edge.node.path} label={edge.node.filename} />
                     </div>
                     )
                 }
@@ -115,17 +115,25 @@ export default Relay.createContainer(Piece, {
                 composers
                 arrangers
                 scores {
-                    id
-                    filename
-                    path
+                    edges {
+                        node {
+                            id
+                            filename
+                            path
+                        }
+                    }
                 }
                 groupscores {
                     id
                     name
                     scores {
-                        id
-                        filename
-                        path
+                        edges {
+                            node {
+                                id
+                                filename
+                                path
+                            }
+                        }
                     }
                 }
             }

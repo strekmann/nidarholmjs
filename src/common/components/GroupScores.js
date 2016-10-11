@@ -10,7 +10,7 @@ export default class GroupScores extends React.Component {
     static propTypes = {
         id: React.PropTypes.string,
         name: React.PropTypes.string,
-        scores: React.PropTypes.array,
+        scores: React.PropTypes.object,
         uploadScores: React.PropTypes.func,
     }
 
@@ -36,14 +36,14 @@ export default class GroupScores extends React.Component {
                     onDrop={this.onDrop}
                 />
                 <List>
-                    {this.props.scores.map(
-                        file => <Link
-                            key={`${this.props.id}-${file.id}`}
-                            href={file.path}
+                    {this.props.scores.edges.map(
+                        edge => <Link
+                            key={`${this.props.id}-${edge.node.id}`}
+                            href={edge.node.path}
                             download
                         >
                             <ListItem
-                                primaryText={file.filename}
+                                primaryText={edge.node.filename}
                                 leftIcon={<Download />}
                                 rightIconButton={del}
                             />

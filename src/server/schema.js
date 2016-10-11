@@ -287,6 +287,27 @@ const eventConnection = connectionDefinitions({
     nodeType: eventType,
 });
 
+const groupScoreType = new GraphQLObjectType({
+    name: 'Groupscore',
+    fields: () => ({
+        id: {
+            type: GraphQLString,
+            resolve: (group) => group.id,
+        },
+        name: {
+            type: GraphQLString,
+            resolve: (group) => group.name,
+        },
+        scores: {
+            type: fileConnection.connectionType,
+            resolve: (group, args) => connectionFromMongooseQuery(
+                File.find({ 'permissions.groups': group.id }).where('_id').in(group.scores),
+                args,
+            ),
+        },
+    }),
+});
+
 pieceType = new GraphQLObjectType({
     name: 'Piece',
     fields: () => ({
@@ -300,31 +321,21 @@ pieceType = new GraphQLObjectType({
         composers: { type: new GraphQLList(GraphQLString) },
         arrangers: { type: new GraphQLList(GraphQLString) },
         scores: {
-            type: new GraphQLList(fileType),
-            resolve: (piece, args, { viewer }) => piece.scores
-            .map(score => authenticate(File.findById(score), viewer))
-            .filter(file => file !== null),
+            type: fileConnection.connectionType,
+            resolve: (piece, args, { viewer }) => connectionFromMongooseQuery(
+                authenticate(File.find().where('_id').in(piece.scores), viewer),
+                args,
+            ),
+            /*
+            resolve: (piece, args, { viewer }) => {
+                const scores = piece.scores
+                .map(score => authenticate(File.findById(score), viewer));
+                return Promise.all(scores).then(_scores => _scores.filter(file => file !== null));
+            },
+            */
         },
         groupscores: {
-            type: new GraphQLList(new GraphQLObjectType({
-                name: 'GroupScores',
-                fields: () => ({
-                    id: {
-                        type: GraphQLString,
-                        resolve: (group) => group.id,
-                    },
-                    name: {
-                        type: GraphQLString,
-                        resolve: (group) => group.name,
-                    },
-                    scores: {
-                        type: new GraphQLList(fileType),
-                        resolve: (group, args, { viewer }) => group.scores
-                        .map(score => File.findById(score).where('permissions.groups', group.id))
-                        .filter(file => file !== null),
-                    },
-                }),
-            })),
+            type: new GraphQLList(groupScoreType),
             resolve: (piece, args, { organization, viewer }) => {
                 if (!musicscoreadmin(organization, viewer)) {
                     throw new Error('Nobody');
@@ -829,33 +840,42 @@ const mutationAddScore = mutationWithClientMutationId({
         },
     },
     outputFields: {
-        group: {
-            type: new GraphQLObjectType({
-                name: 'GroupScoresLazy',
-                fields: {
-                    scores: { type: new GraphQLList(fileType) },
-                },
-            }),
-            resolve: payload => payload.groupId,
+        organization: {
+            type: organizationType,
+            resolve: (payload, args, { organization }) => organization,
         },
-        scoreEdge: {
-            type: scoreConnection.edgeType,
-            resolve: (payload) => ({
-                cursor: offsetToCursor(0),
-                node: payload.file,
-            }),
+        groupscores: {
+            type: groupScoreType,
+            resolve: (payload) => {
+                console.log('OOOOOOOOO', payload);
+                return payload;
+            },
+        },
+        newScoreEdge: {
+            type: fileConnection.edgeType,
+            resolve: (payload) => {
+                console.log("PAYLSCOR", payload);
+                return {
+                    cursor: offsetToCursor(0),
+                    node: payload.file,
+                };
+            },
         },
     },
     mutateAndGetPayload: ({ filename, hex, groupId, pieceId }, { viewer }) => {
         const permissionObj = { public: false, groups: [groupId], users: [] };
-        const file = insertFile(filename, hex, permissionObj,
-                                config.files.raw_prefix, viewer, pieceId,
-                               );
-        return {
-            file,
-            groupId,
-            pieceId,
-        };
+        const pieceDbId = fromGlobalId(pieceId).id;
+        console.log("OASTEAAF", permissionObj, pieceDbId);
+        return insertFile(
+            filename, hex, permissionObj, config.files.raw_prefix, viewer, pieceDbId,
+        ).then(file => {
+            console.log("payload", file, groupId, pieceId);
+            return {
+                file,
+                groupId,
+                pieceId,
+            };
+        });
     },
 });
 
