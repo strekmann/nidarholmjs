@@ -11,6 +11,12 @@ export default class GroupScores extends React.Component {
         id: React.PropTypes.string,
         name: React.PropTypes.string,
         scores: React.PropTypes.array,
+        uploadScores: React.PropTypes.func,
+    }
+
+    onDrop = (files) => {
+        console.log(files);
+        this.props.uploadScores(files, this.props);
     }
 
     render() {
@@ -27,6 +33,7 @@ export default class GroupScores extends React.Component {
                         borderStyle: 'dashed',
                         borderRadius: 5,
                     }}
+                    onDrop={this.onDrop}
                 />
                 <List>
                     {this.props.scores.map(

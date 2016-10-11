@@ -7,6 +7,7 @@ import {
     GraphQLSchema,
     GraphQLString,
     GraphQLInt,
+    GraphQLInputObjectType,
 } from 'graphql';
 
 import GraphQLDate from 'graphql-custom-datetype';
@@ -259,6 +260,11 @@ fileType = new GraphQLObjectType({
 
 const fileConnection = connectionDefinitions({
     name: 'File',
+    nodeType: fileType,
+});
+
+const scoreConnection = connectionDefinitions({
+    name: 'Score',
     nodeType: fileType,
 });
 
@@ -806,6 +812,52 @@ const mutationAddFile = mutationWithClientMutationId({
     },
 });
 
+const mutationAddScore = mutationWithClientMutationId({
+    name: 'AddScore',
+    inputFields: {
+        filename: {
+            type: new GraphQLNonNull(GraphQLString),
+        },
+        hex: {
+            type: new GraphQLNonNull(GraphQLString),
+        },
+        groupId: {
+            type: new GraphQLNonNull(GraphQLString),
+        },
+        pieceId: {
+            type: new GraphQLNonNull(GraphQLString),
+        },
+    },
+    outputFields: {
+        group: {
+            type: new GraphQLObjectType({
+                name: 'GroupScoresLazy',
+                fields: {
+                    scores: { type: new GraphQLList(fileType) },
+                },
+            }),
+            resolve: payload => payload.groupId,
+        },
+        scoreEdge: {
+            type: scoreConnection.edgeType,
+            resolve: (payload) => ({
+                cursor: offsetToCursor(0),
+                node: payload.file,
+            }),
+        },
+    },
+    mutateAndGetPayload: ({ filename, hex, groupId, pieceId }, { viewer }) => {
+        const permissionObj = { public: false, groups: [groupId], users: [] };
+        const file = insertFile(filename, hex, permissionObj,
+                                config.files.raw_prefix, viewer, pieceId,
+                               );
+        return {
+            file,
+            groupId,
+            pieceId,
+        };
+    },
+});
 
 const mutationType = new GraphQLObjectType({
     name: 'Mutation',
@@ -814,6 +866,7 @@ const mutationType = new GraphQLObjectType({
         editEvent: mutationEditEvent,
         editPage: mutationEditPage,
         addFile: mutationAddFile,
+        addScore: mutationAddScore,
     }),
 });
 

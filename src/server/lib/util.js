@@ -15,7 +15,8 @@ let moment = require('moment'),
     mmm = require('mmmagic'),
     Magic = mmm.Magic,
     config = require('config'),
-    File = require('../models/files').File;
+    File = require('../models/files').File,
+    Piece = require('../models/projects').Piece;
 
 module.exports.slug = function (text) {
     return slug(text.toLowerCase());
@@ -320,7 +321,7 @@ module.exports.save_file = function save_file(tmp_path, prefix, do_delete = true
     );
 };
 
-module.exports.insert_file = function insert_file(filename, hex, permissions, prefix, user) {
+module.exports.insert_file = function insert_file(filename, hex, permissions, prefix, user, piece = null) {
     return new Promise((resolve, reject) => {
         // compute paths
         if (prefix[0] !== '/') {
@@ -345,7 +346,19 @@ module.exports.insert_file = function insert_file(filename, hex, permissions, pr
                     creator: user,
                 });
 
-                resolve(file.save());
+                file.save().then(_file => {
+                    if (piece) {
+                        Piece.findByIdAndUpdate(
+                            piece,
+                            { scores: { $add: _file.id } },
+                        ).exec().then(() => {
+                            resolve(_file);
+                        });
+                    }
+                    else {
+                        resolve(_file);
+                    }
+                });
             });
         });
     });

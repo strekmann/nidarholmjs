@@ -1,5 +1,8 @@
+/* global FormData */
+
 import React from 'react';
 import Relay from 'react-relay';
+import axios from 'axios';
 
 import getMuiTheme from 'material-ui/styles/getMuiTheme';
 import FlatButton from 'material-ui/FlatButton';
@@ -8,6 +11,7 @@ import theme from '../theme';
 
 import List from './List';
 import GroupScores from './GroupScores';
+import AddScoreMutation from '../mutations/addScore';
 
 class Piece extends React.Component {
     static contextTypes = {
@@ -31,6 +35,35 @@ class Piece extends React.Component {
         return { muiTheme: this.muiTheme };
     }
 
+    uploadScores = (files, group) => {
+        files.forEach(file => {
+            const data = new FormData();
+            data.append('file', file);
+
+            axios.post('/upload', data)
+            .then((response) => {
+                this.context.relay.commitUpdate(new AddScoreMutation({
+                    viewer: null,
+                    organization: null,
+                    hex: response.data.hex,
+                    filename: file.name,
+                    group,
+                    piece: this.props.organization.piece,
+                }), {
+                    onSuccess: () => {
+                        // console.log("successfile");
+                    },
+                    onFailure: transaction => {
+                        console.error(transaction.getError().source.errors);
+                    },
+                });
+            })
+            .catch(error => {
+                console.error("err", error);
+            });
+        });
+    }
+
     render() {
         const org = this.props.organization;
         const piece = org.piece;
@@ -51,7 +84,14 @@ class Piece extends React.Component {
                 {org.is_musicscoreadmin ?
                     <div>
                         <h2>Admin</h2>
-                        {piece.groupscores.map(group => <GroupScores key={group.id} {...group} />)}
+                        {piece.groupscores.map(
+                            group => <GroupScores
+                                key={group.id}
+                                uploadScores={this.uploadScores}
+                                {...group}
+                            />
+                            )
+                        }
                     </div>
                     : null}
             </section>
@@ -70,6 +110,7 @@ export default Relay.createContainer(Piece, {
             is_member
             is_musicscoreadmin
             piece(pieceId:$pieceId) {
+                id
                 title
                 composers
                 arrangers
