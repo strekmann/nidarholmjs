@@ -49,6 +49,7 @@ class EventDTO { constructor(obj) { for (const k of Object.keys(obj)) { this[k] 
 class ProjectDTO { constructor(obj) { for (const k of Object.keys(obj)) { this[k] = obj[k]; } } }
 class FileDTO { constructor(obj) { for (const k of Object.keys(obj)) { this[k] = obj[k]; } } }
 class PageDTO { constructor(obj) { for (const k of Object.keys(obj)) { this[k] = obj[k]; } } }
+class GroupscoreDTO { constructor(obj) { for (const k of Object.keys(obj)) { this[k] = obj[k]; } } }
 
 const { nodeInterface, nodeField } = nodeDefinitions(
     (globalId) => {
@@ -81,6 +82,9 @@ const { nodeInterface, nodeField } = nodeDefinitions(
         if (type === 'Page') {
             return Page.findById(id).exec().then((page) => new PageDTO(page.toObject()));
         }
+        if (type === 'Groupscore') {
+            return Group.findById(id).exec().then((group) => new GroupscoreDTO(group.toObject()));
+        }
         return null;
     },
     (obj) => {
@@ -107,6 +111,9 @@ const { nodeInterface, nodeField } = nodeDefinitions(
         }
         if (obj instanceof PageDTO) {
             return pageType;
+        }
+        if (obj instanceof GroupscoreDTO) {
+            return groupScoreType;
         }
         return null;
     }
@@ -226,6 +233,54 @@ userType = new GraphQLObjectType({
     interfaces: [nodeInterface],
 });
 
+groupType = new GraphQLObjectType({
+    name: 'Group',
+    fields: {
+        id: globalIdField('Group'),
+        name: { type: GraphQLString },
+        externally_hidden: { type: GraphQLBoolean },
+        members: {
+            type: new GraphQLList(new GraphQLObjectType({
+                name: 'GroupMember',
+                fields: {
+                    id: { type: GraphQLString },
+                    user: {
+                        type: userType,
+                        resolve: (member) => User.findById(member.user).where({
+                            on_leave: false,
+                            in_list: true,
+                            membership_status: { $lt: 5 },
+                        }).exec(),
+                    },
+                    role: { type: new GraphQLObjectType({
+                        name: 'GroupRole',
+                        fields: {
+                            title: { type: GraphQLString },
+                            email: { type: GraphQLString },
+                        },
+                    }) },
+                },
+            })),
+            resolve: (group, args, { organization }) => {
+                const members = organization.member_group.members.map(member => member.user);
+                return group.members.filter(member => {
+                    if (members.includes(member.user)) {
+                        return true;
+                    }
+                    return false;
+                });
+            },
+        },
+    },
+    interfaces: [nodeInterface],
+});
+
+const groupConnection = connectionDefinitions({
+    name: 'Group',
+    nodeType: groupType,
+});
+
+
 const permissionsType = new GraphQLObjectType({
     name: 'Permissions',
     fields: () => ({
@@ -290,15 +345,12 @@ const eventConnection = connectionDefinitions({
 const groupScoreType = new GraphQLObjectType({
     name: 'Groupscore',
     fields: () => ({
-        id: {
-            type: GraphQLString,
-            resolve: (group) => group.id,
-        },
+        id: globalIdField('Groupscore'),
         name: {
             type: GraphQLString,
             resolve: (group) => group.name,
         },
-        scores: {
+        files: {
             type: fileConnection.connectionType,
             resolve: (group, args) => connectionFromMongooseQuery(
                 File.find({ 'permissions.groups': group.id }).where('_id').in(group.scores),
@@ -306,6 +358,7 @@ const groupScoreType = new GraphQLObjectType({
             ),
         },
     }),
+    interfaces: [nodeInterface],
 });
 
 pieceType = new GraphQLObjectType({
@@ -320,7 +373,7 @@ pieceType = new GraphQLObjectType({
         description_publisher: { type: GraphQLString },
         composers: { type: new GraphQLList(GraphQLString) },
         arrangers: { type: new GraphQLList(GraphQLString) },
-        scores: {
+        files: {
             type: fileConnection.connectionType,
             resolve: (piece, args, { viewer }) => connectionFromMongooseQuery(
                 authenticate(File.find().where('_id').in(piece.scores), viewer),
@@ -414,48 +467,6 @@ projectType = new GraphQLObjectType({
                     parts: { type: GraphQLString },
                 },
             })),
-        },
-    },
-    interfaces: [nodeInterface],
-});
-
-groupType = new GraphQLObjectType({
-    name: 'Group',
-    fields: {
-        id: globalIdField('Group'),
-        name: { type: GraphQLString },
-        externally_hidden: { type: GraphQLBoolean },
-        members: {
-            type: new GraphQLList(new GraphQLObjectType({
-                name: 'GroupMember',
-                fields: {
-                    id: { type: GraphQLString },
-                    user: {
-                        type: userType,
-                        resolve: (member) => User.findById(member.user).where({
-                            on_leave: false,
-                            in_list: true,
-                            membership_status: { $lt: 5 },
-                        }).exec(),
-                    },
-                    role: { type: new GraphQLObjectType({
-                        name: 'GroupRole',
-                        fields: {
-                            title: { type: GraphQLString },
-                            email: { type: GraphQLString },
-                        },
-                    }) },
-                },
-            })),
-            resolve: (group, args, { organization }) => {
-                const members = organization.member_group.members.map(member => member.user);
-                return group.members.filter(member => {
-                    if (members.includes(member.user)) {
-                        return true;
-                    }
-                    return false;
-                });
-            },
         },
     },
     interfaces: [nodeInterface],
@@ -844,17 +855,9 @@ const mutationAddScore = mutationWithClientMutationId({
             type: organizationType,
             resolve: (payload, args, { organization }) => organization,
         },
-        groupscores: {
-            type: groupScoreType,
-            resolve: (payload) => {
-                console.log('OOOOOOOOO', payload);
-                return payload;
-            },
-        },
         newScoreEdge: {
             type: fileConnection.edgeType,
             resolve: (payload) => {
-                console.log("PAYLSCOR", payload);
                 return {
                     cursor: offsetToCursor(0),
                     node: payload.file,
@@ -863,13 +866,12 @@ const mutationAddScore = mutationWithClientMutationId({
         },
     },
     mutateAndGetPayload: ({ filename, hex, groupId, pieceId }, { viewer }) => {
-        const permissionObj = { public: false, groups: [groupId], users: [] };
         const pieceDbId = fromGlobalId(pieceId).id;
-        console.log("OASTEAAF", permissionObj, pieceDbId);
+        const groupDbId = fromGlobalId(groupId).id;
+        const permissionObj = { public: false, groups: [groupDbId], users: [] };
         return insertFile(
             filename, hex, permissionObj, config.files.raw_prefix, viewer, pieceDbId,
         ).then(file => {
-            console.log("payload", file, groupId, pieceId);
             return {
                 file,
                 groupId,

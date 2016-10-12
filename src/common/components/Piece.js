@@ -44,7 +44,7 @@ class Piece extends React.Component {
             .then((response) => {
                 this.context.relay.commitUpdate(new AddScoreMutation({
                     viewer: null,
-                    organization: null,
+                    organization: this.props.organization,
                     hex: response.data.hex,
                     filename: file.name,
                     group,
@@ -74,7 +74,7 @@ class Piece extends React.Component {
                 <h2>
                     <List items={piece.composers} /> <small><List items={piece.arrangers} /></small>
                 </h2>
-                {piece.scores.edges.map(
+                {piece.files.edges.map(
                     edge => <div key={edge.node.id}>
                         <FlatButton href={edge.node.path} label={edge.node.filename} />
                     </div>
@@ -106,6 +106,7 @@ export default Relay.createContainer(Piece, {
     fragments: {
         organization: () => Relay.QL`
         fragment on Organization {
+            id
             name
             is_member
             is_musicscoreadmin
@@ -114,7 +115,7 @@ export default Relay.createContainer(Piece, {
                 title
                 composers
                 arrangers
-                scores {
+                files {
                     edges {
                         node {
                             id
@@ -126,7 +127,7 @@ export default Relay.createContainer(Piece, {
                 groupscores {
                     id
                     name
-                    scores {
+                    files {
                         edges {
                             node {
                                 id
@@ -137,6 +138,7 @@ export default Relay.createContainer(Piece, {
                     }
                 }
             }
+            ${AddScoreMutation.getFragment('organization')}
         }`,
     },
 });

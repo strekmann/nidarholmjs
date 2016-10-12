@@ -36,7 +36,7 @@ export default class GroupScores extends React.Component {
                     onDrop={this.onDrop}
                 />
                 <List>
-                    {this.props.scores.edges.map(
+                    {this.props.files.edges.map(
                         edge => <Link
                             key={`${this.props.id}-${edge.node.id}`}
                             href={edge.node.path}
