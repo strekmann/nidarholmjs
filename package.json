@@ -25,7 +25,8 @@
     "watch": "gulp",
     "lint": "eslint --ignore-pattern \"src/server/lib/middleware.js\" --ignore-pattern \"src/server/lib/util.js\" --ignore-pattern \"src/server/routes/*\" --ignore-pattern \"src/client/**/*.js\" src/client \"src/**/*.js\" || :",
     "nodemon": "nodemon src/dev.js | bunyan -o short",
-    "retire": "retire || :"
+    "retire": "retire || :",
+    "start": "npm run nodemon"
   },
   "metadata": {
     "graphql": {
