@@ -212,6 +212,7 @@ export default Relay.createContainer(Project, {
                 files(first:100) {
                     edges {
                         node {
+                            id
                             filename
                             is_image
                             normal_path

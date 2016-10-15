@@ -4,7 +4,7 @@ import MusicItem from './MusicItem';
 
 export default class MusicList extends React.Component {
     static propTypes = {
-        music: React.PropTypes.object,
+        music: React.PropTypes.array,
         memberGroupId: React.PropTypes.string,
     }
     render() {
