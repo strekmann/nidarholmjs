@@ -29,9 +29,7 @@ export default class AddEventMutation extends Relay.Mutation {
         return Relay.QL`
         fragment on AddEventPayload {
             organization {
-                project {
-                    events
-                }
+                project
             }
             newEventEdge
         }`;

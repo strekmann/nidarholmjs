@@ -1,8 +1,13 @@
 import React from 'react';
 import Relay from 'react-relay';
 
-import getMuiTheme from 'material-ui/styles/getMuiTheme';
+import ArrowDown from 'material-ui/svg-icons/navigation/arrow-drop-down';
+import Dialog from 'material-ui/Dialog';
+import IconButton from 'material-ui/IconButton';
+import IconMenu from 'material-ui/IconMenu';
+import MenuItem from 'material-ui/MenuItem';
 import RaisedButton from 'material-ui/RaisedButton';
+import getMuiTheme from 'material-ui/styles/getMuiTheme';
 
 import Date from './Date';
 import Text from './Text';
@@ -34,11 +39,12 @@ class Project extends React.Component {
 
     state = {
         public: false,
+        addEvent: false,
         event: {
             title: '',
             location: '',
-            start: '',
-            end: '',
+            start: null,
+            end: null,
             tags: [],
             year: '',
             permissions: [],
@@ -54,6 +60,14 @@ class Project extends React.Component {
         this.setState({ public: !this.state.public });
     }
 
+    toggleAddEvent = () => {
+        this.setState({ addEvent: !this.state.addEvent });
+    }
+
+    closeAddEvent = () => {
+        this.setState({ addEvent: false });
+    }
+
     saveEvent = (event) => {
         this.context.relay.commitUpdate(new AddEventMutation({
             organization: this.props.organization,
@@ -64,7 +78,14 @@ class Project extends React.Component {
             tags: [this.props.organization.project.tag],
             mdtext: event.mdtext,
             permissions: event.permissions.map(permission => permission.value),
-        }));
+        }), {
+            onSuccess: () => {
+                this.closeAddEvent();
+            },
+            onFailure: (error, ost, kake) => {
+                console.error('AD', error, ost, kake);
+            },
+        });
     }
 
     render() {
@@ -97,8 +118,17 @@ class Project extends React.Component {
             );
         }
         return (
-            <div>
-                <h1>{project.title}</h1>
+            <section>
+                <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                    <h1>{project.title}</h1>
+                    <IconMenu
+                        iconButtonElement={<IconButton><ArrowDown /></IconButton>}
+                        anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
+                        targetOrigin={{ vertical: 'top', horizontal: 'right' }}
+                    >
+                        <MenuItem primaryText="Legg til aktivitet" onTouchTap={this.toggleAddEvent} />
+                    </IconMenu>
+                </div>
                 <div className="meta">
                     {project.start ? <span><Date date={project.start} /> – </span> : null}
                     <Date date={project.end} />
@@ -111,15 +141,22 @@ class Project extends React.Component {
                     :
                     null
                 }
-                <EditEvent
-                    viewer={this.props.viewer}
-                    saveEvent={this.saveEvent}
-                    {...this.state.event}
-                />
                 <EventList events={project.events} />
                 <FileList files={project.files} />
                 <MusicList music={project.music} />
-            </div>
+                <Dialog
+                    title="Legg til aktivitet"
+                    open={this.state.addEvent}
+                    onRequestClose={this.closeEdit}
+                    autoScrollBodyContent
+                >
+                    <EditEvent
+                        viewer={this.props.viewer}
+                        saveEvent={this.saveEvent}
+                        {...this.state.event}
+                    />
+                </Dialog>
+            </section>
         );
     }
 }

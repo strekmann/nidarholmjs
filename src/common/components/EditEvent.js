@@ -5,8 +5,10 @@ import AutoComplete from 'material-ui/AutoComplete';
 import RaisedButton from 'material-ui/RaisedButton';
 import TextField from 'material-ui/TextField';
 import DatePicker from 'material-ui/DatePicker';
+import Subheader from 'material-ui/Subheader';
 import TimePicker from 'material-ui/TimePicker';
 import Chip from 'material-ui/Chip';
+import { List } from 'material-ui/List';
 
 import PermissionItem from './PermissionItem';
 
@@ -29,8 +31,8 @@ export default class EditEvent extends React.Component {
         id: this.props.id,
         title: this.props.title,
         location: this.props.location,
-        start: this.props.start ? moment(this.props.start).toDate() : '',
-        end: this.props.end ? moment(this.props.end).toDate() : '',
+        start: this.props.start ? moment(this.props.start).toDate() : null,
+        end: this.props.end ? moment(this.props.end).toDate() : null,
         tags: this.props.tags,
         mdtext: this.props.mdtext,
         permissions: this.props.permissions || [],
@@ -38,6 +40,10 @@ export default class EditEvent extends React.Component {
 
     onChangeTitle = (event, title) => {
         this.setState({ title });
+    }
+
+    onChangeLocation = (event, location) => {
+        this.setState({ location });
     }
 
     onChangeStart = (event, date) => {
@@ -180,16 +186,21 @@ export default class EditEvent extends React.Component {
                     {this.state.tags ? this.state.tags.map((tag, i) => this.renderChip(tag, i)) : null}
                 </div>
                 <div>
-                    {this.state.permissions.map(
-                    permission => <PermissionItem
-                        key={permission.value}
-                        removePermission={this.removePermission}
-                        {...permission}
-                    />
-                    )}
+                    <List>
+                        <Subheader>Rettigheter</Subheader>
+                        {
+                            this.state.permissions.map(
+                                permission => <PermissionItem
+                                    key={permission.value}
+                                    removePermission={this.removePermission}
+                                    {...permission}
+                                />
+                                )
+                        }
+                    </List>
                     <AutoComplete
                         id="permissions"
-                        floatingLabelText="Rettigheter"
+                        floatingLabelText="Legg til rettigheter"
                         filter={AutoComplete.fuzzyFilter}
                         dataSource={permissions}
                         maxSearchResults={8}
