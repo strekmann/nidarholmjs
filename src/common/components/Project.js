@@ -7,8 +7,10 @@ import RaisedButton from 'material-ui/RaisedButton';
 import Date from './Date';
 import Text from './Text';
 import EventList from './EventList';
+import EditEvent from './EditEvent';
 import FileList from './FileList';
 import MusicList from './MusicList';
+import AddEventMutation from '../mutations/addEvent';
 import theme from '../theme';
 
 class Project extends React.Component {
@@ -18,6 +20,7 @@ class Project extends React.Component {
 
     static propTypes = {
         organization: React.PropTypes.object,
+        viewer: React.PropTypes.object,
     }
 
     static childContextTypes = {
@@ -31,6 +34,16 @@ class Project extends React.Component {
 
     state = {
         public: false,
+        event: {
+            title: '',
+            location: '',
+            start: '',
+            end: '',
+            tags: [],
+            year: '',
+            permissions: [],
+            mdtext: '',
+        },
     }
 
     getChildContext() {
@@ -41,7 +54,28 @@ class Project extends React.Component {
         this.setState({ public: !this.state.public });
     }
 
+    saveEvent = (event) => {
+        this.context.relay.commitUpdate(new AddEventMutation({
+            organization: this.props.organization,
+            title: event.title,
+            location: event.location,
+            start: event.start,
+            end: event.end,
+            tags: [this.props.organization.project.tag],
+            mdtext: event.mdtext,
+            permissions: event.permissions.map(permission => permission.value),
+        }));
+    }
+
     render() {
+        const viewer = this.props.viewer;
+        const permissions = [];
+        if (viewer) {
+            permissions.push({ value: 'p', text: 'Verden' });
+            viewer.groups.forEach(group => {
+                permissions.push({ value: group.id, text: group.name });
+            });
+        }
         const project = this.props.organization.project;
         const isMember = this.props.organization.is_member;
         if (!isMember) {
@@ -77,6 +111,11 @@ class Project extends React.Component {
                     :
                     null
                 }
+                <EditEvent
+                    viewer={this.props.viewer}
+                    saveEvent={this.saveEvent}
+                    {...this.state.event}
+                />
                 <EventList events={project.events} />
                 <FileList files={project.files} />
                 <MusicList music={project.music} />
@@ -91,6 +130,14 @@ export default Relay.createContainer(Project, {
         tag: '',
     },
     fragments: {
+        viewer: () => Relay.QL`
+        fragment on User {
+            groups {
+                id
+                name
+            }
+        }
+        `,
         organization: () => Relay.QL`
         fragment on Organization {
             name
@@ -113,6 +160,7 @@ export default Relay.createContainer(Project, {
                 events(first:100) {
                     edges {
                         node {
+                            id
                             title
                             start
                             end
@@ -146,6 +194,7 @@ export default Relay.createContainer(Project, {
                     }
                 }
             }
+            ${AddEventMutation.getFragment('organization')},
         }`,
     },
 });

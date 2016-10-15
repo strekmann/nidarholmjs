@@ -37,7 +37,7 @@ export default createRoutes(
         <Route path="music/:pieceId" component={Piece} queries={organizationQueries} />
         <Route path="files" component={Files} queries={queries} />
         <Route path=":slug" component={Page} queries={queries} />
-        <Route path=":year/:tag" component={Project} queries={organizationQueries} />
+        <Route path=":year/:tag" component={Project} queries={queries} />
         <Route path="*" component={NoMatch} />
     </Route>
 );

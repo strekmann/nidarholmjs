@@ -443,7 +443,7 @@ projectType = new GraphQLObjectType({
             type: eventConnection.connectionType,
             args: connectionArgs,
             resolve: (project, args, { viewer }) => connectionFromMongooseQuery(
-                authenticate(Event.find({ tags: project.tag }), viewer),
+                authenticate(Event.find({ tags: project.tag }).sort('start'), viewer),
                 args,
             ),
         },
@@ -720,6 +720,65 @@ const mutationEditDescription = mutationWithClientMutationId({
     },
 });
 
+const mutationAddEvent = mutationWithClientMutationId({
+    name: 'AddEvent',
+    inputFields: {
+        title: { type: new GraphQLNonNull(GraphQLString) },
+        location: { type: GraphQLString },
+        start: { type: GraphQLString },
+        end: { type: GraphQLString },
+        tags: { type: new GraphQLList(GraphQLString) },
+        mdtext: { type: GraphQLString },
+        permissions: { type: new GraphQLList(GraphQLString) },
+    },
+    outputFields: {
+        organization: {
+            type: organizationType,
+            resolve: (payload, args, { organization }) => organization,
+        },
+        newEventEdge: {
+            type: eventConnection.edgeType,
+            resolve: (payload, args, { viewer }) => {
+                return {
+                    cursor: offsetToCursor(0),
+                    node: payload,
+                };
+            },
+        },
+    },
+    mutateAndGetPayload: ({ title, location, start, end, tags, mdtext, permissions }, { viewer }) => {
+        if (!viewer) {
+            throw new Error('Nobody!');
+        }
+        const userId = viewer.id;
+        const permissionObj = { public: false, groups: [], users: [] };
+        permissions.forEach(permission => {
+            if (permission === 'p') {
+                permissionObj.public = true;
+            }
+            const idObj = fromGlobalId(permission);
+            if (idObj.type === 'Group') {
+                permissionObj.groups.push(idObj.id);
+            }
+            else if (idObj.type === 'User') {
+                permissionObj.users.push(idObj.id);
+            }
+        });
+        const event = new Event();
+        event.creator = userId;
+        event.title = title;
+        event.location = location;
+        event.start = moment.utc(start);
+        if (event.end) {
+            event.end = moment.utc(end);
+        }
+        event.tags = tags;
+        event.mdtext = mdtext;
+        event.permissions = permissionObj;
+        // TODO: Check permissions
+        return event.save();
+    },
+});
 const mutationEditEvent = mutationWithClientMutationId({
     name: 'EditEvent',
     inputFields: {
@@ -885,6 +944,7 @@ const mutationType = new GraphQLObjectType({
     name: 'Mutation',
     fields: () => ({
         editDescription: mutationEditDescription,
+        addEvent: mutationAddEvent,
         editEvent: mutationEditEvent,
         editPage: mutationEditPage,
         addFile: mutationAddFile,
