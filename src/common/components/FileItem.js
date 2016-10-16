@@ -21,7 +21,7 @@ export default class FileItem extends React.Component {
 
     render() {
         return (
-            <Card key={this.props.id}>
+            <Card key={this.props.id} style={{ width: 270, margin: '0 15px 15px 15px' }} >
                 <CardTitle><Link>{this.props.filename}</Link></CardTitle>
                 {this.props.is_image ?
                     <CardMedia><img alt="" src={this.props.normal_path} /></CardMedia>
