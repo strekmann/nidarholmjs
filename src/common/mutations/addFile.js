@@ -2,8 +2,8 @@ import Relay from 'react-relay';
 
 export default class AddFileMutation extends Relay.Mutation {
     static fragments = {
-        viewer: () => Relay.QL`
-        fragment on User {
+        organization: () => Relay.QL`
+        fragment on Organization {
             id
         }
         `,
@@ -17,6 +17,7 @@ export default class AddFileMutation extends Relay.Mutation {
         return {
             filename: this.props.filename,
             hex: this.props.hex,
+            tags: this.props.tags,
             permissions: this.props.permissions,
         };
     }
@@ -24,9 +25,7 @@ export default class AddFileMutation extends Relay.Mutation {
     getFatQuery() {
         return Relay.QL`
         fragment on AddFilePayload {
-            organization {
-                files
-            }
+            organization
             newFileEdge
         }`;
     }

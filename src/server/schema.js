@@ -859,6 +859,9 @@ const mutationAddFile = mutationWithClientMutationId({
         permissions: {
             type: new GraphQLList(GraphQLString),
         },
+        tags: {
+            type: new GraphQLList(GraphQLString),
+        },
     },
     outputFields: {
         organization: {
@@ -875,7 +878,7 @@ const mutationAddFile = mutationWithClientMutationId({
             },
         },
     },
-    mutateAndGetPayload: ({ filename, hex, permissions }, { viewer }) => {
+    mutateAndGetPayload: ({ filename, hex, permissions, tags }, { viewer }) => {
         const permissionObj = { public: false, groups: [], users: [] };
         permissions.forEach(permission => {
             if (permission === 'p') {
@@ -889,7 +892,7 @@ const mutationAddFile = mutationWithClientMutationId({
                 permissionObj.users.push(idObj.id);
             }
         });
-        return insertFile(filename, hex, permissionObj, config.files.raw_prefix, viewer);
+        return insertFile(filename, hex, permissionObj, tags, config.files.raw_prefix, viewer);
     },
 });
 

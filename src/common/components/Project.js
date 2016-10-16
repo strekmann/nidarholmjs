@@ -1,5 +1,8 @@
+/* global FormData */
+
 import React from 'react';
 import Relay from 'react-relay';
+import axios from 'axios';
 
 import ArrowDown from 'material-ui/svg-icons/navigation/arrow-drop-down';
 import Dialog from 'material-ui/Dialog';
@@ -14,8 +17,10 @@ import Text from './Text';
 import EventList from './EventList';
 import EditEvent from './EditEvent';
 import FileList from './FileList';
+import FileUpload from './FileUpload';
 import MusicList from './MusicList';
 import AddEventMutation from '../mutations/addEvent';
+import AddFileMutation from '../mutations/addFile';
 import theme from '../theme';
 
 class Project extends React.Component {
@@ -56,6 +61,35 @@ class Project extends React.Component {
         return { muiTheme: this.muiTheme };
     }
 
+    onDrop = (files, permissions) => {
+        files.forEach(file => {
+            const data = new FormData();
+            data.append('file', file);
+
+            axios.post('/upload', data)
+            .then((response) => {
+                this.context.relay.commitUpdate(new AddFileMutation({
+                    viewer: null,
+                    organization: this.props.organization,
+                    hex: response.data.hex,
+                    permissions,
+                    tags: [this.props.organization.project.tag],
+                    filename: file.name,
+                }), {
+                    onSuccess: () => {
+                        // console.log("successfile");
+                    },
+                    onFailure: transaction => {
+                        console.error(transaction.getError().source.errors);
+                    },
+                });
+            })
+            .catch(error => {
+                console.error("err", error);
+            });
+        });
+    }
+
     togglePublic = () => {
         this.setState({ public: !this.state.public });
     }
@@ -90,6 +124,7 @@ class Project extends React.Component {
 
     render() {
         const viewer = this.props.viewer;
+        const org = this.props.organization;
         const permissions = [];
         if (viewer) {
             permissions.push({ value: 'p', text: 'Verden' });
@@ -142,7 +177,14 @@ class Project extends React.Component {
                     null
                 }
                 <EventList events={project.events} />
-                <FileList files={project.files} />
+                {viewer ?
+                    <FileUpload viewer={viewer} organization={org} onDrop={this.onDrop} />
+                : null }
+                <FileList
+                    files={project.files}
+                    memberGroupId={org.member_group.id}
+                    style={{ margin: '0 -15px' }}
+                />
                 <MusicList music={project.music} />
                 <Dialog
                     title="Legg til aktivitet"
@@ -179,6 +221,7 @@ export default Relay.createContainer(Project, {
         fragment on Organization {
             name
             is_member
+            member_group
             project(year:$year, tag:$tag) {
                 title
                 tag
@@ -214,13 +257,17 @@ export default Relay.createContainer(Project, {
                         node {
                             id
                             filename
-                            is_image
-                            normal_path
+                            created
+                            mimetype
+                            size
                             permissions {
                                 public
                                 groups
                                 users
                             }
+                            tags
+                            is_image
+                            normal_path
                         }
                     }
                 }
@@ -233,6 +280,7 @@ export default Relay.createContainer(Project, {
                 }
             }
             ${AddEventMutation.getFragment('organization')},
+            ${AddFileMutation.getFragment('organization')},
         }`,
     },
 });

@@ -150,6 +150,7 @@ export default Relay.createContainer(Files, {
                     hasNextPage
                 }
             }
+            ${AddFileMutation.getFragment('organization')},
         }`,
     },
 });
