@@ -289,7 +289,10 @@ const permissionsType = new GraphQLObjectType({
             type: new GraphQLList(groupType),
             resolve: permission => permission.groups.map(groupId => Group.findById(groupId).exec()),
         },
-        users: { type: new GraphQLList(GraphQLString) },
+        users: {
+            type: new GraphQLList(userType),
+            resolve: permission => permission.users.map(userId => User.findById(userId).exec()),
+        },
     }),
 });
 
@@ -451,7 +454,7 @@ projectType = new GraphQLObjectType({
             type: fileConnection.connectionType,
             args: connectionArgs,
             resolve: (project, args, { viewer }) => connectionFromMongooseQuery(
-                authenticate(File.find({ tags: project.tag }), viewer),
+                authenticate(File.find({ tags: project.tag }), viewer).sort({ created: -1 }),
                 args,
             ),
         },

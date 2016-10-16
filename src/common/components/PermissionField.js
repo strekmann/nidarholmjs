@@ -24,7 +24,7 @@ export default class PermissionField extends React.Component {
         });
     }
 
-    value = this.state.permissions.map(permission => permission.value);
+    getValue = () => this.state.permissions.map(permission => permission.value);
 
     addPermission = (chosen) => {
         const permissions = this.state.permissions;
@@ -50,8 +50,8 @@ export default class PermissionField extends React.Component {
         groups.forEach(group => {
             permissions.push({ value: group.id, text: group.name });
         });
-        users.forEach(group => {
-            permissions.push({ value: group.id, text: group.name });
+        users.forEach(user => {
+            permissions.push({ value: user.id, text: user.name });
         });
         return (
             <div>

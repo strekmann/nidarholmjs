@@ -125,13 +125,6 @@ class Project extends React.Component {
     render() {
         const viewer = this.props.viewer;
         const org = this.props.organization;
-        const permissions = [];
-        if (viewer) {
-            permissions.push({ value: 'p', text: 'Verden' });
-            viewer.groups.forEach(group => {
-                permissions.push({ value: group.id, text: group.name });
-            });
-        }
         const project = this.props.organization.project;
         const isMember = this.props.organization.is_member;
         if (!isMember) {
@@ -221,7 +214,9 @@ export default Relay.createContainer(Project, {
         fragment on Organization {
             name
             is_member
-            member_group
+            member_group {
+                id
+            }
             project(year:$year, tag:$tag) {
                 title
                 tag
@@ -246,8 +241,14 @@ export default Relay.createContainer(Project, {
                             end
                             permissions {
                                 public
-                                groups
-                                users
+                                groups {
+                                    id
+                                    name
+                                }
+                                users {
+                                    id
+                                    name
+                                }
                             }
                         }
                     }
@@ -262,8 +263,14 @@ export default Relay.createContainer(Project, {
                             size
                             permissions {
                                 public
-                                groups
-                                users
+                                groups {
+                                    id
+                                    name
+                                }
+                                users {
+                                    id
+                                    name
+                                }
                             }
                             tags
                             is_image

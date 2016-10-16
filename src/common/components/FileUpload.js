@@ -12,7 +12,7 @@ export default class FileUpload extends React.Component {
     }
 
     onDrop = (files) => {
-        const permissions = this.permissions.value;
+        const permissions = this.permissions.getValue();
         this.props.onDrop(files, permissions);
     }
 

@@ -74,20 +74,12 @@ class Files extends React.Component {
     render() {
         const viewer = this.props.viewer;
         const org = this.props.organization;
-        const permissions = [];
-        if (viewer) {
-            permissions.push({ value: 'p', text: 'Verden' });
-            viewer.groups.forEach(group => {
-                permissions.push({ value: group.id, text: group.name });
-            });
-        }
         return (
             <section>
                 <h1>Filer</h1>
                 {viewer ?
                     <FileUpload
                         viewer={this.props.viewer}
-                        organization={this.props.organization}
                         onDrop={this.onDrop}
                     />
                 : null}
@@ -139,7 +131,10 @@ export default Relay.createContainer(Files, {
                                 id
                                 name
                             }
-                            users
+                            users {
+                                id
+                                name
+                            }
                         }
                         tags
                         is_image
