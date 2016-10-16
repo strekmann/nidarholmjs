@@ -13,6 +13,7 @@ import Event from './components/Event';
 import Piece from './components/Piece';
 import Files from './components/Files';
 import Page from './components/Page';
+import Pages from './components/Pages';
 import About from './components/About';
 import NoMatch from './components/NoMatch';
 
@@ -36,6 +37,7 @@ export default createRoutes(
         <Route path="events/:eventid" component={Event} queries={queries} />
         <Route path="music/:pieceId" component={Piece} queries={organizationQueries} />
         <Route path="files" component={Files} queries={queries} />
+        <Route path="pages" component={Pages} queries={queries} />
         <Route path=":slug" component={Page} queries={queries} />
         <Route path=":year/:tag" component={Project} queries={queries} />
         <Route path="*" component={NoMatch} />

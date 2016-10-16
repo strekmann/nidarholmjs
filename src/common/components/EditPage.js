@@ -4,13 +4,17 @@ import Paper from 'material-ui/Paper';
 import RaisedButton from 'material-ui/RaisedButton';
 import TextField from 'material-ui/TextField';
 
+import PermissionField from './PermissionField';
+
 export default class EditPage extends React.Component {
     static propTypes = {
+        viewer: React.PropTypes.object,
         id: React.PropTypes.string,
         slug: React.PropTypes.string,
         title: React.PropTypes.string,
         summary: React.PropTypes.string,
         mdtext: React.PropTypes.string,
+        permissions: React.PropTypes.array,
         savePage: React.PropTypes.func,
     }
 
@@ -20,6 +24,7 @@ export default class EditPage extends React.Component {
         title: this.props.title,
         summary: this.props.summary,
         mdtext: this.props.mdtext,
+        permissions: this.props.permissions,
     }
 
     onChangeSlug = (event, slug) => {
@@ -40,6 +45,9 @@ export default class EditPage extends React.Component {
 
     savePage = (event) => {
         event.preventDefault();
+        this.setState({
+            permissions: this.permissions.getValue(),
+        });
         this.props.savePage(this.state);
     }
 
@@ -83,6 +91,12 @@ export default class EditPage extends React.Component {
                             floatingLabelText="Identifikator"
                             onChange={this.onChangeSlug}
                             hintText="Bør sjelden endres, da den endrer adressen til sida."
+                            required
+                        />
+                        <PermissionField
+                            ref={(p) => { this.permissions = p; }}
+                            groups={this.props.viewer.groups}
+                            users={this.props.viewer.friends}
                         />
                     </div>
                     <div>

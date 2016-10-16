@@ -16,6 +16,22 @@ const PageSchema = new mongoose.Schema({
     updator: { type: String, ref: 'User' },
 });
 
+PageSchema.set('toJSON', {
+    versionKey: false,
+    transform: (document, ret) => {
+        ret.id = ret._id;
+        delete ret._id;
+    },
+});
+
+PageSchema.set('toObject', {
+    versionKey: false,
+    transform: (document, ret) => {
+        ret.id = ret._id;
+        delete ret._id;
+    },
+});
+
 module.exports = {
     Page: mongoose.model('Page', PageSchema),
 };

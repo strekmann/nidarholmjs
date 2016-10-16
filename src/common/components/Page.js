@@ -17,6 +17,7 @@ class Page extends React.Component {
     };
 
     static propTypes = {
+        viewer: React.PropTypes.object,
         organization: React.PropTypes.object,
         location: React.PropTypes.object,
     }
@@ -99,7 +100,11 @@ class Page extends React.Component {
         }
         if (this.state.edit) {
             return (
-                <EditPage savePage={this.savePage} {...this.props.organization.page} />
+                <EditPage
+                    viewer={this.props.viewer}
+                    savePage={this.savePage}
+                    {...this.props.organization.page}
+                />
             );
         }
         return (
