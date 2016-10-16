@@ -9,6 +9,7 @@ import Dialog from 'material-ui/Dialog';
 import IconButton from 'material-ui/IconButton';
 import IconMenu from 'material-ui/IconMenu';
 import MenuItem from 'material-ui/MenuItem';
+import Paper from 'material-ui/Paper';
 import RaisedButton from 'material-ui/RaisedButton';
 import getMuiTheme from 'material-ui/styles/getMuiTheme';
 
@@ -45,6 +46,7 @@ class Project extends React.Component {
     state = {
         public: false,
         addEvent: false,
+        addFile: false,
         event: {
             title: '',
             location: '',
@@ -100,6 +102,14 @@ class Project extends React.Component {
 
     closeAddEvent = () => {
         this.setState({ addEvent: false });
+    }
+
+    toggleAddFile = () => {
+        this.setState({ addFile: !this.state.addFile });
+    }
+
+    closeAddFile = () => {
+        this.setState({ addFile: false });
     }
 
     saveEvent = (event) => {
@@ -162,43 +172,62 @@ class Project extends React.Component {
                         targetOrigin={{ vertical: 'top', horizontal: 'right' }}
                     >
                         <MenuItem primaryText="Legg til aktivitet" onTouchTap={this.toggleAddEvent} />
+                        <MenuItem primaryText="Last opp filer" onTouchTap={this.toggleAddFile} />
                     </IconMenu>
                 </div>
                 <div style={{ display: 'flex' }}>
                     <div>
                         <RaisedButton label="Public/private" onClick={this.togglePublic} />
                         <Text text={this.state.public ? project.public_mdtext : project.private_mdtext} />
-                        {project.poster ?
-                            <img alt="Konsertplakat" src={project.poster.large_path} />
-                            :
-                            null
-                        }
-                        {viewer ?
-                            <FileUpload viewer={viewer} organization={org} onDrop={this.onDrop} />
-                        : null }
+                        <Paper style={{ padding: 15, marginRight: 15, marginBottom: 30 }}>
+                            <h2>Repertoar</h2>
+                            <MusicList music={project.music} />
+                        </Paper>
                         <FileList
                             files={project.files}
                             memberGroupId={org.member_group.id}
                             style={{ margin: '0 -15px' }}
                         />
-                        <MusicList music={project.music} />
                     </div>
                     <div style={{ flexGrow: 1, minWidth: 270 }}>
+                        {project.poster ?
+                            <img alt="Konsertplakat" src={project.poster.large_path} />
+                            :
+                            null
+                        }
+                        <h2>Aktiviteter</h2>
                         <EventList events={project.events} />
                     </div>
                 </div>
-                <Dialog
-                    title="Legg til aktivitet"
-                    open={this.state.addEvent}
-                    onRequestClose={this.closeEdit}
-                    autoScrollBodyContent
-                >
-                    <EditEvent
-                        viewer={this.props.viewer}
-                        saveEvent={this.saveEvent}
-                        {...this.state.event}
-                    />
-                </Dialog>
+                {viewer ?
+                    <div>
+                        <Dialog
+                            title="Legg til aktivitet"
+                            open={this.state.addEvent}
+                            onRequestClose={this.closeAddEvent}
+                            autoScrollBodyContent
+                        >
+                            <EditEvent
+                                viewer={this.props.viewer}
+                                saveEvent={this.saveEvent}
+                                {...this.state.event}
+                            />
+                        </Dialog>
+                        <Dialog
+                            title="Last opp filer"
+                            open={this.state.addFile}
+                            onRequestClose={this.closeAddFile}
+                            autoScrollBodyContent
+                        >
+                            <FileUpload viewer={viewer} organization={org} onDrop={this.onDrop} />
+                            <FileList
+                                files={project.files}
+                                memberGroupId={org.member_group.id}
+                                style={{ margin: '0 -15px' }}
+                            />
+                        </Dialog>
+                    </div>
+                : null }
             </section>
         );
     }
