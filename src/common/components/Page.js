@@ -1,15 +1,13 @@
 import React from 'react';
 import Relay from 'react-relay';
 import getMuiTheme from 'material-ui/styles/getMuiTheme';
-import RaisedButton from 'material-ui/RaisedButton';
-import TextField from 'material-ui/TextField';
 import IconMenu from 'material-ui/IconMenu';
 import MenuItem from 'material-ui/MenuItem';
 import IconButton from 'material-ui/IconButton';
 import ArrowDown from 'material-ui/svg-icons/navigation/arrow-drop-down';
-import Paper from 'material-ui/Paper';
 
 import theme from '../theme';
+import EditPage from './EditPage';
 import EditPageMutation from '../mutations/editPage';
 import Text from './Text';
 
@@ -29,10 +27,6 @@ class Page extends React.Component {
 
     static propTypes = {
         id: React.PropTypes.string,
-        slug: React.PropTypes.string,
-        title: React.PropTypes.string,
-        summary: React.PropTypes.string,
-        mdtext: React.PropTypes.string,
     }
 
     constructor(props) {
@@ -42,10 +36,6 @@ class Page extends React.Component {
 
     state = {
         edit: false,
-        slug: this.props.organization.page.slug,
-        title: this.props.organization.page.title,
-        summary: this.props.organization.page.summary,
-        mdtext: this.props.organization.page.mdtext,
     }
 
     getChildContext() {
@@ -80,16 +70,14 @@ class Page extends React.Component {
         });
     }
 
-    savePage = (event) => {
-        event.preventDefault();
-        const page = this.props.organization.page;
+    savePage = (page) => {
         this.context.relay.commitUpdate(new EditPageMutation({
             viewer: null,
             pageid: page.id,
-            slug: this.state.slug,
-            title: this.state.title,
-            summary: this.state.summary,
-            mdtext: this.state.mdtext,
+            slug: page.slug,
+            title: page.title,
+            summary: page.summary,
+            mdtext: page.mdtext,
         }), {
             onSuccess: () => {
                 this.closeEdit();
@@ -111,51 +99,7 @@ class Page extends React.Component {
         }
         if (this.state.edit) {
             return (
-                <section>
-                    <form onSubmit={this.savePage}>
-                        <h1>Rediger sideinnhold</h1>
-                        <div>
-                            <TextField
-                                id="mdtext"
-                                value={this.state.mdtext}
-                                floatingLabelText="Sideinnhold"
-                                multiLine
-                                fullWidth
-                                onChange={this.onChangeContent}
-                                style={{ width: '100%' }}
-                            />
-                        </div>
-                        <Paper style={{ padding: 15 }}>
-                            <h2>Forsidesnutt</h2>
-                            <TextField
-                                id="title"
-                                value={this.state.title}
-                                floatingLabelText="Tittel"
-                                onChange={this.onChangeTitle}
-                            />
-                            <TextField
-                                id="summary"
-                                value={this.state.summary}
-                                floatingLabelText="Introduksjon"
-                                multiLine
-                                fullWidth
-                                onChange={this.onChangeSummary}
-                            />
-                        </Paper>
-                        <div>
-                            <TextField
-                                id="slug"
-                                value={this.state.slug}
-                                floatingLabelText="Identifikator"
-                                onChange={this.onChangeSlug}
-                                hintText="Bør sjelden endres, da den endrer adressen til sida."
-                            />
-                        </div>
-                        <div>
-                            <RaisedButton type="submit" label="Lagre" />
-                        </div>
-                    </form>
-                </section>
+                <EditPage savePage={this.savePage} {...this.props.organization.page} />
             );
         }
         return (
@@ -191,6 +135,7 @@ export default Relay.createContainer(Page, {
             page(slug:$slug) {
                 id
                 slug
+                title
                 summary
                 mdtext
                 created
