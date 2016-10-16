@@ -11,7 +11,7 @@ export default class PageItem extends React.Component {
         mdtext: React.PropTypes.string,
         title: React.PropTypes.string,
         summary: React.PropTypes.string,
-        permissions: React.PropTypes.array,
+        permissions: React.PropTypes.object,
         memberGroupId: React.PropTypes.string,
         savePage: React.PropTypes.func,
     }

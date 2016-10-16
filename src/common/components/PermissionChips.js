@@ -37,9 +37,9 @@ export default class PermissionChips extends React.Component {
                 <Chip key="null">
                     <Avatar backgroundColor={red500} icon={<VisibilityOff />} />
                     Bare meg
-                </Chip>
+                </Chip>,
             ];
         }
-        return <div>{permissions}</div>;
+        return <div style={{ display: 'flex' }}>{permissions}</div>;
     }
 }

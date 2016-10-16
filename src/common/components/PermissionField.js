@@ -11,6 +11,7 @@ export default class PermissionField extends React.Component {
         permissions: React.PropTypes.array,
         groups: React.PropTypes.array,
         users: React.PropTypes.array,
+        onChange: React.PropTypes.func,
     }
 
     state = {
@@ -24,8 +25,6 @@ export default class PermissionField extends React.Component {
         });
     }
 
-    getValue = () => this.state.permissions.map(permission => permission.value);
-
     addPermission = (chosen) => {
         const permissions = this.state.permissions;
         permissions.push(chosen);
@@ -33,13 +32,15 @@ export default class PermissionField extends React.Component {
             permissions,
             permission: '',
         });
+        this.props.onChange(permissions);
     }
 
     removePermission = (permissionId) => {
-        const permissions = this.state.permissions.filter(_p => _p.value !== permissionId);
+        const permissions = this.state.permissions.filter(_p => _p.id !== permissionId);
         this.setState({
             permissions,
         });
+        this.props.onChange(permissions);
     }
 
     render() {

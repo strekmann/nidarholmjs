@@ -43,6 +43,10 @@ export default class EditPage extends React.Component {
         this.setState({ mdtext });
     }
 
+    onPermissionChange = (permissions) => {
+        this.setState({ permissions });
+    }
+
     savePage = (event) => {
         event.preventDefault();
         this.props.savePage(this.state);
@@ -93,6 +97,7 @@ export default class EditPage extends React.Component {
                         <PermissionField
                             ref={(p) => { this.permissions = p; }}
                             permissions={this.state.permissions}
+                            onChange={this.onPermissionChange}
                             groups={this.props.viewer.groups}
                             users={this.props.viewer.friends}
                         />
