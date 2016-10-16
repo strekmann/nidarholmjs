@@ -4,6 +4,7 @@ import RaisedButton from 'material-ui/RaisedButton';
 import { Card, CardTitle, CardText, CardMedia } from 'material-ui/Card';
 import Download from 'material-ui/svg-icons/file/file-download';
 import PermissionChips from './PermissionChips';
+import { flattenPermissions } from '../utils';
 
 export default class FileItem extends React.Component {
     static propTypes = {
@@ -29,7 +30,7 @@ export default class FileItem extends React.Component {
                 <CardText>
                     <PermissionChips
                         memberGroupId={this.props.memberGroupId}
-                        {...this.props.permissions}
+                        permissions={flattenPermissions(this.props.permissions)}
                     />
                 </CardText>
             </Card>

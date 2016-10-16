@@ -34,11 +34,6 @@ class Files extends React.Component {
         this.muiTheme = getMuiTheme(theme);
     }
 
-    state = {
-        permissions: [],
-        permission: '',
-    }
-
     getChildContext() {
         return { muiTheme: this.muiTheme };
     }

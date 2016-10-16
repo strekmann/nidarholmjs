@@ -40,6 +40,6 @@ export default class PermissionChips extends React.Component {
                 </Chip>,
             ];
         }
-        return <div style={{ display: 'flex' }}>{permissions}</div>;
+        return <div style={{ display: 'flex', flexWrap: 'wrap' }}>{permissions}</div>;
     }
 }

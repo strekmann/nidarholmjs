@@ -11,9 +11,17 @@ export default class FileUpload extends React.Component {
         onDrop: React.PropTypes.func,
     }
 
+    state = {
+        permissions: [],
+    }
+
     onDrop = (files) => {
-        const permissions = this.permissions.getValue();
+        const permissions = this.state.permissions;
         this.props.onDrop(files, permissions);
+    }
+
+    onPermissionChange = (permissions) => {
+        this.setState({ permissions });
     }
 
     render() {
@@ -21,7 +29,8 @@ export default class FileUpload extends React.Component {
         return (
             <Paper>
                 <PermissionField
-                    ref={(p) => { this.permissions = p; }}
+                    permissions={this.state.permissions}
+                    onChange={this.onPermissionChange}
                     groups={viewer.groups}
                     users={viewer.friends}
                 />

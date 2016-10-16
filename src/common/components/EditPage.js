@@ -95,7 +95,6 @@ export default class EditPage extends React.Component {
                             required
                         />
                         <PermissionField
-                            ref={(p) => { this.permissions = p; }}
                             permissions={this.state.permissions}
                             onChange={this.onPermissionChange}
                             groups={this.props.viewer.groups}

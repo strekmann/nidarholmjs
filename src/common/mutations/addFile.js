@@ -18,7 +18,7 @@ export default class AddFileMutation extends Relay.Mutation {
             filename: this.props.filename,
             hex: this.props.hex,
             tags: this.props.tags,
-            permissions: this.props.permissions,
+            permissions: this.props.permissions.map(permission => permission.id),
         };
     }
 
