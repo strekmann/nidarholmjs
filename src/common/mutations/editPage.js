@@ -17,6 +17,7 @@ export default class EditPageMutation extends Relay.Mutation {
         return {
             pageid: this.props.pageid,
             slug: this.props.slug,
+            title: this.props.title,
             summary: this.props.summary,
             mdtext: this.props.mdtext,
         };
@@ -25,12 +26,7 @@ export default class EditPageMutation extends Relay.Mutation {
     getFatQuery() {
         return Relay.QL`
         fragment on EditPagePayload {
-            page {
-                id
-                slug
-                summary
-                mdtext
-            }
+            page
         }`;
     }
 

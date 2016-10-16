@@ -481,6 +481,7 @@ pageType = new GraphQLObjectType({
     fields: {
         id: globalIdField('Page'),
         slug: { type: GraphQLString },
+        title: { type: GraphQLString },
         summary: { type: GraphQLString },
         mdtext: { type: GraphQLString },
         created: { type: GraphQLDate },
@@ -623,7 +624,7 @@ organizationType = new GraphQLObjectType({
             type: new GraphQLList(pageType),
             resolve: (organization) => Organization
             .findById(organization.id)
-            .populate({ path: 'summaries', select: 'summary slug' })
+            .populate({ path: 'summaries', select: 'summary title slug' })
             .exec()
             .then(org => org.summaries),
         },
@@ -821,9 +822,10 @@ const mutationEditPage = mutationWithClientMutationId({
     name: 'EditPage',
     inputFields: {
         pageid: { type: new GraphQLNonNull(GraphQLID) },
-        slug: { type: GraphQLString },
+        slug: { type: new GraphQLNonNull(GraphQLString) },
+        title: { type: GraphQLString },
+        summary: { type: GraphQLString },
         mdtext: { type: GraphQLString },
-        summary: { type: new GraphQLNonNull(GraphQLString) },
     },
     outputFields: {
         page: {
@@ -831,14 +833,14 @@ const mutationEditPage = mutationWithClientMutationId({
             resolve: (payload) => payload,
         },
     },
-    mutateAndGetPayload: ({ pageid, mdtext, summary }, { viewer }) => {
+    mutateAndGetPayload: ({ pageid, mdtext, title, summary }, { viewer }) => {
         const id = fromGlobalId(pageid).id;
         if (!viewer) {
             throw new Error('Nobody!');
         }
         const query = Page.findByIdAndUpdate(
             id,
-            { mdtext, summary },
+            { mdtext, summary, title },
             { new: true },
         );
         return authenticate(query, viewer).exec().then(page => {

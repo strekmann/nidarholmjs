@@ -4,6 +4,7 @@ const PageSchema = new mongoose.Schema({
     _id: { type: String, required: true, unique: true }, // id
     slug: { type: String, required: true, unique: true },
     mdtext: { type: String, trim: true },
+    title: { type: String, trim: true, default: '' },
     summary: { type: String, trim: true, default: '' },
     permissions: {
         groups: [{ type: String, ref: 'Group' }],

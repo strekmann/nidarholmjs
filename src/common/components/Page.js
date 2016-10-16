@@ -7,6 +7,7 @@ import IconMenu from 'material-ui/IconMenu';
 import MenuItem from 'material-ui/MenuItem';
 import IconButton from 'material-ui/IconButton';
 import ArrowDown from 'material-ui/svg-icons/navigation/arrow-drop-down';
+import Paper from 'material-ui/Paper';
 
 import theme from '../theme';
 import EditPageMutation from '../mutations/editPage';
@@ -29,6 +30,7 @@ class Page extends React.Component {
     static propTypes = {
         id: React.PropTypes.string,
         slug: React.PropTypes.string,
+        title: React.PropTypes.string,
         summary: React.PropTypes.string,
         mdtext: React.PropTypes.string,
     }
@@ -41,6 +43,7 @@ class Page extends React.Component {
     state = {
         edit: false,
         slug: this.props.organization.page.slug,
+        title: this.props.organization.page.title,
         summary: this.props.organization.page.summary,
         mdtext: this.props.organization.page.mdtext,
     }
@@ -51,6 +54,10 @@ class Page extends React.Component {
 
     onChangeSlug = (event, slug) => {
         this.setState({ slug });
+    }
+
+    onChangeTitle = (event, title) => {
+        this.setState({ title });
     }
 
     onChangeSummary = (event, summary) => {
@@ -80,6 +87,7 @@ class Page extends React.Component {
             viewer: null,
             pageid: page.id,
             slug: this.state.slug,
+            title: this.state.title,
             summary: this.state.summary,
             mdtext: this.state.mdtext,
         }), {
@@ -117,7 +125,14 @@ class Page extends React.Component {
                                 style={{ width: '100%' }}
                             />
                         </div>
-                        <div>
+                        <Paper style={{ padding: 15 }}>
+                            <h2>Forsidesnutt</h2>
+                            <TextField
+                                id="title"
+                                value={this.state.title}
+                                floatingLabelText="Tittel"
+                                onChange={this.onChangeTitle}
+                            />
                             <TextField
                                 id="summary"
                                 value={this.state.summary}
@@ -126,7 +141,7 @@ class Page extends React.Component {
                                 fullWidth
                                 onChange={this.onChangeSummary}
                             />
-                        </div>
+                        </Paper>
                         <div>
                             <TextField
                                 id="slug"
