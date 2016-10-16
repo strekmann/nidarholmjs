@@ -6,10 +6,11 @@ import MenuItem from 'material-ui/MenuItem';
 import IconButton from 'material-ui/IconButton';
 import ArrowDown from 'material-ui/svg-icons/navigation/arrow-drop-down';
 
-import theme from '../theme';
 import EditPage from './EditPage';
 import EditPageMutation from '../mutations/editPage';
 import Text from './Text';
+import { flattenPermissions } from '../utils';
+import theme from '../theme';
 
 class Page extends React.Component {
     static contextTypes = {
@@ -37,6 +38,7 @@ class Page extends React.Component {
 
     state = {
         edit: false,
+        permissions: flattenPermissions(this.props.organization.page.permissions),
     }
 
     getChildContext() {
@@ -79,6 +81,7 @@ class Page extends React.Component {
             title: page.title,
             summary: page.summary,
             mdtext: page.mdtext,
+            permissions: page.permissions,
         }), {
             onSuccess: () => {
                 this.closeEdit();
@@ -99,11 +102,13 @@ class Page extends React.Component {
             );
         }
         if (this.state.edit) {
+            const page = org.page;
+            page.permissions = this.state.permissions;
             return (
                 <EditPage
                     viewer={this.props.viewer}
                     savePage={this.savePage}
-                    {...this.props.organization.page}
+                    {...page}
                 />
             );
         }
@@ -132,17 +137,31 @@ export default Relay.createContainer(Page, {
         viewer: () => Relay.QL`
         fragment on User {
             id
+            groups {
+                id
+                name
+            }
             ${EditPageMutation.getFragment('viewer')},
         }
         `,
         organization: () => Relay.QL`
         fragment on Organization {
+            member_group {
+                id
+            }
             page(slug:$slug) {
                 id
                 slug
                 title
                 summary
                 mdtext
+                permissions {
+                    public
+                    groups {
+                        id
+                        name
+                    }
+                }
                 created
                 updated
                 updator {

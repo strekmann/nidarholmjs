@@ -19,7 +19,7 @@ export default class AddPageMutation extends Relay.Mutation {
             mdtext: this.props.mdtext,
             summary: this.props.summary,
             title: this.props.title,
-            permissions: this.props.permissions,
+            permissions: this.props.permissions.map(permission => permission.id),
         };
     }
 

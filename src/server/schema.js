@@ -490,7 +490,9 @@ pageType = new GraphQLObjectType({
             type: userType,
             resolve: (page) => User.findById(page.updator).exec(),
         },
-        permissions: { type: permissionsType },
+        permissions: {
+            type: permissionsType,
+        },
     },
     interfaces: [nodeInterface],
 });
@@ -895,6 +897,7 @@ const mutationEditPage = mutationWithClientMutationId({
         title: { type: GraphQLString },
         summary: { type: GraphQLString },
         mdtext: { type: GraphQLString },
+        permissions: { type: new GraphQLList(GraphQLString) },
     },
     outputFields: {
         page: {
@@ -902,14 +905,27 @@ const mutationEditPage = mutationWithClientMutationId({
             resolve: (payload) => payload,
         },
     },
-    mutateAndGetPayload: ({ pageid, mdtext, title, summary }, { viewer }) => {
+    mutateAndGetPayload: ({ pageid, slug, mdtext, title, summary, permissions }, { viewer }) => {
         const id = fromGlobalId(pageid).id;
         if (!viewer) {
             throw new Error('Nobody!');
         }
+        const permissionObj = { public: false, groups: [], users: [] };
+        permissions.forEach(permission => {
+            if (permission === 'p') {
+                permissionObj.public = true;
+            }
+            const idObj = fromGlobalId(permission);
+            if (idObj.type === 'Group') {
+                permissionObj.groups.push(idObj.id);
+            }
+            else if (idObj.type === 'User') {
+                permissionObj.users.push(idObj.id);
+            }
+        });
         const query = Page.findByIdAndUpdate(
             id,
-            { mdtext, summary, title },
+            { slug, mdtext, summary, title, permissions: permissionObj },
             { new: true },
         );
         return authenticate(query, viewer).exec().then(page => {

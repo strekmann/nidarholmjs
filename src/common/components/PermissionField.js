@@ -45,14 +45,16 @@ export default class PermissionField extends React.Component {
     render() {
         const permissions = [];
         const groups = this.props.groups || [];
-        const users = this.props.users || [];
-        permissions.push({ value: 'p', text: 'Verden' });
+        // const users = this.props.users || [];
+        permissions.push({ id: 'p', name: 'Verden' });
         groups.forEach(group => {
-            permissions.push({ value: group.id, text: group.name });
+            permissions.push({ id: group.id, name: group.name });
         });
+        /*
         users.forEach(user => {
-            permissions.push({ value: user.id, text: user.name });
+            permissions.push({ id: user.id, name: user.name });
         });
+        */
         return (
             <div>
                 <div>
@@ -61,7 +63,7 @@ export default class PermissionField extends React.Component {
                         {
                             this.state.permissions.map(
                                 permission => <PermissionItem
-                                    key={permission.value}
+                                    key={permission.id}
                                     removePermission={this.removePermission}
                                     {...permission}
                                 />
@@ -75,6 +77,7 @@ export default class PermissionField extends React.Component {
                     floatingLabelText="Legg til rettigheter"
                     filter={AutoComplete.fuzzyFilter}
                     dataSource={permissions}
+                    dataSourceConfig={{ text: 'name', value: 'id' }}
                     maxSearchResults={8}
                     searchText={this.state.permission}
                     onNewRequest={this.addPermission}

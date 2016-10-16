@@ -5,17 +5,17 @@ import Close from 'material-ui/svg-icons/navigation/close';
 
 export default class PermissionItem extends React.Component {
     static propTypes = {
-        text: React.PropTypes.string,
-        value: React.PropTypes.string,
+        name: React.PropTypes.string,
+        id: React.PropTypes.string,
         removePermission: React.PropTypes.func,
     }
     removePermission = () => {
-        this.props.removePermission(this.props.value);
+        this.props.removePermission(this.props.id);
     }
     render() {
         return (
             <ListItem
-                primaryText={this.props.text}
+                primaryText={this.props.name}
                 rightIconButton={
                     <IconButton onClick={this.removePermission}>
                         <Close />

@@ -12,6 +12,7 @@ const PageSchema = new mongoose.Schema({
         public: { type: Boolean, default: true }, // temporary FIXME
     },
     created: { type: Date, default: Date.now },
+    creator: { type: String, ref: 'User' },
     updated: { type: Date },
     updator: { type: String, ref: 'User' },
 });

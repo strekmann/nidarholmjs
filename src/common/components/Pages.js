@@ -155,10 +155,6 @@ export default Relay.createContainer(Pages, {
                                 id
                                 name
                             }
-                            users {
-                                id
-                                name
-                            }
                         }
                         created
                     }
