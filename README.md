@@ -35,3 +35,13 @@ permission is hardcoded as a `p` in the `id` field.
 
 This way of doing it is always up for discussion, but it seems flexible as soon
 as it is worth the extra effort.
+
+Dates
+-----
+
+The `Date` and `DateFromNow` component has to support input of three types: 
+
+* null, for invalid data
+* string, as is the case for server rendering
+* moment object, as is the case for client rendering when server has rendered
+  from string to moment first
