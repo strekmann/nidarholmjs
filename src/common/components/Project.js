@@ -148,7 +148,14 @@ class Project extends React.Component {
         return (
             <section>
                 <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                    <h1>{project.title}</h1>
+                    <div>
+                        <h1>{project.title}</h1>
+                        <div className="meta">
+                            {project.start ? <span><Date date={project.start} /> – </span> : null}
+                            <Date date={project.end} />
+                            {project.conductors.map(conductor => conductor.name)}
+                        </div>
+                    </div>
                     <IconMenu
                         iconButtonElement={<IconButton><ArrowDown /></IconButton>}
                         anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
@@ -157,28 +164,29 @@ class Project extends React.Component {
                         <MenuItem primaryText="Legg til aktivitet" onTouchTap={this.toggleAddEvent} />
                     </IconMenu>
                 </div>
-                <div className="meta">
-                    {project.start ? <span><Date date={project.start} /> – </span> : null}
-                    <Date date={project.end} />
-                    {project.conductors.map(conductor => conductor.name)}
+                <div style={{ display: 'flex' }}>
+                    <div>
+                        <RaisedButton label="Public/private" onClick={this.togglePublic} />
+                        <Text text={this.state.public ? project.public_mdtext : project.private_mdtext} />
+                        {project.poster ?
+                            <img alt="Konsertplakat" src={project.poster.large_path} />
+                            :
+                            null
+                        }
+                        {viewer ?
+                            <FileUpload viewer={viewer} organization={org} onDrop={this.onDrop} />
+                        : null }
+                        <FileList
+                            files={project.files}
+                            memberGroupId={org.member_group.id}
+                            style={{ margin: '0 -15px' }}
+                        />
+                        <MusicList music={project.music} />
+                    </div>
+                    <div style={{ flexGrow: 1, minWidth: 270 }}>
+                        <EventList events={project.events} />
+                    </div>
                 </div>
-                <RaisedButton label="Public/private" onClick={this.togglePublic} />
-                <Text text={this.state.public ? project.public_mdtext : project.private_mdtext} />
-                {project.poster ?
-                    <img alt="Konsertplakat" src={project.poster.large_path} />
-                    :
-                    null
-                }
-                <EventList events={project.events} />
-                {viewer ?
-                    <FileUpload viewer={viewer} organization={org} onDrop={this.onDrop} />
-                : null }
-                <FileList
-                    files={project.files}
-                    memberGroupId={org.member_group.id}
-                    style={{ margin: '0 -15px' }}
-                />
-                <MusicList music={project.music} />
                 <Dialog
                     title="Legg til aktivitet"
                     open={this.state.addEvent}
