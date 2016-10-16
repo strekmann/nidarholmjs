@@ -96,6 +96,7 @@ class Pages extends React.Component {
                 </div>
                 <PageList
                     pages={org.pages}
+                    isAdmin={org.is_admin}
                 />
                 {org.pages.pageInfo.hasNextPage ?
                     <RaisedButton primary>Mer</RaisedButton>
@@ -141,6 +142,7 @@ export default Relay.createContainer(Pages, {
             member_group {
                 id
             }
+            is_admin
             pages(first:$showPages) {
                 edges {
                     node {
@@ -149,6 +151,14 @@ export default Relay.createContainer(Pages, {
                         mdtext
                         title
                         summary
+                        creator {
+                            name
+                        }
+                        created
+                        updator {
+                            name
+                        }
+                        updated
                         permissions {
                             public
                             groups {
@@ -156,7 +166,6 @@ export default Relay.createContainer(Pages, {
                                 name
                             }
                         }
-                        created
                     }
                 }
                 pageInfo {

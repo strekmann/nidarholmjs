@@ -6,6 +6,7 @@ export default class PageList extends React.Component {
     static propTypes = {
         pages: React.PropTypes.object,
         savePage: React.PropTypes.func,
+        isAdmin: React.PropTypes.bool,
     }
     render() {
         return (

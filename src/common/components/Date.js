@@ -8,6 +8,9 @@ export default class Date extends React.Component {
     }
 
     render() {
+        if (!this.props.date) {
+            return null;
+        }
         const date = moment.isMoment(this.props.date) ? this.props.date : moment(this.props.date);
         const format = this.props.format ? this.props.format : 'LL';
         const formatted = date.format(format);

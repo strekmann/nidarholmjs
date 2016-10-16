@@ -24,6 +24,7 @@ import {
 import connectionFromMongooseQuery, { offsetToCursor } from 'relay-mongoose-connection';
 import moment from 'moment';
 import config from 'config';
+import shortid from 'short-mongo-id';
 
 import { User, Group, Organization } from './models';
 import { File } from './models/files';
@@ -485,6 +486,10 @@ pageType = new GraphQLObjectType({
         summary: { type: GraphQLString },
         mdtext: { type: GraphQLString },
         created: { type: GraphQLDate },
+        creator: {
+            type: userType,
+            resolve: (page) => User.findById(page.creator).exec(),
+        },
         updated: { type: GraphQLDate },
         updator: {
             type: userType,
@@ -527,6 +532,10 @@ organizationType = new GraphQLObjectType({
         is_member: {
             type: GraphQLBoolean,
             resolve: (_, args, { organization, viewer }) => member(organization, viewer),
+        },
+        is_admin: {
+            type: GraphQLBoolean,
+            resolve: (_, args, { organization, viewer }) => admin(organization, viewer),
         },
         is_musicscoreadmin: {
             type: GraphQLBoolean,
@@ -877,7 +886,7 @@ const mutationAddPage = mutationWithClientMutationId({
             }
         });
         const page = new Page();
-        page._id = slug;
+        page._id = shortid();
         page.slug = slug;
         page.mdtext = mdtext;
         page.title = title;
@@ -925,7 +934,7 @@ const mutationEditPage = mutationWithClientMutationId({
         });
         const query = Page.findByIdAndUpdate(
             id,
-            { slug, mdtext, summary, title, permissions: permissionObj },
+            { slug, mdtext, summary, title, permissions: permissionObj, updator: viewer.id, updated: moment.utc() },
             { new: true },
         );
         return authenticate(query, viewer).exec().then(page => {

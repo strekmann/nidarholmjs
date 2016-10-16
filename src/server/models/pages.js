@@ -9,7 +9,7 @@ const PageSchema = new mongoose.Schema({
     permissions: {
         groups: [{ type: String, ref: 'Group' }],
         users: [{ type: String, ref: 'User' }],
-        public: { type: Boolean, default: true }, // temporary FIXME
+        public: { type: Boolean, default: false },
     },
     created: { type: Date, default: Date.now },
     creator: { type: String, ref: 'User' },
