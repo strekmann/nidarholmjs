@@ -24,7 +24,15 @@ export default class PageItem extends React.Component {
     render() {
         return (
             <div>
-                <h3><Link to={`/${this.props.slug}`}>{this.props.slug}</Link></h3>
+                <h3>
+                    <Link to={`/${this.props.slug}`}>
+                        {this.props.slug}
+                        {this.props.title
+                            ? <span> ({this.props.title})</span>
+                            : null
+                        }
+                    </Link>
+                </h3>
                 <p>
                     Oppdatert for <DateFromNow date={this.props.updated} />
                     {' '}

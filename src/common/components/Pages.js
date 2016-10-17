@@ -2,7 +2,6 @@ import React from 'react';
 import Relay from 'react-relay';
 
 import ArrowDown from 'material-ui/svg-icons/navigation/arrow-drop-down';
-import Dialog from 'material-ui/Dialog';
 import IconButton from 'material-ui/IconButton';
 import IconMenu from 'material-ui/IconMenu';
 import MenuItem from 'material-ui/MenuItem';
@@ -81,43 +80,38 @@ class Pages extends React.Component {
         const viewer = this.props.viewer;
         const org = this.props.organization;
         return (
-            <section>
-                <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                    <div>
-                        <h1>Sider</h1>
-                    </div>
-                    <IconMenu
-                        iconButtonElement={<IconButton><ArrowDown /></IconButton>}
-                        anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
-                        targetOrigin={{ vertical: 'top', horizontal: 'right' }}
-                    >
-                        <MenuItem primaryText="Legg til side" onTouchTap={this.toggleAddPage} />
-                    </IconMenu>
-                </div>
-                <PageList
-                    pages={org.pages}
-                    isAdmin={org.is_admin}
-                />
-                {org.pages.pageInfo.hasNextPage ?
-                    <RaisedButton primary>Mer</RaisedButton>
-                    :
-                    null
-                }
-                {viewer ?
-                    <Dialog
-                        title="Legg til side"
-                        open={this.state.addPage}
-                        onRequestClose={this.closeAddPage}
-                        autoScrollBodyContent
-                    >
-                        <EditPage
-                            viewer={this.props.viewer}
-                            savePage={this.savePage}
-                            {...this.state.page}
+            <div>
+                {this.state.addPage
+                    ? <EditPage
+                        viewer={this.props.viewer}
+                        savePage={this.savePage}
+                        {...this.state.page}
+                    />
+                    : <section>
+                        <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                            <div>
+                                <h1>Sider</h1>
+                            </div>
+                            <IconMenu
+                                iconButtonElement={<IconButton><ArrowDown /></IconButton>}
+                                anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
+                                targetOrigin={{ vertical: 'top', horizontal: 'right' }}
+                            >
+                                <MenuItem primaryText="Legg til side" onTouchTap={this.toggleAddPage} />
+                            </IconMenu>
+                        </div>
+                        <PageList
+                            pages={org.pages}
+                            isAdmin={org.is_admin}
                         />
-                    </Dialog>
-                : null }
-            </section>
+                        {org.pages.pageInfo.hasNextPage ?
+                            <RaisedButton primary>Mer</RaisedButton>
+                            :
+                                null
+                        }
+                    </section>
+                }
+            </div>
         );
     }
 
