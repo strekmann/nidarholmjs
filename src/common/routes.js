@@ -14,7 +14,6 @@ import Piece from './components/Piece';
 import Files from './components/Files';
 import Page from './components/Page';
 import Pages from './components/Pages';
-import About from './components/About';
 import NoMatch from './components/NoMatch';
 
 export const queries = {
@@ -30,7 +29,6 @@ export default createRoutes(
     <Route path="/" component={App} queries={queries}>
         <IndexRoute component={Home} queries={queries} />
         <Route path="login" component={Login} queryies={queries} />
-        <Route path="about" component={About} queries={organizationQueries} />
         <Route path="members" component={Members} queries={organizationQueries} />
         <Route path="users/:username" component={Member} queries={queries} />
         <Route path="projects" component={Projects} queries={organizationQueries} />

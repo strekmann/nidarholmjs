@@ -150,38 +150,27 @@ class Home extends React.Component {
                     : null
                 }
                 <section>
-                    <h2>Kort om korpset</h2>
-                    <Text text={org.description_nb} />
-                    <RaisedButton onClick={this.toggleEditDescription} label="Rediger" />
-                    {this.state.editDescription ?
-                        <form>
-                            <TextField
-                                floatingLabelText="Introduksjonstekst"
-                                name="description_nb"
-                                value={this.state.description_nb}
-                                onChange={this.onChangeDescription}
-                                multiLine
-                                style={{ width: '100%' }}
-                            />
-                            <RaisedButton onClick={this.saveDescription} label="Lagre" />
-                        </form>
-                        :
-                        null
-                    }
-                </section>
-                <div style={{ display: 'flex', maxWidth: 1000, margin: '0 auto' }}>
                     {org.summaries.length > 0 ?
-                        <div style={{ padding: '0 15px', flexGrow: 1 }}>
+                        <div>
                             <h2><Link to={`/${org.summaries[0].slug}`}>{org.summaries[0].title}</Link></h2>
                             <Text text={org.summaries[0].summary} />
                             <Link to={`/${org.summaries[0].slug}`}>Les mer</Link>
                         </div>
                     : null }
+                </section>
+                <div style={{ display: 'flex', maxWidth: 1000, margin: '0 auto' }}>
                     {org.summaries.length > 1 ?
                         <div style={{ padding: '0 15px', flexGrow: 1 }}>
                             <h2><Link to={`/${org.summaries[1].slug}`}>{org.summaries[1].title}</Link></h2>
                             <Text text={org.summaries[1].summary} />
                             <Link to={`/${org.summaries[1].slug}`}>Les mer</Link>
+                        </div>
+                    : null }
+                    {org.summaries.length > 2 ?
+                        <div style={{ padding: '0 15px', flexGrow: 1 }}>
+                            <h2><Link to={`/${org.summaries[2].slug}`}>{org.summaries[2].title}</Link></h2>
+                            <Text text={org.summaries[2].summary} />
+                            <Link to={`/${org.summaries[2].slug}`}>Les mer</Link>
                         </div>
                     : null }
                 </div>

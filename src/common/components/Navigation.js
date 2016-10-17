@@ -94,7 +94,7 @@ class Navigation extends React.Component {
                                 alignItems: 'center',
                             }}
                         >
-                            <Link to="about" style={{ color: 'white' }}>
+                            <Link to="/om" style={{ color: 'white' }}>
                                 Om oss
                             </Link>
                             <Link to="/projects" style={{ color: 'white' }}>
