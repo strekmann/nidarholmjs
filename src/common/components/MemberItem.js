@@ -5,6 +5,7 @@ import Phone from './Phone';
 
 export default class MemberItem extends React.Component {
     static propTypes = {
+        isMember: React.PropTypes.bool,
         user: React.PropTypes.object,
         role: React.PropTypes.object,
     }
@@ -23,11 +24,16 @@ export default class MemberItem extends React.Component {
                     >
                         <div>
                             <Link to={`/users/${user.username}`}>{user.name}</Link><br />
-                            <Link
-                                to={`mailto:${user.email}`}
-                            >
-                                {user.email}
-                            </Link> - <Phone phone={user.phone} />
+                            {this.props.isMember
+                                ? <div>
+                                    <Link
+                                        to={`mailto:${user.email}`}
+                                    >
+                                        {user.email}
+                                    </Link> - <Phone phone={user.phone} />
+                                </div>
+                                : null
+                            }
                         </div>
                         <div>
                             <span>{this.props.role.title} {user.instrument}</span>
