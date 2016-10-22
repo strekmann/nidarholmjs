@@ -10,7 +10,7 @@ import injectTapEventPlugin from 'react-tap-event-plugin';
 import moment from 'moment';
 import 'moment/locale/nb';
 import 'font-awesome/css/font-awesome.css';
-import './scss/styles.scss';
+import '../static/scss/styles.scss';
 
 injectTapEventPlugin();
 
