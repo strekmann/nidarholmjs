@@ -64,7 +64,7 @@ if (config.get('express.trust_proxy')) {
     app.enable('trust proxy');
 }
 
-app.use(cookieParser(config.get('session.cookiesecret')));
+app.use(cookieParser(config.get('express.session.secret')));
 app.use(flash());
 
 if (config.util.getEnv('NODE_ENV') === 'test') {
@@ -81,18 +81,18 @@ if (config.util.getEnv('NODE_ENV') === 'test') {
 
 const RedisStore = connectRedis(session);
 const redisStoreOpts = config.get('redis');
-redisStoreOpts.ttl = config.get('session.ttl') / 1000;
+redisStoreOpts.ttl = config.get('express.session.maxAge') / 1000;
 const sessionStore = new RedisStore(redisStoreOpts);
 
 app.use(session({
     store: sessionStore,
-    secret: config.get('session.secret'),
-    name: config.get('session.name'),
-    resave: config.get('session.resave'),
-    saveUninitialized: config.get('session.saveUninitialized'),
-    rolling: config.get('session.rolling'),
+    secret: config.get('express.session.secret'),
+    name: config.get('express.session.name'),
+    resave: config.get('express.session.resave'),
+    saveUninitialized: config.get('express.session.saveUninitialized'),
+    rolling: config.get('express.session.rolling'),
     cookie: {
-        maxAge: config.get('session.ttl'),
+        maxAge: config.get('express.session.maxAge'),
     },
 }));
 

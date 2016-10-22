@@ -15,3 +15,4 @@ tmp
 /src/server/schema.json
 /src/server/schema.graphql
 *retry
+*log

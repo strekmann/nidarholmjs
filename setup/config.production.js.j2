@@ -1,0 +1,35 @@
+module.exports = {
+    auth: {
+        facebook: {
+            clientId: '{{ facebook_client_id }}',
+            clientSecret: '{{ facebook_client_secret }}',
+            callbackURL: '{{ server_url }}/auth/facebook/callback'
+        },
+        google: {
+            clientId: '{{ google_client_id }}',
+            clientSecret: '{{ google_client_secret }}',
+            callbackURL: '{{ server_url }}/auth/google/callback'
+        },
+        twitter: {
+            clientId: '{{ twitter_client_id }}',
+            clientSecret: '{{ twitter_client_secret }}',
+            callbackURL: '{{ server_url }}/auth/twitter/callback'
+        },
+    },
+    express: {
+        port: {{ server_port }},
+    },
+    session: {
+        secret: '{{ server_secret }}',
+    },
+    files: {
+        raw_prefix: '{{ deploy_helper.shared_path }}/uploaded_files',
+        normal_prefix: '{{ deploy_helper.shared_path }}/uploaded_files/normal',
+        large_prefix: '{{ deploy_helper.shared_path }}/uploaded_files/large',
+        thumbnail_prefix: '{{ deploy_helper.shared_path }}/uploaded_files/thumbnail'
+    },
+    mongodb: {
+        servers: ['mongodb://localhost/{{ project_name }}'],
+        replset: null,
+    }
+}

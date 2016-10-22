@@ -30,6 +30,7 @@
       - name: Install apt dependencies
         apt: name={{ item }} state=present
         with_items:
+          - build-essential
           - mongodb
           - nginx
           - nodejs
@@ -61,6 +62,7 @@
         project_home: /srv/{{ project_name }}
         project_user: "{{ project_name }}"
         server_name: "{{ project_name }}.strekmann.no"
+        server_url: "http://{{ project_name }}.strekmann.no"
         server_port: 13412
     tasks:
       - name: Check connection
