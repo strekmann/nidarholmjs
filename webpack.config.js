@@ -12,7 +12,7 @@ module.exports = {
     },
     devtool: 'inline-source-map',
     entry: [
-        'webpack-dev-server/client?http://127.0.0.1:4001/',
+        'webpack-dev-server/client?http://127.0.0.1:3001/',
         'webpack/hot/only-dev-server',
         './src/client/app.js',
     ],
