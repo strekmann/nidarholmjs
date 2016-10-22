@@ -237,7 +237,7 @@ app.use((req, res, next) => {
 */
 
 /** Static stuff **/
-app.use(serveStatic(path.join(__dirname, '..', '..', 'dist', 'public')));
+app.use(serveStatic(path.join(__dirname, '..', 'static')));
 
 /** GraphQL **/
 app.use('/graphql', graphqlHTTP(req => {

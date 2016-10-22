@@ -21,7 +21,7 @@ import {
     nodeDefinitions,
 } from 'graphql-relay';
 
-import connectionFromMongooseQuery, { offsetToCursor } from 'relay-mongoose-connection';
+import { connectionFromMongooseQuery, offsetToCursor } from './connections';
 import moment from 'moment';
 import config from 'config';
 import shortid from 'short-mongo-id';

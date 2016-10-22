@@ -12,7 +12,7 @@ import schema from './schema';
 function renderFullPage(renderedContent, initialState, head = {
     title: '<title>Nidarholm</title>',
     meta: '<meta name="viewport" content="width=device-width, initial-scale=1" />',
-    link: '<link rel="stylesheet" href="/css/styles.css"/>',
+    link: '<link rel="stylesheet" href="/styles.css"/>',
 }) {
     return `
     <!doctype html>
@@ -28,7 +28,7 @@ function renderFullPage(renderedContent, initialState, head = {
         <script>
             window.__INITIAL_STATE__ = ${JSON.stringify(initialState)};
         </script>
-        <script src="/js/javascript.js"></script>
+        <script src="/javascript.js"></script>
     </body>
     </html>
     `;
