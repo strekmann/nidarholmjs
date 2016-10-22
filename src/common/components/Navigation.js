@@ -4,7 +4,7 @@ import Avatar from 'material-ui/Avatar';
 import NavigationMenu from 'material-ui/svg-icons/navigation/menu';
 import RaisedButton from 'material-ui/RaisedButton';
 import getMuiTheme from 'material-ui/styles/getMuiTheme';
-import { fullWhite, lightBlue900 } from 'material-ui/styles/colors';
+import { fullWhite, pink900 } from 'material-ui/styles/colors';
 import { Link } from 'react-router';
 
 import theme from '../theme';
@@ -61,7 +61,7 @@ class Navigation extends React.Component {
         );
 
         return (
-            <div style={{ backgroundColor: lightBlue900 }}>
+            <div style={{ backgroundColor: pink900 }}>
                 <div className="flex-menu-desktop">
                     <div
                         className="flex-menu"
