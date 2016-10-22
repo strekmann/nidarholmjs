@@ -150,7 +150,7 @@ class Navigation extends React.Component {
                             right: 0,
                             padding: '16px 15px 15px 1rem',
                             outline: 'none',
-                            backgroundColor: lightBlue900,
+                            backgroundColor: pink900,
                             margin: 0,
                         }}
                     >
