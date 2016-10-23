@@ -331,6 +331,7 @@ export default Relay.createContainer(Project, {
                                     name
                                 }
                             }
+                            mdtext
                         }
                     }
                 }

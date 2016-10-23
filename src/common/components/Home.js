@@ -1,9 +1,7 @@
 import React from 'react';
 import Relay from 'react-relay';
 import getMuiTheme from 'material-ui/styles/getMuiTheme';
-import { Card, CardMedia } from 'material-ui/Card';
 import Paper from 'material-ui/Paper';
-import { fullWhite } from 'material-ui/styles/colors';
 import { Link } from 'react-router';
 import Text from './Text';
 import Date from './Date';
@@ -113,18 +111,16 @@ class Home extends React.Component {
                                             marginTop: '2em',
                                         }}
                                     >
-                                        <Card>
-                                            <CardMedia>
-                                                <Link
-                                                    to={`/${nextProject.year}/${nextProject.tag}`}
-                                                >
-                                                    <img
-                                                        alt="Konsertplakat"
-                                                        src={nextProject.poster.normal_path}
-                                                    />
-                                                </Link>
-                                            </CardMedia>
-                                        </Card>
+                                        <Paper>
+                                            <Link
+                                                to={`/${nextProject.year}/${nextProject.tag}`}
+                                            >
+                                                <img
+                                                    alt="Konsertplakat"
+                                                    src={nextProject.poster.normal_path}
+                                                />
+                                            </Link>
+                                        </Paper>
                                     </div>
                                 : null }
                                 <div style={{ width: '25%', minWidth: 230, padding: '0 20px' }}>
@@ -186,16 +182,14 @@ class Home extends React.Component {
                             }}
                         >
                             <div style={{ width: '50%', minWidth: 270, padding: '0 15px' }}>
-                                <Card>
-                                    <CardMedia>
-                                        <iframe
-                                            width="100%"
-                                            height="300px"
-                                            frameBorder="0"
-                                            src={org.map_url}
-                                        />
-                                    </CardMedia>
-                                </Card>
+                                <Paper>
+                                    <iframe
+                                        width="100%"
+                                        height="300px"
+                                        frameBorder="0"
+                                        src={org.map_url}
+                                    />
+                                </Paper>
                             </div>
                             <div style={{ width: '50%', minWidth: 270, padding: '0 15px' }}>
                                 <h3>E-post</h3>
