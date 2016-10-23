@@ -1,6 +1,6 @@
 import Relay from 'react-relay';
 
-export default class AddFileMutation extends Relay.Mutation {
+export default class AddPageMutation extends Relay.Mutation {
     static fragments = {
         organization: () => Relay.QL`
         fragment on Organization {
@@ -10,23 +10,24 @@ export default class AddFileMutation extends Relay.Mutation {
     }
 
     getMutation() {
-        return Relay.QL`mutation {addFile}`;
+        return Relay.QL`mutation {addPage}`;
     }
 
     getVariables() {
         return {
-            filename: this.props.filename,
-            hex: this.props.hex,
-            tags: this.props.tags,
+            slug: this.props.slug,
+            mdtext: this.props.mdtext,
+            summary: this.props.summary,
+            title: this.props.title,
             permissions: this.props.permissions.map(permission => permission.id),
         };
     }
 
     getFatQuery() {
         return Relay.QL`
-        fragment on AddFilePayload {
+        fragment on AddPagePayload {
             organization
-            newFileEdge
+            newPageEdge
         }`;
     }
 
@@ -35,8 +36,8 @@ export default class AddFileMutation extends Relay.Mutation {
             type: 'RANGE_ADD',
             parentName: 'organization',
             parentID: this.props.organization.id,
-            connectionName: 'files',
-            edgeName: 'newFileEdge',
+            connectionName: 'pages',
+            edgeName: 'newPageEdge',
             rangeBehaviors: {
                 '': 'prepend',
             },

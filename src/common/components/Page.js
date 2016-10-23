@@ -1,16 +1,16 @@
 import React from 'react';
 import Relay from 'react-relay';
 import getMuiTheme from 'material-ui/styles/getMuiTheme';
-import RaisedButton from 'material-ui/RaisedButton';
-import TextField from 'material-ui/TextField';
 import IconMenu from 'material-ui/IconMenu';
 import MenuItem from 'material-ui/MenuItem';
 import IconButton from 'material-ui/IconButton';
 import ArrowDown from 'material-ui/svg-icons/navigation/arrow-drop-down';
 
-import theme from '../theme';
+import EditPage from './EditPage';
 import EditPageMutation from '../mutations/editPage';
 import Text from './Text';
+import { flattenPermissions } from '../utils';
+import theme from '../theme';
 
 class Page extends React.Component {
     static contextTypes = {
@@ -18,6 +18,7 @@ class Page extends React.Component {
     };
 
     static propTypes = {
+        viewer: React.PropTypes.object,
         organization: React.PropTypes.object,
         location: React.PropTypes.object,
     }
@@ -28,9 +29,6 @@ class Page extends React.Component {
 
     static propTypes = {
         id: React.PropTypes.string,
-        slug: React.PropTypes.string,
-        summary: React.PropTypes.string,
-        mdtext: React.PropTypes.string,
     }
 
     constructor(props) {
@@ -40,9 +38,7 @@ class Page extends React.Component {
 
     state = {
         edit: false,
-        slug: this.props.organization.page.slug,
-        summary: this.props.organization.page.summary,
-        mdtext: this.props.organization.page.mdtext,
+        permissions: flattenPermissions(this.props.organization.page.permissions),
     }
 
     getChildContext() {
@@ -51,6 +47,10 @@ class Page extends React.Component {
 
     onChangeSlug = (event, slug) => {
         this.setState({ slug });
+    }
+
+    onChangeTitle = (event, title) => {
+        this.setState({ title });
     }
 
     onChangeSummary = (event, summary) => {
@@ -73,15 +73,15 @@ class Page extends React.Component {
         });
     }
 
-    savePage = (event) => {
-        event.preventDefault();
-        const page = this.props.organization.page;
+    savePage = (page) => {
         this.context.relay.commitUpdate(new EditPageMutation({
             viewer: null,
             pageid: page.id,
-            slug: this.state.slug,
-            summary: this.state.summary,
-            mdtext: this.state.mdtext,
+            slug: page.slug,
+            title: page.title,
+            summary: page.summary,
+            mdtext: page.mdtext,
+            permissions: page.permissions,
         }), {
             onSuccess: () => {
                 this.closeEdit();
@@ -102,45 +102,14 @@ class Page extends React.Component {
             );
         }
         if (this.state.edit) {
+            const page = org.page;
+            page.permissions = this.state.permissions;
             return (
-                <section>
-                    <form onSubmit={this.savePage}>
-                        <h1>Rediger sideinnhold</h1>
-                        <div>
-                            <TextField
-                                id="mdtext"
-                                value={this.state.mdtext}
-                                floatingLabelText="Sideinnhold"
-                                multiLine
-                                fullWidth
-                                onChange={this.onChangeContent}
-                                style={{ width: '100%' }}
-                            />
-                        </div>
-                        <div>
-                            <TextField
-                                id="summary"
-                                value={this.state.summary}
-                                floatingLabelText="Introduksjon"
-                                multiLine
-                                fullWidth
-                                onChange={this.onChangeSummary}
-                            />
-                        </div>
-                        <div>
-                            <TextField
-                                id="slug"
-                                value={this.state.slug}
-                                floatingLabelText="Identifikator"
-                                onChange={this.onChangeSlug}
-                                hintText="Bør sjelden endres, da den endrer adressen til sida."
-                            />
-                        </div>
-                        <div>
-                            <RaisedButton type="submit" label="Lagre" />
-                        </div>
-                    </form>
-                </section>
+                <EditPage
+                    viewer={this.props.viewer}
+                    savePage={this.savePage}
+                    {...page}
+                />
             );
         }
         return (
@@ -168,16 +137,31 @@ export default Relay.createContainer(Page, {
         viewer: () => Relay.QL`
         fragment on User {
             id
+            groups {
+                id
+                name
+            }
             ${EditPageMutation.getFragment('viewer')},
         }
         `,
         organization: () => Relay.QL`
         fragment on Organization {
+            member_group {
+                id
+            }
             page(slug:$slug) {
                 id
                 slug
+                title
                 summary
                 mdtext
+                permissions {
+                    public
+                    groups {
+                        id
+                        name
+                    }
+                }
                 created
                 updated
                 updator {

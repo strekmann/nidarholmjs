@@ -14,4 +14,5 @@ tmp
 /dist
 /src/server/schema.json
 /src/server/schema.graphql
-*.log
+*retry
+*log

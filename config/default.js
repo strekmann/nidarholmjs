@@ -1,3 +1,5 @@
+const project_name = 'nidarholm';
+
 const serializers = {
     req: (req) => ({
         method: req.method,
@@ -9,46 +11,6 @@ const serializers = {
 };
 
 module.exports = {
-    express: {
-        port: 3000,
-        trust_proxy: false,
-    },
-    bunyan: {
-        level: 'debug',
-        name: 'nidarholm-dev',
-        serializers,
-    },
-    'bunyan-express': {
-        excludes: [
-            'body',
-            'http-version',
-            'req-headers',
-            'res-headers',
-            'response-hrtime',
-            'user-agent',
-        ],
-        format: () => '',
-    },
-    session: {
-        secret: 'sessionsecret',
-        cookiesecret: 'cookiesecret',
-        name: 'ros.sid',
-        saveUninitialized: false,
-        rolling: false,
-        resave: false,
-        ttl: 86400000,
-    },
-    redis: {
-        host: 'localhost',
-        port: 6379,
-        pass: undefined,
-    },
-    mongodb: {
-        servers: ['mongodb://localhost/nidarholm-dev'],
-        replset: null,
-    },
-    uri: 'http://localhost:3000/',
-    sessionSecret: 'wS89da1kCq1ml6yYYPapxX6jReh9Kho1nnBxsI8QGo536iOiTo3xts3tppCUdZLl',
     auth: {
         facebook: {
             clientId: '291636897704096',
@@ -66,15 +28,61 @@ module.exports = {
             callbackURL: 'http://localhost:3000/auth/twitter/callback',
         },
     },
+    bunyan: {
+        level: 'info',
+        name: 'nidarholm',
+        serializers,
+    },
+    'bunyan-express': {
+        excludes: [
+            'body',
+            'http-version',
+            'req-headers',
+            'res-headers',
+        ],
+        format: ':remote-address :incoming :method :url HTTP/:http-version :status-code :res-headers[content-length] :referer :user-agent[family] :user-agent[major].:user-agent[minor] :user-agent[os] :response-time ms',
+    },
+    express: {
+        port: 3000,
+        trust_proxy: true,
+        session: {
+            cookiesecret: 'cookiesecret',
+            httpOnly: true,
+            maxAge: 1000 * 60 * 60 * 24 * 100,
+            name: 'ros.sid',
+            path: '/',
+            resave: false,
+            rolling: true,
+            saveUninitialized: false,
+            secret: 'sessionsecret',
+            secure: true, // false in development
+        },
+    },
     files: {
         raw_prefix: '/home/sigurdga/Prosjekter/nidarholmjs/uploaded_files',
         normal_prefix: '/home/sigurdga/Prosjekter/nidarholmjs/uploaded_files/normal',
         large_prefix: '/home/sigurdga/Prosjekter/nidarholmjs/uploaded_files/large',
         thumbnail_prefix: '/home/sigurdga/Prosjekter/nidarholmjs/uploaded_files/thumbnail',
     },
+    graphql: {
+        graphiql: false,
+        pretty: false,
+    },
+    html: {
+        style: true,
+    },
+    mongodb: {
+        servers: ['mongodb://localhost/nidarholm-dev'],
+        replset: null,
+    },
+    news_tag: 'nyheter',
     organization: 'nidarholm',
     profile_picture_tag: 'profilbilde',
-    news_tag: 'nyheter',
+    redis: {
+        host: 'localhost',
+        port: 6379,
+        pass: undefined,
+    },
 };
 
 /* secret gen: cat /dev/urandom| base64 | fold -w 64 */

@@ -21,9 +21,10 @@ import {
     nodeDefinitions,
 } from 'graphql-relay';
 
-import connectionFromMongooseQuery, { offsetToCursor } from 'relay-mongoose-connection';
+import { connectionFromMongooseQuery, offsetToCursor } from './connections';
 import moment from 'moment';
 import config from 'config';
+import shortid from 'short-mongo-id';
 
 import { User, Group, Organization } from './models';
 import { File } from './models/files';
@@ -289,7 +290,10 @@ const permissionsType = new GraphQLObjectType({
             type: new GraphQLList(groupType),
             resolve: permission => permission.groups.map(groupId => Group.findById(groupId).exec()),
         },
-        users: { type: new GraphQLList(GraphQLString) },
+        users: {
+            type: new GraphQLList(userType),
+            resolve: permission => permission.users.map(userId => User.findById(userId).exec()),
+        },
     }),
 });
 
@@ -443,7 +447,7 @@ projectType = new GraphQLObjectType({
             type: eventConnection.connectionType,
             args: connectionArgs,
             resolve: (project, args, { viewer }) => connectionFromMongooseQuery(
-                authenticate(Event.find({ tags: project.tag }), viewer),
+                authenticate(Event.find({ tags: project.tag }).sort('start'), viewer),
                 args,
             ),
         },
@@ -451,7 +455,7 @@ projectType = new GraphQLObjectType({
             type: fileConnection.connectionType,
             args: connectionArgs,
             resolve: (project, args, { viewer }) => connectionFromMongooseQuery(
-                authenticate(File.find({ tags: project.tag }), viewer),
+                authenticate(File.find({ tags: project.tag }), viewer).sort({ created: -1 }),
                 args,
             ),
         },
@@ -478,16 +482,29 @@ pageType = new GraphQLObjectType({
     fields: {
         id: globalIdField('Page'),
         slug: { type: GraphQLString },
+        title: { type: GraphQLString },
         summary: { type: GraphQLString },
         mdtext: { type: GraphQLString },
         created: { type: GraphQLDate },
+        creator: {
+            type: userType,
+            resolve: (page) => User.findById(page.creator).exec(),
+        },
         updated: { type: GraphQLDate },
         updator: {
             type: userType,
             resolve: (page) => User.findById(page.updator).exec(),
         },
+        permissions: {
+            type: permissionsType,
+        },
     },
     interfaces: [nodeInterface],
+});
+
+const pageConnection = connectionDefinitions({
+    name: 'Page',
+    nodeType: pageType,
 });
 
 organizationType = new GraphQLObjectType({
@@ -515,6 +532,10 @@ organizationType = new GraphQLObjectType({
         is_member: {
             type: GraphQLBoolean,
             resolve: (_, args, { organization, viewer }) => member(organization, viewer),
+        },
+        is_admin: {
+            type: GraphQLBoolean,
+            resolve: (_, args, { organization, viewer }) => admin(organization, viewer),
         },
         is_musicscoreadmin: {
             type: GraphQLBoolean,
@@ -606,6 +627,14 @@ organizationType = new GraphQLObjectType({
                 );
             },
         },
+        pages: {
+            type: pageConnection.connectionType,
+            args: connectionArgs,
+            resolve: (_, { ...args }, { viewer }) => connectionFromMongooseQuery(
+                authenticate(Page.find().sort({ created: -1 }), viewer),
+                args,
+            ),
+        },
         page: {
             type: pageType,
             args: {
@@ -620,7 +649,7 @@ organizationType = new GraphQLObjectType({
             type: new GraphQLList(pageType),
             resolve: (organization) => Organization
             .findById(organization.id)
-            .populate({ path: 'summaries', select: 'summary slug' })
+            .populate({ path: 'summaries', select: 'summary title slug' })
             .exec()
             .then(org => org.summaries),
         },
@@ -720,6 +749,65 @@ const mutationEditDescription = mutationWithClientMutationId({
     },
 });
 
+const mutationAddEvent = mutationWithClientMutationId({
+    name: 'AddEvent',
+    inputFields: {
+        title: { type: new GraphQLNonNull(GraphQLString) },
+        location: { type: GraphQLString },
+        start: { type: GraphQLString },
+        end: { type: GraphQLString },
+        tags: { type: new GraphQLList(GraphQLString) },
+        mdtext: { type: GraphQLString },
+        permissions: { type: new GraphQLList(GraphQLString) },
+    },
+    outputFields: {
+        organization: {
+            type: organizationType,
+            resolve: (payload, args, { organization }) => organization,
+        },
+        newEventEdge: {
+            type: eventConnection.edgeType,
+            resolve: (payload, args, { viewer }) => {
+                return {
+                    cursor: offsetToCursor(0),
+                    node: payload,
+                };
+            },
+        },
+    },
+    mutateAndGetPayload: ({ title, location, start, end, tags, mdtext, permissions }, { viewer }) => {
+        if (!viewer) {
+            throw new Error('Nobody!');
+        }
+        const userId = viewer.id;
+        const permissionObj = { public: false, groups: [], users: [] };
+        permissions.forEach(permission => {
+            if (permission === 'p') {
+                permissionObj.public = true;
+            }
+            const idObj = fromGlobalId(permission);
+            if (idObj.type === 'Group') {
+                permissionObj.groups.push(idObj.id);
+            }
+            else if (idObj.type === 'User') {
+                permissionObj.users.push(idObj.id);
+            }
+        });
+        const event = new Event();
+        event.creator = userId;
+        event.title = title;
+        event.location = location;
+        event.start = moment.utc(start);
+        if (event.end) {
+            event.end = moment.utc(end);
+        }
+        event.tags = tags;
+        event.mdtext = mdtext;
+        event.permissions = permissionObj;
+        // TODO: Check permissions
+        return event.save();
+    },
+});
 const mutationEditEvent = mutationWithClientMutationId({
     name: 'EditEvent',
     inputFields: {
@@ -755,13 +843,70 @@ const mutationEditEvent = mutationWithClientMutationId({
     },
 });
 
+const mutationAddPage = mutationWithClientMutationId({
+    name: 'AddPage',
+    inputFields: {
+        slug: { type: new GraphQLNonNull(GraphQLString) },
+        mdtext: { type: GraphQLString },
+        title: { type: GraphQLString },
+        summary: { type: GraphQLString },
+        permissions: { type: new GraphQLList(GraphQLString) },
+    },
+    outputFields: {
+        organization: {
+            type: organizationType,
+            resolve: (payload, args, { organization }) => organization,
+        },
+        newPageEdge: {
+            type: pageConnection.edgeType,
+            resolve: (payload, args, { viewer }) => {
+                return {
+                    cursor: offsetToCursor(0),
+                    node: payload,
+                };
+            },
+        },
+    },
+    mutateAndGetPayload: ({ slug, mdtext, title, summary, permissions }, { viewer }) => {
+        if (!viewer) {
+            throw new Error('Nobody!');
+        }
+        const userId = viewer.id;
+        const permissionObj = { public: false, groups: [], users: [] };
+        permissions.forEach(permission => {
+            if (permission === 'p') {
+                permissionObj.public = true;
+            }
+            const idObj = fromGlobalId(permission);
+            if (idObj.type === 'Group') {
+                permissionObj.groups.push(idObj.id);
+            }
+            else if (idObj.type === 'User') {
+                permissionObj.users.push(idObj.id);
+            }
+        });
+        const page = new Page();
+        page._id = shortid();
+        page.slug = slug;
+        page.mdtext = mdtext;
+        page.title = title;
+        page.summary = summary;
+        page.permissions = permissionObj;
+        page.creator = userId;
+        // TODO: Check permissions
+        return page.save();
+    },
+});
+
 const mutationEditPage = mutationWithClientMutationId({
     name: 'EditPage',
     inputFields: {
         pageid: { type: new GraphQLNonNull(GraphQLID) },
-        slug: { type: GraphQLString },
+        slug: { type: new GraphQLNonNull(GraphQLString) },
+        title: { type: GraphQLString },
+        summary: { type: GraphQLString },
         mdtext: { type: GraphQLString },
-        summary: { type: new GraphQLNonNull(GraphQLString) },
+        permissions: { type: new GraphQLList(GraphQLString) },
     },
     outputFields: {
         page: {
@@ -769,14 +914,27 @@ const mutationEditPage = mutationWithClientMutationId({
             resolve: (payload) => payload,
         },
     },
-    mutateAndGetPayload: ({ pageid, mdtext, summary }, { viewer }) => {
+    mutateAndGetPayload: ({ pageid, slug, mdtext, title, summary, permissions }, { viewer }) => {
         const id = fromGlobalId(pageid).id;
         if (!viewer) {
             throw new Error('Nobody!');
         }
+        const permissionObj = { public: false, groups: [], users: [] };
+        permissions.forEach(permission => {
+            if (permission === 'p') {
+                permissionObj.public = true;
+            }
+            const idObj = fromGlobalId(permission);
+            if (idObj.type === 'Group') {
+                permissionObj.groups.push(idObj.id);
+            }
+            else if (idObj.type === 'User') {
+                permissionObj.users.push(idObj.id);
+            }
+        });
         const query = Page.findByIdAndUpdate(
             id,
-            { mdtext, summary },
+            { slug, mdtext, summary, title, permissions: permissionObj, updator: viewer.id, updated: moment.utc() },
             { new: true },
         );
         return authenticate(query, viewer).exec().then(page => {
@@ -800,6 +958,9 @@ const mutationAddFile = mutationWithClientMutationId({
         permissions: {
             type: new GraphQLList(GraphQLString),
         },
+        tags: {
+            type: new GraphQLList(GraphQLString),
+        },
     },
     outputFields: {
         organization: {
@@ -816,7 +977,7 @@ const mutationAddFile = mutationWithClientMutationId({
             },
         },
     },
-    mutateAndGetPayload: ({ filename, hex, permissions }, { viewer }) => {
+    mutateAndGetPayload: ({ filename, hex, permissions, tags }, { viewer }) => {
         const permissionObj = { public: false, groups: [], users: [] };
         permissions.forEach(permission => {
             if (permission === 'p') {
@@ -830,7 +991,7 @@ const mutationAddFile = mutationWithClientMutationId({
                 permissionObj.users.push(idObj.id);
             }
         });
-        return insertFile(filename, hex, permissionObj, config.files.raw_prefix, viewer);
+        return insertFile(filename, hex, permissionObj, tags, config.files.raw_prefix, viewer);
     },
 });
 
@@ -885,7 +1046,9 @@ const mutationType = new GraphQLObjectType({
     name: 'Mutation',
     fields: () => ({
         editDescription: mutationEditDescription,
+        addEvent: mutationAddEvent,
         editEvent: mutationEditEvent,
+        addPage: mutationAddPage,
         editPage: mutationEditPage,
         addFile: mutationAddFile,
         addScore: mutationAddScore,

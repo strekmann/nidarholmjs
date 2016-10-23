@@ -34,7 +34,14 @@ class Members extends React.Component {
         return (
             <section>
                 <h1>Medlemmer</h1>
-                {org.instrument_groups.map(group => <GroupItem key={group.id} {...group} />)}
+                {org.instrument_groups.map(
+                    group => <GroupItem
+                        key={group.id}
+                        isMember={this.props.organization.is_member}
+                        {...group}
+                    />
+                    )
+                }
             </section>
         );
     }
@@ -44,6 +51,7 @@ export default Relay.createContainer(Members, {
     fragments: {
         organization: () => Relay.QL`
         fragment on Organization {
+            is_member
             instrument_groups {
                 id
                 name

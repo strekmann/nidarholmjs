@@ -2,19 +2,14 @@
 
 import React from 'react';
 import Relay from 'react-relay';
-import Dropzone from 'react-dropzone';
 import axios from 'axios';
 
 import getMuiTheme from 'material-ui/styles/getMuiTheme';
 import RaisedButton from 'material-ui/RaisedButton';
-import AutoComplete from 'material-ui/AutoComplete';
-import { List } from 'material-ui/List';
-import Subheader from 'material-ui/Subheader';
-import Paper from 'material-ui/Paper';
 
 import theme from '../theme';
 import FileList from './FileList';
-import PermissionItem from './PermissionItem';
+import FileUpload from './FileUpload';
 import AddFileMutation from '../mutations/addFile';
 
 const itemsPerPage = 10;
@@ -39,16 +34,11 @@ class Files extends React.Component {
         this.muiTheme = getMuiTheme(theme);
     }
 
-    state = {
-        permissions: [],
-        permission: '',
-    }
-
     getChildContext() {
         return { muiTheme: this.muiTheme };
     }
 
-    onDrop = (files) => {
+    onDrop = (files, permissions) => {
         files.forEach(file => {
             const data = new FormData();
             data.append('file', file);
@@ -59,7 +49,7 @@ class Files extends React.Component {
                     viewer: null,
                     organization: this.props.organization,
                     hex: response.data.hex,
-                    permissions: this.state.permissions.map(permission => permission.value),
+                    permissions,
                     filename: file.name,
                 }), {
                     onSuccess: () => {
@@ -76,76 +66,22 @@ class Files extends React.Component {
         });
     }
 
-    onPermissionChange = (value) => {
-        this.setState({
-            permission: value,
-        });
-    }
-
-    addPermission = (chosen) => {
-        const permissions = this.state.permissions;
-        permissions.push(chosen);
-        this.setState({
-            permissions,
-            permission: '',
-        });
-    }
-
-    removePermission = (permissionId) => {
-        const permissions = this.state.permissions.filter(_p => _p.value !== permissionId);
-        this.setState({
-            permissions,
-        });
-    }
-
     render() {
         const viewer = this.props.viewer;
         const org = this.props.organization;
-        const permissions = [];
-        if (viewer) {
-            permissions.push({ value: 'p', text: 'Verden' });
-            viewer.groups.forEach(group => {
-                permissions.push({ value: group.id, text: group.name });
-            });
-        }
         return (
             <section>
                 <h1>Filer</h1>
                 {viewer ?
-                    <Paper>
-                        {this.state.permissions.length ?
-                            <div>
-                                <List>
-                                    <Subheader>Rettigheter</Subheader>
-                                    {
-                                        this.state.permissions.map(
-                                            permission => <PermissionItem
-                                                key={permission.value}
-                                                removePermission={this.removePermission}
-                                                {...permission}
-                                            />
-                                            )
-                                    }
-                                </List>
-                            </div>
-                        : null}
-
-                        <AutoComplete
-                            id="permissions"
-                            floatingLabelText="Legg til rettigheter"
-                            filter={AutoComplete.fuzzyFilter}
-                            dataSource={permissions}
-                            maxSearchResults={8}
-                            searchText={this.state.permission}
-                            onNewRequest={this.addPermission}
-                            onUpdateInput={this.onPermissionChange}
-                        />
-                        <Dropzone onDrop={this.onDrop} />
-                    </Paper>
+                    <FileUpload
+                        viewer={this.props.viewer}
+                        onDrop={this.onDrop}
+                    />
                 : null}
                 <FileList
                     files={org.files}
                     memberGroupId={org.member_group.id}
+                    style={{ margin: '0 -15px' }}
                 />
                 {org.files.pageInfo.hasNextPage ?
                     <RaisedButton primary>Mer</RaisedButton>
@@ -190,7 +126,10 @@ export default Relay.createContainer(Files, {
                                 id
                                 name
                             }
-                            users
+                            users {
+                                id
+                                name
+                            }
                         }
                         tags
                         is_image
@@ -201,6 +140,7 @@ export default Relay.createContainer(Files, {
                     hasNextPage
                 }
             }
+            ${AddFileMutation.getFragment('organization')},
         }`,
     },
 });

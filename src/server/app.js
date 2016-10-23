@@ -2,6 +2,7 @@ import ReactDOMServer from 'react-dom/server';
 import Router from 'isomorphic-relay-router';
 import RelayLocalSchema from 'relay-local-schema';
 import 'cookie-parser';
+import config from 'config';
 import moment from 'moment';
 // import Helmet from 'react-helmet';
 import { match } from 'react-router';
@@ -12,8 +13,12 @@ import schema from './schema';
 function renderFullPage(renderedContent, initialState, head = {
     title: '<title>Nidarholm</title>',
     meta: '<meta name="viewport" content="width=device-width, initial-scale=1" />',
-    link: '<link rel="stylesheet" href="/css/styles.css"/>',
+    link: '<link rel="stylesheet" href="/styles.css"/>',
 }) {
+    let link = '';
+    if (config.get('html.style')) {
+        link = head.link;
+    }
     return `
     <!doctype html>
     <html>
@@ -21,14 +26,14 @@ function renderFullPage(renderedContent, initialState, head = {
         <meta charset="utf-8" />
         ${head.title}
         ${head.meta}
-        ${head.link}
+        ${link}
     </head>
     <body>
         <div id="app">${renderedContent}</div>
         <script>
             window.__INITIAL_STATE__ = ${JSON.stringify(initialState)};
         </script>
-        <script src="/js/javascript.js"></script>
+        <script src="/javascript.js"></script>
     </body>
     </html>
     `;

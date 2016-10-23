@@ -321,7 +321,7 @@ module.exports.save_file = function save_file(tmp_path, prefix, do_delete = true
     );
 };
 
-module.exports.insert_file = function insert_file(filename, hex, permissions, prefix, user, piece = null) {
+module.exports.insert_file = function insert_file(filename, hex, permissions, tags, prefix, user, piece = null) {
     return new Promise((resolve, reject) => {
         // compute paths
         if (prefix[0] !== '/') {
@@ -343,6 +343,7 @@ module.exports.insert_file = function insert_file(filename, hex, permissions, pr
                     mimetype,
                     size: stats.size,
                     permissions,
+                    tags,
                     creator: user,
                 });
 

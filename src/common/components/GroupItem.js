@@ -5,6 +5,7 @@ import MemberItem from './MemberItem';
 
 export default class GroupItem extends React.Component {
     static propTypes = {
+        isMember: React.PropTypes.bool,
         name: React.PropTypes.string,
         members: React.PropTypes.array,
     }
@@ -13,7 +14,11 @@ export default class GroupItem extends React.Component {
         return (
             <div>
                 <h3><Link>{this.props.name}</Link></h3>
-                {this.props.members.map(member => <MemberItem key={member.id} {...member} />)}
+                {this.props.members.map(member => <MemberItem
+                    key={member.id}
+                    isMember={this.props.isMember}
+                    {...member}
+                />)}
             </div>
         );
     }

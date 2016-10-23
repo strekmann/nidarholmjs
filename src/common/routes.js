@@ -13,7 +13,7 @@ import Event from './components/Event';
 import Piece from './components/Piece';
 import Files from './components/Files';
 import Page from './components/Page';
-import About from './components/About';
+import Pages from './components/Pages';
 import NoMatch from './components/NoMatch';
 
 export const queries = {
@@ -29,15 +29,15 @@ export default createRoutes(
     <Route path="/" component={App} queries={queries}>
         <IndexRoute component={Home} queries={queries} />
         <Route path="login" component={Login} queryies={queries} />
-        <Route path="about" component={About} queries={organizationQueries} />
         <Route path="members" component={Members} queries={organizationQueries} />
         <Route path="users/:username" component={Member} queries={queries} />
         <Route path="projects" component={Projects} queries={organizationQueries} />
         <Route path="events/:eventid" component={Event} queries={queries} />
         <Route path="music/:pieceId" component={Piece} queries={organizationQueries} />
         <Route path="files" component={Files} queries={queries} />
+        <Route path="pages" component={Pages} queries={queries} />
         <Route path=":slug" component={Page} queries={queries} />
-        <Route path=":year/:tag" component={Project} queries={organizationQueries} />
+        <Route path=":year/:tag" component={Project} queries={queries} />
         <Route path="*" component={NoMatch} />
     </Route>
 );

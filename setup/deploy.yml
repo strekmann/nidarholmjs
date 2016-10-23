@@ -1,0 +1,132 @@
+---
+  - name: Setup nidarholm software and user
+    hosts: all
+    remote_user: root
+    vars:
+      - project_name: nidarholm
+        project_home: /srv/{{ project_name }}
+        project_user: "{{ project_name }}"
+        web_server_user: www-data
+
+    tasks:
+      - name: Setup nodesource repository
+        apt_repository: repo="deb http://deb.nodesource.com/node_6.x jessie main" state=present
+
+      - name: Add nodesource key
+        apt_key: url=https://deb.nodesource.com/gpgkey/nodesource.gpg.key state=present
+
+      - name: Upgrade packages
+        apt: upgrade=full update_cache=yes autoremove=yes
+
+      - name: Install etckeeper
+        apt: name={{ item }} state=present
+        with_items:
+          - git
+          - etckeeper
+
+      - name: Initialize etckeeper
+        command: etckeeper init creates=/etc/.git
+
+      - name: Install apt dependencies
+        apt: name={{ item }} state=present
+        with_items:
+          - build-essential
+          - mongodb
+          - nginx
+          - nodejs
+          - imagemagick
+
+      - name: Create project user
+        user:
+          name={{ project_user }}
+          comment="Nidarholm project user"
+          system=yes
+          generate_ssh_key=yes
+          ssh_key_bits=2048
+          home={{ project_home }}
+
+      - name: Add keys
+        authorized_key: user={{ project_user }} key={{ item }}
+        with_items:
+          - "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQC6FA2v+ehx8glCCIo+2P/qzHA5Ym4MmjNZ5Yjmbxxe53ke78HYrDa2hA1t0q0GycXCoxlql6pmcVKdWLxTLRvrD73l7YNOE1D7G6RZuSSs7zdRrn64sQGFdMV4jEjAyrxnrTgR+SMUc79r3gNsrl/29BmbAaYKifGuRL4RCGLTdYi3iXpOdNLy0e0OQpQkuuSrdIx18pKZ6F83ocSTH1hfSNt6H08PaSDVk6ueFWDASUmUUCLnF17J3oJlLlxtBuW6tLE7qDVoBWp8K+mwNqnCnJE27Fgl8+fOGanQnD7cAfXx4BmYcgWcB++2NfHNWEBmWN36XcJUjhjnQ1CAu3gnGRfeVCamjW3YEgDHnfX7Koj8LPFgtlfL0d3Lsu+5FIufXtrp8r2IoBQd+z0JgryTwt1Nxu57KChvTnKvzj1Wm+0HPr/p5svlGhWgd+IPSRXF0HaRZedmzmVOvROMaTi5vm1UWaL/ojzGqJM4T/KAfbua7n8+PALctkCtX0uj4r9si6hUrt3hBDGZLykuUKE0O9dCC+hEicIVHPCgAspMChf7HZk4NivrYr2Lxj0UY4eCBTdignw55hzmLvYIPuoZwdK7vzaMM5ag6Mu7BTCBdYDW/ra+YjULxl+mlbGZ62ahVRozaCnoLWfkUUURlwFq78z1ZxkI6EyhN+dZipL3Hw== sigurdga@svart"
+          - "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQC7T3GkxDdPPSqGVL+VR62VnEOUWLHgSJgvOVBbAtWHDn70qGHebkeX1cNdpl7C9YLz3uKg0allRk5dNK0HBH4fdl/wSaLbL+kBgEh6T1LqIFFZWS+J67fnON1RqRGsJ2XRW/6gSh9p8ZO7g9H76+kFe6MuZsjT6T+o3LL17Laxcccv9pBJb1y5qE88nU4XOeMPXdRLsD8ISF87UqcndDQhbNFbCABqJf9Q5hnoGoGRY1eFotfFfbiK4a6rt5zZ4pY93GwWrTy1u2S2cGjq3RsSQ00FZ4+h2zInQSL9wEMgmCJJqDVyEGUyW7x3TAfmM0kiYxllkmSMzVcHh86L4nwkJQCG9vwzhyX1qGyP3WsUb6mgZ+45yCkYQzoR+U+bePA5oJfubIQhsXElh7xd/+vUEIhTMOzaPIH+UfyqQDzF1ONDJ4Uqc9XptQJBFcBegMJzAv//nGMS7h8BhOItrmflJ2wvvGVWwiEF0fJcvB4adUqnr99eRtKjqiT9/l0Be7XXzzFNd49qaa4+zgx6gxf2vCC7dhFsRr6saeaDd22KajOlAAOluuq4LP+dMES5//c28TPpHs7IGaCmyemCHF3BsnWmtq2nDJX7XPG5XNAAQf3f8W7fQFJ/SgKp35cLRhz+0GYcM3TgO+K58mMmxb6DPk/v0eRUtg2sWh36WtU98Q== sigurdga@nemi"
+
+      - name: Add web_server_user to new group to have easy read access to web files
+        user: name={{ web_server_user }} groups={{ project_user }}
+
+  - name: Setup Nidarholm project
+    hosts: all
+    remote_user: nidarholm
+    vars:
+      - project_name: nidarholm
+        project_home: /srv/{{ project_name }}
+        project_user: "{{ project_name }}"
+        server_name: "{{ project_name }}.strekmann.no"
+        server_url: "http://{{ project_name }}.strekmann.no"
+        server_port: 13412
+    tasks:
+      - name: Check connection
+        shell: ls
+
+      - name: Initialize deploy root
+        deploy_helper: path={{ project_home }}
+
+      - name: Create release directory  # Not necessary if we checkout with git
+        file: path={{ deploy_helper.new_release_path }} state=directory mode=0755
+
+      - name: Add "unfinished file" for deploy_helper
+        file: path={{ deploy_helper.new_release_path }}/{{ deploy_helper.unfinished_filename }} state=touch
+
+      - name: Build package to dist
+        local_action: command npm run dist
+
+      - name: Synchronize dist
+        synchronize: src=../dist/ dest={{ deploy_helper.new_release_path }}
+
+      - name: Rebuild dependencies for this setup
+        command: npm rebuild chdir={{ deploy_helper.new_release_path }}
+
+      - name: Add production config
+        template: src=config.production.js.j2 dest={{ deploy_helper.new_release_path }}/config/production.js
+
+      - name: Remove default nginx vhost config
+        remote_user: root
+        file:
+          path: /etc/nginx/sites-enabled/default
+          state: absent
+        notify: reload nginx
+
+      - name: Copy nginx config
+        remote_user: root
+        template: src={{ project_name }}.nginx.j2 dest=/etc/nginx/sites-available/{{ project_name }} owner=root mode=644
+        notify: reload nginx
+
+      - name: Symlink nginx config
+        file: path=/etc/nginx/sites-enabled/{{ project_name }} src=/etc/nginx/sites-available/{{ project_name }} state=link
+        remote_user: root
+        notify: reload nginx
+
+      - name: Copy systemd config
+        remote_user: root
+        template: src={{ project_name }}.service.j2 dest=/etc/systemd/system/{{ project_name }}.service owner=root mode=644
+        notify:
+          - reload systemd daemon
+          - reload systemd service
+
+      - name: Finalize the deploy, removing the unfinished file and switching the symlink
+        deploy_helper: path={{ project_home }} release={{ deploy_helper.new_release }} state=finalize
+        notify:
+          - reload systemd service
+
+    handlers:
+      - name: reload systemd daemon
+        command: systemctl daemon-reload
+        remote_user: root
+
+      - name: reload systemd service
+        service: name={{ project_name }} state=restarted enabled=true
+        remote_user: root
+
+      - name: reload nginx
+        service: name=nginx state=reloaded
+        remote_user: root

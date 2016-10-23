@@ -1,23 +1,21 @@
-import webpack from 'webpack';
 import path from 'path';
+import webpack from 'webpack';
+import CopyWebpackPlugin from 'copy-webpack-plugin';
 
 module.exports = {
-    entry: './src/client/app.js',
-    devtool: 'cheap-module-source-map',
-    plugins: [
-        new webpack.DefinePlugin({
-            'process.env': {
-                // This has effect on the react lib size
-                NODE_ENV: JSON.stringify('development'),
-            },
-            __CLIENT__: JSON.stringify(true),
-        }),
-        new webpack.ContextReplacementPlugin(/moment[\\\/]locale$/, /^\.\/(en|nb|nn|zh-cn)$/),
-    ],
-    output: {
-        filename: 'javascript.js',
-        publicPath: 'http://localhost:3001/js/',
+    devServer: {
+        port: 3001,
+        hot: true,
+        proxy: {
+            '*': 'http://localhost:3000',
+        },
     },
+    devtool: 'inline-source-map',
+    entry: [
+        'webpack-dev-server/client?http://127.0.0.1:3001/',
+        'webpack/hot/only-dev-server',
+        './src/client/app.js',
+    ],
     module: {
         loaders: [
             {
@@ -46,11 +44,24 @@ module.exports = {
             },
         ],
     },
+    output: {
+        path: path.join(__dirname, 'dist', 'static'),
+        publicPath: '/',
+        filename: 'javascript.js',
+    },
+    plugins: [
+        new webpack.HotModuleReplacementPlugin(),
+        new webpack.NoErrorsPlugin(),
+        new CopyWebpackPlugin([{
+            from: path.join(__dirname, 'src', 'static'),
+        }]),
+        new webpack.ContextReplacementPlugin(/moment[\\\/]locale$/, /^\.\/(en|nb|nn|zh-cn)$/),
+    ],
     sassLoader: {
         includePaths: [
             path.resolve(__dirname, 'node_modules/bootstrap-sass/assets/stylesheets'),
             path.resolve(__dirname, 'node_modules/font-awesome/scss'),
             path.resolve(__dirname, 'node_modules/foundation-sites/scss'),
-        ]
-    }
+        ],
+    },
 };

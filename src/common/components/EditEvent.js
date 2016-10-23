@@ -1,11 +1,16 @@
 import React from 'react';
 import moment from 'moment';
 
+import AutoComplete from 'material-ui/AutoComplete';
 import RaisedButton from 'material-ui/RaisedButton';
 import TextField from 'material-ui/TextField';
 import DatePicker from 'material-ui/DatePicker';
+import Subheader from 'material-ui/Subheader';
 import TimePicker from 'material-ui/TimePicker';
 import Chip from 'material-ui/Chip';
+import { List } from 'material-ui/List';
+
+import PermissionItem from './PermissionItem';
 
 export default class EditEvent extends React.Component {
     static propTypes = {
@@ -16,6 +21,7 @@ export default class EditEvent extends React.Component {
         end: React.PropTypes.string,
         tags: React.PropTypes.array,
         year: React.PropTypes.string,
+        permissions: React.PropTypes.array,
         mdtext: React.PropTypes.string,
         saveEvent: React.PropTypes.func,
         closeEdit: React.PropTypes.func,
@@ -25,14 +31,19 @@ export default class EditEvent extends React.Component {
         id: this.props.id,
         title: this.props.title,
         location: this.props.location,
-        start: moment(this.props.start).toDate(),
-        end: moment(this.props.end).toDate(),
+        start: this.props.start ? moment(this.props.start).toDate() : null,
+        end: this.props.end ? moment(this.props.end).toDate() : null,
         tags: this.props.tags,
         mdtext: this.props.mdtext,
+        permissions: this.props.permissions || [],
     }
 
     onChangeTitle = (event, title) => {
         this.setState({ title });
+    }
+
+    onChangeLocation = (event, location) => {
+        this.setState({ location });
     }
 
     onChangeStart = (event, date) => {
@@ -43,27 +54,59 @@ export default class EditEvent extends React.Component {
     }
 
     onChangeStartDate = (event, date) => {
-        this.setState({
-            start: moment(this.state.start).set({
-                year: date.getFullYear(),
-                month: date.getMonth(),
-                date: date.getDate(),
-            }).toDate(),
-        });
+        if (!this.state.start) {
+            this.setState({ start: date });
+        }
+        else {
+            this.setState({
+                start: moment(this.state.start).set({
+                    year: date.getFullYear(),
+                    month: date.getMonth(),
+                    date: date.getDate(),
+                }).toDate(),
+            });
+        }
     }
 
     onChangeEndDate = (event, date) => {
-        this.setState({
-            end: moment(this.state.end).set({
-                year: date.getFullYear(),
-                month: date.getMonth(),
-                date: date.getDate(),
-            }).toDate(),
-        });
+        if (!this.state.end) {
+            this.setState({ end: date });
+        }
+        else {
+            this.setState({
+                end: moment(this.state.end).set({
+                    year: date.getFullYear(),
+                    month: date.getMonth(),
+                    date: date.getDate(),
+                }).toDate(),
+            });
+        }
     }
 
     onChangeDescription = (event, mdtext) => {
         this.setState({ mdtext });
+    }
+
+    onPermissionChange = (value) => {
+        this.setState({
+            permission: value,
+        });
+    }
+
+    addPermission = (chosen) => {
+        const permissions = this.state.permissions;
+        permissions.push(chosen);
+        this.setState({
+            permissions,
+            permission: '',
+        });
+    }
+
+    removePermission = (permissionId) => {
+        const permissions = this.state.permissions.filter(_p => _p.value !== permissionId);
+        this.setState({
+            permissions,
+        });
     }
 
     saveEvent = () => {
@@ -81,6 +124,15 @@ export default class EditEvent extends React.Component {
     }
 
     render() {
+        const viewer = this.props.viewer;
+        const org = this.props.organization;
+        const permissions = [];
+        if (viewer) {
+            permissions.push({ value: 'p', text: 'Verden' });
+            viewer.groups.forEach(group => {
+                permissions.push({ value: group.id, text: group.name });
+            });
+        }
         return (
             <form>
                 <div>
@@ -131,12 +183,30 @@ export default class EditEvent extends React.Component {
                     />
                 </div>
                 <div>
-                    {this.state.tags.map((tag, i) => this.renderChip(tag, i))}
+                    {this.state.tags ? this.state.tags.map((tag, i) => this.renderChip(tag, i)) : null}
                 </div>
                 <div>
-                    <TextField
-                        value={this.state.location}
-                        floatingLabelText="Rettigheter"
+                    <List>
+                        <Subheader>Rettigheter</Subheader>
+                        {
+                            this.state.permissions.map(
+                                permission => <PermissionItem
+                                    key={permission.value}
+                                    removePermission={this.removePermission}
+                                    {...permission}
+                                />
+                                )
+                        }
+                    </List>
+                    <AutoComplete
+                        id="permissions"
+                        floatingLabelText="Legg til rettigheter"
+                        filter={AutoComplete.fuzzyFilter}
+                        dataSource={permissions}
+                        maxSearchResults={8}
+                        searchText={this.state.permission}
+                        onNewRequest={this.addPermission}
+                        onUpdateInput={this.onPermissionChange}
                     />
                 </div>
                 <div>
