@@ -292,31 +292,6 @@ a:focus {
     }
 }
 
-@media #{$topbar-media-query} {
-    #logobtn {
-        display: block;
-        width: 70px;
-        height: 70px;
-        background-color: $primary-color;
-        background-image: url(../img/btn.png);
-        background-repeat: no-repeat;
-        background-position: 50% 50%;
-        box-shadow: rgba(0,0,0,.4) 1px 1px 2px -1px;
-        position: relative;
-        top: 0;
-        z-index: 10;
-        cursor: pointer;
-    }
-
-    nav.top-bar {
-        border-bottom: none;
-
-        .title-area .name {
-            display: none;
-        }
-    }
-
-}
 
 #forum,
 #news,
@@ -847,5 +822,21 @@ section {
     }
     .flex-menu-handler {
         display: block;
+    }
+}
+
+nav a {
+    color: white;
+    &:link {
+        color: white;
+    }
+    &:hover {
+        color: white;
+    }
+    &:active {
+        color: white;
+    }
+    &:visited {
+        color: white;
     }
 }

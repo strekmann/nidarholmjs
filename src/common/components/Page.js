@@ -4,6 +4,7 @@ import getMuiTheme from 'material-ui/styles/getMuiTheme';
 import IconMenu from 'material-ui/IconMenu';
 import MenuItem from 'material-ui/MenuItem';
 import IconButton from 'material-ui/IconButton';
+import Paper from 'material-ui/Paper';
 import ArrowDown from 'material-ui/svg-icons/navigation/arrow-drop-down';
 
 import EditPage from './EditPage';
@@ -113,7 +114,7 @@ class Page extends React.Component {
             );
         }
         return (
-            <section>
+            <Paper className="row">
                 <div style={{ float: 'right' }}>
                     <IconMenu
                         iconButtonElement={<IconButton><ArrowDown /></IconButton>}
@@ -124,7 +125,7 @@ class Page extends React.Component {
                     </IconMenu>
                 </div>
                 <Text text={org.page.mdtext} />
-            </section>
+            </Paper>
         );
     }
 }

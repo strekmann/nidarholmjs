@@ -11,9 +11,12 @@ export default class GroupItem extends React.Component {
     }
 
     render() {
+        if (!this.props.members.filter(member => member.user).length) {
+            return null;
+        }
         return (
             <div>
-                <h3><Link>{this.props.name}</Link></h3>
+                <h2>{this.props.name}</h2>
                 {this.props.members.map(member => <MemberItem
                     key={member.id}
                     isMember={this.props.isMember}

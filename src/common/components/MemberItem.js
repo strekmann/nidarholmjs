@@ -14,31 +14,34 @@ export default class MemberItem extends React.Component {
         if (this.props.user) {
             const user = this.props.user;
             return (
-                <div>
-                    <div
-                        style={{
-                            display: 'flex',
-                            justifyContent: 'space-between',
-                            marginBottom: '0.5rem',
-                        }}
-                    >
-                        <div>
-                            <Link to={`/users/${user.username}`}>{user.name}</Link><br />
-                            {this.props.isMember
-                                ? <div>
-                                    <Link
-                                        to={`mailto:${user.email}`}
-                                    >
-                                        {user.email}
-                                    </Link> - <Phone phone={user.phone} />
-                                </div>
+                <div style={{ marginBottom: 5 }}>
+                    {this.props.isMember
+                        ? <div>
+                            <Link to={`/users/${user.username}`}>{user.name}</Link>
+                            {' '}
+                            {this.props.role.tile || user.instrument
+                                ? <span>({this.props.role.title || user.instrument})</span>
+                                : null
+                            }
+                            <div>
+                                <Phone phone={user.phone} /> -
+                                {' '}
+                                <Link
+                                    to={`mailto:${user.email}`}
+                                >
+                                    {user.email}
+                                </Link>
+                            </div>
+                        </div>
+                        : <div>
+                            {user.name}
+                            {' '}
+                            {this.props.role.tile || user.instrument
+                                ? <span>({this.props.role.title || user.instrument})</span>
                                 : null
                             }
                         </div>
-                        <div>
-                            <span>{this.props.role.title} {user.instrument}</span>
-                        </div>
-                    </div>
+                    }
                 </div>
             );
         }
