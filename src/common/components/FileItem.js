@@ -62,7 +62,6 @@ export default class FileItem extends React.Component {
 
     render() {
         return (
-            <div>
             <Card key={this.props.id} style={{ width: 200, margin: '0 15px 15px 15px' }} >
                 <CardTitle>
                     <div style={{ float: 'right' }}>
@@ -71,7 +70,14 @@ export default class FileItem extends React.Component {
                             anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
                             targetOrigin={{ vertical: 'top', horizontal: 'right' }}
                         >
-                            <MenuItem primaryText="Rediger rettigheter" onTouchTap={this.toggleEditPermissions} />
+                            <MenuItem
+                                primaryText="Rediger rettigheter"
+                                onTouchTap={this.toggleEditPermissions}
+                            />
+                            <MenuItem
+                                primaryText="Bruk som prosjektplakat"
+                                onTouchTap={this.setProjectPoster}
+                            />
                         </IconMenu>
                     </div>
                     <Link
@@ -101,24 +107,23 @@ export default class FileItem extends React.Component {
                         permissions={flattenPermissions(this.props.permissions)}
                     />
                 </CardText>
+                {this.state.editPermissions
+                    ? <Dialog
+                        title="Rediger rettigheter"
+                        open={this.state.editPermissions}
+                        onRequestClose={this.closeEditPermissions}
+                    >
+                        <PermissionField
+                            permissions={this.state.permissions}
+                            onChange={this.onPermissionChange}
+                            groups={this.props.viewer.groups}
+                            users={this.props.viewer.friends}
+                        />
+                        <RaisedButton label="Lagre" onClick={this.savePermissions} />
+                    </Dialog>
+                    : null
+                }
             </Card>
-            {this.state.editPermissions
-                ? <Dialog
-                    title="Rediger rettigheter"
-                    open={this.state.editPermissions}
-                    onRequestClose={this.closeEditPermissions}
-                >
-                    <PermissionField
-                        permissions={this.state.permissions}
-                        onChange={this.onPermissionChange}
-                        groups={this.props.viewer.groups}
-                        users={this.props.viewer.friends}
-                    />
-                    <RaisedButton label="Lagre" onClick={this.savePermissions} />
-                </Dialog>
-                : null
-            }
-        </div>
         );
     }
 }
