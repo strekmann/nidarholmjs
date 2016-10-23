@@ -1,0 +1,39 @@
+upstream app {
+    server 127.0.0.1:{{ server_port }};
+}
+
+server {
+    listen 80;
+    listen   [::]:80;
+    server_name {{ server_name }};
+
+    access_log  /var/log/nginx/{{ server_name }}.access.log;
+    error_log /var/log/nginx/{{ server_name }}.error.log;
+    client_max_body_size 100M;
+
+    location ~ ^/(img/|fonts/|styles.css|javascript.js|favicon.ico|apple-touch-icon-precomposed.png) {
+        root {{ deploy_helper.current_path }}/static;
+        access_log off;
+        log_not_found off;
+        expires 1d;
+    }
+
+    location / {
+        proxy_redirect off;
+        proxy_set_header X-Real-IP              $remote_addr;
+        proxy_set_header X-Forwarded-For        $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto      $scheme;
+        proxy_set_header Host                   $http_host;
+        proxy_set_header X-NginX-Proxy          true;
+        proxy_set_header Connection             "";
+        proxy_pass http://app;
+    }
+
+    gzip on;
+    gzip_comp_level 6;
+    gzip_vary on;
+    gzip_min_length 1000;
+    gzip_proxied any;
+    gzip_types text/plain text/html text/css application/json application/x-javascript text/xml application/xml application/xml+rss text/javascript;
+    gzip_buffers 16 8k;
+}
