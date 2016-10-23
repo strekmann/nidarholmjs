@@ -36,6 +36,17 @@
           - nodejs
           - imagemagick
 
+      - name: Create filesystem on extra volume
+        filesystem: fstype=ext4 dev=/dev/disk/by-id/scsi-0DO_Volume_uploaded
+
+      - name: Mount volume
+        mount:
+          name: /mnt/uploaded
+          src: /dev/disk/by-id/scsi-0DO_Volume_uploaded
+          fstype: ext4
+          opts: defaults,nofail,discard
+          state: mounted
+
       - name: Create project user
         user:
           name={{ project_user }}
@@ -76,6 +87,14 @@
 
       - name: Add "unfinished file" for deploy_helper
         file: path={{ deploy_helper.new_release_path }}/{{ deploy_helper.unfinished_filename }} state=touch
+
+      - name: Create subdirectory with project permissions
+        remote_user: root
+        file: path=/mnt/uploaded/files owner={{ project_user }} group={{ project_user }} state=directory recurse=yes
+
+      - name: Link shared folder to /mnt/uploaded/files
+        remote_user: root
+        file: src=/mnt/uploaded/files dest={{ deploy_helper.shared_path }}/uploaded_files owner={{ project_user }} group={{ project_user }} state=link
 
       - name: Build package to dist
         local_action: command npm run dist
