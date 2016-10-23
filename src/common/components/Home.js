@@ -8,7 +8,6 @@ import { Link } from 'react-router';
 import Text from './Text';
 import Date from './Date';
 import Email from './Email';
-import EditDescriptionMutation from '../mutations/editDescription';
 
 import theme from '../theme';
 
@@ -33,35 +32,8 @@ class Home extends React.Component {
         this.muiTheme = getMuiTheme(theme);
     }
 
-    state = {
-        editDescription: false,
-        description_nb: this.props.organization.description_nb,
-    }
-
     getChildContext() {
         return { muiTheme: this.muiTheme };
-    }
-
-    onChangeDescription = (event) => {
-        this.setState({ description_nb: event.target.value });
-    }
-
-    toggleEditDescription = () => {
-        this.setState({ editDescription: !this.state.editDescription });
-    }
-
-    saveDescription = () => {
-        this.context.relay.commitUpdate(new EditDescriptionMutation({
-            viewer: this.props.viewer,
-            organization: this.props.organization,
-            description_nb: this.state.description_nb,
-        }), {
-            onSuccess: () => {
-                this.setState({
-                    editDescription: false,
-                });
-            },
-        });
     }
 
     render() {
@@ -217,14 +189,12 @@ export default Relay.createContainer(Home, {
             name
             email
             username
-            ${EditDescriptionMutation.getFragment('viewer')},
         }`,
         organization: () => Relay.QL`
         fragment on Organization {
             id
             name
             email
-            description_nb
             map_url
             contact_text
             summaries {
