@@ -19,6 +19,9 @@ module.exports = {
     express: {
         port: {{ server_port }},
     },
+    override: {
+        site: 'nidarholm',
+    },
     session: {
         secret: '{{ server_secret }}',
     },
