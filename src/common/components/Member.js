@@ -94,9 +94,9 @@ class Member extends React.Component {
                     </IconMenu>
                 </div>
                 <div
-                    style={{ display: 'flex', justifyContent: 'space-between', margin: '0 -15px' }}
+                    style={{ display: 'flex', justifyContent: 'space-between', margin: '0 -20px' }}
                 >
-                    <div style={{ padding: '0 15px' }}>
+                    <div style={{ padding: '0 20px' }}>
                         <div>
                             <a href={`mailto:${user.email}`}>{user.email}</a>
                         </div>
@@ -128,7 +128,7 @@ class Member extends React.Component {
                             </div>
                         </div>
                     </div>
-                    <div style={{ padding: '0 15px' }}>
+                    <div style={{ padding: '0 20px', width: '25%', minWidth: 230 }}>
                         <img src={user.profile_picture_path} alt={`Bilde av ${user.name}`} />
                         <div>Bursdag <Date date={user.born} format="Do MMMM" /></div>
                         <div>
