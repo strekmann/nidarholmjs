@@ -88,24 +88,13 @@ body {
 
 h1 {
     font-family: $sans-font;
-    //font-style: italic;
-    margin: rem-calc(5px 0 10px 0);
-    line-height: 1.2;
-    color: #999999;
-    font-weight: normal;
 }
 
 h2, h3 {
     font-family: $sans-font;
-    font-weight: normal;
 }
 h3 {
     font-weight: normal;
-}
-
-#upcoming-activities {
-    margin-top: -1px;
-    margin-bottom: 0;
 }
 
 .phone {
