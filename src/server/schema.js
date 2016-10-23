@@ -853,6 +853,38 @@ const mutationSaveFilePermissions = mutationWithClientMutationId({
     },
 });
 
+const mutationSetProjectPoster = mutationWithClientMutationId({
+    name: 'SetProjectPoster',
+    inputFields: {
+        projectId: { type: new GraphQLNonNull(GraphQLID) },
+        fileId: { type: new GraphQLNonNull(GraphQLID) },
+    },
+    outputFields: {
+        project: {
+            type: projectType,
+            resolve: (payload) => payload,
+        },
+    },
+    mutateAndGetPayload: ({ projectId, fileId }, { viewer }) => {
+        const id = fromGlobalId(projectId).id;
+        const posterId = fromGlobalId(fileId).id;
+        if (!viewer) {
+            throw new Error('Nobody!');
+        }
+        const query = Project.findByIdAndUpdate(
+            id,
+            { poster: posterId },
+            { new: true },
+        );
+        return authenticate(query, viewer).exec().then(project => {
+            if (!project) {
+                throw new Error('Nothing!');
+            }
+            return project;
+        });
+    },
+});
+
 const mutationEditEvent = mutationWithClientMutationId({
     name: 'EditEvent',
     inputFields: {
@@ -1097,7 +1129,8 @@ const mutationType = new GraphQLObjectType({
         editPage: mutationEditPage,
         addFile: mutationAddFile,
         addScore: mutationAddScore,
-        SaveFilePermissions: mutationSaveFilePermissions,
+        saveFilePermissions: mutationSaveFilePermissions,
+        setProjectPoster: mutationSetProjectPoster,
     }),
 });
 

@@ -770,6 +770,18 @@ span.permissions {
     min-height: 100px;
 }
 
+html {
+    box-sizing: border-box;
+}
+
+*, *:before, *:after {
+    box-sizing: inherit;
+}
+
+body {
+    margin: 0;
+    font-family: sans-serif;
+}
 
 section {
     max-width: 1000px;

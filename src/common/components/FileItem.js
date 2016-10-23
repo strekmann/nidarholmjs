@@ -27,6 +27,7 @@ export default class FileItem extends React.Component {
         normal_path: React.PropTypes.string,
         path: React.PropTypes.string,
         onSavePermissions: React.PropTypes.func.isRequired,
+        onSetProjectPoster: React.PropTypes.func,
         viewer: React.PropTypes.object,
     }
 
@@ -58,6 +59,10 @@ export default class FileItem extends React.Component {
                 editPermissions: false,
             });
         });
+    }
+
+    setProjectPoster = () => {
+        this.props.onSetProjectPoster(this.props.id);
     }
 
     render() {

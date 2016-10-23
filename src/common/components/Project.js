@@ -22,6 +22,7 @@ import MusicList from './MusicList';
 import AddEventMutation from '../mutations/addEvent';
 import AddFileMutation from '../mutations/addFile';
 import SaveFilePermissionsMutation from '../mutations/saveFilePermissions';
+import SetProjectPosterMutation from '../mutations/setProjectPoster';
 import theme from '../theme';
 
 class Project extends React.Component {
@@ -142,6 +143,14 @@ class Project extends React.Component {
         });
     }
 
+    onSetProjectPoster = (file) => {
+        this.context.relay.commitUpdate(new SetProjectPosterMutation({
+            organization: this.props.organization,
+            fileId: file,
+            projectId: this.props.organization.project.id,
+        }));
+    }
+
     render() {
         const viewer = this.props.viewer;
         const org = this.props.organization;
@@ -211,6 +220,7 @@ class Project extends React.Component {
                                 files={project.files}
                                 memberGroupId={org.member_group.id}
                                 onSavePermissions={this.onSaveFilePermissions}
+                                onSetProjectPoster={this.onSetProjectPoster}
                                 style={{ margin: '0 -15px' }}
                                 title="Prosjektfiler"
                                 viewer={this.props.viewer}
@@ -253,6 +263,7 @@ class Project extends React.Component {
                                 files={project.files}
                                 memberGroupId={org.member_group.id}
                                 onSavePermissions={this.onSaveFilePermissions}
+                                onSetProjectPoster={this.onSetProjectPoster}
                                 viewer={this.props.viewer}
                                 style={{ margin: '0 -15px' }}
                             />
@@ -287,6 +298,7 @@ export default Relay.createContainer(Project, {
                 id
             }
             project(year:$year, tag:$tag) {
+                id
                 title
                 tag
                 start
@@ -359,6 +371,7 @@ export default Relay.createContainer(Project, {
             ${AddEventMutation.getFragment('organization')}
             ${AddFileMutation.getFragment('organization')}
             ${SaveFilePermissionsMutation.getFragment('organization')}
+            ${SetProjectPosterMutation.getFragment('organization')}
         }`,
     },
 });

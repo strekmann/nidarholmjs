@@ -65,7 +65,7 @@ class Home extends React.Component {
                 </div>
                 <Paper
                     className="main"
-                    style={{ maxWidth: 1000, margin: '0 auto', padding: '0 15px 2em' }}
+                    style={{ maxWidth: 1000, margin: '0 auto', padding: '0 20px 2em' }}
                 >
                     {nextProject ?
                         <div>
@@ -74,14 +74,14 @@ class Home extends React.Component {
                                     display: 'flex',
                                     flexWrap: 'wrap',
                                     maxWidth: 1000,
-                                    margin: '0 -15px',
+                                    margin: '0 -20px',
                                 }}
                             >
                                 <div
                                     style={{
                                         width: nextProject.poster ? '50%' : '75%',
-                                        minWidth: 270,
-                                        padding: '0 15px',
+                                        minWidth: 260,
+                                        padding: '0 20px',
                                         display: 'flex',
                                         flexDirection: 'column',
                                         justifyContent: 'space-between',
@@ -105,18 +105,29 @@ class Home extends React.Component {
                                     </Link>
                                 </div>
                                 {nextProject.poster ?
-                                    <div style={{ width: '25%', minWidth: 270, padding: '0 15px' }}>
+                                    <div
+                                        style={{
+                                            width: '25%',
+                                            minWidth: 230,
+                                            padding: '0 20px',
+                                            marginTop: '2em',
+                                        }}
+                                    >
                                         <Card>
                                             <CardMedia>
-                                                <img
-                                                    alt="Konsertplakat"
-                                                    src={nextProject.poster.normal_path}
-                                                />
+                                                <Link
+                                                    to={`/${nextProject.year}/${nextProject.tag}`}
+                                                >
+                                                    <img
+                                                        alt="Konsertplakat"
+                                                        src={nextProject.poster.normal_path}
+                                                    />
+                                                </Link>
                                             </CardMedia>
                                         </Card>
                                     </div>
                                 : null }
-                                <div style={{ width: '25%', minWidth: 230, padding: '0 15px' }}>
+                                <div style={{ width: '25%', minWidth: 230, padding: '0 20px' }}>
                                     <h2>Neste aktiviteter</h2>
                                     <EventList events={org.nextEvents} saveEvent={this.saveEvent} />
                                     <Link to="projects">

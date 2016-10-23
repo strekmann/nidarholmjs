@@ -9,6 +9,7 @@ export default class FileList extends React.Component {
         style: React.PropTypes.object,
         title: React.PropTypes.string,
         onSavePermissions: React.PropTypes.func,
+        onSetProjectPoster: React.PropTypes.func,
         viewer: React.PropTypes.object,
     }
     render() {
@@ -27,6 +28,7 @@ export default class FileList extends React.Component {
                             key={edge.node.id}
                             memberGroupId={this.props.memberGroupId}
                             onSavePermissions={this.props.onSavePermissions}
+                            onSetProjectPoster={this.props.onSetProjectPoster}
                             viewer={this.props.viewer}
                             {...edge.node}
                         />
