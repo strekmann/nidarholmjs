@@ -8,6 +8,8 @@ export default class FileList extends React.Component {
         memberGroupId: React.PropTypes.string,
         style: React.PropTypes.object,
         title: React.PropTypes.string,
+        onSavePermissions: React.PropTypes.func,
+        viewer: React.PropTypes.object,
     }
     render() {
         const style = this.props.style || {};
@@ -24,6 +26,8 @@ export default class FileList extends React.Component {
                         <FileItem
                             key={edge.node.id}
                             memberGroupId={this.props.memberGroupId}
+                            onSavePermissions={this.props.onSavePermissions}
+                            viewer={this.props.viewer}
                             {...edge.node}
                         />
                         ))

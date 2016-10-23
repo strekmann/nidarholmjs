@@ -808,6 +808,51 @@ const mutationAddEvent = mutationWithClientMutationId({
         return event.save();
     },
 });
+
+const mutationSaveFilePermissions = mutationWithClientMutationId({
+    name: 'SaveFilePermissions',
+    inputFields: {
+        fileId: { type: new GraphQLNonNull(GraphQLID) },
+        permissions: { type: new GraphQLList(GraphQLString) },
+    },
+    outputFields: {
+        file: {
+            type: fileType,
+            resolve: (payload) => payload,
+        },
+    },
+    mutateAndGetPayload: ({ fileId, permissions }, { viewer }) => {
+        const id = fromGlobalId(fileId).id;
+        const permissionObj = { public: false, groups: [], users: [] };
+        permissions.forEach(permission => {
+            if (permission === 'p') {
+                permissionObj.public = true;
+            }
+            const idObj = fromGlobalId(permission);
+            if (idObj.type === 'Group') {
+                permissionObj.groups.push(idObj.id);
+            }
+            else if (idObj.type === 'User') {
+                permissionObj.users.push(idObj.id);
+            }
+        });
+        if (!viewer) {
+            throw new Error('Nobody!');
+        }
+        const query = File.findByIdAndUpdate(
+            id,
+            { permissions: permissionObj },
+            { new: true }
+        );
+        return authenticate(query, viewer).exec().then(file => {
+            if (!file) {
+                throw new Error('Nothing!');
+            }
+            return file;
+        });
+    },
+});
+
 const mutationEditEvent = mutationWithClientMutationId({
     name: 'EditEvent',
     inputFields: {
@@ -1052,6 +1097,7 @@ const mutationType = new GraphQLObjectType({
         editPage: mutationEditPage,
         addFile: mutationAddFile,
         addScore: mutationAddScore,
+        SaveFilePermissions: mutationSaveFilePermissions,
     }),
 });
 

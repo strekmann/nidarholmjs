@@ -10,7 +10,6 @@ import IconButton from 'material-ui/IconButton';
 import IconMenu from 'material-ui/IconMenu';
 import MenuItem from 'material-ui/MenuItem';
 import Paper from 'material-ui/Paper';
-import RaisedButton from 'material-ui/RaisedButton';
 import getMuiTheme from 'material-ui/styles/getMuiTheme';
 
 import Date from './Date';
@@ -22,6 +21,7 @@ import FileUpload from './FileUpload';
 import MusicList from './MusicList';
 import AddEventMutation from '../mutations/addEvent';
 import AddFileMutation from '../mutations/addFile';
+import SaveFilePermissionsMutation from '../mutations/saveFilePermissions';
 import theme from '../theme';
 
 class Project extends React.Component {
@@ -132,6 +132,16 @@ class Project extends React.Component {
         });
     }
 
+    onSaveFilePermissions = (file, permissions, onSuccess) => {
+        this.context.relay.commitUpdate(new SaveFilePermissionsMutation({
+            organization: this.props.organization,
+            fileId: file,
+            permissions: permissions.map(permission => permission.id),
+        }), {
+            onSuccess,
+        });
+    }
+
     render() {
         const viewer = this.props.viewer;
         const org = this.props.organization;
@@ -200,8 +210,10 @@ class Project extends React.Component {
                             ? <FileList
                                 files={project.files}
                                 memberGroupId={org.member_group.id}
+                                onSavePermissions={this.onSaveFilePermissions}
                                 style={{ margin: '0 -15px' }}
                                 title="Prosjektfiler"
+                                viewer={this.props.viewer}
                             />
                             : null
                         }
@@ -240,6 +252,8 @@ class Project extends React.Component {
                             <FileList
                                 files={project.files}
                                 memberGroupId={org.member_group.id}
+                                onSavePermissions={this.onSaveFilePermissions}
+                                viewer={this.props.viewer}
                                 style={{ margin: '0 -15px' }}
                             />
                         </Dialog>
@@ -342,8 +356,9 @@ export default Relay.createContainer(Project, {
                     }
                 }
             }
-            ${AddEventMutation.getFragment('organization')},
-            ${AddFileMutation.getFragment('organization')},
+            ${AddEventMutation.getFragment('organization')}
+            ${AddFileMutation.getFragment('organization')}
+            ${SaveFilePermissionsMutation.getFragment('organization')}
         }`,
     },
 });
