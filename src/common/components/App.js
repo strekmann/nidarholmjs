@@ -64,6 +64,7 @@ export default Relay.createContainer(App, {
             encoded_email,
             twitter,
             facebook,
+            is_member,
         }`,
     },
 });

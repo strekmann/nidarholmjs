@@ -44,6 +44,8 @@ class Navigation extends React.Component {
 
     render() {
         const viewer = this.props.viewer;
+        const org = this.props.organization;
+        const isMember = org.is_member;
         const logo = (
             <Link
                 to="/"
@@ -63,7 +65,7 @@ class Navigation extends React.Component {
         return (
             <div style={{ backgroundColor: pink900 }}>
                 <div className="flex-menu-desktop">
-                    <div
+                    <nav
                         className="flex-menu"
                         style={{
                             display: 'flex',
@@ -84,15 +86,6 @@ class Navigation extends React.Component {
                                 justifyContent: 'flex-start',
                                 alignItems: 'center',
                             }}
-                        />
-                        <div
-                            style={{
-                                display: 'flex',
-                                flexWrap: 'wrap',
-                                flexGrow: 1,
-                                justifyContent: 'flex-end',
-                                alignItems: 'center',
-                            }}
                         >
                             <Link to="/om" style={{ color: 'white' }}>
                                 Om oss
@@ -106,8 +99,26 @@ class Navigation extends React.Component {
                             <Link to="/stott-oss" style={{ color: 'white' }}>
                                 Støtt oss
                             </Link>
-                            {viewer ?
-                                <a
+                        </div>
+                        <div
+                            style={{
+                                display: 'flex',
+                                flexWrap: 'wrap',
+                                flexGrow: 1,
+                                justifyContent: 'flex-end',
+                                alignItems: 'center',
+                            }}
+                        >
+                            {isMember
+                                ? <Link to="/files">Filer</Link>
+                                : null
+                            }
+                            {isMember
+                                ? <Link to="/pages">Sider</Link>
+                                : null
+                            }
+                            {viewer
+                                ? <a
                                     href={`/users/${viewer.username}`}
                                     style={{
                                         display: 'flex',
@@ -122,8 +133,7 @@ class Navigation extends React.Component {
                                     />
                                     <span>{viewer.name}</span>
                                 </a>
-                                :
-                                <Link
+                                : <Link
                                     to="/login"
                                     style={{
                                         padding: 0,
@@ -137,7 +147,7 @@ class Navigation extends React.Component {
                                 </Link>
                             }
                         </div>
-                    </div>
+                    </nav>
                 </div>
                 <div className="flex-menu-mobile" style={{ position: 'relative' }}>
                     {logo}
@@ -157,7 +167,7 @@ class Navigation extends React.Component {
                         <NavigationMenu color={fullWhite} />
                     </button>
                     {this.state.open ?
-                        <div
+                        <nav
                             className="flex-menu"
                             style={{
                                 display: 'flex',
@@ -213,7 +223,7 @@ class Navigation extends React.Component {
                                     </a>
                                 }
                             </div>
-                        </div>
+                        </nav>
                         : null
                     }
                 </div>
