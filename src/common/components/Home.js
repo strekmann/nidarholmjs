@@ -42,7 +42,7 @@ class Home extends React.Component {
                 <div
                     style={{
                         backgroundImage:
-                            'url(/img/Musikkforeningen-Nidarholm-dir-Trond-Madsen-1.jpg)',
+                            'url(/img/jubileumskonsert-banner.jpg)',
                         backgroundPosition: 'top center',
                         backgroundSize: 'cover',
                         height: '30vw',
@@ -56,6 +56,7 @@ class Home extends React.Component {
                             paddingTop: '3vw',
                             textAlign: 'center',
                             color: 'rgba(255,255,255,0.6)',
+                            display: 'none',
                         }}
                     >
                         {org.name}
