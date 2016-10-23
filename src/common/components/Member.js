@@ -129,7 +129,9 @@ class Member extends React.Component {
                         </div>
                     </div>
                     <div style={{ padding: '0 20px', width: '25%', minWidth: 230 }}>
-                        <img src={user.profile_picture_path} alt={`Bilde av ${user.name}`} />
+                        <Paper>
+                            <img src={user.profile_picture_path} alt={`Bilde av ${user.name}`} />
+                        </Paper>
                         <div>Bursdag <Date date={user.born} format="Do MMMM" /></div>
                         <div>
                             Startet for <DateFromNow date={user.joined} /> og har NMF-nummer {user.nmf_id}
