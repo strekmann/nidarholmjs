@@ -5,6 +5,7 @@ import Dialog from 'material-ui/Dialog';
 import IconMenu from 'material-ui/IconMenu';
 import MenuItem from 'material-ui/MenuItem';
 import IconButton from 'material-ui/IconButton';
+import Paper from 'material-ui/Paper';
 import ArrowDown from 'material-ui/svg-icons/navigation/arrow-drop-down';
 
 import theme from '../theme';
@@ -75,7 +76,7 @@ class Event extends React.Component {
     render() {
         const event = this.props.organization.event;
         return (
-            <section>
+            <Paper className="row">
                 <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                     <h1>{event.title}</h1>
                     <IconMenu
@@ -102,7 +103,7 @@ class Event extends React.Component {
                         {...event}
                     />
                 </Dialog>
-            </section>
+            </Paper>
         );
     }
 }
