@@ -4,6 +4,7 @@ import getMuiTheme from 'material-ui/styles/getMuiTheme';
 import IconMenu from 'material-ui/IconMenu';
 import MenuItem from 'material-ui/MenuItem';
 import IconButton from 'material-ui/IconButton';
+import Paper from 'material-ui/Paper';
 import ArrowDown from 'material-ui/svg-icons/navigation/arrow-drop-down';
 import { lightBlue100 } from 'material-ui/styles/colors';
 
@@ -76,8 +77,12 @@ class Member extends React.Component {
     render() {
         const member = this.props.organization.member;
         const user = member.user;
+        const isMember = this.props.organization.is_member;
+        if (!isMember) {
+            return <div />;
+        }
         return (
-            <section>
+            <Paper className="row">
                 <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                     <h1>{user.name}</h1>
                     <IconMenu
@@ -88,44 +93,50 @@ class Member extends React.Component {
                         <MenuItem primaryText="Rediger" onTouchTap={this.toggleEdit} />
                     </IconMenu>
                 </div>
-                <div>
-                    <img src={user.profile_picture_path} alt={`Bilde av ${user.name}`} />
-                </div>
-                <div>
-                    <a href={`mailto:${user.email}`}>{user.email}</a>
-                </div>
-                <div>
-                    <Phone phone={user.phone} />
-                </div>
-                <div>
-                    {user.address}
-                    <br />
-                    {user.postcode} {user.city}
-                </div>
-                <div>Bursdag <Date date={user.born} format="Do MMMM" /></div>
-                <div>
-                    Startet for <DateFromNow date={user.joined} /> og har NMF-nummer {user.nmf_id}
-                </div>
-                <div>
-                    <h3>Grupper</h3>
-                    <ul>
-                        {user.groups.map(group => <li key={group.id}>{group.name}</li>)}
-                    </ul>
-                </div>
-                <div style={{ backgroundColor: lightBlue100 }}>
-                    <div>
-                        Reskontro: {user.reskontro}
+                <div
+                    style={{ display: 'flex', justifyContent: 'space-between', margin: '0 -15px' }}
+                >
+                    <div style={{ padding: '0 15px' }}>
+                        <div>
+                            <a href={`mailto:${user.email}`}>{user.email}</a>
+                        </div>
+                        <div>
+                            <Phone phone={user.phone} />
+                        </div>
+                        <div>
+                            {user.address}
+                            <br />
+                            {user.postcode} {user.city}
+                        </div>
+                        <div>
+                            <h3>Grupper</h3>
+                            <ul>
+                                {user.groups.map(group => <li key={group.id}>{group.name}</li>)}
+                            </ul>
+                        </div>
+                        <div style={{ backgroundColor: lightBlue100 }}>
+                            <div>
+                                Reskontro: {user.reskontro}
+                            </div>
+                            <Text text={user.membership_history} />
+                            <div>
+                                Brukernavn {user.username},
+                                aktiv: <Yesno value={user.is_active} />,
+                                i medlemslista: <Yesno value={user.in_list} />,
+                                unngår epost: <Yesno value={user.no_email} />,
+                                permisjon: <Yesno value={user.on_leave} />
+                            </div>
+                        </div>
                     </div>
-                    <Text text={user.membership_history} />
-                    <div>
-                        Brukernavn {user.username},
-                        aktiv: <Yesno value={user.is_active} />,
-                        i medlemslista: <Yesno value={user.in_list} />,
-                        unngår epost: <Yesno value={user.no_email} />,
-                        permisjon: <Yesno value={user.on_leave} />
+                    <div style={{ padding: '0 15px' }}>
+                        <img src={user.profile_picture_path} alt={`Bilde av ${user.name}`} />
+                        <div>Bursdag <Date date={user.born} format="Do MMMM" /></div>
+                        <div>
+                            Startet for <DateFromNow date={user.joined} /> og har NMF-nummer {user.nmf_id}
+                        </div>
                     </div>
                 </div>
-            </section>
+            </Paper>
         );
     }
 }
@@ -142,6 +153,7 @@ export default Relay.createContainer(Member, {
         `,
         organization: () => Relay.QL`
         fragment on Organization {
+            is_member
             member(username:$username) {
                 id
                 role {

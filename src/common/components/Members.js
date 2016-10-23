@@ -1,6 +1,7 @@
 import React from 'react';
 import Relay from 'react-relay';
 
+import Paper from 'material-ui/Paper';
 import getMuiTheme from 'material-ui/styles/getMuiTheme';
 
 import GroupItem from './GroupItem';
@@ -32,7 +33,7 @@ class Members extends React.Component {
     render() {
         const org = this.props.organization;
         return (
-            <section>
+            <Paper className="row">
                 <h1>Medlemmer</h1>
                 {org.instrument_groups.map(
                     group => <GroupItem
@@ -42,7 +43,7 @@ class Members extends React.Component {
                     />
                     )
                 }
-            </section>
+            </Paper>
         );
     }
 }
