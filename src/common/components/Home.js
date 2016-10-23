@@ -88,13 +88,13 @@ class Home extends React.Component {
                                     }}
                                 >
                                     <h2>Neste konsert</h2>
-                                    <span
+                                    <Link to={`/${nextProject.year}/${nextProject.tag}`}
                                         style={{
                                             fontSize: '3rem',
                                         }}
                                     >
                                         {nextProject.title}
-                                    </span>
+                                    </Link>
                                     <div className="meta" style={{ fontWeight: 'bold' }}>
                                         <Date date={nextProject.end} />
                                     </div>
@@ -224,6 +224,8 @@ export default Relay.createContainer(Home, {
                 title
                 start
                 end
+                year
+                tag
                 poster {
                     filename
                     normal_path
