@@ -137,26 +137,8 @@ class Project extends React.Component {
         const org = this.props.organization;
         const project = this.props.organization.project;
         const isMember = this.props.organization.is_member;
-        if (!isMember) {
-            return (
-                <div>
-                    <h1>{project.title}</h1>
-                    <div className="meta">
-                        {project.start ? <span><Date date={project.start} /> – </span> : null}
-                        <Date date={project.end} />
-                        {project.conductors.map(conductor => conductor.name)}
-                    </div>
-                    <Text text={project.public_mdtext} />
-                    {project.poster ?
-                        <img alt="Konsertplakat" src={project.poster.large_path} />
-                        :
-                        null
-                    }
-                </div>
-            );
-        }
         return (
-            <section>
+            <Paper className="row">
                 <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                     <div>
                         <h1>{project.title}</h1>
@@ -166,30 +148,65 @@ class Project extends React.Component {
                             {project.conductors.map(conductor => conductor.name)}
                         </div>
                     </div>
-                    <IconMenu
-                        iconButtonElement={<IconButton><ArrowDown /></IconButton>}
-                        anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
-                        targetOrigin={{ vertical: 'top', horizontal: 'right' }}
-                    >
-                        <MenuItem primaryText="Legg til aktivitet" onTouchTap={this.toggleAddEvent} />
-                        <MenuItem primaryText="Last opp filer" onTouchTap={this.toggleAddFile} />
-                    </IconMenu>
+                    {isMember
+                        ? <IconMenu
+                            iconButtonElement={<IconButton><ArrowDown /></IconButton>}
+                            anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
+                            targetOrigin={{ vertical: 'top', horizontal: 'right' }}
+                        >
+                            <MenuItem
+                                primaryText="Legg til aktivitet"
+                                onTouchTap={this.toggleAddEvent}
+                            />
+                            <MenuItem
+                                primaryText="Last opp filer"
+                                onTouchTap={this.toggleAddFile}
+                            />
+                        </IconMenu>
+                        : null
+                    }
                 </div>
-                <div style={{ display: 'flex' }}>
-                    <div>
-                        <RaisedButton label="Public/private" onClick={this.togglePublic} />
-                        <Text text={this.state.public ? project.public_mdtext : project.private_mdtext} />
-                        <Paper style={{ padding: 15, marginRight: 15, marginBottom: 30 }}>
-                            <h2>Repertoar</h2>
-                            <MusicList music={project.music} />
-                        </Paper>
-                        <FileList
-                            files={project.files}
-                            memberGroupId={org.member_group.id}
-                            style={{ margin: '0 -15px' }}
-                        />
+                <div
+                    style={{
+                        display: 'flex',
+                        flexWrap: 'wrap',
+                        justifyContent: 'space-between',
+                        margin: '0 -15px',
+                    }}
+                >
+                    <div style={{ padding: '0 15px', maxWidth: 700 }}>
+                        {isMember
+                            ? <div>
+                                <h2>Repertoar</h2>
+                                <MusicList music={project.music} />
+                            </div>
+                            : null
+                        }
+                        {project.public_mdtext
+                            ? <div>
+                                <h2>Informasjon</h2>
+                                <Text text={project.public_mdtext} />
+                            </div>
+                            : null
+                        }
+                        {isMember && project.private_mdtext
+                            ? <div>
+                                <h2>Intern informasjon</h2>
+                                <Text text={project.private_mdtext} />
+                            </div>
+                            : null
+                        }
+                        {isMember
+                            ? <FileList
+                                files={project.files}
+                                memberGroupId={org.member_group.id}
+                                style={{ margin: '0 -15px' }}
+                                title="Prosjektfiler"
+                            />
+                            : null
+                        }
                     </div>
-                    <div style={{ flexGrow: 1, minWidth: 270 }}>
+                    <div style={{ width: 300, padding: '0 15px' }}>
                         {project.poster ?
                             <img alt="Konsertplakat" src={project.poster.large_path} />
                             :
@@ -199,8 +216,8 @@ class Project extends React.Component {
                         <EventList events={project.events} />
                     </div>
                 </div>
-                {viewer ?
-                    <div>
+                {isMember
+                    ? <div>
                         <Dialog
                             title="Legg til aktivitet"
                             open={this.state.addEvent}
@@ -227,8 +244,9 @@ class Project extends React.Component {
                             />
                         </Dialog>
                     </div>
-                : null }
-            </section>
+                    : null
+                }
+            </Paper>
         );
     }
 }
@@ -312,6 +330,7 @@ export default Relay.createContainer(Project, {
                             tags
                             is_image
                             normal_path
+                            path
                         }
                     }
                 }

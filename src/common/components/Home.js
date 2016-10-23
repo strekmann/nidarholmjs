@@ -88,7 +88,8 @@ class Home extends React.Component {
                                     }}
                                 >
                                     <h2>Neste konsert</h2>
-                                    <Link to={`/${nextProject.year}/${nextProject.tag}`}
+                                    <Link
+                                        to={`/${nextProject.year}/${nextProject.tag}`}
                                         style={{
                                             fontSize: '3rem',
                                         }}

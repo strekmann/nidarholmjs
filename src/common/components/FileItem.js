@@ -1,8 +1,8 @@
 import React from 'react';
 import { Link } from 'react-router';
-import RaisedButton from 'material-ui/RaisedButton';
 import { Card, CardTitle, CardText, CardMedia } from 'material-ui/Card';
 import Download from 'material-ui/svg-icons/file/file-download';
+import { grey400 } from 'material-ui/styles/colors';
 import PermissionChips from './PermissionChips';
 import { flattenPermissions } from '../utils';
 
@@ -18,15 +18,34 @@ export default class FileItem extends React.Component {
         memberGroupId: React.PropTypes.string,
         is_image: React.PropTypes.bool,
         normal_path: React.PropTypes.string,
+        path: React.PropTypes.string,
     }
 
     render() {
         return (
-            <Card key={this.props.id} style={{ width: 270, margin: '0 15px 15px 15px' }} >
-                <CardTitle><Link>{this.props.filename}</Link></CardTitle>
-                {this.props.is_image ?
-                    <CardMedia><img alt="" src={this.props.normal_path} /></CardMedia>
-                    : <RaisedButton icon={<Download />} label="Last ned" />}
+            <Card key={this.props.id} style={{ width: 200, margin: '0 15px 15px 15px' }} >
+                <CardTitle>
+                    <Link
+                        style={{
+                            textOverflow: 'ellipsis',
+                            overflow: 'hidden',
+                            width: 170,
+                            display: 'inline-block',
+                        }}
+                    >
+                        {this.props.filename}
+                    </Link>
+                </CardTitle>
+                {this.props.is_image
+                    ? <CardMedia><img alt="" src={this.props.normal_path} /></CardMedia>
+                    : <Link
+                        style={{ display: 'block', textAlign: 'center' }}
+                        href={this.props.path}
+                        download
+                    >
+                        <Download style={{ height: 100, width: '100%' }} color={grey400} />
+                    </Link>
+                    }
                 <CardText>
                     <PermissionChips
                         memberGroupId={this.props.memberGroupId}
