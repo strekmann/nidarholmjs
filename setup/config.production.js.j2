@@ -15,6 +15,7 @@ module.exports = {
             clientSecret: '{{ twitter_client_secret }}',
             callbackURL: '{{ server_url }}/auth/twitter/callback'
         },
+        remember_me: true,
     },
     express: {
         port: {{ server_port }},
@@ -24,6 +25,7 @@ module.exports = {
     },
     session: {
         secret: '{{ server_secret }}',
+        secure: false,
     },
     files: {
         raw_prefix: '{{ deploy_helper.shared_path }}/uploaded_files',

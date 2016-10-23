@@ -46,7 +46,6 @@ module.exports = {
         port: 3000,
         trust_proxy: true,
         session: {
-            cookiesecret: 'cookiesecret',
             httpOnly: true,
             maxAge: 1000 * 60 * 60 * 24 * 100,
             name: 'ros.sid',
