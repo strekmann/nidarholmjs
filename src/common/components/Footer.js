@@ -11,7 +11,6 @@ class Footer extends React.Component {
         const org = this.props.organization;
         return (
             <footer>
-                <hr />
                 <div style={{ textAlign: 'center', marginTop: 50, marginBottom: 80 }}>
                     <a href={`https://facebook.com/${org.facebook}`}>
                         <i className="fa fa-fw fa-envelope fa-3x" />
