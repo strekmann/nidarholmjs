@@ -4,12 +4,12 @@
 /* eslint camelcase: "off" */
 
 import bodyParser from 'body-parser';
-import cookieParser from 'cookie-parser';
+//import cookieParser from 'cookie-parser';
 import session from 'express-session';
 import errorHandler from 'errorhandler';
 import express from 'express';
 import http from 'http';
-import flash from 'connect-flash';
+//import flash from 'connect-flash';
 import httpProxy from 'http-proxy';
 import bunyan from 'bunyan';
 import expressBunyan from 'express-bunyan-logger';
@@ -61,11 +61,11 @@ function get_member_group() {
 */
 
 if (config.get('express.trust_proxy')) {
-    app.enable('trust proxy');
+    app.set('trust proxy', 1);
 }
 
-app.use(cookieParser(config.get('express.session.secret')));
-app.use(flash());
+//app.use(cookieParser(config.get('express.session.secret')));
+//app.use(flash());
 
 if (config.util.getEnv('NODE_ENV') === 'test') {
     app.use(errorHandler({
@@ -74,8 +74,8 @@ if (config.util.getEnv('NODE_ENV') === 'test') {
     }));
     app.use(session({
         secret: 'testing-secret',
-        resave: config.get('session.resave'),
-        saveUninitialized: config.get('sessopn.saveUninitialized'),
+        resave: config.get('express.session.resave'),
+        saveUninitialized: config.get('express.session.saveUninitialized'),
     }));
 }
 
@@ -91,9 +91,13 @@ app.use(session({
     resave: config.get('express.session.resave'),
     saveUninitialized: config.get('express.session.saveUninitialized'),
     rolling: config.get('express.session.rolling'),
+    maxAge: config.get('express.session.maxAge'),
+    httpOnly: false,
     cookie: {
         maxAge: config.get('express.session.maxAge'),
+        secure: config.get('express.session.secure'),
     },
+    sameSite: 'strict',
 }));
 
 /* LOGGING */
