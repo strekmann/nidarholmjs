@@ -5,6 +5,7 @@ import ArrowDown from 'material-ui/svg-icons/navigation/arrow-drop-down';
 import IconButton from 'material-ui/IconButton';
 import IconMenu from 'material-ui/IconMenu';
 import MenuItem from 'material-ui/MenuItem';
+import Paper from 'material-ui/Paper';
 import RaisedButton from 'material-ui/RaisedButton';
 import getMuiTheme from 'material-ui/styles/getMuiTheme';
 
@@ -80,14 +81,14 @@ class Pages extends React.Component {
         const viewer = this.props.viewer;
         const org = this.props.organization;
         return (
-            <div>
+            <Paper className="row">
                 {this.state.addPage
                     ? <EditPage
                         viewer={this.props.viewer}
                         savePage={this.savePage}
                         {...this.state.page}
                     />
-                    : <section>
+                    : <div>
                         <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                             <div>
                                 <h1>Sider</h1>
@@ -109,9 +110,9 @@ class Pages extends React.Component {
                             :
                                 null
                         }
-                    </section>
+                    </div>
                 }
-            </div>
+            </Paper>
         );
     }
 

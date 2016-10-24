@@ -39,7 +39,7 @@ class Page extends React.Component {
 
     state = {
         edit: false,
-        permissions: flattenPermissions(this.props.organization.page.permissions),
+        permissions: this.props.organization.page && flattenPermissions(this.props.organization.page.permissions),
     }
 
     getChildContext() {
@@ -95,11 +95,12 @@ class Page extends React.Component {
 
     render() {
         const org = this.props.organization;
-        if (!org.page.slug) {
+        if (!org.page || !org.page.slug) {
             return (
-                <section>
-                    <h1>Not found: {this.props.location.pathname}</h1>
-                </section>
+                <Paper className="row">
+                    <h1>Ikke funnet: {this.props.location.pathname}</h1>
+                    <p>Denne sida fins ikke</p>
+                </Paper>
             );
         }
         if (this.state.edit) {
