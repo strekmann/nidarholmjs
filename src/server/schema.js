@@ -609,6 +609,23 @@ organizationType = new GraphQLObjectType({
                 return authenticate(query, viewer, { exclude: ['mdtext'] });
             },
         },
+        events: {
+            type: eventConnection.connectionType,
+            args: connectionArgs,
+            resolve: (parent, { ...args }, { viewer }) => {
+                const query = Event
+                .find({
+                    start: {
+                        $gte: moment().startOf('day').toDate(),
+                    },
+                })
+                .sort({ start: 1 });
+                return connectionFromMongooseQuery(
+                    authenticate(query, viewer, { exclude: ['mdtext'] }),
+                    args,
+                );
+            },
+        },
         nextEvents: {
             type: eventConnection.connectionType,
             args: connectionArgs,

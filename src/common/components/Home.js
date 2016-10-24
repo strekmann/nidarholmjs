@@ -98,10 +98,9 @@ class Home extends React.Component {
                                     <div className="meta" style={{ fontWeight: 'bold' }}>
                                         <Date date={nextProject.end} />
                                     </div>
-                                    <Text text={nextProject.public_mdtext} />
-                                    <Link to="projects" style={{ alignSelf: 'end' }}>
-                                        Alle konserter
-                                    </Link>
+                                    <div>
+                                        <Text text={nextProject.public_mdtext} />
+                                    </div>
                                 </div>
                                 {nextProject.poster ?
                                     <div
@@ -127,9 +126,16 @@ class Home extends React.Component {
                                 <div style={{ width: '25%', minWidth: 230, padding: '0 20px' }}>
                                     <h2>Neste aktiviteter</h2>
                                     <EventList events={org.nextEvents} saveEvent={this.saveEvent} />
-                                    <Link to="projects">
-                                        Aktivitetskalender
-                                    </Link>
+                                    <div>
+                                        <Link to="projects">
+                                            Prosjektoversikt
+                                        </Link>
+                                    </div>
+                                    <div>
+                                        <Link to="events">
+                                            Aktivitetskalender
+                                        </Link>
+                                    </div>
                                 </div>
                             </div>
                         </div>
