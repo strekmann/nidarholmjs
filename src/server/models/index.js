@@ -1,9 +1,10 @@
 import mongoose from 'mongoose';
 import marked from 'marked';
 import crypto from 'crypto';
+import uuid from 'node-uuid';
 
 const PasswordCode = new mongoose.Schema({
-    _id: { type: String, unique: true, required: true }, // uuid
+    _id: { type: String, unique: true, required: true, default: uuid.v4 }, // uuid
     user: { type: String, required: true },
     created: { type: Date, required: true, default: Date.now },
 });
