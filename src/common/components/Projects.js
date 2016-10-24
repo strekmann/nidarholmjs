@@ -59,7 +59,7 @@ class Projects extends React.Component {
         const org = this.props.organization;
         return (
             <section className="row" style={{ display: 'flex', flexWrap: 'wrap' }}>
-                <div style={{ minWidth: 230, width: '50%', padding: '0 20px' }}>
+                <div style={{ minWidth: 230, width: '50%', padding: '0 20px', margin: '0 -20px' }}>
                     <h1>Kommende prosjekter</h1>
                     <ProjectList
                         projects={org.nextProjects}
