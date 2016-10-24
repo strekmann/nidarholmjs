@@ -27,7 +27,7 @@ export default class FileUpload extends React.Component {
     render() {
         const viewer = this.props.viewer;
         return (
-            <Paper>
+            <div>
                 <PermissionField
                     permissions={this.state.permissions}
                     onChange={this.onPermissionChange}
@@ -35,7 +35,7 @@ export default class FileUpload extends React.Component {
                     users={viewer.friends}
                 />
                 <Dropzone onDrop={this.onDrop} />
-            </Paper>
+            </div>
         );
     }
 }

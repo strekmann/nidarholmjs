@@ -685,15 +685,6 @@ span.permissions {
     color: $hr-border-color;
 }
 
-#memberlist .row {
-    margin-bottom: rem-calc(10px);
-}
-@media #{$large-up} {
-    #memberlist .row {
-        margin-bottom: 0;
-    }
-}
-
 #contact {
     figure {
         margin: 0;
@@ -780,7 +771,7 @@ section {
 .row {
     max-width: 1000px;
     margin: 0 auto;
-    padding: 0 15px;
+    padding: 0 20px;
 }
 
 .main h2 {

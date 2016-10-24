@@ -67,9 +67,9 @@ export default class FileItem extends React.Component {
 
     render() {
         return (
-            <Card key={this.props.id} style={{ width: 200, margin: '0 15px 15px 15px' }} >
-                <CardTitle>
-                    <div style={{ float: 'right' }}>
+            <Card key={this.props.id} style={{ width: 200, margin: '0 20px 20px 20px' }} >
+                <CardTitle style={{ paddingBottom: 0 }}>
+                    <div style={{ float: 'right', marginTop: -20, marginRight: -20 }}>
                         <IconMenu
                             iconButtonElement={<IconButton><ArrowDown /></IconButton>}
                             anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
@@ -79,10 +79,13 @@ export default class FileItem extends React.Component {
                                 primaryText="Rediger rettigheter"
                                 onTouchTap={this.toggleEditPermissions}
                             />
-                            <MenuItem
-                                primaryText="Bruk som prosjektplakat"
-                                onTouchTap={this.setProjectPoster}
-                            />
+                            {this.props.onSetProjectPoster
+                                ? <MenuItem
+                                    primaryText="Bruk som prosjektplakat"
+                                    onTouchTap={this.setProjectPoster}
+                                />
+                                : null
+                            }
                         </IconMenu>
                     </div>
                     <Link
