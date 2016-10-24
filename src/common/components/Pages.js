@@ -104,6 +104,7 @@ class Pages extends React.Component {
                         <PageList
                             pages={org.pages}
                             isAdmin={org.is_admin}
+                            memberGroupId={org.member_group.id}
                         />
                         {org.pages.pageInfo.hasNextPage ?
                             <RaisedButton primary>Mer</RaisedButton>
