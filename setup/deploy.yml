@@ -7,6 +7,7 @@
         project_home: /srv/{{ project_name }}
         project_user: "{{ project_name }}"
         web_server_user: www-data
+        server_name: "{{ project_name }}.strekmann.no"
 
     tasks:
       - name: Setup nodesource repository
@@ -14,6 +15,9 @@
 
       - name: Add nodesource key
         apt_key: url=https://deb.nodesource.com/gpgkey/nodesource.gpg.key state=present
+
+      - name: Setup backports repository
+        apt_repository: repo="deb http://ftp.debian.org/debian jessie-backports main" state=present
 
       - name: Upgrade packages
         apt: upgrade=full update_cache=yes autoremove=yes
@@ -35,6 +39,10 @@
           - nginx
           - nodejs
           - imagemagick
+          - ufw
+
+      - name: Install certbot from backports
+        apt: name=certbot default_release=jessie-backports state=present
 
       - name: Create filesystem on extra volume
         filesystem: fstype=ext4 dev=/dev/disk/by-id/scsi-0DO_Volume_uploaded
@@ -64,6 +72,28 @@
 
       - name: Add web_server_user to new group to have easy read access to web files
         user: name={{ web_server_user }} groups={{ project_user }}
+
+      - name: Open up http ports in firewall
+        ufw: rule=allow port={{ item }} proto=tcp
+        with_items:
+          - 80
+          - 443
+
+      - name: Run dhparams
+        remote_user: root
+        command: openssl dhparam -out /etc/ssl/certs/dhparams.pem 2048 creates=/etc/ssl/certs/dhparams.pem
+
+      - name: Stop nginx
+        remote_user: root
+        service: name=nginx state=stopped
+
+      - name: Run certbot
+        remote_user: root
+        command: certbot certonly --text --non-interactive --standalone --agree-tos --email {{ admin_email }} -d {{ server_name }}
+
+      - name: Start nginx
+        remote_user: root
+        service: name=nginx state=started
 
   - name: Setup Nidarholm project
     hosts: all
