@@ -4,13 +4,13 @@ import crypto from 'crypto';
 import uuid from 'node-uuid';
 
 const PasswordCode = new mongoose.Schema({
-    _id: { type: String, unique: true, required: true, default: uuid.v4 }, // uuid
+    _id: { type: String, unique: true, required: true, default: uuid.v4 },
     user: { type: String, required: true },
     created: { type: Date, required: true, default: Date.now },
 });
 
 const RememberMeToken = new mongoose.Schema({
-    _id: { type: String, unique: true, required: true }, // uuid
+    _id: { type: String, unique: true, required: true, default: uuid.v4 },
     user: { type: String, required: true },
     created: { type: Date, required: true, default: Date.now },
 });
