@@ -1125,7 +1125,7 @@ const mutationAddScore = mutationWithClientMutationId({
         const groupDbId = fromGlobalId(groupId).id;
         const permissionObj = { public: false, groups: [groupDbId], users: [] };
         return insertFile(
-            filename, hex, permissionObj, config.files.raw_prefix, viewer, pieceDbId,
+            filename, hex, permissionObj, [], config.files.raw_prefix, viewer, pieceDbId,
         ).then(file => {
             return {
                 file,

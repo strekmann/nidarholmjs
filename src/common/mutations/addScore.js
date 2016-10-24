@@ -31,8 +31,6 @@ export default class AddScoreMutation extends Relay.Mutation {
                     groupscores
                 }
             }
-            group
-            files
             newScoreEdge
         }`;
     }

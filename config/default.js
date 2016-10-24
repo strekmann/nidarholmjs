@@ -27,6 +27,7 @@ module.exports = {
             clientSecret: 'EzcmNycN1E50JFZKcRF8SyYW1s1bSgs6eztTqv8VQukO2ZxxUc',
             callbackURL: 'http://localhost:3000/auth/twitter/callback',
         },
+        remember_me: true,
     },
     bunyan: {
         level: 'info',

@@ -15,7 +15,6 @@ export default class GroupScores extends React.Component {
     }
 
     onDrop = (files) => {
-        console.log(files);
         this.props.uploadScores(files, this.props);
     }
 

@@ -4,7 +4,7 @@
 /* eslint camelcase: "off" */
 
 import bodyParser from 'body-parser';
-//import cookieParser from 'cookie-parser';
+import cookieParser from 'cookie-parser';
 import session from 'express-session';
 import errorHandler from 'errorhandler';
 import express from 'express';
@@ -64,7 +64,7 @@ if (config.get('express.trust_proxy')) {
     app.set('trust proxy', 1);
 }
 
-//app.use(cookieParser(config.get('express.session.secret')));
+app.use(cookieParser(config.get('express.session.secret')));
 //app.use(flash());
 
 if (config.util.getEnv('NODE_ENV') === 'test') {

@@ -16,9 +16,7 @@ class Projects extends React.Component {
 
     static propTypes = {
         organization: React.PropTypes.object,
-        relay: {
-            setVariables: React.PropTypes.func,
-        },
+        relay: React.PropTypes.object,
     }
 
     static childContextTypes = {
