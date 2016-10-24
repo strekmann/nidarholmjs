@@ -125,6 +125,10 @@ class Navigation extends React.Component {
                                 ? <Link to="/events">Aktiviteter</Link>
                                 : null
                             }
+                            {isMember
+                                ? <Link to="/music">Notearkiv</Link>
+                                : null
+                            }
                             {viewer
                                 ? <a
                                     href={`/users/${viewer.username}`}

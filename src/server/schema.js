@@ -407,6 +407,10 @@ pieceType = new GraphQLObjectType({
                      }));
             },
         },
+        scoreCount: {
+            type: GraphQLInt,
+            resolve: (piece => piece.scores.length),
+        },
         unique_number: { type: GraphQLInt },
         record_number: { type: GraphQLInt },
         archive_number: { type: GraphQLInt },
@@ -425,6 +429,11 @@ pieceType = new GraphQLObjectType({
         creator: { type: userType },
     }),
     interfaces: [nodeInterface],
+});
+
+const pieceConnection = connectionDefinitions({
+    name: 'Piece',
+    nodeType: pieceType,
 });
 
 projectType = new GraphQLObjectType({
@@ -722,6 +731,26 @@ organizationType = new GraphQLObjectType({
                 }
                 const id = fromGlobalId(pieceId).id;
                 return Piece.findById(id).exec();
+            },
+        },
+        pieces: {
+            type: pieceConnection.connectionType,
+            args: {
+                term: { type: GraphQLString },
+                ...connectionArgs,
+            },
+            resolve: (_, args, { viewer, organization }) => {
+                let query;
+                if (!args.term) {
+                    query = Piece.find();
+                }
+                else {
+                    query = Piece.find().regex('title', new RegExp(args.term, 'i'));
+                }
+                return connectionFromMongooseQuery(
+                    query.sort({ title: 1 }),
+                    args,
+                );
             },
         },
     },
