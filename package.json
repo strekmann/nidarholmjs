@@ -71,7 +71,7 @@
     "moment": "^2.10.0",
     "mongoose": "^4.0.5",
     "multer": "^1.1.0",
-    "node-uuid": "^1.4.1",
+    "node-uuid": "^1.4.7",
     "nodemailer": "^1.11.0",
     "passport": "^0.3.2",
     "passport-facebook": "^1.0.3",

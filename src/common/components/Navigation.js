@@ -55,9 +55,13 @@ class Navigation extends React.Component {
                 }}
             >
                 <img
-                    src="/img/btn.png"
+                    src="/img/logo.wh.svg"
                     alt="Nidarholm-logo"
-                    style={{ marginLeft: -15 }}
+                    style={{
+                        height: 70,
+                        paddingTop: 4,
+                        marginBottom: -16,
+                    }}
                 />
             </Link>
         );
