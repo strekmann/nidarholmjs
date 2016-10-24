@@ -58,25 +58,29 @@ class Projects extends React.Component {
     render() {
         const org = this.props.organization;
         return (
-            <section>
-                <h1>Kommende prosjekter</h1>
-                <ProjectList
-                    projects={org.nextProjects}
-                />
-                {org.nextProjects.pageInfo.hasNextPage ?
-                    <RaisedButton primary onClick={this.loadMoreUpcomongProjects}>Mer</RaisedButton>
-                    :
-                    null
-                }
-                <h1>Tidligere prosjekter</h1>
-                <ProjectList
-                    projects={org.previousProjects}
-                />
-                {org.previousProjects.pageInfo.hasNextPage ?
-                    <RaisedButton primary onClick={this.loadMorePreviousProjects}>Mer</RaisedButton>
-                    :
-                    null
-                }
+            <section className="row" style={{ display: 'flex', flexWrap: 'wrap' }}>
+                <div style={{ minWidth: 230, width: '50%', padding: '0 20px' }}>
+                    <h1>Kommende prosjekter</h1>
+                    <ProjectList
+                        projects={org.nextProjects}
+                    />
+                    {org.nextProjects.pageInfo.hasNextPage ?
+                        <RaisedButton primary onClick={this.loadMoreUpcomongProjects}>Mer</RaisedButton>
+                        :
+                            null
+                    }
+                </div>
+                <div style={{ minWidth: 230, width: '50%', padding: '0 20px' }}>
+                    <h1>Tidligere prosjekter</h1>
+                    <ProjectList
+                        projects={org.previousProjects}
+                    />
+                    {org.previousProjects.pageInfo.hasNextPage ?
+                        <RaisedButton primary onClick={this.loadMorePreviousProjects}>Mer</RaisedButton>
+                        :
+                            null
+                    }
+                </div>
             </section>
         );
     }
@@ -103,7 +107,7 @@ export default Relay.createContainer(Projects, {
                         public_mdtext
                         poster {
                             filename
-                            thumbnail_path
+                            large_path
                         }
                     }
                 }
