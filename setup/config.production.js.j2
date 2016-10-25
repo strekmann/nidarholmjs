@@ -18,12 +18,13 @@ module.exports = {
     },
     express: {
         port: {{ server_port }},
+        session: {
+            secret: '{{ server_secret }}',
+            domain: '{{ server_name }}',
+        },
     },
     override: {
         site: '{{ project_name }}',
-    },
-    session: {
-        secret: '{{ server_secret }}',
     },
     files: {
         raw_prefix: '{{ deploy_helper.shared_path }}/uploaded_files',

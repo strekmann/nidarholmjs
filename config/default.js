@@ -49,10 +49,11 @@ module.exports = {
             maxAge: 1000 * 60 * 60 * 24 * 30,
             name: 'nidarholm.sid',
             path: '/',
-            resave: true,
+            resave: false,
             rolling: true,
             saveUninitialized: false,
             secret: 'sessionsecret',
+            httpOnly: true,
             secure: true, // false in development
         },
     },

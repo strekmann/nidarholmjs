@@ -9,8 +9,8 @@ import session from 'express-session';
 import errorHandler from 'errorhandler';
 import express from 'express';
 import http from 'http';
-//import flash from 'connect-flash';
 import httpProxy from 'http-proxy';
+import mongoose from 'mongoose';
 import bunyan from 'bunyan';
 import expressBunyan from 'express-bunyan-logger';
 import path from 'path';
@@ -18,7 +18,7 @@ import path from 'path';
 // import passportSocketIO from 'passport.socketio';
 import config from 'config';
 import serveStatic from 'serve-static';
-import connectRedis from 'connect-redis';
+import connectMongo from 'connect-mongo';
 import multer from 'multer';
 import graphqlHTTP from 'express-graphql';
 
@@ -79,13 +79,14 @@ if (config.util.getEnv('NODE_ENV') === 'test') {
     }));
 }
 
-const RedisStore = connectRedis(session);
-const redisStoreOpts = config.get('redis');
-redisStoreOpts.ttl = config.get('express.session.maxAge') / 1000;
-const sessionStore = new RedisStore(redisStoreOpts);
+const MongoStore = connectMongo(session);
 
 app.use(session({
-    store: sessionStore,
+    store: new MongoStore({
+        mongooseConnection: mongoose.connection,
+        ttl: config.get('express.session.maxAge') / 1000,
+        touchAfter: config.get('express.session.maxAge') / 10000,
+    }),
     secret: config.get('express.session.secret'),
     name: config.get('express.session.name'),
     resave: config.get('express.session.resave'),
