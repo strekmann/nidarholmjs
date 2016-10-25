@@ -124,7 +124,7 @@ export default Relay.createContainer(Projects, {
                         tag
                         poster {
                             filename
-                            thumbnail_path
+                            large_path
                         }
                     }
                 }
