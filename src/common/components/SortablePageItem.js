@@ -9,6 +9,7 @@ const pageSource = {
     beginDrag(props) {
         return {
             id: props.id,
+            index: props.index,
             slug: props.slug,
         };
     },
@@ -16,7 +17,7 @@ const pageSource = {
 
 const pageTarget = {
     hover(props, monitor, component) {
-        const dragIndex = monitor.getItem().id;
+        const dragIndex = monitor.getItem().index;
         const hoverIndex = props.index;
 
         // Don't replace items with themselves
@@ -36,7 +37,7 @@ const pageTarget = {
     connectDragSource: connect.dragSource(),
     isDragging: monitor.isDragging(),
 }))
-export default class Page extends React.Component {
+export default class SortablePageItem extends React.Component {
     static propTypes = {
         connectDragSource: React.PropTypes.func.isRequired,
         connectDropTarget: React.PropTypes.func.isRequired,
@@ -52,7 +53,7 @@ export default class Page extends React.Component {
         const opacity = isDragging ? 0 : 1;
 
         return connectDragSource(connectDropTarget(
-            <div style={{ opacity }}>
+            <div style={{ cursor: 'move', opacity }}>
                 {slug}
             </div>
         ));

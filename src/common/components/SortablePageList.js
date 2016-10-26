@@ -15,9 +15,8 @@ export default class SortablePageList extends React.Component {
         pages: this.props.pages,
     }
 
-    movePage = (pageId, hoverIndex) => {
+    movePage = (dragIndex, hoverIndex) => {
         const { pages } = this.state;
-        const dragIndex = pages.findIndex(page => page.id === pageId);
         const dragPage = pages[dragIndex];
 
         this.setState(update(this.state, {
@@ -35,9 +34,10 @@ export default class SortablePageList extends React.Component {
         const { pages } = this.state;
         return (
             <div>
-                {pages.map(page => <SortablePageItem
-                    key={page.slug}
+                {pages.map((page, index) => <SortablePageItem
+                    key={page.id}
                     id={page.id}
+                    index={index}
                     slug={page.slug}
                     movePage={this.movePage}
                 />)}
