@@ -4,8 +4,22 @@ import RaisedButton from 'material-ui/RaisedButton';
 import Relay from 'react-relay';
 import getMuiTheme from 'material-ui/styles/getMuiTheme';
 
+import SaveOrganizationMutation from '../mutations/saveOrganization';
 import SortablePageList from './SortablePageList';
 import theme from '../theme';
+
+class PageItem extends React.Component {
+    addSummary = () => {
+        this.props.onAddSummary(this.props.id);
+    }
+
+    render() {
+        const { title, slug } = this.props;
+        return (
+            <div>{title} ({slug}) <RaisedButton label="+" onClick={this.addSummary} /></div>
+        );
+    }
+}
 
 class Organization extends React.Component {
     static contextTypes = {
@@ -40,19 +54,36 @@ class Organization extends React.Component {
         this.setState({ summaries });
     }
 
+    onAddSummary = (pageId) => {
+        const summaries = this.state.summaries;
+        summaries.push(pageId);
+        this.setState({ summaries });
+    }
+
+    saveOrganization = (event) => {
+        event.preventDefault();
+        this.context.relay.commitUpdate(new SaveOrganizationMutation({
+            organization: this.props.organization,
+            summaries: this.state.summaries.map(page => page.id),
+        }));
+    }
+
     render() {
         const org = this.props.organization;
         return (
             <Paper className="row">
                 <h1>Innstillinger</h1>
-                <h2>Forsidesnutter</h2>
-                <p>Hvor mange som vises er avhengig av hvordan forsida er definert. Du kan trykke pluss i den nederste lista for å legge dem til, eller minus i den øverste for å fjerne dem.</p>
-                <h3>Valgt</h3>
-                <SortablePageList pages={this.state.summaries} onChange={this.onChange} />
-                <h3>Mulige</h3>
-                <div>
-                    {org.pages.edges.map(edge => <div>{edge.node.title} ({edge.node.slug})</div>)}
-                </div>
+                <form onSubmit={this.saveOrganization}>
+                    <h2>Forsidesnutter</h2>
+                    <p>Hvor mange som vises er avhengig av hvordan forsida er definert. Du kan trykke pluss i den nederste lista for å legge dem til, eller minus i den øverste for å fjerne dem.</p>
+                    <h3>Valgt</h3>
+                    <SortablePageList pages={this.state.summaries} onChange={this.onChange} />
+                    <RaisedButton type="submit" label="Lagre" />
+                    <h3>Mulige</h3>
+                    <div>
+                        {org.pages.edges.map(edge => <PageItem key={edge.cursor} onAddSummary={this.onAddSummary} {...edge.node} />)}
+                    </div>
+                </form>
             </Paper>
         );
     }
@@ -73,12 +104,14 @@ export default Relay.createContainer(Organization, {
             }
             pages(first:100) {
                 edges {
+                    cursor
                     node {
                         title
                         slug
                     }
                 }
             }
+            ${SaveOrganizationMutation.getFragment('organization')}
         }`,
     },
 });
