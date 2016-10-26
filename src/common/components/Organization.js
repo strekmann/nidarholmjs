@@ -10,7 +10,7 @@ import theme from '../theme';
 
 class PageItem extends React.Component {
     addSummary = () => {
-        this.props.onAddSummary(this.props.id);
+        this.props.onAddSummary(this.props);
     }
 
     render() {
@@ -106,6 +106,7 @@ export default Relay.createContainer(Organization, {
                 edges {
                     cursor
                     node {
+                        id
                         title
                         slug
                     }
