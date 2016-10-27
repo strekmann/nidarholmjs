@@ -1082,7 +1082,6 @@ const mutationSaveOrganization = mutationWithClientMutationId({
     },
     mutateAndGetPayload: ({ summaryIds }, { viewer, organization }) => {
         const pageIds = summaryIds.map(pageId => fromGlobalId(pageId).id);
-        console.log("SA", pageIds, summaryIds, organization.id);
         return Organization.findByIdAndUpdate(organization.id, { summaries: pageIds }, { new: true });
     },
 });

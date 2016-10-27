@@ -30,6 +30,13 @@ export default class SortablePageList extends React.Component {
         this.props.onChange(this.state.pages);
     }
 
+    onRemoveSummary = (page) => {
+        const { pages } = this.state;
+        pages.splice(page.index, 1);
+        this.setState({ pages });
+        this.props.onChange(this.state.pages);
+    }
+
     render() {
         const { pages } = this.state;
         return (
@@ -40,6 +47,7 @@ export default class SortablePageList extends React.Component {
                     index={index}
                     slug={page.slug}
                     movePage={this.movePage}
+                    onRemoveSummary={this.onRemoveSummary}
                 />)}
             </div>
         );

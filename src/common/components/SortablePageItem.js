@@ -1,3 +1,4 @@
+import RaisedButton from 'material-ui/RaisedButton';
 import React from 'react';
 import { DragSource, DropTarget } from 'react-dnd';
 
@@ -46,6 +47,11 @@ export default class SortablePageItem extends React.Component {
         id: React.PropTypes.any.isRequired,
         slug: React.PropTypes.string.isRequired,
         movePage: React.PropTypes.func.isRequired,
+        onRemoveSummary: React.PropTypes.func,
+    }
+
+    removeSummary = () => {
+        this.props.onRemoveSummary(this.props);
     }
 
     render() {
@@ -55,6 +61,7 @@ export default class SortablePageItem extends React.Component {
         return connectDragSource(connectDropTarget(
             <div style={{ cursor: 'move', opacity }}>
                 {slug}
+                <RaisedButton label="-" onClick={this.removeSummary} />
             </div>
         ));
     }
