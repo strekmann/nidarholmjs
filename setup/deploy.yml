@@ -22,15 +22,6 @@
       - name: Upgrade packages
         apt: upgrade=full update_cache=yes autoremove=yes
 
-      - name: Install etckeeper
-        apt: name={{ item }} state=present
-        with_items:
-          - git
-          - etckeeper
-
-      - name: Initialize etckeeper
-        command: etckeeper init creates=/etc/.git
-
       - name: Install apt dependencies
         apt: name={{ item }} state=present
         with_items:
