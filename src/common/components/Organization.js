@@ -1,8 +1,7 @@
 import IconButton from 'material-ui/IconButton';
-import { List, ListItem } from 'material-ui/List';
 import AddCircle from 'material-ui/svg-icons/content/add-circle';
 import Paper from 'material-ui/Paper';
-import React from 'react';
+import React, {Component, PropTypes} from 'react';
 import RaisedButton from 'material-ui/RaisedButton';
 import Relay from 'react-relay';
 import getMuiTheme from 'material-ui/styles/getMuiTheme';
@@ -11,16 +10,27 @@ import SaveOrganizationMutation from '../mutations/saveOrganization';
 import SortablePageList from './SortablePageList';
 import theme from '../theme';
 
-class PageItem extends React.Component {
+class PageSummaryItem extends React.Component {
+    static propTypes = {
+        slug: PropTypes.string.isRequired,
+        title: PropTypes.string,
+        onAddSummary: PropTypes.func.isRequired,
+    }
     addSummary = () => {
         this.props.onAddSummary(this.props);
     }
 
     render() {
         const { title, slug } = this.props;
-        const add = <IconButton onClick={this.addSummary}><AddCircle /></IconButton>;
+        const addIcon = <IconButton onClick={this.addSummary}><AddCircle /></IconButton>;
         return (
-            <ListItem primaryText={title} secondaryText={slug} rightIconButton={add} />
+            <div style={{ display: 'flex', alignItems: 'center' }}>
+                <div style={{ flexGrow: 1 }}>
+                    <div>{title}</div>
+                    <div>/{slug}</div>
+                </div>
+                <div>{addIcon}</div>
+            </div>
         );
     }
 }
@@ -80,13 +90,26 @@ class Organization extends React.Component {
                 <form onSubmit={this.saveOrganization}>
                     <h2>Forsidesnutter</h2>
                     <p>Hvor mange som vises er avhengig av hvordan forsida er definert. Du kan trykke pluss i den nederste lista for å legge dem til, eller minus i den øverste for å fjerne dem.</p>
-                    <h3>Valgt</h3>
-                    <SortablePageList pages={this.state.summaries} onChange={this.onChange} />
-                    <RaisedButton type="submit" label="Lagre" />
-                    <h3>Mulige</h3>
-                    <List>
-                        {org.pages.edges.map(edge => <PageItem key={edge.cursor} onAddSummary={this.onAddSummary} {...edge.node} />)}
-                    </List>
+                    <div style={{ display: 'flex' }}>
+                        <div>
+                            <h3>Valgt</h3>
+                            <SortablePageList pages={this.state.summaries} onChange={this.onChange} />
+                            <RaisedButton type="submit" label="Lagre" />
+                        </div>
+                        <div>
+                            <h3>Mulige</h3>
+                            <div style={{ height: 400, overflow: 'scroll', overflowX: 'hidden' }}>
+                                {org.pages.edges.map(
+                                    edge => <PageSummaryItem
+                                        key={edge.cursor}
+                                        onAddSummary={this.onAddSummary}
+                                        {...edge.node}
+                                    />
+                                    )
+                                }
+                            </div>
+                        </div>
+                    </div>
                 </form>
             </Paper>
         );

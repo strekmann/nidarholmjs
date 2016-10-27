@@ -63,6 +63,10 @@ $serif-font: "Merriweather", serif;
 // foundation lib
 @import "foundation";
 
+$grey100: #fafafa;
+$grey200: #eeeeee;
+$grey600: #757575;
+
 $dark-orange: #f2784b;
 
 /* foundation ++ */
@@ -834,8 +838,14 @@ nav a {
 }
 
 .shade {
-    color: #757575;
+    color: $grey600;
     a {
-        color: #757575;
+        color: $grey600;
+    }
+}
+
+.draggable {
+    &:hover {
+        background-color: $grey200;
     }
 }

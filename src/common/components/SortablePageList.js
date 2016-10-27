@@ -41,7 +41,7 @@ export default class SortablePageList extends React.Component {
     render() {
         const { pages } = this.state;
         return (
-            <List>
+            <div>
                 {pages.map((page, index) => <SortablePageItem
                     key={page.id}
                     id={page.id}
@@ -51,7 +51,7 @@ export default class SortablePageList extends React.Component {
                     movePage={this.movePage}
                     onRemoveSummary={this.onRemoveSummary}
                 />)}
-            </List>
+            </div>
         );
     }
 }
