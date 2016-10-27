@@ -154,9 +154,9 @@ class Home extends React.Component {
                             </div>
                         : null }
                     </div>
-                    <div style={{ display: 'flex', maxWidth: 1000, margin: '0 -15px' }}>
+                    <div style={{ display: 'flex', flexWrap: 'wrap', margin: '0 -20px' }}>
                         {org.summaries.length > 1 ?
-                            <div style={{ padding: '0 15px' }}>
+                            <div style={{ padding: '0 20px', width: '50%', minWidth: 260 }}>
                                 <h2>
                                     <Link to={`/${org.summaries[1].slug}`}>
                                         {org.summaries[1].title}
@@ -167,7 +167,7 @@ class Home extends React.Component {
                             </div>
                         : null }
                         {org.summaries.length > 2 ?
-                            <div style={{ padding: '0 15px' }}>
+                            <div style={{ padding: '0 20px', width: '50%', minWidth: 260 }}>
                                 <h2>
                                     <Link to={`/${org.summaries[2].slug}`}>
                                         {org.summaries[2].title}
