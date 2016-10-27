@@ -41,10 +41,12 @@ const pageTarget = {
 }))
 @DragSource(Types.PAGE, pageSource, (connect, monitor) => ({
     connectDragSource: connect.dragSource(),
+    connectDragPreview: connect.dragPreview(),
     isDragging: monitor.isDragging(),
 }))
 export default class SortablePageItem extends React.Component {
     static propTypes = {
+        connectDragPreview: React.PropTypes.func.isRequired,
         connectDragSource: React.PropTypes.func.isRequired,
         connectDropTarget: React.PropTypes.func.isRequired,
         index: React.PropTypes.number.isRequired,
@@ -61,7 +63,7 @@ export default class SortablePageItem extends React.Component {
     }
 
     render() {
-        const { slug, title, isDragging, connectDragSource, connectDropTarget, ...rest } = this.props;
+        const { slug, title, isDragging, connectDragPreview, connectDragSource, connectDropTarget, ...rest } = this.props;
         const opacity = isDragging ? 0 : 1;
         const remove = <IconButton onClick={this.removeSummary}><RemoveCircle /></IconButton>;
 
@@ -73,8 +75,10 @@ export default class SortablePageItem extends React.Component {
                 ref={
                     instance => {
                         const node = findDOMNode(instance);
+                        //console.log(instance, node);
                         connectDragSource(node);
                         connectDropTarget(node);
+                        connectDragPreview(node);
                     }
                 }
                 rightIconButton={remove}
