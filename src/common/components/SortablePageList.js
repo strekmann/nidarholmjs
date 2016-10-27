@@ -1,3 +1,4 @@
+import { List } from 'material-ui/List';
 import React from 'react';
 import { DragDropContext } from 'react-dnd';
 import HTML5Backend from 'react-dnd-html5-backend';
@@ -40,16 +41,17 @@ export default class SortablePageList extends React.Component {
     render() {
         const { pages } = this.state;
         return (
-            <div>
+            <List>
                 {pages.map((page, index) => <SortablePageItem
                     key={page.id}
                     id={page.id}
                     index={index}
                     slug={page.slug}
+                    title={page.title}
                     movePage={this.movePage}
                     onRemoveSummary={this.onRemoveSummary}
                 />)}
-            </div>
+            </List>
         );
     }
 }

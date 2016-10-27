@@ -1,3 +1,6 @@
+import IconButton from 'material-ui/IconButton';
+import { List, ListItem } from 'material-ui/List';
+import AddCircle from 'material-ui/svg-icons/content/add-circle';
 import Paper from 'material-ui/Paper';
 import React from 'react';
 import RaisedButton from 'material-ui/RaisedButton';
@@ -15,8 +18,9 @@ class PageItem extends React.Component {
 
     render() {
         const { title, slug } = this.props;
+        const add = <IconButton onClick={this.addSummary}><AddCircle /></IconButton>;
         return (
-            <div>{title} ({slug}) <RaisedButton label="+" onClick={this.addSummary} /></div>
+            <ListItem primaryText={title} secondaryText={slug} rightIconButton={add} />
         );
     }
 }
@@ -80,9 +84,9 @@ class Organization extends React.Component {
                     <SortablePageList pages={this.state.summaries} onChange={this.onChange} />
                     <RaisedButton type="submit" label="Lagre" />
                     <h3>Mulige</h3>
-                    <div>
+                    <List>
                         {org.pages.edges.map(edge => <PageItem key={edge.cursor} onAddSummary={this.onAddSummary} {...edge.node} />)}
-                    </div>
+                    </List>
                 </form>
             </Paper>
         );

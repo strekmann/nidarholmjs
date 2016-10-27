@@ -1,6 +1,10 @@
-import RaisedButton from 'material-ui/RaisedButton';
+import IconButton from 'material-ui/IconButton';
+import { ListItem } from 'material-ui/List';
+import RemoveCircle from 'material-ui/svg-icons/content/remove-circle';
+import DragHandle from 'material-ui/svg-icons/editor/drag-handle';
 import React from 'react';
 import { DragSource, DropTarget } from 'react-dnd';
+import { findDOMNode } from 'react-dom';
 
 const Types = {
     PAGE: 'page',
@@ -12,6 +16,7 @@ const pageSource = {
             id: props.id,
             index: props.index,
             slug: props.slug,
+            title: props.title,
         };
     },
 };
@@ -55,14 +60,26 @@ export default class SortablePageItem extends React.Component {
     }
 
     render() {
-        const { slug, isDragging, connectDragSource, connectDropTarget } = this.props;
+        const { slug, title, isDragging, connectDragSource, connectDropTarget, ...rest } = this.props;
         const opacity = isDragging ? 0 : 1;
+        const remove = <IconButton onClick={this.removeSummary}><RemoveCircle /></IconButton>;
 
-        return connectDragSource(connectDropTarget(
-            <div style={{ cursor: 'move', opacity }}>
-                {slug}
-                <RaisedButton label="-" onClick={this.removeSummary} />
-            </div>
-        ));
+        return (
+            <ListItem
+                style={{ cursor: 'move', opacity }}
+                primaryText={title}
+                secondaryText={slug}
+                ref={
+                    instance => {
+                        const node = findDOMNode(instance);
+                        connectDragSource(node);
+                        connectDropTarget(node);
+                    }
+                }
+                rightIconButton={remove}
+                leftIcon={<DragHandle />}
+                {...rest}
+            />
+        );
     }
 }
