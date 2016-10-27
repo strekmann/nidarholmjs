@@ -1,7 +1,8 @@
 {
     "passPerPreset": true,
     "plugins": [
-        "babel-relay-plugin-loader"
+        "babel-relay-plugin-loader",
+        "transform-decorators-legacy"
     ],
     "presets": [
         "react",

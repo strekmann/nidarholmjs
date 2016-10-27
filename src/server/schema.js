@@ -1069,6 +1069,23 @@ const mutationEditPage = mutationWithClientMutationId({
     },
 });
 
+const mutationSaveOrganization = mutationWithClientMutationId({
+    name: 'SaveOrganization',
+    inputFields: {
+        summaryIds: { type: new GraphQLList(GraphQLID) },
+    },
+    outputFields: {
+        organization: {
+            type: organizationType,
+            resolve: payload => payload,
+        },
+    },
+    mutateAndGetPayload: ({ summaryIds }, { viewer, organization }) => {
+        const pageIds = summaryIds.map(pageId => fromGlobalId(pageId).id);
+        return Organization.findByIdAndUpdate(organization.id, { summaries: pageIds }, { new: true });
+    },
+});
+
 const mutationAddFile = mutationWithClientMutationId({
     name: 'AddFile',
     inputFields: {
@@ -1176,6 +1193,7 @@ const mutationType = new GraphQLObjectType({
         addFile: mutationAddFile,
         addScore: mutationAddScore,
         saveFilePermissions: mutationSaveFilePermissions,
+        saveOrganization: mutationSaveOrganization,
         setProjectPoster: mutationSetProjectPoster,
     }),
 });
