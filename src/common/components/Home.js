@@ -101,6 +101,11 @@ class Home extends React.Component {
                                     <div>
                                         <Text text={nextProject.public_mdtext} />
                                     </div>
+                                    <div>
+                                        <Link to="projects">
+                                            Konsertoversikt
+                                        </Link>
+                                    </div>
                                 </div>
                                 {nextProject.poster ?
                                     <div
@@ -126,11 +131,6 @@ class Home extends React.Component {
                                 <div style={{ width: '25%', minWidth: 230, padding: '0 20px' }}>
                                     <h2>Neste aktiviteter</h2>
                                     <EventList events={org.nextEvents} saveEvent={this.saveEvent} />
-                                    <div>
-                                        <Link to="projects">
-                                            Prosjektoversikt
-                                        </Link>
-                                    </div>
                                     <div>
                                         <Link to="events">
                                             Aktivitetskalender
@@ -239,6 +239,7 @@ export default Relay.createContainer(Home, {
                 end
                 year
                 tag
+                public_mdtext
                 poster {
                     filename
                     normal_path
