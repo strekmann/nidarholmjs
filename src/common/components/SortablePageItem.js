@@ -51,6 +51,7 @@ export default class SortablePageItem extends React.Component {
         isDragging: React.PropTypes.bool.isRequired,
         id: React.PropTypes.any.isRequired,
         slug: React.PropTypes.string.isRequired,
+        title: React.PropTypes.string,
         movePage: React.PropTypes.func.isRequired,
         onRemoveSummary: React.PropTypes.func,
     }
@@ -78,7 +79,6 @@ export default class SortablePageItem extends React.Component {
                 }
                 rightIconButton={remove}
                 leftIcon={<DragHandle />}
-                {...rest}
             />
         );
     }
