@@ -161,7 +161,7 @@ class Navigation extends React.Component {
                         </div>
                     </nav>
                 </div>
-                <div className="flex-menu-mobile" style={{ position: 'relative' }}>
+                <div className="flex-menu-mobile" style={{ position: 'relative', height: 62 }}>
                     {logo}
                     <button
                         className="flex-menu-handler"
@@ -170,9 +170,8 @@ class Navigation extends React.Component {
                             position: 'absolute',
                             top: 0,
                             right: 0,
-                            padding: '16px 15px 15px 1rem',
                             outline: 'none',
-                            backgroundColor: pink900,
+                            backgroundColor: 'inherit',
                             margin: 0,
                         }}
                     >
@@ -184,11 +183,12 @@ class Navigation extends React.Component {
                             style={{
                                 display: 'flex',
                                 flexWrap: 'wrap',
-                                minWidth: 270,
+                                justifyContent: 'space-around',
+                                minWidth: 260,
                                 width: '100%',
+                                backgroundColor: pink900,
                             }}
                         >
-                            <div style={{ display: 'flex', flexWrap: 'wrap' }} />
                             <div style={{ display: 'flex', flexWrap: 'wrap' }}>
                                 <Link
                                     to="about"
@@ -218,11 +218,31 @@ class Navigation extends React.Component {
                                 >
                                     Støtt oss
                                 </Link>
+                            </div>
+                            <div style={{ display: 'flex', flexWrap: 'wrap' }}>
+                                {isMember
+                                    ? <Link to="/files">Filer</Link>
+                                    : null
+                                }
+                                {isMember
+                                    ? <Link to="/pages">Sider</Link>
+                                    : null
+                                }
+                                {isMember
+                                    ? <Link to="/events">Aktiviteter</Link>
+                                    : null
+                                }
+                                {isMember
+                                    ? <Link to="/music">Notearkiv</Link>
+                                    : null
+                                }
+                            </div>
+                            <div style={{ width: '100%', textAlign: 'center' }}>
                                 {this.props.viewer ?
-                                    <a href={`/users/${viewer.username}`} style={{ lineHeight: 1 }}>
+                                    <a href={`/users/${viewer.username}`} style={{ display: 'block' }}>
                                         <Avatar
                                             src={viewer.profile_picture_path}
-                                            style={{ margin: '-10px 5px -20px 0' }}
+                                            style={{ marginRight: 5 }}
                                         />
                                         <span style={{ color: 'white' }}>{viewer.name}</span>
                                     </a>

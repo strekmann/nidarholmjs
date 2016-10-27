@@ -156,7 +156,7 @@ class Home extends React.Component {
                     </div>
                     <div style={{ display: 'flex', maxWidth: 1000, margin: '0 -15px' }}>
                         {org.summaries.length > 1 ?
-                            <div style={{ padding: '0 15px', flexGrow: 1 }}>
+                            <div style={{ padding: '0 15px' }}>
                                 <h2>
                                     <Link to={`/${org.summaries[1].slug}`}>
                                         {org.summaries[1].title}
@@ -167,7 +167,7 @@ class Home extends React.Component {
                             </div>
                         : null }
                         {org.summaries.length > 2 ?
-                            <div style={{ padding: '0 15px', flexGrow: 1 }}>
+                            <div style={{ padding: '0 15px' }}>
                                 <h2>
                                     <Link to={`/${org.summaries[2].slug}`}>
                                         {org.summaries[2].title}

@@ -796,16 +796,14 @@ section {
 .giant-image-text {
     font-size: 3rem;
 }
-@media all and (max-width: 700px) {
+@media all and (max-width: 1200px) {
     .giant-image-text {
         font-size: 1.5rem;
     }
     .flex-menu {
-        flex-direction: column;
         &> div {
             flex-direction: column;
             a {
-                min-width: 270px;
                 width: 100%;
             }
         }
