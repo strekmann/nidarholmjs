@@ -60,6 +60,7 @@ class Navigation extends React.Component {
                     alt="Nidarholm-logo"
                     style={{
                         height: 70,
+                        width: 196,
                         paddingTop: 4,
                         marginBottom: -16,
                     }}
