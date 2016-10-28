@@ -809,7 +809,8 @@ section {
         }
     }
     .flex-menu-mobile {
-        display: block;
+        display: flex;
+        align-items: center;
     }
     .flex-menu-desktop {
         display: none;

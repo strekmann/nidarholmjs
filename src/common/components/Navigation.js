@@ -1,7 +1,9 @@
 import React from 'react';
-import ActionLock from 'material-ui/svg-icons/action/lock';
+import ActionLockOpen from 'material-ui/svg-icons/action/lock-open';
 import Avatar from 'material-ui/Avatar';
 import { Menu, MenuItem } from 'material-ui/Menu';
+import IconButton from 'material-ui/IconButton';
+import Popover from 'material-ui/Popover';
 import NavigationMenu from 'material-ui/svg-icons/navigation/menu';
 import RaisedButton from 'material-ui/RaisedButton';
 import getMuiTheme from 'material-ui/styles/getMuiTheme';
@@ -11,33 +13,35 @@ import { Link } from 'react-router';
 import theme from '../theme';
 
 class Navigation extends React.Component {
-    constructor(props) {
-        super(props);
-        this.handleOpen = this.handleOpen.bind(this);
-        this.handleClose = this.handleClose.bind(this);
-        this.handleToggle = this.handleToggle.bind(this);
-        this.state = {
-            open: false,
-        };
+    static propTypes = {
+        viewer: React.PropTypes.object,
+        organization: React.PropTypes.object,
+        //socket: React.PropTypes.object,
+    }
+
+    static childContextTypes = {
+        muiTheme: React.PropTypes.object.isRequired,
+    };
+
+    state = {
+        open: false,
     }
 
     getChildContext() {
         return { muiTheme: getMuiTheme(theme) };
     }
 
-    handleToggle() {
+    handleOpen = (event) => {
+        // This prevents ghost click.
+        event.preventDefault();
+
         this.setState({
-            open: !this.state.open,
+            open: true,
+            anchorEl: event.currentTarget,
         });
     }
 
-    handleOpen(state) {
-        this.setState({
-            open: state,
-        });
-    }
-
-    handleClose() {
+    handleClose = () => {
         this.setState({
             open: false,
         });
@@ -155,144 +159,134 @@ class Navigation extends React.Component {
                                 >
                                     <RaisedButton
                                         label="Logg inn"
-                                        icon={<ActionLock />}
+                                        icon={<ActionLockOpen />}
                                     />
                                 </Link>
                             }
                         </div>
                     </nav>
                 </div>
-                <div className="flex-menu-mobile" style={{ position: 'relative', height: 62 }}>
-                    {logo}
-                    <button
-                        className="flex-menu-handler"
-                        onClick={this.handleToggle}
-                        style={{
-                            position: 'absolute',
-                            top: 0,
-                            right: 0,
-                            outline: 'none',
-                            backgroundColor: 'inherit',
-                            margin: 0,
-                        }}
-                    >
-                        <NavigationMenu color={fullWhite} />
-                    </button>
-                    {this.state.open ?
-                        <nav
-                            className="flex-menu"
-                            style={{
-                                display: 'flex',
-                                flexWrap: 'wrap',
-                                justifyContent: 'space-around',
-                                minWidth: 260,
-                                width: '100%',
-                                backgroundColor: pink900,
-                            }}
+                <div className="flex-menu-mobile">
+                    <div style={{ flexGrow: 1 }}>
+                        {logo}
+                    </div>
+                    <div>
+                        {this.props.viewer ? <Link to={`/users/${viewer.username}`}>
+                            <Avatar
+                                src={viewer.profile_picture_path}
+                            />
+                        </Link>
+                        : <Link to="/login">
+                            <RaisedButton
+                                style={{ minWidth: 44, marginLeft: 10 }}
+                                icon={<ActionLockOpen />}
+                            />
+                        </Link>
+                        }
+                    </div>
+                    <div>
+                        <IconButton
+                            className="flex-menu-handler"
+                            onClick={this.handleOpen}
+                            touch
                         >
-                            <Menu>
-                                <MenuItem>
-                                    <Link
-                                        to="about"
-                                        onClick={this.handleClose}
-                                    >
-                                        Om oss
-                                    </Link>
-                                </MenuItem>
-                                <MenuItem>
-                                    <Link
-                                        to="/projects"
-                                        onClick={this.handleClose}
-                                    >
-                                        Konserter
-                                    </Link>
-                                </MenuItem>
-                                <MenuItem>
-                                    <Link
-                                        to="/members"
-                                        onClick={this.handleClose}
-                                    >
-                                        Medlemmer
-                                    </Link>
-                                </MenuItem>
-                                <MenuItem>
-                                    <Link
-                                        to="/stott-oss"
-                                        onClick={this.handleClose}
-                                    >
-                                        Støtt oss
-                                    </Link>
-                                </MenuItem>
-                            </Menu>
-                            <Menu>
-                                {isMember
-                                    ? <MenuItem>
-                                        <Link to="/files" onClick={this.handleClose}>
-                                            Filer
+                            <NavigationMenu color={fullWhite} />
+                        </IconButton>
+                        <Popover
+                            open={this.state.open}
+                            anchorEl={this.state.anchorEl}
+                            anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
+                            targetOrigin={{ horizontal: 'right', vertical: 'top' }}
+                            onRequestClose={this.handleClose}
+                        >
+                            <nav
+                                className="flex-menu"
+                                style={{
+                                    display: 'flex',
+                                    flexWrap: 'wrap',
+                                    justifyContent: 'space-around',
+                                    width: '100%',
+                                    backgroundColor: pink900,
+                                }}
+                            >
+                                <Menu>
+                                    <MenuItem>
+                                        <Link
+                                            to="about"
+                                            onClick={this.handleClose}
+                                        >
+                                            Om oss
                                         </Link>
                                     </MenuItem>
-                                    : null
-                                }
-                                {isMember
-                                    ? <MenuItem>
-                                        <Link to="/pages" onClick={this.handleClose}>
-                                            Sider
+                                    <MenuItem>
+                                        <Link
+                                            to="/projects"
+                                            onClick={this.handleClose}
+                                        >
+                                            Konserter
                                         </Link>
                                     </MenuItem>
-                                    : null
-                                }
-                                {isMember
-                                    ? <MenuItem>
-                                        <Link to="/events" onClick={this.handleClose}>
-                                            Aktiviteter
+                                    <MenuItem>
+                                        <Link
+                                            to="/members"
+                                            onClick={this.handleClose}
+                                        >
+                                            Medlemmer
                                         </Link>
                                     </MenuItem>
-                                    : null
-                                }
-                                {isMember
-                                    ? <MenuItem>
-                                        <Link to="/music" onClick={this.handleClose}>
-                                            Notearkiv
+                                    <MenuItem>
+                                        <Link
+                                            to="/stott-oss"
+                                            onClick={this.handleClose}
+                                        >
+                                            Støtt oss
                                         </Link>
                                     </MenuItem>
+                                </Menu>
+                                {isMember
+                                    ? <Menu>
+                                        {isMember
+                                            ? <MenuItem>
+                                                <Link to="/files" onClick={this.handleClose}>
+                                                    Filer
+                                                </Link>
+                                            </MenuItem>
+                                            : null
+                                        }
+                                        {isMember
+                                            ? <MenuItem>
+                                                <Link to="/pages" onClick={this.handleClose}>
+                                                    Sider
+                                                </Link>
+                                            </MenuItem>
+                                            : null
+                                        }
+                                        {isMember
+                                            ? <MenuItem>
+                                                <Link to="/events" onClick={this.handleClose}>
+                                                    Aktiviteter
+                                                </Link>
+                                            </MenuItem>
+                                            : null
+                                        }
+                                        {isMember
+                                            ? <MenuItem>
+                                                <Link to="/music" onClick={this.handleClose}>
+                                                    Notearkiv
+                                                </Link>
+                                            </MenuItem>
+                                            : null
+                                        }
+                                    </Menu>
                                     : null
                                 }
-                            </Menu>
-                            <div style={{ width: '100%', textAlign: 'center' }}>
-                                {this.props.viewer ?
-                                    <a href={`/users/${viewer.username}`} style={{ display: 'block' }}>
-                                        <Avatar
-                                            src={viewer.profile_picture_path}
-                                            style={{ marginRight: 5 }}
-                                        />
-                                        <span style={{ color: 'white' }}>{viewer.name}</span>
-                                    </a>
-                                    :
-                                    <a href="/login" style={{ padding: 0, margin: '1rem' }}>
-                                        <RaisedButton
-                                            label="Logg inn"
-                                            icon={<ActionLock />}
-                                        />
-                                    </a>
-                                }
-                            </div>
-                        </nav>
-                        : null
-                    }
+                            </nav>
+                        </Popover>
+                    </div>
                 </div>
             </div>
         );
     }
 }
-
-Navigation.propTypes = {
-    viewer: React.PropTypes.object,
-    organization: React.PropTypes.object,
-    socket: React.PropTypes.object,
-};
-
-Navigation.childContextTypes = {
-    muiTheme: React.PropTypes.object.isRequired,
-};
 
 export default Navigation;
