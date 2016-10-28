@@ -24,8 +24,12 @@ export default class MemberItem extends React.Component {
                                 : null
                             }
                             <div>
-                                <Phone phone={user.phone} /> -
-                                {' '}
+                                {user.phone
+                                    ? <span style={{ marginRight: 20 }}>
+                                        <Phone phone={user.phone} />
+                                    </span>
+                                    : null
+                                }
                                 <Link
                                     to={`mailto:${user.email}`}
                                 >

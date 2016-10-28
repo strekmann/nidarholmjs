@@ -21,11 +21,11 @@ import {
     nodeDefinitions,
 } from 'graphql-relay';
 
-import { connectionFromMongooseQuery, offsetToCursor } from './connections';
 import moment from 'moment';
 import config from 'config';
-import shortid from 'short-mongo-id';
+import uuid from 'node-uuid';
 
+import { connectionFromMongooseQuery, offsetToCursor } from './connections';
 import { User, Group, Organization } from './models';
 import { File } from './models/files';
 import { Project, Event, Piece } from './models/projects';
@@ -234,6 +234,11 @@ userType = new GraphQLObjectType({
     interfaces: [nodeInterface],
 });
 
+const userConnection = connectionDefinitions({
+    name: 'User',
+    nodeType: userType,
+});
+
 groupType = new GraphQLObjectType({
     name: 'Group',
     fields: {
@@ -250,7 +255,7 @@ groupType = new GraphQLObjectType({
                         resolve: (member) => User.findById(member.user).where({
                             on_leave: false,
                             in_list: true,
-                            membership_status: { $lt: 5 },
+                            //membership_status: { $lt: 5 },
                         }).exec(),
                     },
                     role: { type: new GraphQLObjectType({
@@ -562,6 +567,19 @@ organizationType = new GraphQLObjectType({
             .then(
                 _organization => _organization.instrument_groups
             ),
+        },
+        users: {
+            type: new GraphQLList(userType),
+            resolve: (_, args, { organization, viewer }) => {
+                let query;
+                if (admin(organization, viewer)) {
+                    query = User.find().select('name username');
+                }
+                else {
+                    query = User.find({ _id: { $exists: false } });
+                }
+                return query.sort('-created').exec();
+            },
         },
         project: {
             type: projectType,
@@ -1009,7 +1027,7 @@ const mutationAddPage = mutationWithClientMutationId({
             }
         });
         const page = new Page();
-        page._id = shortid();
+        page._id = uuid.v4();
         page.slug = slug;
         page.mdtext = mdtext;
         page.title = title;
@@ -1018,6 +1036,54 @@ const mutationAddPage = mutationWithClientMutationId({
         page.creator = userId;
         // TODO: Check permissions
         return page.save();
+    },
+});
+
+const mutationAddUser = mutationWithClientMutationId({
+    name: 'AddUser',
+    inputFields: {
+        name: { type: new GraphQLNonNull(GraphQLString) },
+        email: { type: new GraphQLNonNull(GraphQLString) },
+        instrument: { type: GraphQLString },
+        isMember: { type: GraphQLBoolean },
+        groupId: { type: GraphQLID },
+    },
+    outputFields: {
+        organization: {
+            type: organizationType,
+            resolve: (payload, args, { organization }) => organization,
+        },
+        newUser: {
+            type: userType,
+            resolve: payload => payload,
+        },
+    },
+    mutateAndGetPayload: ({ name, email, instrument, isMember, groupId }, { viewer, organization }) => {
+        if (!viewer) {
+            throw new Error('Nobody!');
+        }
+        return Organization.findById(organization.id).populate('member_group').exec().then(_organization => {
+            const userId = uuid.v4();
+            const user = new User({ _id: userId, username: userId, instrument, name });
+            let p = Promise.resolve(_organization);
+            if (isMember) {
+                user.groups.push(_organization.member_group);
+                _organization.member_group.members.push({ user, role: instrument });
+                p = _organization.member_group.save();
+            }
+            return p.then(_org => {
+                if (groupId) {
+                    const gId = fromGlobalId(groupId).id;
+                    console.log("Uwse", groupId, gId);
+                    return Group.findById(gId).exec().then(group => {
+                        user.groups.push(group);
+                        group.members.push({ user });
+                        return group.save();
+                    });
+                }
+                return Promise.resolve(_org);
+            }).then(() => user.save().then(_user => { console.log(_user, "uuu"); return _user; }));
+        });
     },
 });
 
@@ -1185,6 +1251,7 @@ const mutationAddScore = mutationWithClientMutationId({
 const mutationType = new GraphQLObjectType({
     name: 'Mutation',
     fields: () => ({
+        addUser: mutationAddUser,
         editDescription: mutationEditDescription,
         addEvent: mutationAddEvent,
         editEvent: mutationEditEvent,

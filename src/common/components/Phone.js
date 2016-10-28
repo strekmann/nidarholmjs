@@ -2,10 +2,13 @@ import React from 'react';
 
 export default class Phone extends React.Component {
     static propTypes = {
-        phone: React.PropTypes.string,
+        phone: React.PropTypes.string.isRequired,
     }
 
     render() {
+        if (!this.props.phone) {
+            return <span />;
+        }
         const cl = this.props.phone.replace(' ', ''); // cleaned
         let pretty = cl;
         let full = cl;
