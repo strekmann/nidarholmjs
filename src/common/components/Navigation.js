@@ -1,6 +1,7 @@
 import React from 'react';
 import ActionLock from 'material-ui/svg-icons/action/lock';
 import Avatar from 'material-ui/Avatar';
+import { Menu, MenuItem } from 'material-ui/Menu';
 import NavigationMenu from 'material-ui/svg-icons/navigation/menu';
 import RaisedButton from 'material-ui/RaisedButton';
 import getMuiTheme from 'material-ui/styles/getMuiTheme';
@@ -189,54 +190,74 @@ class Navigation extends React.Component {
                                 backgroundColor: pink900,
                             }}
                         >
-                            <div style={{ display: 'flex', flexWrap: 'wrap' }}>
-                                <Link
-                                    to="about"
-                                    style={{ color: 'white' }}
-                                    onClick={this.handleClose}
-                                >
-                                    Om oss
-                                </Link>
-                                <Link
-                                    to="/projects"
-                                    style={{ color: 'white' }}
-                                    onClick={this.handleClose}
-                                >
-                                    Konserter
-                                </Link>
-                                <Link
-                                    to="/members"
-                                    style={{ color: 'white' }}
-                                    onClick={this.handleClose}
-                                >
-                                    Medlemmer
-                                </Link>
-                                <Link
-                                    to="/stott-oss"
-                                    style={{ color: 'white' }}
-                                    onClick={this.handleClose}
-                                >
-                                    Støtt oss
-                                </Link>
-                            </div>
-                            <div style={{ display: 'flex', flexWrap: 'wrap' }}>
+                            <Menu>
+                                <MenuItem>
+                                    <Link
+                                        to="about"
+                                        onClick={this.handleClose}
+                                    >
+                                        Om oss
+                                    </Link>
+                                </MenuItem>
+                                <MenuItem>
+                                    <Link
+                                        to="/projects"
+                                        onClick={this.handleClose}
+                                    >
+                                        Konserter
+                                    </Link>
+                                </MenuItem>
+                                <MenuItem>
+                                    <Link
+                                        to="/members"
+                                        onClick={this.handleClose}
+                                    >
+                                        Medlemmer
+                                    </Link>
+                                </MenuItem>
+                                <MenuItem>
+                                    <Link
+                                        to="/stott-oss"
+                                        onClick={this.handleClose}
+                                    >
+                                        Støtt oss
+                                    </Link>
+                                </MenuItem>
+                            </Menu>
+                            <Menu>
                                 {isMember
-                                    ? <Link to="/files">Filer</Link>
+                                    ? <MenuItem>
+                                        <Link to="/files" onClick={this.handleClose}>
+                                            Filer
+                                        </Link>
+                                    </MenuItem>
                                     : null
                                 }
                                 {isMember
-                                    ? <Link to="/pages">Sider</Link>
+                                    ? <MenuItem>
+                                        <Link to="/pages" onClick={this.handleClose}>
+                                            Sider
+                                        </Link>
+                                    </MenuItem>
                                     : null
                                 }
                                 {isMember
-                                    ? <Link to="/events">Aktiviteter</Link>
+                                    ? <MenuItem>
+                                        <Link to="/events" onClick={this.handleClose}>
+                                            Aktiviteter
+                                        </Link>
+                                    </MenuItem>
                                     : null
                                 }
                                 {isMember
-                                    ? <Link to="/music">Notearkiv</Link>
+                                    ? <MenuItem>
+                                        <Link to="/music" onClick={this.handleClose}>
+                                            Notearkiv
+                                        </Link>
+                                    </MenuItem>
                                     : null
                                 }
-                            </div>
+                            </Menu>
                             <div style={{ width: '100%', textAlign: 'center' }}>
                                 {this.props.viewer ?
                                     <a href={`/users/${viewer.username}`} style={{ display: 'block' }}>
