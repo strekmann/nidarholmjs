@@ -21,7 +21,7 @@ export default class ProjectItem extends React.Component {
     render() {
         return (
             <Paper style={{ display: 'flex', marginBottom: 20 }}>
-                <div style={{ width: this.props.poster ? '50%' : '100%', padding: '0 20px' }}>
+                <div style={{ width: this.props.poster ? '50%' : '100%', padding: '1rem 20px' }}>
                     <h2>
                         <Link to={`/${this.props.year}/${this.props.tag}`}>
                             {this.props.title}
