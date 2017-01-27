@@ -22,6 +22,7 @@ import GroupItem from './GroupItem';
 class Members extends React.Component {
     static contextTypes = {
         relay: Relay.PropTypes.Environment,
+        router: React.PropTypes.object.isRequired,
     };
 
     static propTypes = {
@@ -97,7 +98,9 @@ class Members extends React.Component {
             groupId: this.state.groupId,
         }), {
             onSuccess: (results) => {
+                console.log(results);
                 this.setState({ addUser: false });
+                this.context.router.push({ pathname: `/users/${results.addUser.newUser.username}` });
             },
         });
     }
@@ -187,7 +190,7 @@ class Members extends React.Component {
                                         onChange={this.onChangeGroup}
                                     >
                                         <MenuItem primaryText="(Ingen)" />
-                                        {org.instrument_groups.map(group => <MenuItem
+                                        {org.instrumentGroups.map(group => <MenuItem
                                             key={group.id}
                                             value={group.id}
                                             primaryText={group.name}
@@ -200,10 +203,10 @@ class Members extends React.Component {
                         }
                     </Dialog>
                 </div>
-                {org.instrument_groups.map(
+                {org.instrumentGroups.map(
                     group => <GroupItem
                         key={group.id}
-                        isMember={this.props.organization.is_member}
+                        isMember={this.props.organization.isMember}
                         {...group}
                     />
                     )
@@ -217,8 +220,8 @@ export default Relay.createContainer(Members, {
     fragments: {
         organization: () => Relay.QL`
         fragment on Organization {
-            is_member
-            instrument_groups {
+            isMember
+            instrumentGroups {
                 id
                 name
                 members {
@@ -228,7 +231,7 @@ export default Relay.createContainer(Members, {
                         username
                         email
                         phone
-                        membership_status
+                        membershipStatus
                         instrument
                     }
                     role {

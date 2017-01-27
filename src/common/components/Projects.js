@@ -102,10 +102,10 @@ export default Relay.createContainer(Projects, {
                         end
                         year
                         tag
-                        public_mdtext
+                        publicMdtext
                         poster {
                             filename
-                            large_path
+                            largePath
                         }
                     }
                 }
@@ -124,7 +124,7 @@ export default Relay.createContainer(Projects, {
                         tag
                         poster {
                             filename
-                            large_path
+                            largePath
                         }
                     }
                 }

@@ -99,7 +99,7 @@ class Home extends React.Component {
                                         <Date date={nextProject.end} />
                                     </div>
                                     <div>
-                                        <Text text={nextProject.public_mdtext} />
+                                        <Text text={nextProject.publicMdtext} />
                                     </div>
                                     <div>
                                         <Link to="projects">
@@ -122,7 +122,7 @@ class Home extends React.Component {
                                             >
                                                 <img
                                                     alt="Konsertplakat"
-                                                    src={nextProject.poster.normal_path}
+                                                    src={nextProject.poster.normalPath}
                                                 />
                                             </Link>
                                         </Paper>
@@ -194,7 +194,7 @@ class Home extends React.Component {
                                         width="100%"
                                         height="300px"
                                         frameBorder="0"
-                                        src={org.map_url}
+                                        src={org.mapUrl}
                                     />
                                 </Paper>
                             </div>
@@ -202,7 +202,7 @@ class Home extends React.Component {
                                 <h3>E-post</h3>
                                 <Email email={org.email} />
                                 <h3>Øvelser</h3>
-                                <Text text={org.contact_text} />
+                                <Text text={org.contactText} />
                             </div>
                         </div>
                     </div>
@@ -226,8 +226,8 @@ export default Relay.createContainer(Home, {
             id
             name
             email
-            map_url
-            contact_text
+            mapUrl
+            contactText
             summaries {
                 title
                 summary
@@ -239,10 +239,10 @@ export default Relay.createContainer(Home, {
                 end
                 year
                 tag
-                public_mdtext
+                publicMdtext
                 poster {
                     filename
-                    normal_path
+                    normalPath
                 }
             }
             nextEvents(first:4) {

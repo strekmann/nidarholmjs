@@ -194,13 +194,28 @@ userType = new GraphQLObjectType({
         username: { type: GraphQLString },
         name: { type: GraphQLString },
         email: { type: GraphQLString },
-        is_active: { type: GraphQLBoolean },
-        is_admin: { type: GraphQLBoolean },
+        isActive: {
+            type: GraphQLBoolean,
+            resolve: user => user.is_active,
+        },
+        isAdmin: { type: GraphQLBoolean },
         created: { type: GraphQLDate },
-        facebook_id: { type: GraphQLString },
-        google_id: { type: GraphQLString },
-        twitter_id: { type: GraphQLString },
-        nmf_id: { type: GraphQLString },
+        facebookId: {
+            type: GraphQLString,
+            resolve: user => user.facebook_id,
+        },
+        googleId: {
+            type: GraphQLString,
+            resolve: user => user.google_id,
+        },
+        twitterId: {
+            type: GraphQLString,
+            resolve: user => user.twitter_id,
+        },
+        nmfId: {
+            type: GraphQLString,
+            resolve: user => user.nmf_id,
+        },
         phone: { type: GraphQLString },
         address: { type: GraphQLString },
         postcode: { type: GraphQLString },
@@ -209,15 +224,39 @@ userType = new GraphQLObjectType({
         born: { type: GraphQLDate },
         joined: { type: GraphQLDate },
         instrument: { type: GraphQLString },
-        instrument_insurance: { type: GraphQLBoolean },
+        instrumentInsurance: {
+            type: GraphQLBoolean,
+            resolve: user => user.instrument_insurance,
+        },
         reskontro: { type: GraphQLString },
-        profile_picture: { type: GraphQLString },
-        profile_picture_path: { type: GraphQLString },
-        membership_status: { type: GraphQLInt },
-        membership_history: { type: GraphQLString },
-        in_list: { type: GraphQLBoolean },
-        on_leave: { type: GraphQLBoolean },
-        no_email: { type: GraphQLBoolean },
+        profilePicture: {
+            type: GraphQLString,
+            resolve: user => user.profile_picture,
+        },
+        profilePicturePath: {
+            type: GraphQLString,
+            resolve: user => user.profile_picture_path,
+        },
+        membershipStatus: {
+            type: GraphQLInt,
+            resolve: user => user.membership_status,
+        },
+        membershipHistory: {
+            type: GraphQLString,
+            resolve: user => user.membership_history,
+        },
+        inList: {
+            type: GraphQLBoolean,
+            resolve: user => user.in_list,
+        },
+        onLeave: {
+            type: GraphQLBoolean,
+            resolve: user => user.on_leave,
+        },
+        noEmail: {
+            type: GraphQLBoolean,
+            resolve: user => user.no_email,
+        },
         groups: {
             type: new GraphQLList(groupType),
             resolve: user => User
@@ -313,10 +352,22 @@ fileType = new GraphQLObjectType({
         size: { type: GraphQLInt },
         tags: { type: new GraphQLList(GraphQLString) },
         path: { type: GraphQLString },
-        thumbnail_path: { type: GraphQLString },
-        normal_path: { type: GraphQLString },
-        large_path: { type: GraphQLString },
-        is_image: { type: GraphQLBoolean },
+        thumbnailPath: {
+            type: GraphQLString,
+            resolve: file => file.thumbnail_path,
+        },
+        normalPath: {
+            type: GraphQLString,
+            resolve: file => file.normal_path,
+        },
+        largePath: {
+            type: GraphQLString,
+            resolve: file => file.large_path,
+        },
+        isImage: {
+            type: GraphQLBoolean,
+            resolve: file => file.is_image,
+        },
         permissions: { type: permissionsType },
     },
     interfaces: [nodeInterface],
@@ -450,8 +501,14 @@ projectType = new GraphQLObjectType({
         start: { type: GraphQLDate },
         end: { type: GraphQLDate },
         year: { type: GraphQLString },
-        public_mdtext: { type: GraphQLString },
-        private_mdtext: { type: GraphQLString },
+        publicMdtext: {
+            type: GraphQLString,
+            resolve: project => project.public_mdtext,
+        },
+        privateMdtext: {
+            type: GraphQLString,
+            resolve: project => project.private_mdtext,
+        },
         conductors: { type: new GraphQLList(userType) },
         poster: {
             type: fileType,
@@ -528,34 +585,58 @@ organizationType = new GraphQLObjectType({
         id: globalIdField('Organization'),
         name: { type: GraphQLString },
         webdomain: { type: GraphQLString },
-        mail_address: { type: GraphQLString },
+        mailAddress: {
+            type: GraphQLString,
+            resolve: organization => organization.mail_address,
+        },
         postcode: { type: GraphQLString },
         city: { type: GraphQLString },
         email: { type: GraphQLString },
-        public_bank_account: { type: GraphQLString },
-        organization_number: { type: GraphQLString },
-        encoded_email: { type: GraphQLString },
+        publicBankAccount: {
+            type: GraphQLString,
+            resolve: organization => organization.public_bank_account,
+        },
+        organizationNumber: {
+            type: GraphQLString,
+            resolve: organization => organization.organization_number,
+        },
+        encodedEmail: {
+            type: GraphQLString,
+            resolve: organization => organization.encoded_email,
+        },
         website: { type: GraphQLString },
         twitter: { type: GraphQLString },
         facebook: { type: GraphQLString },
         description_nb: { type: GraphQLString }, // TODO: Migrate
-        map_url: { type: GraphQLString },
-        contact_text: { type: GraphQLString },
-        member_group: { type: groupType },
-        musicscore_admins: { type: new GraphQLList(GraphQLString) },
-        is_member: {
+        mapUrl: {
+            type: GraphQLString,
+            resolve: organization => organization.map_url,
+        },
+        contactText: {
+            type: GraphQLString,
+            resolve: organization => organization.contact_text,
+        },
+        memberGroup: {
+            type: groupType,
+            resolve: organization => organization.member_group,
+        },
+        musicscoreAdmins: {
+            type: new GraphQLList(GraphQLString),
+            resolve: organization => organization.musicscore_admins,
+        },
+        isMember: {
             type: GraphQLBoolean,
             resolve: (_, args, { organization, viewer }) => member(organization, viewer),
         },
-        is_admin: {
+        isAdmin: {
             type: GraphQLBoolean,
             resolve: (_, args, { organization, viewer }) => admin(organization, viewer),
         },
-        is_musicscoreadmin: {
+        isMusicscoreadmin: {
             type: GraphQLBoolean,
             resolve: (_, args, { organization, viewer }) => musicscoreadmin(organization, viewer),
         },
-        instrument_groups: {
+        instrumentGroups: {
             type: new GraphQLList(groupType),
             resolve: (_, args, { organization }) => Organization
             .findById(organization.id)
@@ -1087,6 +1168,80 @@ const mutationAddUser = mutationWithClientMutationId({
     },
 });
 
+const mutationEditUser = mutationWithClientMutationId({
+    name: 'EditUser',
+    inputFields: {
+        userId: { type: GraphQLID },
+        username: { type: new GraphQLNonNull(GraphQLString) },
+        name: { type: new GraphQLNonNull(GraphQLString) },
+        phone: { type: GraphQLString },
+        email: { type: GraphQLString },
+        instrument: { type: GraphQLString },
+        born: { type: GraphQLString },
+        address: { type: GraphQLString },
+        postcode: { type: GraphQLString },
+        city: { type: GraphQLString },
+        country: { type: GraphQLString },
+        joined: { type: GraphQLString },
+        nmfId: { type: GraphQLString },
+        reskontro: { type: GraphQLInt },
+        membershipHistory: { type: GraphQLString },
+        inList: { type: GraphQLBoolean },
+        onLeave: { type: GraphQLBoolean },
+        noEmail: { type: GraphQLBoolean },
+    },
+    outputFields: {
+        organization: {
+            type: organizationType,
+            resolve: (payload, args, { organization }) => organization,
+        },
+    },
+    mutateAndGetPayload: ({
+        userId, username, name, phone, email, instrument, born, address,
+        postcode, city, country, joined, nmfId, reskontro, membershipHistory,
+        inList, onLeave, noEmail,
+    }, { viewer, organization }) => {
+        const id = fromGlobalId(userId).id;
+        const fields = {};
+        if (admin(organization, viewer)) {
+            Object.assign(fields, {
+                name,
+                phone,
+                email,
+                instrument,
+                born,
+                address,
+                postcode,
+                city,
+                country,
+                joined,
+                nmf_id: nmfId,
+                reskontro,
+                membership_history: membershipHistory,
+                in_list: inList,
+                on_leave: onLeave,
+                no_email: noEmail,
+            });
+        }
+        if (viewer.id === userId) {
+            Object.assign(fields, {
+                username,
+                name,
+                phone,
+                email,
+                instrument,
+                born,
+                address,
+                postcode,
+                city,
+                country,
+            });
+        }
+        console.log(id, userId, fields);
+        return User.findByIdAndUpdate(id, fields, { new: true }).exec();
+    },
+});
+
 const mutationEditPage = mutationWithClientMutationId({
     name: 'EditPage',
     inputFields: {
@@ -1252,6 +1407,7 @@ const mutationType = new GraphQLObjectType({
     name: 'Mutation',
     fields: () => ({
         addUser: mutationAddUser,
+        editUser: mutationEditUser,
         editDescription: mutationEditDescription,
         addEvent: mutationAddEvent,
         editEvent: mutationEditEvent,

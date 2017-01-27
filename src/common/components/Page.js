@@ -148,7 +148,7 @@ export default Relay.createContainer(Page, {
         `,
         organization: () => Relay.QL`
         fragment on Organization {
-            member_group {
+            memberGroup {
                 id
             }
             page(slug:$slug) {

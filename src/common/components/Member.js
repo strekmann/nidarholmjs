@@ -1,3 +1,6 @@
+import areIntlLocalesSupported from 'intl-locales-supported';
+import Checkbox from 'material-ui/Checkbox';
+import DatePicker from 'material-ui/DatePicker';
 import React from 'react';
 import Relay from 'react-relay';
 import getMuiTheme from 'material-ui/styles/getMuiTheme';
@@ -5,8 +8,11 @@ import IconMenu from 'material-ui/IconMenu';
 import MenuItem from 'material-ui/MenuItem';
 import IconButton from 'material-ui/IconButton';
 import Paper from 'material-ui/Paper';
+import RaisedButton from 'material-ui/RaisedButton';
+import TextField from 'material-ui/TextField';
 import ArrowDown from 'material-ui/svg-icons/navigation/arrow-drop-down';
 import { lightBlue100 } from 'material-ui/styles/colors';
+import moment from 'moment';
 
 import theme from '../theme';
 import Text from './Text';
@@ -14,6 +20,12 @@ import Phone from './Phone';
 import Date from './Date';
 import DateFromNow from './DateFromNow';
 import Yesno from './Yesno';
+import EditUserMutation from '../mutations/editUser';
+
+let DateTimeFormat;
+if (areIntlLocalesSupported(['nb'])) {
+    DateTimeFormat = global.Intl.DateTimeFormat;
+}
 
 class Member extends React.Component {
     static contextTypes = {
@@ -35,51 +47,279 @@ class Member extends React.Component {
 
     state = {
         edit: false,
+        editMember: false,
+        name: this.props.organization.member.user.name || '',
+        username: this.props.organization.member.user.username || '',
+        phone: this.props.organization.member.user.phone || '',
+        email: this.props.organization.member.user.email || '',
+        instrument: this.props.organization.member.user.instrument || '',
+        born: this.props.organization.member.user.born ? moment(this.props.organization.member.user.born).toDate() : null,
+        address: this.props.organization.member.user.address || '',
+        postcode: this.props.organization.member.user.postcode || '',
+        city: this.props.organization.member.user.city || '',
+        country: this.props.organization.member.user.country || '',
+        joined: this.props.organization.member.user.joined ? moment(this.props.organization.member.user.joined).toDate() : null,
+        nmfId: this.props.organization.member.user.nmfId || '',
+        reskontro: this.props.organization.member.user.reskontro || '',
+        membershipHistory: this.props.organization.member.user.membershipHistory || '',
+        inList: this.props.organization.member.user.inList,
+        onLeave: this.props.organization.member.user.onLeave,
+        noEmail: this.props.organization.member.user.noEmail,
     }
 
     getChildContext() {
         return { muiTheme: this.muiTheme };
     }
 
-    toggleEdit = () => {
+    openEditMember = () => {
         this.setState({
-            edit: !this.state.edit,
+            editMember: true,
         });
     }
 
-    closeEdit = () => {
+    closeEditMember = () => {
         this.setState({
-            edit: false,
+            editMember: false,
         });
     }
 
-    saveMember = (event, closeEdit) => {
-        /*
-        this.context.relay.commitUpdate(new EditEventMutation({
-            viewer: null,
-            eventid: event.id,
-            title: event.title,
-            location: event.location,
-            start: event.start,
-            end: event.end,
-            mdtext: event.mdtext,
+    saveMember = (event) => {
+        event.preventDefault();
+        this.context.relay.commitUpdate(new EditUserMutation({
+            organization: this.props.organization,
+            userId: this.props.organization.member.user.id,
+            username: this.state.username,
+            name: this.state.name,
+            phone: this.state.phone,
+            email: this.state.email,
+            instrument: this.state.instrument,
+            born: this.state.born,
+            address: this.state.address,
+            postcode: this.state.postcode,
+            city: this.state.city,
+            country: this.state.country,
+            joined: this.state.joined,
+            nmfId: this.state.nmfId,
+            reskontro: this.state.reskontro,
+            membershipHistory: this.state.membershipHistory,
+            inList: this.state.inList,
+            onLeave: this.state.onLeave,
+            noEmail: this.state.noEmail,
         }), {
             onSuccess: () => {
-                closeEdit();
+                this.setState({
+                    edit: false,
+                    editMember: false,
+                });
             },
             onFailure: (error, ost, kake) => {
                 console.error('AD', error, ost, kake);
             },
         });
-        */
+    }
+
+    onChangeName = (event, name) => {
+        this.setState({ name });
+    }
+    onChangePhone = (event, phone) => {
+        this.setState({ phone });
+    }
+    onChangeEmail = (event, email) => {
+        this.setState({ email });
+    }
+    onChangeInstrument = (event, instrument) => {
+        this.setState({ instrument });
+    }
+    onChangeAddress = (event, address) => {
+        this.setState({ address });
+    }
+    onChangePostcode = (event, postcode) => {
+        this.setState({ postcode });
+    }
+    onChangeCity = (event, city) => {
+        this.setState({ city });
+    }
+    onChangeCountry = (event, country) => {
+        this.setState({ country });
+    }
+    onChangeNmfId = (event, nmfID) => {
+        this.setState({ nmfID });
+    }
+    onChangeReskontro = (event, reskontro) => {
+        this.setState({ reskontro });
+    }
+    onChangeMembershipHistory = (event, membershipHistory) => {
+        this.setState({ membershipHistory });
+    }
+    onChangeJoined = (event, joined) => {
+        this.setState({ joined });
+    }
+    onChangeBorn = (event, born) => {
+        this.setState({ born });
+    }
+    onChangeInList = (event, inList) => {
+        this.setState({ inList });
+    }
+    onChangeOnLeave = (event, onLeave) => {
+        this.setState({ onLeave });
+    }
+    onChangeNoEmail = (event, noEmail) => {
+        this.setState({ noEmail });
     }
 
     render() {
         const member = this.props.organization.member;
         const user = member.user;
-        const isMember = this.props.organization.is_member;
+        const isMember = this.props.organization.isMember;
         if (!isMember) {
             return <div />;
+        }
+        if (this.state.editMember) {
+            return (
+                <Paper className="row">
+                    <form onSubmit={this.saveMember}>
+                        <div>
+                            <TextField
+                                id="name"
+                                floatingLabelText="Navn"
+                                onChange={this.onChangeName}
+                                value={this.state.name}
+                            />
+                        </div>
+                        <div>
+                            <TextField
+                                id="phone"
+                                floatingLabelText="Telefon"
+                                onChange={this.onChangePhone}
+                                value={this.state.phone}
+                            />
+                        </div>
+                        <div>
+                            <TextField
+                                id="email"
+                                floatingLabelText="E-post"
+                                onChange={this.onChangeEmail}
+                                value={this.state.email}
+                            />
+                        </div>
+                        <div>
+                            <TextField
+                                id="instrument"
+                                floatingLabelText="Instrument"
+                                onChange={this.onChangeInstrument}
+                                value={this.state.instrument}
+                            />
+                        </div>
+                        <div>
+                            <DatePicker
+                                id="born"
+                                floatingLabelText="Fødselsdato"
+                                onChange={this.onChangeBorn}
+                                value={this.state.born}
+                                mode="landscape"
+                                locale="nb"
+                                DateTimeFormat={DateTimeFormat}
+                            />
+                        </div>
+                        <div>
+                            <TextField
+                                id="address"
+                                floatingLabelText="Adresse"
+                                onChange={this.onChangeAddress}
+                                value={this.state.address}
+                            />
+                        </div>
+                        <div>
+                            <TextField
+                                id="postcode"
+                                floatingLabelText="Postnummer"
+                                onChange={this.onChangePostcode}
+                                value={this.state.postcode}
+                            />
+                        </div>
+                        <div>
+                            <TextField
+                                id="city"
+                                floatingLabelText="Sted"
+                                onChange={this.onChangeCity}
+                                value={this.state.city}
+                            />
+                        </div>
+                        <div>
+                            <TextField
+                                id="country"
+                                floatingLabelText="Land"
+                                onChange={this.onChangeCountry}
+                                value={this.state.country}
+                            />
+                        </div>
+                        <div>
+                            <TextField
+                                id="nmfId"
+                                floatingLabelText="NMF-nummer"
+                                onChange={this.onChangeNmfId}
+                                value={this.state.nmfId}
+                            />
+                        </div>
+                        <div>
+                            <TextField
+                                id="reskontro"
+                                floatingLabelText="Reskontro"
+                                onChange={this.onChangeReskontro}
+                                value={this.state.reskontro}
+                            />
+                        </div>
+                        <div>
+                            <DatePicker
+                                id="joined"
+                                floatingLabelText="Startet i korpset"
+                                onChange={this.onChangeJoined}
+                                value={this.state.joined}
+                                mode="landscape"
+                                locale="nb"
+                                DateTimeFormat={DateTimeFormat}
+                            />
+                        </div>
+                        <div>
+                            <TextField
+                                id="membershipHistory"
+                                floatingLabelText="Medlemskapshistorikk"
+                                onChange={this.onChangeMembershipHistory}
+                                value={this.state.membershipHistory}
+                                multiLine
+                                fullWidth
+                            />
+                        </div>
+                        <div>
+                            <Checkbox
+                                id="inList"
+                                label="Synlig i medlemslista"
+                                onCheck={this.onChangeInList}
+                                checked={this.state.inList}
+                            />
+                        </div>
+                        <div>
+                            <Checkbox
+                                id="onLeave"
+                                label="Har permisjon"
+                                onCheck={this.onChangeOnLeave}
+                                checked={this.state.onLeave}
+                            />
+                        </div>
+                        <div>
+                            <Checkbox
+                                id="noEmail"
+                                label="Ikke epost"
+                                onCheck={this.onChangeNoEmail}
+                                checked={this.state.noEmail}
+                            />
+                        </div>
+                        <div>
+                            <RaisedButton type="submit" label="Lagre" primary />
+                        </div>
+                    </form>
+                </Paper>
+            );
         }
         return (
             <Paper className="row">
@@ -90,7 +330,7 @@ class Member extends React.Component {
                         anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
                         targetOrigin={{ vertical: 'top', horizontal: 'right' }}
                     >
-                        <MenuItem primaryText="Rediger" onTouchTap={this.toggleEdit} />
+                        <MenuItem primaryText="Rediger" onTouchTap={this.openEditMember} />
                     </IconMenu>
                 </div>
                 <div
@@ -118,23 +358,23 @@ class Member extends React.Component {
                             <div>
                                 Reskontro: {user.reskontro}
                             </div>
-                            <Text text={user.membership_history} />
+                            <Text text={user.membershipHistory} />
                             <div>
                                 Brukernavn {user.username},
-                                aktiv: <Yesno value={user.is_active} />,
-                                i medlemslista: <Yesno value={user.in_list} />,
-                                unngår epost: <Yesno value={user.no_email} />,
-                                permisjon: <Yesno value={user.on_leave} />
+                                aktiv: <Yesno value={user.isActive} />,
+                                i medlemslista: <Yesno value={user.inList} />,
+                                unngår epost: <Yesno value={user.noEmail} />,
+                                permisjon: <Yesno value={user.onLeave} />
                             </div>
                         </div>
                     </div>
                     <div style={{ padding: '0 20px', width: '25%', minWidth: 230 }}>
                         <Paper>
-                            <img src={user.profile_picture_path} alt={`Bilde av ${user.name}`} />
+                            <img src={user.profilePicturePath} alt={`Bilde av ${user.name}`} />
                         </Paper>
                         <div>Bursdag <Date date={user.born} format="Do MMMM" /></div>
                         <div>
-                            Startet for <DateFromNow date={user.joined} /> og har NMF-nummer {user.nmf_id}
+                            Startet for <DateFromNow date={user.joined} /> og har NMF-nummer {user.nmfId}
                         </div>
                     </div>
                 </div>
@@ -155,7 +395,7 @@ export default Relay.createContainer(Member, {
         `,
         organization: () => Relay.QL`
         fragment on Organization {
-            is_member
+            isMember
             member(username:$username) {
                 id
                 role {
@@ -171,13 +411,13 @@ export default Relay.createContainer(Member, {
                         id
                         name
                     }
-                    is_active
-                    is_admin
+                    isActive
+                    isAdmin
                     created
-                    facebook_id
-                    google_id
-                    twitter_id
-                    nmf_id
+                    facebookId
+                    googleId
+                    twitterId
+                    nmfId
                     phone
                     address
                     postcode
@@ -186,17 +426,18 @@ export default Relay.createContainer(Member, {
                     born
                     joined
                     instrument
-                    instrument_insurance
+                    instrumentInsurance
                     reskontro
-                    membership_history
-                    profile_picture
-                    profile_picture_path
-                    membership_status
-                    in_list
-                    on_leave
-                    no_email
+                    membershipHistory
+                    profilePicture
+                    profilePicturePath
+                    membershipStatus
+                    inList
+                    onLeave
+                    noEmail
                 }
             }
+            ${EditUserMutation.getFragment('organization')}
         }
         `,
     },

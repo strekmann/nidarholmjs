@@ -121,7 +121,7 @@ export default Relay.createContainer(Organization, {
         organization: () => Relay.QL`
         fragment on Organization {
             id
-            member_group {
+            memberGroup {
                 id
             }
             summaries {

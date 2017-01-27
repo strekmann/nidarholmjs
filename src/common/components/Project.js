@@ -155,7 +155,7 @@ class Project extends React.Component {
         const viewer = this.props.viewer;
         const org = this.props.organization;
         const project = this.props.organization.project;
-        const isMember = this.props.organization.is_member;
+        const isMember = this.props.organization.isMember;
         return (
             <Paper className="row">
                 <div style={{ display: 'flex', justifyContent: 'space-between' }}>
@@ -201,24 +201,24 @@ class Project extends React.Component {
                             </div>
                             : null
                         }
-                        {project.public_mdtext
+                        {project.publicMdtext
                             ? <div>
                                 <h2>Informasjon</h2>
-                                <Text text={project.public_mdtext} />
+                                <Text text={project.publicMdtext} />
                             </div>
                             : null
                         }
-                        {isMember && project.private_mdtext
+                        {isMember && project.privateMdtext
                             ? <div>
                                 <h2>Intern informasjon</h2>
-                                <Text text={project.private_mdtext} />
+                                <Text text={project.privateMdtext} />
                             </div>
                             : null
                         }
                         {isMember
                             ? <FileList
                                 files={project.files}
-                                memberGroupId={org.member_group.id}
+                                memberGroupId={org.memberGroup.id}
                                 onSavePermissions={this.onSaveFilePermissions}
                                 onSetProjectPoster={this.onSetProjectPoster}
                                 style={{ margin: '0 -15px' }}
@@ -230,7 +230,7 @@ class Project extends React.Component {
                     </div>
                     <div style={{ width: 300, padding: '0 15px' }}>
                         {project.poster ?
-                            <img alt="Konsertplakat" src={project.poster.large_path} />
+                            <img alt="Konsertplakat" src={project.poster.largePath} />
                             :
                             null
                         }
@@ -261,7 +261,7 @@ class Project extends React.Component {
                             <FileUpload viewer={viewer} organization={org} onDrop={this.onDrop} />
                             <FileList
                                 files={project.files}
-                                memberGroupId={org.member_group.id}
+                                memberGroupId={org.memberGroup.id}
                                 onSavePermissions={this.onSaveFilePermissions}
                                 onSetProjectPoster={this.onSetProjectPoster}
                                 viewer={this.props.viewer}
@@ -293,8 +293,8 @@ export default Relay.createContainer(Project, {
         organization: () => Relay.QL`
         fragment on Organization {
             name
-            is_member
-            member_group {
+            isMember
+            memberGroup {
                 id
             }
             project(year:$year, tag:$tag) {
@@ -304,14 +304,14 @@ export default Relay.createContainer(Project, {
                 start
                 end
                 year
-                public_mdtext
-                private_mdtext
+                publicMdtext
+                privateMdtext
                 conductors {
                     name
                 }
                 poster {
                     filename
-                    large_path
+                    largePath
                 }
                 events(first:100) {
                     edges {
@@ -355,8 +355,8 @@ export default Relay.createContainer(Project, {
                                 }
                             }
                             tags
-                            is_image
-                            normal_path
+                            isImage
+                            normalPath
                             path
                         }
                     }

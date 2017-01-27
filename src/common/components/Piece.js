@@ -69,7 +69,7 @@ class Piece extends React.Component {
         const piece = org.piece;
         return (
             <section>
-                {org.is_musicscoreadmin ? '(Noteadmin)' : null}
+                {org.isMusicscoreadmin ? '(Noteadmin)' : null}
                 <h1>{piece.title} <small>{piece.subtitle}</small></h1>
                 <h2>
                     <List items={piece.composers} /> <small><List items={piece.arrangers} /></small>
@@ -81,7 +81,7 @@ class Piece extends React.Component {
                     )
                 }
 
-                {org.is_musicscoreadmin ?
+                {org.isMusicscoreadmin ?
                     <div>
                         <h2>Admin</h2>
                         {piece.groupscores.map(
@@ -108,8 +108,8 @@ export default Relay.createContainer(Piece, {
         fragment on Organization {
             id
             name
-            is_member
-            is_musicscoreadmin
+            isMember
+            isMusicscoreadmin
             piece(pieceId:$pieceId) {
                 id
                 title

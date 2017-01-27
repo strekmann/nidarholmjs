@@ -47,24 +47,11 @@ export default Relay.createContainer(App, {
     fragments: {
         viewer: () => Relay.QL`
         fragment on User {
-            name,
-            email,
-            username,
-            profile_picture_path,
+            ${Navigation.getFragment('viewer')}
         }`,
         organization: () => Relay.QL`
         fragment on Organization {
-            id,
-            name,
-            mail_address,
-            postcode,
-            city,
-            public_bank_account,
-            organization_number,
-            encoded_email,
-            twitter,
-            facebook,
-            is_member,
+            ${Navigation.getFragment('organization')}
         }`,
     },
 });

@@ -1,4 +1,5 @@
 import React from 'react';
+import Relay from 'react-relay';
 import ActionLockOpen from 'material-ui/svg-icons/action/lock-open';
 import Avatar from 'material-ui/Avatar';
 import { Menu, MenuItem } from 'material-ui/Menu';
@@ -50,7 +51,7 @@ class Navigation extends React.Component {
     render() {
         const viewer = this.props.viewer;
         const org = this.props.organization;
-        const isMember = org.is_member;
+        const isMember = org.isMember;
         const logo = (
             <Link
                 to="/"
@@ -146,7 +147,7 @@ class Navigation extends React.Component {
                                     }}
                                 >
                                     <Avatar
-                                        src={viewer.profile_picture_path}
+                                        src={viewer.profilePicturePath}
                                         style={{ margin: '0 5px' }}
                                     />
                                     <span>{viewer.name}</span>
@@ -174,7 +175,7 @@ class Navigation extends React.Component {
                     <div>
                         {this.props.viewer ? <Link to={`/users/${viewer.username}`}>
                             <Avatar
-                                src={viewer.profile_picture_path}
+                                src={viewer.profilePicturePath}
                             />
                         </Link>
                         : <Link to="/login">
@@ -290,4 +291,28 @@ class Navigation extends React.Component {
     }
 }
 
-export default Navigation;
+export default Relay.createContainer(Navigation, {
+    fragments: {
+        organization: () => Relay.QL`
+        fragment on Organization {
+            id
+            name,
+            mailAddress,
+            postcode,
+            city,
+            publicBankAccount,
+            organizationNumber,
+            encodedEmail,
+            twitter,
+            facebook,
+            isMember,
+        }`,
+        viewer: () => Relay.QL`
+        fragment on User {
+            name,
+            email,
+            username,
+            profilePicturePath,
+        }`,
+    },
+});

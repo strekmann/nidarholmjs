@@ -69,7 +69,7 @@ class Files extends React.Component {
     render() {
         const viewer = this.props.viewer;
         const org = this.props.organization;
-        const isMember = org.is_member;
+        const isMember = org.isMember;
         return (
             <div className="row">
                 <h1>Filer</h1>
@@ -81,7 +81,7 @@ class Files extends React.Component {
                 : null}
                 <FileList
                     files={org.files}
-                    memberGroupId={org.member_group.id}
+                    memberGroupId={org.memberGroup.id}
                     style={{ margin: '0 -20px' }}
                 />
                 {org.files.pageInfo.hasNextPage ?
@@ -110,8 +110,8 @@ export default Relay.createContainer(Files, {
         organization: () => Relay.QL`
         fragment on Organization {
             id
-            is_member
-            member_group {
+            isMember
+            memberGroup {
                 id
             }
             files(first:$showFiles) {
@@ -134,8 +134,8 @@ export default Relay.createContainer(Files, {
                             }
                         }
                         tags
-                        is_image
-                        normal_path
+                        isImage
+                        normalPath
                     }
                 }
                 pageInfo {

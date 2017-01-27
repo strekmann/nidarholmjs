@@ -32,11 +32,26 @@ export default class AddEventMutation extends Relay.Mutation {
     }
 
     getConfigs() {
-        return [{
-            type: 'FIELDS_CHANGE',
-            fieldIDs: {
-                organization: this.props.organization.id,
+        return [
+            {
+                type: 'FIELDS_CHANGE',
+                fieldIDs: {
+                    organization: this.props.organization.id,
+                },
             },
-        }];
+            {
+                type: 'REQUIRED_CHILDREN',
+                children: [
+                    Relay.QL`
+                    fragment on AddUserPayload {
+                        newUser {
+                            name
+                            username
+                        }
+                    }
+                    `,
+                ],
+            },
+        ];
     }
 }
