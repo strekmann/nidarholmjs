@@ -547,6 +547,11 @@ projectType = new GraphQLObjectType({
     interfaces: [nodeInterface],
 });
 
+const projectConnection = connectionDefinitions({
+    name: 'Project',
+    nodeType: projectType,
+});
+
 pageType = new GraphQLObjectType({
     name: 'Page',
     description: 'Wiki page',
@@ -694,10 +699,7 @@ organizationType = new GraphQLObjectType({
             ),
         },
         previousProjects: {
-            type: connectionDefinitions({
-                name: 'Project',
-                nodeType: projectType,
-            }).connectionType,
+            type: projectConnection.connectionType,
             args: connectionArgs,
             resolve: (_, { ...args }) => connectionFromMongooseQuery(
                 Project.find({
@@ -1403,6 +1405,66 @@ const mutationAddScore = mutationWithClientMutationId({
     },
 });
 
+const mutationAddProject = mutationWithClientMutationId({
+    name: 'AddProject',
+    inputFields: {
+        title: { type: new GraphQLNonNull(GraphQLString) },
+        tag: { type: GraphQLString },
+        start: { type: GraphQLString },
+        end: { type: GraphQLString },
+        privateMdtext: { type: GraphQLString },
+        publicMdtext: { type: GraphQLString },
+        permissions: { type: new GraphQLList(GraphQLString) },
+    },
+    outputFields: {
+        organization: {
+            type: organizationType,
+            resolve: (payload, args, { organization }) => organization,
+        },
+        newProjectEdge: {
+            type: projectConnection.edgeType,
+            resolve: (payload, args, { viewer }) => {
+                return {
+                    cursor: offsetToCursor(0),
+                    node: payload,
+                };
+            },
+        },
+    },
+    mutateAndGetPayload: ({ title, tag, privateMdtext, publicMdtext, start, end, permissions }, { viewer }) => {
+        if (!viewer) {
+            throw new Error('Nobody!');
+        }
+        const permissionObj = { public: false, groups: [], users: [] };
+        permissions.forEach(permission => {
+            if (permission === 'p') {
+                permissionObj.public = true;
+            }
+            const idObj = fromGlobalId(permission);
+            if (idObj.type === 'Group') {
+                permissionObj.groups.push(idObj.id);
+            }
+            else if (idObj.type === 'User') {
+                permissionObj.users.push(idObj.id);
+            }
+        });
+        const project = new Project();
+        project.creator = viewer.id;
+        project.title = title;
+        const momentEnd = moment.utc(end);
+        if (start) {
+            project.start = moment.utc(start);
+        }
+        project.end = momentEnd;
+        project.tag = tag;
+        project.private_mdtext = privateMdtext;
+        project.public_mdtext = publicMdtext;
+        project.permissions = permissionObj;
+        project.year = momentEnd.year();
+        return project.save();
+    },
+});
+
 const mutationType = new GraphQLObjectType({
     name: 'Mutation',
     fields: () => ({
@@ -1418,6 +1480,7 @@ const mutationType = new GraphQLObjectType({
         saveFilePermissions: mutationSaveFilePermissions,
         saveOrganization: mutationSaveOrganization,
         setProjectPoster: mutationSetProjectPoster,
+        addProject: mutationAddProject,
     }),
 });
 
