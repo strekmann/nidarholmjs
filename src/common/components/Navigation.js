@@ -8,7 +8,7 @@ import Popover from 'material-ui/Popover';
 import NavigationMenu from 'material-ui/svg-icons/navigation/menu';
 import RaisedButton from 'material-ui/RaisedButton';
 import getMuiTheme from 'material-ui/styles/getMuiTheme';
-import { fullWhite, pink900 } from 'material-ui/styles/colors';
+import { fullWhite, lightBlue900 } from 'material-ui/styles/colors';
 import { Link } from 'react-router';
 
 import theme from '../theme';
@@ -74,7 +74,7 @@ class Navigation extends React.Component {
         );
 
         return (
-            <div style={{ backgroundColor: pink900 }}>
+            <div style={{ backgroundColor: lightBlue900 }}>
                 <div className="flex-menu-desktop">
                     <nav
                         className="flex-menu"
@@ -208,7 +208,7 @@ class Navigation extends React.Component {
                                     flexWrap: 'wrap',
                                     justifyContent: 'space-around',
                                     width: '100%',
-                                    backgroundColor: pink900,
+                                    backgroundColor: lightBlue900,
                                 }}
                             >
                                 <Menu>
