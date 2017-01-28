@@ -16,12 +16,14 @@ import Date from './Date';
 import Text from './Text';
 import EventList from './EventList';
 import EditEvent from './EditEvent';
+import ProjectForm from './ProjectForm';
 import FileList from './FileList';
 import FileUpload from './FileUpload';
 import MusicList from './MusicList';
 import AddEventMutation from '../mutations/addEvent';
 import AddFileMutation from '../mutations/addFile';
 import SaveFilePermissionsMutation from '../mutations/saveFilePermissions';
+import SaveProjectMutation from '../mutations/saveProject';
 import SetProjectPosterMutation from '../mutations/setProjectPoster';
 import theme from '../theme';
 
@@ -48,6 +50,7 @@ class Project extends React.Component {
         public: false,
         addEvent: false,
         addFile: false,
+        editProject: false,
         event: {
             title: '',
             location: '',
@@ -101,6 +104,10 @@ class Project extends React.Component {
         this.setState({ addEvent: !this.state.addEvent });
     }
 
+    toggleEditProject = () => {
+        this.setState({ editProject: !this.state.editProject });
+    }
+
     closeAddEvent = () => {
         this.setState({ addEvent: false });
     }
@@ -151,6 +158,19 @@ class Project extends React.Component {
         }));
     }
 
+    saveProject = (project, callbacks) => {
+        this.context.relay.commitUpdate(new SaveProjectMutation({
+            organization: this.props.organization,
+            ...project,
+        }), {
+            onSuccess: () => {
+                if (callbacks && callbacks.onSuccess) {
+                    callbacks.onSuccess();
+                }
+            },
+        });
+    }
+
     render() {
         const viewer = this.props.viewer;
         const org = this.props.organization;
@@ -174,6 +194,10 @@ class Project extends React.Component {
                             targetOrigin={{ vertical: 'top', horizontal: 'right' }}
                         >
                             <MenuItem
+                                primaryText="Rediger prosjektinfo"
+                                onTouchTap={this.toggleEditProject}
+                            />
+                            <MenuItem
                                 primaryText="Legg til aktivitet"
                                 onTouchTap={this.toggleAddEvent}
                             />
@@ -194,7 +218,7 @@ class Project extends React.Component {
                     }}
                 >
                     <div style={{ padding: '0 15px', maxWidth: 700 }}>
-                        {isMember
+                        {isMember && project.music.length
                             ? <div>
                                 <h2>Repertoar</h2>
                                 <MusicList music={project.music} />
@@ -215,7 +239,7 @@ class Project extends React.Component {
                             </div>
                             : null
                         }
-                        {isMember
+                        {isMember && project.files.length
                             ? <FileList
                                 files={project.files}
                                 memberGroupId={org.memberGroup.id}
@@ -234,12 +258,21 @@ class Project extends React.Component {
                             :
                             null
                         }
-                        <h2>Aktiviteter</h2>
-                        <EventList events={project.events} />
+                        {project.events.length
+                            ? <EventList events={project.events} />
+                            : null
+                        }
                     </div>
                 </div>
                 {isMember
                     ? <div>
+                        <ProjectForm
+                            open={this.state.editProject}
+                            save={this.saveProject}
+                            toggle={this.toggleEditProject}
+                            viewer={this.props.viewer}
+                            {...project}
+                        />
                         <Dialog
                             title="Legg til aktivitet"
                             open={this.state.addEvent}
@@ -288,6 +321,7 @@ export default Relay.createContainer(Project, {
                 id
                 name
             }
+            ${ProjectForm.getFragment('viewer')}
         }
         `,
         organization: () => Relay.QL`
@@ -372,6 +406,7 @@ export default Relay.createContainer(Project, {
             ${AddEventMutation.getFragment('organization')}
             ${AddFileMutation.getFragment('organization')}
             ${SaveFilePermissionsMutation.getFragment('organization')}
+            ${SaveProjectMutation.getFragment('organization')}
             ${SetProjectPosterMutation.getFragment('organization')}
         }`,
     },

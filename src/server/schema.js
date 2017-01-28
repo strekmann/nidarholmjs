@@ -1465,6 +1465,59 @@ const mutationAddProject = mutationWithClientMutationId({
     },
 });
 
+const mutationSaveProject = mutationWithClientMutationId({
+    name: 'SaveProject',
+    inputFields: {
+        id: { type: new GraphQLNonNull(GraphQLID) },
+        title: { type: new GraphQLNonNull(GraphQLString) },
+        tag: { type: GraphQLString },
+        start: { type: GraphQLString },
+        end: { type: GraphQLString },
+        privateMdtext: { type: GraphQLString },
+        publicMdtext: { type: GraphQLString },
+        permissions: { type: new GraphQLList(GraphQLString) },
+    },
+    outputFields: {
+        organization: {
+            type: organizationType,
+            resolve: (payload, args, { organization }) => organization,
+        },
+    },
+    mutateAndGetPayload: ({ id, title, tag, privateMdtext, publicMdtext, start, end, permissions }, { viewer }) => {
+        if (!viewer) {
+            throw new Error('Nobody!');
+        }
+        const permissionObj = { public: false, groups: [], users: [] };
+        permissions.forEach(permission => {
+            if (permission === 'p') {
+                permissionObj.public = true;
+            }
+            const idObj = fromGlobalId(permission);
+            if (idObj.type === 'Group') {
+                permissionObj.groups.push(idObj.id);
+            }
+            else if (idObj.type === 'User') {
+                permissionObj.users.push(idObj.id);
+            }
+        });
+        let startMoment = null;
+        if (start) {
+            startMoment = moment.utc(start);
+        }
+        const endMoment = moment.utc(end);
+        const projectId = fromGlobalId(id).id;
+        return Project.findByIdAndUpdate(projectId, {
+            title,
+            tag,
+            privateMdtext,
+            publicMdtext,
+            start: startMoment,
+            end: endMoment,
+            permissions,
+        }).exec();
+    },
+});
+
 const mutationType = new GraphQLObjectType({
     name: 'Mutation',
     fields: () => ({
@@ -1481,6 +1534,7 @@ const mutationType = new GraphQLObjectType({
         saveOrganization: mutationSaveOrganization,
         setProjectPoster: mutationSetProjectPoster,
         addProject: mutationAddProject,
+        saveProject: mutationSaveProject,
     }),
 });
 

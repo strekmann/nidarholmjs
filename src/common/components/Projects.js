@@ -23,6 +23,7 @@ class Projects extends React.Component {
     static propTypes = {
         organization: React.PropTypes.object,
         relay: React.PropTypes.object,
+        viewer: React.PropTypes.object,
     }
 
     static childContextTypes = {

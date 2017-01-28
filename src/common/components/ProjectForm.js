@@ -3,6 +3,7 @@ import DatePicker from 'material-ui/DatePicker';
 import Dialog from 'material-ui/Dialog';
 import RaisedButton from 'material-ui/RaisedButton';
 import TextField from 'material-ui/TextField';
+import moment from 'moment';
 import React from 'react';
 import Relay from 'react-relay';
 
@@ -13,26 +14,31 @@ if (areIntlLocalesSupported(['nb'])) {
     DateTimeFormat = global.Intl.DateTimeFormat;
 }
 
-const newState = {
-    title: '',
-    tag: '',
-    privateMdtext: '',
-    publicMdtext: '',
-    start: null,
-    end: null,
-    permissions: [],
-};
-
 class ProjectForm extends React.Component {
     static propTypes = {
         open: React.PropTypes.bool,
-        project: React.PropTypes.object,
         save: React.PropTypes.func,
         toggle: React.PropTypes.func,
         viewer: React.PropTypes.object,
+        id: React.PropTypes.string,
+        title: React.PropTypes.string,
+        tag: React.PropTypes.string,
+        privateMdtext: React.PropTypes.string,
+        publicMdtext: React.PropTypes.string,
+        start: React.PropTypes.string,
+        end: React.PropTypes.string,
+        permissions: React.PropTypes.array,
     }
 
-    state = newState;
+    state = {
+        title: this.props.title || '',
+        tag: this.props.tag || '',
+        privateMdtext: this.props.privateMdtext || '',
+        publicMdtext: this.props.publicMdtext || '',
+        start: this.props.start ? moment(this.props.start).toDate() : null,
+        end: this.props.end ? moment(this.props.end).toDate() : null,
+        permissions: this.props.permissions || [],
+    };
 
     onChangeTitle = (event, title) => {
         this.setState({ title });
@@ -86,6 +92,7 @@ class ProjectForm extends React.Component {
         event.preventDefault();
         this.props.toggle();
         this.props.save({
+            id: this.props.id,
             title: this.state.title,
             tag: this.state.tag,
             privateMdtext: this.state.privateMdtext,
@@ -95,7 +102,17 @@ class ProjectForm extends React.Component {
             permissions: this.state.permissions,
         }, {
             onSuccess: () => {
-                this.setState(newState);
+                if (!this.props.id) {
+                    this.setState({
+                        title: '',
+                        tag: '',
+                        privateMdtext: '',
+                        publicMdtext: '',
+                        start: null,
+                        end: null,
+                        permissions: [],
+                    });
+                }
             },
         });
     }
@@ -112,7 +129,7 @@ class ProjectForm extends React.Component {
 
         return (
             <Dialog
-                title={this.props.project ? 'Rediger prosjekt' : 'Nytt prosjekt'}
+                title={this.props.id ? 'Rediger prosjekt' : 'Nytt prosjekt'}
                 open={this.props.open}
                 onRequestClose={this.toggle}
             >
