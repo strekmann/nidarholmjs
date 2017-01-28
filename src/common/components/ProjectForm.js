@@ -139,6 +139,7 @@ class ProjectForm extends React.Component {
                             floatingLabelText="Tittel"
                             onChange={this.onChangeTitle}
                             value={this.state.title}
+                            required
                         />
                     </div>
                     <div>
@@ -146,6 +147,7 @@ class ProjectForm extends React.Component {
                             floatingLabelText="Identifikator"
                             onChange={this.onChangeTag}
                             value={this.state.tag}
+                            required
                         />
                     </div>
                     <div>
@@ -186,6 +188,7 @@ class ProjectForm extends React.Component {
                             mode="landscape"
                             locale="nb"
                             DateTimeFormat={DateTimeFormat}
+                            required
                         />
                     </div>
                     <div>
