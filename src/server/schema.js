@@ -7,7 +7,7 @@ import {
     GraphQLSchema,
     GraphQLString,
     GraphQLInt,
-    GraphQLInputObjectType,
+    // GraphQLInputObjectType,
 } from 'graphql';
 
 import GraphQLDate from 'graphql-custom-datetype';
@@ -41,6 +41,7 @@ let projectType;
 let fileType;
 let pageType;
 let pieceType;
+let groupScoreType;
 
 class UserDTO { constructor(obj) { for (const k of Object.keys(obj)) { this[k] = obj[k]; } } }
 class GroupDTO { constructor(obj) { for (const k of Object.keys(obj)) { this[k] = obj[k]; } } }
@@ -273,10 +274,12 @@ userType = new GraphQLObjectType({
     interfaces: [nodeInterface],
 });
 
+/*
 const userConnection = connectionDefinitions({
     name: 'User',
     nodeType: userType,
 });
+*/
 
 groupType = new GraphQLObjectType({
     name: 'Group',
@@ -291,7 +294,7 @@ groupType = new GraphQLObjectType({
                     id: { type: GraphQLString },
                     user: {
                         type: userType,
-                        resolve: (member) => User.findById(member.user).where({
+                        resolve: groupMember => User.findById(groupMember.user).where({
                             on_leave: false,
                             in_list: true,
                             //membership_status: { $lt: 5 },
@@ -307,9 +310,11 @@ groupType = new GraphQLObjectType({
                 },
             })),
             resolve: (group, args, { organization }) => {
-                const members = organization.member_group.members.map(member => member.user);
-                return group.members.filter(member => {
-                    if (members.includes(member.user)) {
+                const members = organization.member_group.members.map(
+                    organizationMember => organizationMember.user
+                );
+                return group.members.filter(groupMember => {
+                    if (members.includes(groupMember.user)) {
                         return true;
                     }
                     return false;
@@ -320,11 +325,12 @@ groupType = new GraphQLObjectType({
     interfaces: [nodeInterface],
 });
 
+/*
 const groupConnection = connectionDefinitions({
     name: 'Group',
     nodeType: groupType,
 });
-
+*/
 
 const permissionsType = new GraphQLObjectType({
     name: 'Permissions',
@@ -378,10 +384,12 @@ const fileConnection = connectionDefinitions({
     nodeType: fileType,
 });
 
+/*
 const scoreConnection = connectionDefinitions({
     name: 'Score',
     nodeType: fileType,
 });
+*/
 
 eventType = new GraphQLObjectType({
     name: 'Event',
@@ -402,7 +410,7 @@ const eventConnection = connectionDefinitions({
     nodeType: eventType,
 });
 
-const groupScoreType = new GraphQLObjectType({
+groupScoreType = new GraphQLObjectType({
     name: 'Groupscore',
     fields: () => ({
         id: globalIdField('Groupscore'),
@@ -914,15 +922,16 @@ const mutationAddEvent = mutationWithClientMutationId({
         },
         newEventEdge: {
             type: eventConnection.edgeType,
-            resolve: (payload, args, { viewer }) => {
-                return {
-                    cursor: offsetToCursor(0),
-                    node: payload,
-                };
-            },
+            resolve: payload => ({
+                cursor: offsetToCursor(0),
+                node: payload,
+            }),
         },
     },
-    mutateAndGetPayload: ({ title, location, start, end, tags, mdtext, permissions }, { viewer }) => {
+    mutateAndGetPayload: (
+        { title, location, start, end, tags, mdtext, permissions },
+        { viewer },
+    ) => {
         if (!viewer) {
             throw new Error('Nobody!');
         }
@@ -1083,12 +1092,10 @@ const mutationAddPage = mutationWithClientMutationId({
         },
         newPageEdge: {
             type: pageConnection.edgeType,
-            resolve: (payload, args, { viewer }) => {
-                return {
-                    cursor: offsetToCursor(0),
-                    node: payload,
-                };
-            },
+            resolve: payload => ({
+                cursor: offsetToCursor(0),
+                node: payload,
+            }),
         },
     },
     mutateAndGetPayload: ({ slug, mdtext, title, summary, permissions }, { viewer }) => {
@@ -1141,11 +1148,18 @@ const mutationAddUser = mutationWithClientMutationId({
             resolve: payload => payload,
         },
     },
-    mutateAndGetPayload: ({ name, email, instrument, isMember, groupId }, { viewer, organization }) => {
+    mutateAndGetPayload: (
+        { name, email, instrument, isMember, groupId },
+        { viewer, organization },
+    ) => {
         if (!viewer) {
             throw new Error('Nobody!');
         }
-        return Organization.findById(organization.id).populate('member_group').exec().then(_organization => {
+        return Organization
+        .findById(organization.id)
+        .populate('member_group')
+        .exec()
+        .then(_organization => {
             const userId = uuid.v4();
             const user = new User({ _id: userId, username: userId, instrument, name });
             let p = Promise.resolve(_organization);
@@ -1157,7 +1171,6 @@ const mutationAddUser = mutationWithClientMutationId({
             return p.then(_org => {
                 if (groupId) {
                     const gId = fromGlobalId(groupId).id;
-                    console.log("Uwse", groupId, gId);
                     return Group.findById(gId).exec().then(group => {
                         user.groups.push(group);
                         group.members.push({ user });
@@ -1165,7 +1178,7 @@ const mutationAddUser = mutationWithClientMutationId({
                     });
                 }
                 return Promise.resolve(_org);
-            }).then(() => user.save().then(_user => { console.log(_user, "uuu"); return _user; }));
+            }).then(() => user.save());
         });
     },
 });
@@ -1239,7 +1252,6 @@ const mutationEditUser = mutationWithClientMutationId({
                 country,
             });
         }
-        console.log(id, userId, fields);
         return User.findByIdAndUpdate(id, fields, { new: true }).exec();
     },
 });
@@ -1280,7 +1292,15 @@ const mutationEditPage = mutationWithClientMutationId({
         });
         const query = Page.findByIdAndUpdate(
             id,
-            { slug, mdtext, summary, title, permissions: permissionObj, updator: viewer.id, updated: moment.utc() },
+            {
+                slug,
+                mdtext,
+                summary,
+                title,
+                permissions: permissionObj,
+                updator: viewer.id,
+                updated: moment.utc(),
+            },
             { new: true },
         );
         return authenticate(query, viewer).exec().then(page => {
@@ -1305,7 +1325,11 @@ const mutationSaveOrganization = mutationWithClientMutationId({
     },
     mutateAndGetPayload: ({ summaryIds }, { viewer, organization }) => {
         const pageIds = summaryIds.map(pageId => fromGlobalId(pageId).id);
-        return Organization.findByIdAndUpdate(organization.id, { summaries: pageIds }, { new: true });
+        return Organization.findByIdAndUpdate(
+            organization.id,
+            { summaries: pageIds },
+            { new: true },
+        );
     },
 });
 
@@ -1332,12 +1356,10 @@ const mutationAddFile = mutationWithClientMutationId({
         },
         newFileEdge: {
             type: fileConnection.edgeType,
-            resolve: (payload, args, { viewer }) => {
-                return {
-                    cursor: offsetToCursor(0),
-                    node: payload,
-                };
-            },
+            resolve: payload => ({
+                cursor: offsetToCursor(0),
+                node: payload,
+            }),
         },
     },
     mutateAndGetPayload: ({ filename, hex, permissions, tags }, { viewer }) => {
@@ -1381,12 +1403,10 @@ const mutationAddScore = mutationWithClientMutationId({
         },
         newScoreEdge: {
             type: fileConnection.edgeType,
-            resolve: (payload) => {
-                return {
-                    cursor: offsetToCursor(0),
-                    node: payload.file,
-                };
-            },
+            resolve: (payload) => ({
+                cursor: offsetToCursor(0),
+                node: payload.file,
+            }),
         },
     },
     mutateAndGetPayload: ({ filename, hex, groupId, pieceId }, { viewer }) => {
@@ -1396,6 +1416,9 @@ const mutationAddScore = mutationWithClientMutationId({
         return insertFile(
             filename, hex, permissionObj, [], config.files.raw_prefix, viewer, pieceDbId,
         ).then(file => {
+            if (!viewer) {
+                throw new Error('Nobody!');
+            }
             return {
                 file,
                 groupId,
@@ -1423,15 +1446,16 @@ const mutationAddProject = mutationWithClientMutationId({
         },
         newProjectEdge: {
             type: projectConnection.edgeType,
-            resolve: (payload, args, { viewer }) => {
-                return {
-                    cursor: offsetToCursor(0),
-                    node: payload,
-                };
-            },
+            resolve: payload => ({
+                cursor: offsetToCursor(0),
+                node: payload,
+            }),
         },
     },
-    mutateAndGetPayload: ({ title, tag, privateMdtext, publicMdtext, start, end, permissions }, { viewer }) => {
+    mutateAndGetPayload: (
+        { title, tag, privateMdtext, publicMdtext, start, end, permissions },
+        { viewer },
+    ) => {
         if (!viewer) {
             throw new Error('Nobody!');
         }
@@ -1483,7 +1507,10 @@ const mutationSaveProject = mutationWithClientMutationId({
             resolve: (payload, args, { organization }) => organization,
         },
     },
-    mutateAndGetPayload: ({ id, title, tag, privateMdtext, publicMdtext, start, end, permissions }, { viewer }) => {
+    mutateAndGetPayload: (
+        { id, title, tag, privateMdtext, publicMdtext, start, end, permissions },
+        { viewer },
+    ) => {
         if (!viewer) {
             throw new Error('Nobody!');
         }
