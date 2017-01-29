@@ -9,7 +9,7 @@
         "new-cap": [1, { "capIsNewExceptions": ["ImmutableStore", "List", "Map"] }],
         "no-param-reassign": [2, {"props": false}],
         "no-shadow": [2, {"allow": ["err"]}],
-        "no-underscore-dangle": ["error", { "allow": ["_id", "__INITIAL_STATE__", "_json", "_header", "__"] }],
+        "no-underscore-dangle": ["error", { "allow": ["_id", "_type", "__INITIAL_STATE__", "_json", "_header", "__"] }],
         "no-unused-expressions": 1,
         "no-unused-vars": [ 1, { "vars": "all", "args": "after-used", "argsIgnorePattern": "req|res|next" }],
         "prefer-const": 1,

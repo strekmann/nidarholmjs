@@ -26,12 +26,16 @@ import config from 'config';
 import uuid from 'node-uuid';
 
 import { connectionFromMongooseQuery, offsetToCursor } from './connections';
-import { User, Group, Organization } from './models';
-import { File } from './models/files';
-import { Project, Event, Piece } from './models/projects';
-import { Page } from './models/pages';
 
-import { insert_file as insertFile } from './lib/util';
+import Event from './models/Event';
+import File from './models/File';
+import Group from './models/Group';
+import Organization from './models/Organization';
+import Page from './models/Page';
+import Piece from './models/Piece';
+import Project from './models/Project';
+import User from './models/User';
+import insertFile from './lib/insertFile';
 
 let userType;
 let groupType;
@@ -43,79 +47,63 @@ let pageType;
 let pieceType;
 let groupScoreType;
 
-class UserDTO { constructor(obj) { for (const k of Object.keys(obj)) { this[k] = obj[k]; } } }
-class GroupDTO { constructor(obj) { for (const k of Object.keys(obj)) { this[k] = obj[k]; } } }
-class OrganizationDTO { constructor(o) { for (const k of Object.keys(o)) { this[k] = o[k]; } } }
-class PieceDTO { constructor(obj) { for (const k of Object.keys(obj)) { this[k] = obj[k]; } } }
-class EventDTO { constructor(obj) { for (const k of Object.keys(obj)) { this[k] = obj[k]; } } }
-class ProjectDTO { constructor(obj) { for (const k of Object.keys(obj)) { this[k] = obj[k]; } } }
-class FileDTO { constructor(obj) { for (const k of Object.keys(obj)) { this[k] = obj[k]; } } }
-class PageDTO { constructor(obj) { for (const k of Object.keys(obj)) { this[k] = obj[k]; } } }
-class GroupscoreDTO { constructor(obj) { for (const k of Object.keys(obj)) { this[k] = obj[k]; } } }
-
 const { nodeInterface, nodeField } = nodeDefinitions(
+    // FIXME: Add permission checks
     (globalId) => {
         const { type, id } = fromGlobalId(globalId);
         if (type === 'User') {
-            return User.findById(id).exec().then((user) => new UserDTO(user.toObject()));
+            return User.findById(id).exec();
         }
         if (type === 'Group') {
-            return Group.findById(id).exec().then((group) => new GroupDTO(group.toObject()));
+            return Group.findById(id).exec();
         }
         if (type === 'Organization') {
-            return Organization.findById(id).exec().then(
-                (organization) => new OrganizationDTO(organization.toObject())
-            );
+            return Organization.findById(id).exec();
         }
         if (type === 'Piece') {
-            return Piece.findById(id).exec().then((piece) => new PieceDTO(piece.toObject()));
+            return Piece.findById(id).exec();
         }
         if (type === 'Event') {
-            return Event.findById(id).exec().then((event) => new EventDTO(event.toObject()));
+            return Event.findById(id).exec();
         }
         if (type === 'Project') {
-            return Project.findById(id).exec().then(
-                (project) => new ProjectDTO(project.toObject())
-            );
+            return Project.findById(id).exec();
         }
         if (type === 'File') {
-            return File.findById(id).exec().then((file) => new FileDTO(file.toObject()));
+            return File.findById(id).exec();
         }
         if (type === 'Page') {
-            return Page.findById(id).exec().then((page) => new PageDTO(page.toObject()));
+            return Page.findById(id).exec();
         }
         if (type === 'Groupscore') {
-            return Group.findById(id).exec().then((group) => new GroupscoreDTO(group.toObject()));
+            return Group.findById(id).exec();
         }
         return null;
     },
     (obj) => {
-        if (obj instanceof UserDTO) {
+        if (obj._type === 'User') {
             return userType;
         }
-        if (obj instanceof GroupDTO) {
+        if (obj._type === 'Group') {
             return groupType;
         }
-        if (obj instanceof OrganizationDTO) {
+        if (obj._type === 'Organization') {
             return organizationType;
         }
-        if (obj instanceof PieceDTO) {
+        if (obj._type === 'Piece') {
             return pieceType;
         }
-        if (obj instanceof EventDTO) {
+        if (obj._type === 'Event') {
             return eventType;
         }
-        if (obj instanceof ProjectDTO) {
+        if (obj._type === 'Project') {
             return projectType;
         }
-        if (obj instanceof FileDTO) {
+        if (obj._type === 'File') {
             return fileType;
         }
-        if (obj instanceof PageDTO) {
+        if (obj._type === 'Page') {
             return pageType;
-        }
-        if (obj instanceof GroupscoreDTO) {
-            return groupScoreType;
         }
         return null;
     }

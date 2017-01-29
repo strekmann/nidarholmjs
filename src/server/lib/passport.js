@@ -8,7 +8,8 @@ import { OAuth2Strategy as GoogleStrategy } from 'passport-google-oauth';
 import { Strategy as FacebookStrategy } from 'passport-facebook';
 import { Strategy as TwitterStrategy } from 'passport-twitter';
 
-import { User, RememberMeToken } from '../models';
+import RememberMeToken from '../models/RememberMeToken';
+import User from '../models/User'
 
 function fetchUser(userId, callback) {
     return User
