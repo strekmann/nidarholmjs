@@ -8,6 +8,7 @@ import cookieParser from 'cookie-parser';
 import session from 'express-session';
 import errorHandler from 'errorhandler';
 import express from 'express';
+import fs from 'fs';
 import http from 'http';
 import httpProxy from 'http-proxy';
 import mongoose from 'mongoose';
@@ -26,9 +27,11 @@ import passport from './lib/passport';
 // import api from './api';
 import universal from './app';
 // import socketRoutes from './socket';
+import { icalEvents } from './icalRoutes';
 import Organization from './models/Organization';
 import './lib/db';
 import saveFile from './lib/saveFile';
+import findFilePath from './lib/findFilePath';
 
 // import project_routes from './routes/projects';
 // import organization_routes from './routes/organization';
@@ -265,6 +268,67 @@ app.post('/upload', upload, (req, res, next) => {
         console.error(error);
     });
 });
+
+
+app.get('/files/l/:path/:filename', (req, res) => {
+    const filepath = req.params.path;
+    const fullpath = path.join(
+        findFilePath('large'),
+        filepath.substr(0, 2),
+        filepath.substr(2, 2),
+        filepath,
+    );
+
+    fs.exists(fullpath, (exists) => {
+        if (exists) {
+            res.sendFile(fullpath);
+        }
+        else {
+            res.sendStatus(404);
+        }
+    });
+});
+
+app.get('/files/n/:path/:filename', (req, res) => {
+    const filepath = req.params.path;
+    const fullpath = path.join(
+        findFilePath('normal'),
+        filepath.substr(0, 2),
+        filepath.substr(2, 2),
+        filepath,
+    );
+
+    fs.exists(fullpath, (exists) => {
+        if (exists) {
+            res.sendFile(fullpath);
+        }
+        else {
+            res.sendStatus(404);
+        }
+    });
+});
+
+app.get('/files/th/:path/:filename', (req, res) => {
+    const filepath = req.params.path;
+    const fullpath = path.join(
+        findFilePath('thumbnails'),
+        filepath.substr(0, 2),
+        filepath.substr(2, 2),
+        filepath,
+    );
+
+    fs.exists(fullpath, (exists) => {
+        if (exists) {
+            res.sendFile(fullpath);
+        }
+        else {
+            res.sendStatus(404);
+        }
+    });
+});
+
+app.get('/events/public.ics', icalEvents);
+app.get('/events/export.ics', icalEvents);
 
 /** Socket.io routes **/
 // socketRoutes(io);

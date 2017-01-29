@@ -3,8 +3,8 @@ import path from 'path';
 
 export default function findPath(configName) {
     let configRoot = 'files';
-    if (config.paths && config.paths.images) {
-        configRoot = config.paths.images;
+    if (config.paths && config.paths.files) {
+        configRoot = config.paths.files;
     }
     let configPath = path.join(configRoot, configName);
     if (config.paths && config.paths[configName]) {
