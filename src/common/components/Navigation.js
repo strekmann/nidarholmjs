@@ -137,8 +137,8 @@ class Navigation extends React.Component {
                                 : null
                             }
                             {viewer
-                                ? <a
-                                    href={`/users/${viewer.username}`}
+                                ? <Link
+                                    to={`/users/${viewer.username}`}
                                     style={{
                                         display: 'flex',
                                         alignItems: 'center',
@@ -151,7 +151,7 @@ class Navigation extends React.Component {
                                         style={{ margin: '0 5px' }}
                                     />
                                     <span>{viewer.name}</span>
-                                </a>
+                                </Link>
                                 : <Link
                                     to="/login"
                                     style={{
