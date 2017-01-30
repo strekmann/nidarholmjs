@@ -1,6 +1,8 @@
 import areIntlLocalesSupported from 'intl-locales-supported';
 import Checkbox from 'material-ui/Checkbox';
 import DatePicker from 'material-ui/DatePicker';
+import FlatButton from 'material-ui/FlatButton';
+import { Toolbar, ToolbarGroup } from 'material-ui/Toolbar';
 import React from 'react';
 import Relay from 'react-relay';
 import getMuiTheme from 'material-ui/styles/getMuiTheme';
@@ -38,6 +40,7 @@ class Member extends React.Component {
 
     static propTypes = {
         organization: React.PropTypes.object,
+        viewer: React.PropTypes.object,
     }
 
     constructor(props) {
@@ -325,13 +328,24 @@ class Member extends React.Component {
             <Paper className="row">
                 <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                     <h1>{user.name}</h1>
-                    <IconMenu
-                        iconButtonElement={<IconButton><ArrowDown /></IconButton>}
-                        anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
-                        targetOrigin={{ vertical: 'top', horizontal: 'right' }}
-                    >
-                        <MenuItem primaryText="Rediger" onTouchTap={this.openEditMember} />
-                    </IconMenu>
+                    <Toolbar style={{ backgroundColor: theme.palette.fullWhite }}>
+                        <ToolbarGroup lastChild>
+                            {this.props.viewer.id === user.id
+                                ? <FlatButton
+                                    label="Logg ut"
+                                    href="/logout"
+                                />
+                                : null
+                            }
+                            <IconMenu
+                                iconButtonElement={<IconButton><ArrowDown /></IconButton>}
+                                anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
+                                targetOrigin={{ vertical: 'top', horizontal: 'right' }}
+                            >
+                                <MenuItem primaryText="Rediger" onTouchTap={this.openEditMember} />
+                            </IconMenu>
+                        </ToolbarGroup>
+                    </Toolbar>
                 </div>
                 <div
                     style={{ display: 'flex', justifyContent: 'space-between', margin: '0 -20px' }}
