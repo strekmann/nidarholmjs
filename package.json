@@ -153,6 +153,7 @@
     "gulp-util": "^3.0.7",
     "imagemin-cli": "^3.0.0",
     "mocha": "",
+    "nodemon": "^1.11.0",
     "pg": "",
     "postcss-loader": "^0.13.0",
     "retire": "^1.2.10",
