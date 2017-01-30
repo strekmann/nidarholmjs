@@ -40,6 +40,7 @@ class Member extends React.Component {
 
     static propTypes = {
         organization: React.PropTypes.object,
+        viewer: React.PropTypes.object,
     }
 
     constructor(props) {
@@ -329,10 +330,13 @@ class Member extends React.Component {
                     <h1>{user.name}</h1>
                     <Toolbar style={{ backgroundColor: theme.palette.fullWhite }}>
                         <ToolbarGroup lastChild>
-                            <FlatButton
-                                label="Logg ut"
-                                href="/logout"
-                            />
+                            {this.props.viewer.id === user.id
+                                ? <FlatButton
+                                    label="Logg ut"
+                                    href="/logout"
+                                />
+                                : null
+                            }
                             <IconMenu
                                 iconButtonElement={<IconButton><ArrowDown /></IconButton>}
                                 anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
