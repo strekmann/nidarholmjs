@@ -7,12 +7,12 @@ var uslug = require('uslug'),
     util = require('../lib/util'),
     upload_file = util.upload_file,
     snippetify = require('../lib/util').snippetify,
-    Project = require('../models/projects').Project,
-    CalendarEvent = require('../models/projects').Event,
-    Piece = require('../models/projects').Piece,
-    File = require('../models/files').File,
+    Project = require('../models/Project'),
+    CalendarEvent = require('../models/Event'),
+    Piece = require('../models/Piece'),
+    File = require('../models/File'),
     ForumPost = require('../models/forum').ForumPost,
-    Activity = require('../models').Activity;
+    Activity = require('../models/Activity');
 
 module.exports.index = function (req, res, next) {
     var query;

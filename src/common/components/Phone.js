@@ -2,7 +2,7 @@ import React from 'react';
 
 export default class Phone extends React.Component {
     static propTypes = {
-        phone: React.PropTypes.string.isRequired,
+        phone: React.PropTypes.string,
     }
 
     render() {

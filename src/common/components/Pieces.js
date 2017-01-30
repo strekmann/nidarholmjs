@@ -109,7 +109,7 @@ export default Relay.createContainer(Pieces, {
         organization: () => Relay.QL`
         fragment on Organization {
             id
-            member_group {
+            memberGroup {
                 id
             }
             pieces(first:$showItems,term:$term) {

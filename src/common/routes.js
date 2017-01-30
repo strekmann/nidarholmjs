@@ -34,7 +34,7 @@ export default createRoutes(
         <Route path="login" component={Login} queryies={queries} />
         <Route path="members" component={Members} queries={organizationQueries} />
         <Route path="users/:username" component={Member} queries={queries} />
-        <Route path="projects" component={Projects} queries={organizationQueries} />
+        <Route path="projects" component={Projects} queries={queries} />
         <Route path="events/:eventid" component={Event} queries={queries} />
         <Route path="events" component={Events} queries={organizationQueries} />
         <Route path="music/:pieceId" component={Piece} queries={organizationQueries} />

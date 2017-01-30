@@ -16,12 +16,14 @@ import Date from './Date';
 import Text from './Text';
 import EventList from './EventList';
 import EditEvent from './EditEvent';
+import ProjectForm from './ProjectForm';
 import FileList from './FileList';
 import FileUpload from './FileUpload';
 import MusicList from './MusicList';
 import AddEventMutation from '../mutations/addEvent';
 import AddFileMutation from '../mutations/addFile';
 import SaveFilePermissionsMutation from '../mutations/saveFilePermissions';
+import SaveProjectMutation from '../mutations/saveProject';
 import SetProjectPosterMutation from '../mutations/setProjectPoster';
 import theme from '../theme';
 
@@ -48,6 +50,7 @@ class Project extends React.Component {
         public: false,
         addEvent: false,
         addFile: false,
+        editProject: false,
         event: {
             title: '',
             location: '',
@@ -101,6 +104,10 @@ class Project extends React.Component {
         this.setState({ addEvent: !this.state.addEvent });
     }
 
+    toggleEditProject = () => {
+        this.setState({ editProject: !this.state.editProject });
+    }
+
     closeAddEvent = () => {
         this.setState({ addEvent: false });
     }
@@ -151,11 +158,24 @@ class Project extends React.Component {
         }));
     }
 
+    saveProject = (project, callbacks) => {
+        this.context.relay.commitUpdate(new SaveProjectMutation({
+            organization: this.props.organization,
+            ...project,
+        }), {
+            onSuccess: () => {
+                if (callbacks && callbacks.onSuccess) {
+                    callbacks.onSuccess();
+                }
+            },
+        });
+    }
+
     render() {
         const viewer = this.props.viewer;
         const org = this.props.organization;
         const project = this.props.organization.project;
-        const isMember = this.props.organization.is_member;
+        const isMember = this.props.organization.isMember;
         return (
             <Paper className="row">
                 <div style={{ display: 'flex', justifyContent: 'space-between' }}>
@@ -173,6 +193,10 @@ class Project extends React.Component {
                             anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
                             targetOrigin={{ vertical: 'top', horizontal: 'right' }}
                         >
+                            <MenuItem
+                                primaryText="Rediger prosjektinfo"
+                                onTouchTap={this.toggleEditProject}
+                            />
                             <MenuItem
                                 primaryText="Legg til aktivitet"
                                 onTouchTap={this.toggleAddEvent}
@@ -194,31 +218,31 @@ class Project extends React.Component {
                     }}
                 >
                     <div style={{ padding: '0 15px', maxWidth: 700 }}>
-                        {isMember
+                        {isMember && project.music.length
                             ? <div>
                                 <h2>Repertoar</h2>
                                 <MusicList music={project.music} />
                             </div>
                             : null
                         }
-                        {project.public_mdtext
+                        {project.publicMdtext
                             ? <div>
                                 <h2>Informasjon</h2>
-                                <Text text={project.public_mdtext} />
+                                <Text text={project.publicMdtext} />
                             </div>
                             : null
                         }
-                        {isMember && project.private_mdtext
+                        {isMember && project.privateMdtext
                             ? <div>
                                 <h2>Intern informasjon</h2>
-                                <Text text={project.private_mdtext} />
+                                <Text text={project.privateMdtext} />
                             </div>
                             : null
                         }
-                        {isMember
+                        {isMember && project.files.length
                             ? <FileList
                                 files={project.files}
-                                memberGroupId={org.member_group.id}
+                                memberGroupId={org.memberGroup.id}
                                 onSavePermissions={this.onSaveFilePermissions}
                                 onSetProjectPoster={this.onSetProjectPoster}
                                 style={{ margin: '0 -15px' }}
@@ -230,16 +254,25 @@ class Project extends React.Component {
                     </div>
                     <div style={{ width: 300, padding: '0 15px' }}>
                         {project.poster ?
-                            <img alt="Konsertplakat" src={project.poster.large_path} />
+                            <img alt="Konsertplakat" src={project.poster.largePath} />
                             :
                             null
                         }
-                        <h2>Aktiviteter</h2>
-                        <EventList events={project.events} />
+                        {project.events.length
+                            ? <EventList events={project.events} />
+                            : null
+                        }
                     </div>
                 </div>
                 {isMember
                     ? <div>
+                        <ProjectForm
+                            open={this.state.editProject}
+                            save={this.saveProject}
+                            toggle={this.toggleEditProject}
+                            viewer={this.props.viewer}
+                            {...project}
+                        />
                         <Dialog
                             title="Legg til aktivitet"
                             open={this.state.addEvent}
@@ -261,7 +294,7 @@ class Project extends React.Component {
                             <FileUpload viewer={viewer} organization={org} onDrop={this.onDrop} />
                             <FileList
                                 files={project.files}
-                                memberGroupId={org.member_group.id}
+                                memberGroupId={org.memberGroup.id}
                                 onSavePermissions={this.onSaveFilePermissions}
                                 onSetProjectPoster={this.onSetProjectPoster}
                                 viewer={this.props.viewer}
@@ -288,13 +321,14 @@ export default Relay.createContainer(Project, {
                 id
                 name
             }
+            ${ProjectForm.getFragment('viewer')}
         }
         `,
         organization: () => Relay.QL`
         fragment on Organization {
             name
-            is_member
-            member_group {
+            isMember
+            memberGroup {
                 id
             }
             project(year:$year, tag:$tag) {
@@ -304,14 +338,14 @@ export default Relay.createContainer(Project, {
                 start
                 end
                 year
-                public_mdtext
-                private_mdtext
+                publicMdtext
+                privateMdtext
                 conductors {
                     name
                 }
                 poster {
                     filename
-                    large_path
+                    largePath
                 }
                 events(first:100) {
                     edges {
@@ -355,8 +389,8 @@ export default Relay.createContainer(Project, {
                                 }
                             }
                             tags
-                            is_image
-                            normal_path
+                            isImage
+                            normalPath
                             path
                         }
                     }
@@ -372,6 +406,7 @@ export default Relay.createContainer(Project, {
             ${AddEventMutation.getFragment('organization')}
             ${AddFileMutation.getFragment('organization')}
             ${SaveFilePermissionsMutation.getFragment('organization')}
+            ${SaveProjectMutation.getFragment('organization')}
             ${SetProjectPosterMutation.getFragment('organization')}
         }`,
     },

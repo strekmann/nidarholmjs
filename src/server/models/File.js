@@ -1,6 +1,7 @@
 import mongoose from 'mongoose';
 import moment from 'moment';
 import path from 'path';
+import schemaOptions from './schemaOptions';
 
 const FileSchema = new mongoose.Schema({
     _id: { type: String, required: true, unique: true },
@@ -57,14 +58,7 @@ FileSchema.virtual('shortdate').get(function shortdate() {
     return moment(this.created).format('LL');
 });
 
-FileSchema.set('toJSON', {
-    virtuals: true,
-});
-
-FileSchema.set('toObject', {
-    virtuals: true,
-});
-
-module.exports = {
-    File: mongoose.model('File', FileSchema),
-};
+FileSchema.virtual('_type').get(() => 'File');
+FileSchema.set('toObject', schemaOptions);
+FileSchema.set('toJSON', schemaOptions);
+export default mongoose.model('File', FileSchema);

@@ -7,7 +7,7 @@ import {
     GraphQLSchema,
     GraphQLString,
     GraphQLInt,
-    GraphQLInputObjectType,
+    // GraphQLInputObjectType,
 } from 'graphql';
 
 import GraphQLDate from 'graphql-custom-datetype';
@@ -26,12 +26,16 @@ import config from 'config';
 import uuid from 'node-uuid';
 
 import { connectionFromMongooseQuery, offsetToCursor } from './connections';
-import { User, Group, Organization } from './models';
-import { File } from './models/files';
-import { Project, Event, Piece } from './models/projects';
-import { Page } from './models/pages';
 
-import { insert_file as insertFile } from './lib/util';
+import Event from './models/Event';
+import File from './models/File';
+import Group from './models/Group';
+import Organization from './models/Organization';
+import Page from './models/Page';
+import Piece from './models/Piece';
+import Project from './models/Project';
+import User from './models/User';
+import insertFile from './lib/insertFile';
 
 let userType;
 let groupType;
@@ -41,80 +45,65 @@ let projectType;
 let fileType;
 let pageType;
 let pieceType;
-
-class UserDTO { constructor(obj) { for (const k of Object.keys(obj)) { this[k] = obj[k]; } } }
-class GroupDTO { constructor(obj) { for (const k of Object.keys(obj)) { this[k] = obj[k]; } } }
-class OrganizationDTO { constructor(o) { for (const k of Object.keys(o)) { this[k] = o[k]; } } }
-class PieceDTO { constructor(obj) { for (const k of Object.keys(obj)) { this[k] = obj[k]; } } }
-class EventDTO { constructor(obj) { for (const k of Object.keys(obj)) { this[k] = obj[k]; } } }
-class ProjectDTO { constructor(obj) { for (const k of Object.keys(obj)) { this[k] = obj[k]; } } }
-class FileDTO { constructor(obj) { for (const k of Object.keys(obj)) { this[k] = obj[k]; } } }
-class PageDTO { constructor(obj) { for (const k of Object.keys(obj)) { this[k] = obj[k]; } } }
-class GroupscoreDTO { constructor(obj) { for (const k of Object.keys(obj)) { this[k] = obj[k]; } } }
+let groupScoreType;
 
 const { nodeInterface, nodeField } = nodeDefinitions(
+    // FIXME: Add permission checks
     (globalId) => {
         const { type, id } = fromGlobalId(globalId);
         if (type === 'User') {
-            return User.findById(id).exec().then((user) => new UserDTO(user.toObject()));
+            return User.findById(id).exec();
         }
         if (type === 'Group') {
-            return Group.findById(id).exec().then((group) => new GroupDTO(group.toObject()));
+            return Group.findById(id).exec();
         }
         if (type === 'Organization') {
-            return Organization.findById(id).exec().then(
-                (organization) => new OrganizationDTO(organization.toObject())
-            );
+            return Organization.findById(id).exec();
         }
         if (type === 'Piece') {
-            return Piece.findById(id).exec().then((piece) => new PieceDTO(piece.toObject()));
+            return Piece.findById(id).exec();
         }
         if (type === 'Event') {
-            return Event.findById(id).exec().then((event) => new EventDTO(event.toObject()));
+            return Event.findById(id).exec();
         }
         if (type === 'Project') {
-            return Project.findById(id).exec().then(
-                (project) => new ProjectDTO(project.toObject())
-            );
+            return Project.findById(id).exec();
         }
         if (type === 'File') {
-            return File.findById(id).exec().then((file) => new FileDTO(file.toObject()));
+            return File.findById(id).exec();
         }
         if (type === 'Page') {
-            return Page.findById(id).exec().then((page) => new PageDTO(page.toObject()));
+            return Page.findById(id).exec();
         }
         if (type === 'Groupscore') {
-            return Group.findById(id).exec().then((group) => new GroupscoreDTO(group.toObject()));
+            return Group.findById(id).exec();
         }
         return null;
     },
     (obj) => {
-        if (obj instanceof UserDTO) {
+        if (obj._type === 'User') {
             return userType;
         }
-        if (obj instanceof GroupDTO) {
+        if (obj._type === 'Group') {
             return groupType;
         }
-        if (obj instanceof OrganizationDTO) {
+        if (obj._type === 'Organization') {
             return organizationType;
         }
-        if (obj instanceof PieceDTO) {
+        if (obj._type === 'Piece') {
             return pieceType;
         }
-        if (obj instanceof EventDTO) {
+        if (obj._type === 'Event') {
             return eventType;
         }
-        if (obj instanceof ProjectDTO) {
+        if (obj._type === 'Project') {
             return projectType;
         }
-        if (obj instanceof FileDTO) {
+        if (obj._type === 'File') {
             return fileType;
         }
-        if (obj instanceof PageDTO) {
+        if (obj._type === 'Page') {
             return pageType;
-        }
-        if (obj instanceof GroupscoreDTO) {
-            return groupScoreType;
         }
         return null;
     }
@@ -194,13 +183,28 @@ userType = new GraphQLObjectType({
         username: { type: GraphQLString },
         name: { type: GraphQLString },
         email: { type: GraphQLString },
-        is_active: { type: GraphQLBoolean },
-        is_admin: { type: GraphQLBoolean },
+        isActive: {
+            type: GraphQLBoolean,
+            resolve: user => user.is_active,
+        },
+        isAdmin: { type: GraphQLBoolean },
         created: { type: GraphQLDate },
-        facebook_id: { type: GraphQLString },
-        google_id: { type: GraphQLString },
-        twitter_id: { type: GraphQLString },
-        nmf_id: { type: GraphQLString },
+        facebookId: {
+            type: GraphQLString,
+            resolve: user => user.facebook_id,
+        },
+        googleId: {
+            type: GraphQLString,
+            resolve: user => user.google_id,
+        },
+        twitterId: {
+            type: GraphQLString,
+            resolve: user => user.twitter_id,
+        },
+        nmfId: {
+            type: GraphQLString,
+            resolve: user => user.nmf_id,
+        },
         phone: { type: GraphQLString },
         address: { type: GraphQLString },
         postcode: { type: GraphQLString },
@@ -209,15 +213,39 @@ userType = new GraphQLObjectType({
         born: { type: GraphQLDate },
         joined: { type: GraphQLDate },
         instrument: { type: GraphQLString },
-        instrument_insurance: { type: GraphQLBoolean },
+        instrumentInsurance: {
+            type: GraphQLBoolean,
+            resolve: user => user.instrument_insurance,
+        },
         reskontro: { type: GraphQLString },
-        profile_picture: { type: GraphQLString },
-        profile_picture_path: { type: GraphQLString },
-        membership_status: { type: GraphQLInt },
-        membership_history: { type: GraphQLString },
-        in_list: { type: GraphQLBoolean },
-        on_leave: { type: GraphQLBoolean },
-        no_email: { type: GraphQLBoolean },
+        profilePicture: {
+            type: GraphQLString,
+            resolve: user => user.profile_picture,
+        },
+        profilePicturePath: {
+            type: GraphQLString,
+            resolve: user => user.profile_picture_path,
+        },
+        membershipStatus: {
+            type: GraphQLInt,
+            resolve: user => user.membership_status,
+        },
+        membershipHistory: {
+            type: GraphQLString,
+            resolve: user => user.membership_history,
+        },
+        inList: {
+            type: GraphQLBoolean,
+            resolve: user => user.in_list,
+        },
+        onLeave: {
+            type: GraphQLBoolean,
+            resolve: user => user.on_leave,
+        },
+        noEmail: {
+            type: GraphQLBoolean,
+            resolve: user => user.no_email,
+        },
         groups: {
             type: new GraphQLList(groupType),
             resolve: user => User
@@ -234,10 +262,12 @@ userType = new GraphQLObjectType({
     interfaces: [nodeInterface],
 });
 
+/*
 const userConnection = connectionDefinitions({
     name: 'User',
     nodeType: userType,
 });
+*/
 
 groupType = new GraphQLObjectType({
     name: 'Group',
@@ -252,7 +282,7 @@ groupType = new GraphQLObjectType({
                     id: { type: GraphQLString },
                     user: {
                         type: userType,
-                        resolve: (member) => User.findById(member.user).where({
+                        resolve: groupMember => User.findById(groupMember.user).where({
                             on_leave: false,
                             in_list: true,
                             //membership_status: { $lt: 5 },
@@ -268,9 +298,11 @@ groupType = new GraphQLObjectType({
                 },
             })),
             resolve: (group, args, { organization }) => {
-                const members = organization.member_group.members.map(member => member.user);
-                return group.members.filter(member => {
-                    if (members.includes(member.user)) {
+                const members = organization.member_group.members.map(
+                    organizationMember => organizationMember.user
+                );
+                return group.members.filter(groupMember => {
+                    if (members.includes(groupMember.user)) {
                         return true;
                     }
                     return false;
@@ -281,11 +313,12 @@ groupType = new GraphQLObjectType({
     interfaces: [nodeInterface],
 });
 
+/*
 const groupConnection = connectionDefinitions({
     name: 'Group',
     nodeType: groupType,
 });
-
+*/
 
 const permissionsType = new GraphQLObjectType({
     name: 'Permissions',
@@ -313,10 +346,22 @@ fileType = new GraphQLObjectType({
         size: { type: GraphQLInt },
         tags: { type: new GraphQLList(GraphQLString) },
         path: { type: GraphQLString },
-        thumbnail_path: { type: GraphQLString },
-        normal_path: { type: GraphQLString },
-        large_path: { type: GraphQLString },
-        is_image: { type: GraphQLBoolean },
+        thumbnailPath: {
+            type: GraphQLString,
+            resolve: file => file.thumbnail_path,
+        },
+        normalPath: {
+            type: GraphQLString,
+            resolve: file => file.normal_path,
+        },
+        largePath: {
+            type: GraphQLString,
+            resolve: file => file.large_path,
+        },
+        isImage: {
+            type: GraphQLBoolean,
+            resolve: file => file.is_image,
+        },
         permissions: { type: permissionsType },
     },
     interfaces: [nodeInterface],
@@ -327,10 +372,12 @@ const fileConnection = connectionDefinitions({
     nodeType: fileType,
 });
 
+/*
 const scoreConnection = connectionDefinitions({
     name: 'Score',
     nodeType: fileType,
 });
+*/
 
 eventType = new GraphQLObjectType({
     name: 'Event',
@@ -351,7 +398,7 @@ const eventConnection = connectionDefinitions({
     nodeType: eventType,
 });
 
-const groupScoreType = new GraphQLObjectType({
+groupScoreType = new GraphQLObjectType({
     name: 'Groupscore',
     fields: () => ({
         id: globalIdField('Groupscore'),
@@ -450,8 +497,14 @@ projectType = new GraphQLObjectType({
         start: { type: GraphQLDate },
         end: { type: GraphQLDate },
         year: { type: GraphQLString },
-        public_mdtext: { type: GraphQLString },
-        private_mdtext: { type: GraphQLString },
+        publicMdtext: {
+            type: GraphQLString,
+            resolve: project => project.public_mdtext,
+        },
+        privateMdtext: {
+            type: GraphQLString,
+            resolve: project => project.private_mdtext,
+        },
         conductors: { type: new GraphQLList(userType) },
         poster: {
             type: fileType,
@@ -488,6 +541,11 @@ projectType = new GraphQLObjectType({
         },
     },
     interfaces: [nodeInterface],
+});
+
+const projectConnection = connectionDefinitions({
+    name: 'Project',
+    nodeType: projectType,
 });
 
 pageType = new GraphQLObjectType({
@@ -528,34 +586,58 @@ organizationType = new GraphQLObjectType({
         id: globalIdField('Organization'),
         name: { type: GraphQLString },
         webdomain: { type: GraphQLString },
-        mail_address: { type: GraphQLString },
+        mailAddress: {
+            type: GraphQLString,
+            resolve: organization => organization.mail_address,
+        },
         postcode: { type: GraphQLString },
         city: { type: GraphQLString },
         email: { type: GraphQLString },
-        public_bank_account: { type: GraphQLString },
-        organization_number: { type: GraphQLString },
-        encoded_email: { type: GraphQLString },
+        publicBankAccount: {
+            type: GraphQLString,
+            resolve: organization => organization.public_bank_account,
+        },
+        organizationNumber: {
+            type: GraphQLString,
+            resolve: organization => organization.organization_number,
+        },
+        encodedEmail: {
+            type: GraphQLString,
+            resolve: organization => organization.encoded_email,
+        },
         website: { type: GraphQLString },
         twitter: { type: GraphQLString },
         facebook: { type: GraphQLString },
         description_nb: { type: GraphQLString }, // TODO: Migrate
-        map_url: { type: GraphQLString },
-        contact_text: { type: GraphQLString },
-        member_group: { type: groupType },
-        musicscore_admins: { type: new GraphQLList(GraphQLString) },
-        is_member: {
+        mapUrl: {
+            type: GraphQLString,
+            resolve: organization => organization.map_url,
+        },
+        contactText: {
+            type: GraphQLString,
+            resolve: organization => organization.contact_text,
+        },
+        memberGroup: {
+            type: groupType,
+            resolve: organization => organization.member_group,
+        },
+        musicscoreAdmins: {
+            type: new GraphQLList(GraphQLString),
+            resolve: organization => organization.musicscore_admins,
+        },
+        isMember: {
             type: GraphQLBoolean,
             resolve: (_, args, { organization, viewer }) => member(organization, viewer),
         },
-        is_admin: {
+        isAdmin: {
             type: GraphQLBoolean,
             resolve: (_, args, { organization, viewer }) => admin(organization, viewer),
         },
-        is_musicscoreadmin: {
+        isMusicscoreadmin: {
             type: GraphQLBoolean,
             resolve: (_, args, { organization, viewer }) => musicscoreadmin(organization, viewer),
         },
-        instrument_groups: {
+        instrumentGroups: {
             type: new GraphQLList(groupType),
             resolve: (_, args, { organization }) => Organization
             .findById(organization.id)
@@ -613,10 +695,7 @@ organizationType = new GraphQLObjectType({
             ),
         },
         previousProjects: {
-            type: connectionDefinitions({
-                name: 'Project',
-                nodeType: projectType,
-            }).connectionType,
+            type: projectConnection.connectionType,
             args: connectionArgs,
             resolve: (_, { ...args }) => connectionFromMongooseQuery(
                 Project.find({
@@ -831,15 +910,16 @@ const mutationAddEvent = mutationWithClientMutationId({
         },
         newEventEdge: {
             type: eventConnection.edgeType,
-            resolve: (payload, args, { viewer }) => {
-                return {
-                    cursor: offsetToCursor(0),
-                    node: payload,
-                };
-            },
+            resolve: payload => ({
+                cursor: offsetToCursor(0),
+                node: payload,
+            }),
         },
     },
-    mutateAndGetPayload: ({ title, location, start, end, tags, mdtext, permissions }, { viewer }) => {
+    mutateAndGetPayload: (
+        { title, location, start, end, tags, mdtext, permissions },
+        { viewer },
+    ) => {
         if (!viewer) {
             throw new Error('Nobody!');
         }
@@ -1000,12 +1080,10 @@ const mutationAddPage = mutationWithClientMutationId({
         },
         newPageEdge: {
             type: pageConnection.edgeType,
-            resolve: (payload, args, { viewer }) => {
-                return {
-                    cursor: offsetToCursor(0),
-                    node: payload,
-                };
-            },
+            resolve: payload => ({
+                cursor: offsetToCursor(0),
+                node: payload,
+            }),
         },
     },
     mutateAndGetPayload: ({ slug, mdtext, title, summary, permissions }, { viewer }) => {
@@ -1058,11 +1136,18 @@ const mutationAddUser = mutationWithClientMutationId({
             resolve: payload => payload,
         },
     },
-    mutateAndGetPayload: ({ name, email, instrument, isMember, groupId }, { viewer, organization }) => {
+    mutateAndGetPayload: (
+        { name, email, instrument, isMember, groupId },
+        { viewer, organization },
+    ) => {
         if (!viewer) {
             throw new Error('Nobody!');
         }
-        return Organization.findById(organization.id).populate('member_group').exec().then(_organization => {
+        return Organization
+        .findById(organization.id)
+        .populate('member_group')
+        .exec()
+        .then(_organization => {
             const userId = uuid.v4();
             const user = new User({ _id: userId, username: userId, instrument, name });
             let p = Promise.resolve(_organization);
@@ -1074,7 +1159,6 @@ const mutationAddUser = mutationWithClientMutationId({
             return p.then(_org => {
                 if (groupId) {
                     const gId = fromGlobalId(groupId).id;
-                    console.log("Uwse", groupId, gId);
                     return Group.findById(gId).exec().then(group => {
                         user.groups.push(group);
                         group.members.push({ user });
@@ -1082,8 +1166,81 @@ const mutationAddUser = mutationWithClientMutationId({
                     });
                 }
                 return Promise.resolve(_org);
-            }).then(() => user.save().then(_user => { console.log(_user, "uuu"); return _user; }));
+            }).then(() => user.save());
         });
+    },
+});
+
+const mutationEditUser = mutationWithClientMutationId({
+    name: 'EditUser',
+    inputFields: {
+        userId: { type: GraphQLID },
+        username: { type: new GraphQLNonNull(GraphQLString) },
+        name: { type: new GraphQLNonNull(GraphQLString) },
+        phone: { type: GraphQLString },
+        email: { type: GraphQLString },
+        instrument: { type: GraphQLString },
+        born: { type: GraphQLString },
+        address: { type: GraphQLString },
+        postcode: { type: GraphQLString },
+        city: { type: GraphQLString },
+        country: { type: GraphQLString },
+        joined: { type: GraphQLString },
+        nmfId: { type: GraphQLString },
+        reskontro: { type: GraphQLInt },
+        membershipHistory: { type: GraphQLString },
+        inList: { type: GraphQLBoolean },
+        onLeave: { type: GraphQLBoolean },
+        noEmail: { type: GraphQLBoolean },
+    },
+    outputFields: {
+        organization: {
+            type: organizationType,
+            resolve: (payload, args, { organization }) => organization,
+        },
+    },
+    mutateAndGetPayload: ({
+        userId, username, name, phone, email, instrument, born, address,
+        postcode, city, country, joined, nmfId, reskontro, membershipHistory,
+        inList, onLeave, noEmail,
+    }, { viewer, organization }) => {
+        const id = fromGlobalId(userId).id;
+        const fields = {};
+        if (admin(organization, viewer)) {
+            Object.assign(fields, {
+                name,
+                phone,
+                email,
+                instrument,
+                born,
+                address,
+                postcode,
+                city,
+                country,
+                joined,
+                nmf_id: nmfId,
+                reskontro,
+                membership_history: membershipHistory,
+                in_list: inList,
+                on_leave: onLeave,
+                no_email: noEmail,
+            });
+        }
+        if (viewer.id === userId) {
+            Object.assign(fields, {
+                username,
+                name,
+                phone,
+                email,
+                instrument,
+                born,
+                address,
+                postcode,
+                city,
+                country,
+            });
+        }
+        return User.findByIdAndUpdate(id, fields, { new: true }).exec();
     },
 });
 
@@ -1123,7 +1280,15 @@ const mutationEditPage = mutationWithClientMutationId({
         });
         const query = Page.findByIdAndUpdate(
             id,
-            { slug, mdtext, summary, title, permissions: permissionObj, updator: viewer.id, updated: moment.utc() },
+            {
+                slug,
+                mdtext,
+                summary,
+                title,
+                permissions: permissionObj,
+                updator: viewer.id,
+                updated: moment.utc(),
+            },
             { new: true },
         );
         return authenticate(query, viewer).exec().then(page => {
@@ -1148,7 +1313,11 @@ const mutationSaveOrganization = mutationWithClientMutationId({
     },
     mutateAndGetPayload: ({ summaryIds }, { viewer, organization }) => {
         const pageIds = summaryIds.map(pageId => fromGlobalId(pageId).id);
-        return Organization.findByIdAndUpdate(organization.id, { summaries: pageIds }, { new: true });
+        return Organization.findByIdAndUpdate(
+            organization.id,
+            { summaries: pageIds },
+            { new: true },
+        );
     },
 });
 
@@ -1175,12 +1344,10 @@ const mutationAddFile = mutationWithClientMutationId({
         },
         newFileEdge: {
             type: fileConnection.edgeType,
-            resolve: (payload, args, { viewer }) => {
-                return {
-                    cursor: offsetToCursor(0),
-                    node: payload,
-                };
-            },
+            resolve: payload => ({
+                cursor: offsetToCursor(0),
+                node: payload,
+            }),
         },
     },
     mutateAndGetPayload: ({ filename, hex, permissions, tags }, { viewer }) => {
@@ -1224,12 +1391,10 @@ const mutationAddScore = mutationWithClientMutationId({
         },
         newScoreEdge: {
             type: fileConnection.edgeType,
-            resolve: (payload) => {
-                return {
-                    cursor: offsetToCursor(0),
-                    node: payload.file,
-                };
-            },
+            resolve: (payload) => ({
+                cursor: offsetToCursor(0),
+                node: payload.file,
+            }),
         },
     },
     mutateAndGetPayload: ({ filename, hex, groupId, pieceId }, { viewer }) => {
@@ -1239,6 +1404,9 @@ const mutationAddScore = mutationWithClientMutationId({
         return insertFile(
             filename, hex, permissionObj, [], config.files.raw_prefix, viewer, pieceDbId,
         ).then(file => {
+            if (!viewer) {
+                throw new Error('Nobody!');
+            }
             return {
                 file,
                 groupId,
@@ -1248,10 +1416,128 @@ const mutationAddScore = mutationWithClientMutationId({
     },
 });
 
+const mutationAddProject = mutationWithClientMutationId({
+    name: 'AddProject',
+    inputFields: {
+        title: { type: new GraphQLNonNull(GraphQLString) },
+        tag: { type: GraphQLString },
+        start: { type: GraphQLString },
+        end: { type: GraphQLString },
+        privateMdtext: { type: GraphQLString },
+        publicMdtext: { type: GraphQLString },
+        permissions: { type: new GraphQLList(GraphQLString) },
+    },
+    outputFields: {
+        organization: {
+            type: organizationType,
+            resolve: (payload, args, { organization }) => organization,
+        },
+        newProjectEdge: {
+            type: projectConnection.edgeType,
+            resolve: payload => ({
+                cursor: offsetToCursor(0),
+                node: payload,
+            }),
+        },
+    },
+    mutateAndGetPayload: (
+        { title, tag, privateMdtext, publicMdtext, start, end, permissions },
+        { viewer },
+    ) => {
+        if (!viewer) {
+            throw new Error('Nobody!');
+        }
+        const permissionObj = { public: false, groups: [], users: [] };
+        permissions.forEach(permission => {
+            if (permission === 'p') {
+                permissionObj.public = true;
+            }
+            const idObj = fromGlobalId(permission);
+            if (idObj.type === 'Group') {
+                permissionObj.groups.push(idObj.id);
+            }
+            else if (idObj.type === 'User') {
+                permissionObj.users.push(idObj.id);
+            }
+        });
+        const project = new Project();
+        project.creator = viewer.id;
+        project.title = title;
+        const momentEnd = moment.utc(end);
+        if (start) {
+            project.start = moment.utc(start);
+        }
+        project.end = momentEnd;
+        project.tag = tag;
+        project.private_mdtext = privateMdtext;
+        project.public_mdtext = publicMdtext;
+        project.permissions = permissionObj;
+        project.year = momentEnd.year();
+        return project.save();
+    },
+});
+
+const mutationSaveProject = mutationWithClientMutationId({
+    name: 'SaveProject',
+    inputFields: {
+        id: { type: new GraphQLNonNull(GraphQLID) },
+        title: { type: new GraphQLNonNull(GraphQLString) },
+        tag: { type: GraphQLString },
+        start: { type: GraphQLString },
+        end: { type: GraphQLString },
+        privateMdtext: { type: GraphQLString },
+        publicMdtext: { type: GraphQLString },
+        permissions: { type: new GraphQLList(GraphQLString) },
+    },
+    outputFields: {
+        organization: {
+            type: organizationType,
+            resolve: (payload, args, { organization }) => organization,
+        },
+    },
+    mutateAndGetPayload: (
+        { id, title, tag, privateMdtext, publicMdtext, start, end, permissions },
+        { viewer },
+    ) => {
+        if (!viewer) {
+            throw new Error('Nobody!');
+        }
+        const permissionObj = { public: false, groups: [], users: [] };
+        permissions.forEach(permission => {
+            if (permission === 'p') {
+                permissionObj.public = true;
+            }
+            const idObj = fromGlobalId(permission);
+            if (idObj.type === 'Group') {
+                permissionObj.groups.push(idObj.id);
+            }
+            else if (idObj.type === 'User') {
+                permissionObj.users.push(idObj.id);
+            }
+        });
+        let startMoment = null;
+        if (start) {
+            startMoment = moment.utc(start);
+        }
+        const endMoment = moment.utc(end);
+        const projectId = fromGlobalId(id).id;
+        return Project.findByIdAndUpdate(projectId, {
+            title,
+            tag,
+            privateMdtext,
+            publicMdtext,
+            start: startMoment,
+            end: endMoment,
+            permissions,
+        }).exec();
+    },
+});
+
 const mutationType = new GraphQLObjectType({
     name: 'Mutation',
     fields: () => ({
         addUser: mutationAddUser,
+        editUser: mutationEditUser,
         editDescription: mutationEditDescription,
         addEvent: mutationAddEvent,
         editEvent: mutationEditEvent,
@@ -1262,6 +1548,8 @@ const mutationType = new GraphQLObjectType({
         saveFilePermissions: mutationSaveFilePermissions,
         saveOrganization: mutationSaveOrganization,
         setProjectPoster: mutationSetProjectPoster,
+        addProject: mutationAddProject,
+        saveProject: mutationSaveProject,
     }),
 });
 

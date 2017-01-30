@@ -103,8 +103,8 @@ class Pages extends React.Component {
                         </div>
                         <PageList
                             pages={org.pages}
-                            isAdmin={org.is_admin}
-                            memberGroupId={org.member_group.id}
+                            isAdmin={org.isAdmin}
+                            memberGroupId={org.memberGroup.id}
                         />
                         {org.pages.pageInfo.hasNextPage ?
                             <RaisedButton primary>Mer</RaisedButton>
@@ -135,10 +135,10 @@ export default Relay.createContainer(Pages, {
         organization: () => Relay.QL`
         fragment on Organization {
             id
-            member_group {
+            memberGroup {
                 id
             }
-            is_admin
+            isAdmin
             pages(first:$showPages) {
                 edges {
                     node {

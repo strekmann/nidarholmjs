@@ -8,6 +8,7 @@ import cookieParser from 'cookie-parser';
 import session from 'express-session';
 import errorHandler from 'errorhandler';
 import express from 'express';
+import fs from 'fs';
 import http from 'http';
 import httpProxy from 'http-proxy';
 import mongoose from 'mongoose';
@@ -26,13 +27,15 @@ import passport from './lib/passport';
 // import api from './api';
 import universal from './app';
 // import socketRoutes from './socket';
-import { Organization } from './models';
+import { icalEvents } from './icalRoutes';
+import Organization from './models/Organization';
 import './lib/db';
-import { save_file as saveFile } from './lib/util';
+import saveFile from './lib/saveFile';
+import findFilePath from './lib/findFilePath';
 
-import project_routes from './routes/projects';
-import organization_routes from './routes/organization';
-import { persistentLogin } from './lib/middleware';
+// import project_routes from './routes/projects';
+// import organization_routes from './routes/organization';
+import persistentLogin from './lib/persistentLoginMiddleware';
 
 import schema from './schema';
 
@@ -266,6 +269,67 @@ app.post('/upload', upload, (req, res, next) => {
     });
 });
 
+
+app.get('/files/l/:path/:filename', (req, res) => {
+    const filepath = req.params.path;
+    const fullpath = path.join(
+        findFilePath('large'),
+        filepath.substr(0, 2),
+        filepath.substr(2, 2),
+        filepath,
+    );
+
+    fs.exists(fullpath, (exists) => {
+        if (exists) {
+            res.sendFile(fullpath);
+        }
+        else {
+            res.sendStatus(404);
+        }
+    });
+});
+
+app.get('/files/n/:path/:filename', (req, res) => {
+    const filepath = req.params.path;
+    const fullpath = path.join(
+        findFilePath('normal'),
+        filepath.substr(0, 2),
+        filepath.substr(2, 2),
+        filepath,
+    );
+
+    fs.exists(fullpath, (exists) => {
+        if (exists) {
+            res.sendFile(fullpath);
+        }
+        else {
+            res.sendStatus(404);
+        }
+    });
+});
+
+app.get('/files/th/:path/:filename', (req, res) => {
+    const filepath = req.params.path;
+    const fullpath = path.join(
+        findFilePath('thumbnails'),
+        filepath.substr(0, 2),
+        filepath.substr(2, 2),
+        filepath,
+    );
+
+    fs.exists(fullpath, (exists) => {
+        if (exists) {
+            res.sendFile(fullpath);
+        }
+        else {
+            res.sendStatus(404);
+        }
+    });
+});
+
+app.get('/events/public.ics', icalEvents);
+app.get('/events/export.ics', icalEvents);
+
 /** Socket.io routes **/
 // socketRoutes(io);
 
@@ -281,6 +345,13 @@ if (process.env.NODE_ENV !== 'production') {
 /** Authentication stuff **/
 app.get('/auth/logout', (req, res, next) => {
     req.logout();
+    res.redirect('/');
+});
+
+app.get('/logout', (req, res) => {
+    req.logout();
+    req.session.destroy();
+    res.clearCookie('remember_me');
     res.redirect('/');
 });
 
@@ -353,63 +424,65 @@ app.get('/', universal);
 app.get('/about', universal);
 app.get('/login', universal);
 
-app.use('/', require('./routes/index'));
-app.use('/proxy', require('./routes/proxy'));
-app.use('/forum', require('./routes/forum'));
+// app.use('/', require('./routes/index'));
+// app.use('/proxy', require('./routes/proxy'));
+// app.use('/forum', require('./routes/forum'));
 
 app.get('/files', universal);
-app.use('/files', require('./routes/files'));
+// app.use('/files', require('./routes/files'));
 
 app.use('/users/:username', universal);
-app.use('/users', require('./routes/users'));
-app.use('/groups', require('./routes/groups'));
+// app.use('/users', require('./routes/users'));
+// app.use('/groups', require('./routes/groups'));
 
 app.get('/music/:pieceId', universal);
 app.get('/music', universal);
-app.use('/music', require('./routes/music'));
+// app.use('/music', require('./routes/music'));
 
-app.get('/events/public.ics', project_routes.ical_events);
-app.get('/events/export.ics', project_routes.ical_events);
+// app.get('/events/public.ics', project_routes.ical_events);
+// app.get('/events/export.ics', project_routes.ical_events);
 app.get('/events/:eventid', universal);
 app.get('/events', universal);
-app.use('/events', require('./routes/events'));
+// app.use('/events', require('./routes/events'));
 
 // app.get('/members', organization_routes.memberlist);
 app.get('/members', universal);
 // app.get('/organization/fill_dummy', organization_routes.fill_dummy);
-app.get('/members/new', organization_routes.add_user);
-app.post('/members/new', organization_routes.create_user);
+// app.get('/members/new', organization_routes.add_user);
+// app.post('/members/new', organization_routes.create_user);
 // app.post('/members', organization_routes.add_group);
-app.delete('/members/:groupid', organization_routes.remove_group);
+// app.delete('/members/:groupid', organization_routes.remove_group);
 
-app.post('/organization', organization_routes.add_instrument_group);
-app.delete('/organization/:id', organization_routes.remove_instrument_group);
-app.post('/organization/order', organization_routes.order_instrument_groups);
-app.get('/contact', organization_routes.contacts);
-app.get('/organization/edit', organization_routes.edit_organization);
-app.post('/organization/edit', organization_routes.update_organization);
+// app.post('/organization', organization_routes.add_instrument_group);
+// app.delete('/organization/:id', organization_routes.remove_instrument_group);
+// app.post('/organization/order', organization_routes.order_instrument_groups);
+// app.get('/contact', organization_routes.contacts);
+// app.get('/organization/edit', organization_routes.edit_organization);
+// app.post('/organization/edit', organization_routes.update_organization);
+/*
 app.get(
     '/organization/updated_email_lists.json/:groups',
     organization_routes.encrypted_mailman_lists,
 );
-app.put('/organization/admin/admin_group', organization_routes.set_admin_group);
-app.put('/organization/admin/musicscoreadmin_group', organization_routes.set_musicscoreadmin_group);
+*/
+// app.put('/organization/admin/admin_group', organization_routes.set_admin_group);
+// app.put('/organization/admin/musicscoreadmin_group', organization_routes.set_musicscoreadmin_group);
 
 // app.get('/projects', project_routes.index);
 app.get('/projects', universal);
-app.post('/projects', project_routes.create_project);
+// app.post('/projects', project_routes.create_project);
 // app.get('/:year(\\d{4})', project_routes.year);
 // app.get('/:year(\\d{4})/:tag', project_routes.project);
-app.get('/:year(\\d{4})/:tag', universal);
-app.put('/projects/:id', project_routes.update_project);
-app.delete('/projects/:id', project_routes.delete_project);
-app.post('/projects/:id/events', project_routes.project_create_event);
-app.post('/projects/:id/forum', project_routes.project_create_post);
-app.delete('/projects/:project_id/forum/:post_id', project_routes.project_delete_post);
-app.post('/projects/:id/files', upload, project_routes.project_create_file);
-app.put('/projects/:id/poster', project_routes.set_poster);
-app.put('/projects/:project_id/music', project_routes.add_piece);
-app.delete('/projects/:project_id/music', project_routes.remove_piece);
+// app.get('/:year(\\d{4})/:tag', universal);
+// app.put('/projects/:id', project_routes.update_project);
+// app.delete('/projects/:id', project_routes.delete_project);
+// app.post('/projects/:id/events', project_routes.project_create_event);
+// app.post('/projects/:id/forum', project_routes.project_create_post);
+// app.delete('/projects/:project_id/forum/:post_id', project_routes.project_delete_post);
+// app.post('/projects/:id/files', upload, project_routes.project_create_file);
+// app.put('/projects/:id/poster', project_routes.set_poster);
+// app.put('/projects/:project_id/music', project_routes.add_piece);
+// app.delete('/projects/:project_id/music', project_routes.remove_piece);
 
 // app.use('/', require('./routes/pages'));
 app.use('/', universal);

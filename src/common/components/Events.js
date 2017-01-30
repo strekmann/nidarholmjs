@@ -65,7 +65,7 @@ export default Relay.createContainer(Events, {
         organization: () => Relay.QL`
         fragment on Organization {
             id
-            member_group {
+            memberGroup {
                 id
             }
             events(first:$showItems) {
