@@ -8,7 +8,7 @@ import TagItem from './TagItem';
 export default class TagField extends React.Component {
     static propTypes = {
         allTags: React.PropTypes.array,
-        tags: React.PropTypes.array,
+        tags: React.PropTypes.string,
         onChange: React.PropTypes.func,
         onChangeTerm: React.PropTypes.func,
         term: React.PropTypes.string,

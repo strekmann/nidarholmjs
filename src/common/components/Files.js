@@ -16,7 +16,7 @@ import TagField from './TagField';
 import AddFileMutation from '../mutations/addFile';
 import SaveFilePermissionsMutation from '../mutations/saveFilePermissions';
 
-const itemsPerPage = 10;
+const itemsPerPage = 12;
 
 class Files extends React.Component {
     static contextTypes = {

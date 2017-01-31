@@ -15,13 +15,14 @@ export default class PermissionChips extends React.Component {
     render() {
         let permissions = this.props.permissions;
         if (!permissions.length) {
-            permissions = [{ name: 'Bare meg' }];
+            permissions = [{ id: null, name: 'Bare meg' }];
         }
         const chips = permissions.map(permission => <PermissionChipItem
-            removePermission={this.props.removePermission ? this.removePermission : null}
             id={permission.id}
-            text={permission.name}
+            key={permission.id}
             memberGroupId={this.props.memberGroupId}
+            removePermission={this.props.removePermission ? this.removePermission : null}
+            text={permission.name}
         />);
         return <div style={{ display: 'flex', flexWrap: 'wrap' }}>{chips}</div>;
     }
