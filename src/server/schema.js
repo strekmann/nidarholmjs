@@ -21,8 +21,9 @@ import {
     nodeDefinitions,
 } from 'graphql-relay';
 
-import moment from 'moment';
 import config from 'config';
+import moment from 'moment';
+import nodemailer from 'nodemailer';
 import uuid from 'node-uuid';
 
 import { connectionFromMongooseQuery, offsetToCursor } from './connections';
@@ -33,6 +34,7 @@ import File from './models/File';
 import Group from './models/Group';
 import Organization from './models/Organization';
 import Page from './models/Page';
+import PasswordCode from './models/PasswordCode';
 import Piece from './models/Piece';
 import Project from './models/Project';
 import User from './models/User';
@@ -1532,6 +1534,54 @@ const mutationSetPassword = mutationWithClientMutationId({
     },
 });
 
+const mutationSendReset = mutationWithClientMutationId({
+    name: 'SendReset',
+    inputFields: {
+        email: { type: new GraphQLNonNull(GraphQLString) },
+    },
+    outputFields: {
+        organization: {
+            type: organizationType,
+            resolve: (payload, args, { organization }) => Organization.findById(organization.id),
+        },
+    },
+    mutateAndGetPayload: ({ email }, { organization }) => {
+        if (!email) {
+            return organization;
+        }
+        const pattern = new RegExp(email, 'i');
+        return User
+            .findOne({ email: { $regex: pattern } })
+            .exec()
+            .then(user => {
+                if (user) {
+                    const code = new PasswordCode();
+                    code.user = user._id;
+                    return code.save().then(newCode => {
+                        const message =  `Hei ${user.name}\r\n\r\nDet kan se ut som du holder på å sette nytt passord. Hvis du ikke prøver på dette, ber vi deg se bort fra denne eposten. For å sette nytt passord, må du gå til lenka:\r\n${config.site.domain}/login/reset/${newCode._id}`;
+                        if (config.auth && config.auth.smtp && config.auth.smtp.host) {
+                            const transporter = nodemailer.createTransport(config.auth.smtp);
+                            const mailOptions = {
+                                from: config.auth.smtp.noreply_address,
+                                to: `${user.name} <${user.email}>`,
+                                subject: 'Nytt passord',
+                                text: message,
+                            };
+                            return transporter.sendMail(mailOptions)
+                            .then(info => {
+                                console.info('Email info:', info);
+                                return organization;
+                            });
+                        }
+                        console.info('No email config, this was the intended message', message);
+                        return organization;
+                    });
+                }
+                return organization;
+            });
+    },
+});
+
 const mutationType = new GraphQLObjectType({
     name: 'Mutation',
     fields: () => ({
@@ -1550,6 +1600,7 @@ const mutationType = new GraphQLObjectType({
         addProject: mutationAddProject,
         saveProject: mutationSaveProject,
         setPassword: mutationSetPassword,
+        sendReset: mutationSendReset,
     }),
 });
 

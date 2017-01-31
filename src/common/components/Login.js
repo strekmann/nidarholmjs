@@ -1,8 +1,9 @@
+import { Card, CardTitle, CardText, CardActions } from 'material-ui/Card';
 import FlatButton from 'material-ui/FlatButton';
 import RaisedButton from 'material-ui/RaisedButton';
 import TextField from 'material-ui/TextField';
 import React from 'react';
-import { Card, CardTitle, CardText, CardActions } from 'material-ui/Card';
+import { Link } from 'react-router';
 import getMuiTheme from 'material-ui/styles/getMuiTheme';
 
 import theme from '../theme';
@@ -24,7 +25,7 @@ class Login extends React.Component {
         return (
             <section style={{ display: 'flex', flexWrap: 'wrap' }}>
                 <form
-                    action="/auth/login"
+                    action="/login"
                     method="POST"
                     style={{
                         width: '50%',
@@ -60,9 +61,11 @@ class Login extends React.Component {
                                     primary
                                     label="Logg inn"
                                 />
-                                <FlatButton
-                                    label="Nytt passord"
-                                />
+                                <Link to="/login/reset">
+                                    <FlatButton
+                                        label="Nytt passord"
+                                    />
+                                </Link>
                             </div>
                         </CardActions>
                     </Card>

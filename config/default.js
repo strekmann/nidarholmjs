@@ -78,10 +78,8 @@ module.exports = {
     news_tag: 'nyheter',
     organization: 'nidarholm',
     profile_picture_tag: 'profilbilde',
-    redis: {
-        host: 'localhost',
-        port: 6379,
-        pass: undefined,
+    site: {
+        domain: 'nidarholm.no',
     },
 };
 

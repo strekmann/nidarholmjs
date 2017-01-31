@@ -334,7 +334,7 @@ class Member extends React.Component {
                             {this.props.viewer.id === user.id
                                 ? <FlatButton
                                     label="Logg ut"
-                                    href="/auth/logout"
+                                    href="/logout"
                                 />
                                 : null
                             }

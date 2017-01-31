@@ -18,6 +18,7 @@ import Pieces from './components/Pieces';
 import Files from './components/Files';
 import Page from './components/Page';
 import Pages from './components/Pages';
+import Reset from './components/Reset';
 import NoMatch from './components/NoMatch';
 
 export const queries = {
@@ -32,7 +33,10 @@ export const organizationQueries = {
 export default createRoutes(
     <Route path="/" component={App} queries={queries}>
         <IndexRoute component={Home} queries={queries} />
-        <Route path="login" component={Login} queryies={queries} />
+        <Route path="login">
+            <IndexRoute component={Login} />
+            <Route path="reset" component={Reset} queries={organizationQueries} />
+        </Route>
         <Route path="members" component={Members} queries={organizationQueries} />
         <Route path="users/:id">
             <IndexRoute component={Member} queries={queries} />

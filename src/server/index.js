@@ -20,6 +20,7 @@ import path from 'path';
 import config from 'config';
 import serveStatic from 'serve-static';
 import connectMongo from 'connect-mongo';
+import moment from 'moment';
 import multer from 'multer';
 import graphqlHTTP from 'express-graphql';
 
@@ -29,6 +30,7 @@ import universal from './app';
 // import socketRoutes from './socket';
 import { icalEvents } from './icalRoutes';
 import Organization from './models/Organization';
+import PasswordCode from './models/PasswordCode';
 import User from './models/User';
 import './lib/db';
 import saveFile from './lib/saveFile';
@@ -346,7 +348,7 @@ if (process.env.NODE_ENV !== 'production') {
 }
 
 /** Authentication stuff **/
-app.get('/auth/logout', (req, res, next) => {
+app.get('/logout', (req, res, next) => {
     req.logout();
     req.session.destroy();
     res.clearCookie('remember_me');
@@ -354,13 +356,29 @@ app.get('/auth/logout', (req, res, next) => {
 });
 
 app.post(
-    '/auth/login',
+    '/login',
     passport.authenticate('local'),
     persistentLogin,
     (req, res, next) => {
         res.redirect('/');
     }
 );
+
+app.get('/login/reset/:code', (req, res, next) => PasswordCode.findById(req.params.code).exec()
+        .then(passwordCode => {
+            if (!passwordCode || passwordCode.created < moment().subtract(1, 'hours')) {
+                return res.redirect('/login/reset');
+            }
+            return User.findById(passwordCode.user).exec()
+            .then(user => {
+                req.logIn(user, err => {
+                    if (err) {
+                        throw err;
+                    }
+                    return res.redirect('/');
+                });
+            });
+        }));
 
 app.get(
     '/auth/google',
