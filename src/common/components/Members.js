@@ -201,9 +201,26 @@ class Members extends React.Component {
                                         />)}
                                     </SelectField>
                                 </div>
-                                <div><RaisedButton type="submit" label="Legg til" primary /></div>
+                                <div>
+                                    <RaisedButton
+                                        type="submit"
+                                        label="Legg til"
+                                        primary
+                                    />
+                                    <RaisedButton
+                                        type="reset"
+                                        label="Avbryt"
+                                        onTouchTap={this.closeAddUser}
+                                    />
+                                </div>
                             </form>
-                            : null
+                            : <div>
+                                <RaisedButton
+                                    type="reset"
+                                    label="Avbryt"
+                                    onTouchTap={this.closeAddUser}
+                                />
+                            </div>
                         }
                     </Dialog>
                 </div>
