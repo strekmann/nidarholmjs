@@ -5,6 +5,7 @@ import { List, ListItem } from 'material-ui/List';
 import Subheader from 'material-ui/Subheader';
 
 import PermissionItem from './PermissionItem';
+import PermissionChips from './PermissionChips';
 
 export default class PermissionField extends React.Component {
     static propTypes = {
@@ -12,6 +13,7 @@ export default class PermissionField extends React.Component {
         groups: React.PropTypes.array,
         users: React.PropTypes.array,
         onChange: React.PropTypes.func,
+        memberGroupId: React.PropTypes.string,
     }
 
     state = {
@@ -58,22 +60,6 @@ export default class PermissionField extends React.Component {
         */
         return (
             <div>
-                <div>
-                    <List>
-                        <Subheader>Rettigheter</Subheader>
-                        {!this.state.permissions.length
-                            ? <ListItem primaryText="Bare meg" />
-                            : this.state.permissions.map(
-                                permission => <PermissionItem
-                                    key={permission.id}
-                                    removePermission={this.removePermission}
-                                    {...permission}
-                                />
-                                )
-                        }
-                    </List>
-                </div>
-
                 <AutoComplete
                     id="permissions"
                     floatingLabelText="Legg til rettigheter"
@@ -84,6 +70,13 @@ export default class PermissionField extends React.Component {
                     searchText={this.state.permission}
                     onNewRequest={this.addPermission}
                     onUpdateInput={this.onPermissionChange}
+                />
+                <PermissionChips
+                    permissions={this.state.permissions}
+                    groups={this.props.groups}
+                    users={this.props.users}
+                    memberGroupId={this.props.memberGroupId}
+                    removePermission={this.removePermission}
                 />
             </div>
         );

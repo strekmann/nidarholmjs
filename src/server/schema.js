@@ -837,7 +837,7 @@ organizationType = new GraphQLObjectType({
             resolve: (_, args, { viewer }) => {
                 const tags = args.tags.split('|');
                 let query = File.find().sort('-created');
-                if (tags.length) {
+                if (args.tags.length) {
                     query = query.where({ tags: { '$all': tags } });
                 }
                 return connectionFromMongooseQuery(

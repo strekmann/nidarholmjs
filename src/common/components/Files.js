@@ -131,6 +131,7 @@ class Files extends React.Component {
                             <FileUpload
                                 viewer={this.props.viewer}
                                 onDrop={this.onDrop}
+                                memberGroupId={org.memberGroup.id}
                             />
                             <RaisedButton label="Ferdig" primary onTouchTap={this.closeAddFile} />
                         </Dialog>
