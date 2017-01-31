@@ -7,6 +7,7 @@ import axios from 'axios';
 import getMuiTheme from 'material-ui/styles/getMuiTheme';
 import RaisedButton from 'material-ui/RaisedButton';
 import Dialog from 'material-ui/Dialog';
+import Paper from 'material-ui/Paper';
 
 import theme from '../theme';
 import FileList from './FileList';
@@ -39,6 +40,7 @@ class Files extends React.Component {
 
     state = {
         addFile: false,
+        search: false,
     }
 
     getChildContext() {
@@ -101,6 +103,10 @@ class Files extends React.Component {
         this.setState({ addFile: false });
     }
 
+    toggleSearch = () => {
+        this.setState({ search: !this.state.search });
+    }
+
     render() {
         const org = this.props.organization;
         const isMember = org.isMember;
@@ -111,6 +117,10 @@ class Files extends React.Component {
                         <RaisedButton
                             label="Last opp filer"
                             onTouchTap={this.toggleAddFile}
+                        />
+                        <RaisedButton
+                            label="Søk"
+                            onTouchTap={this.toggleSearch}
                         />
                         <Dialog
                             title="Last opp filer"
@@ -127,13 +137,19 @@ class Files extends React.Component {
                     </div>
                 : null}
                 <h1>Filer</h1>
-                <TagField
-                    tags={this.props.relay.variables.tags}
-                    onChange={this.onTagChange}
-                    allTags={this.props.organization.tags}
-                    onChangeTerm={this.onChangeTerm}
-                    term={this.props.relay.variables.term}
-                />
+                {this.state.search
+                        ? <Paper style={{ padding: 20, marginBottom: 20 }}>
+                            <h2>Søk i merkelapper</h2>
+                            <TagField
+                                tags={this.props.relay.variables.tags}
+                                onChange={this.onTagChange}
+                                allTags={this.props.organization.tags}
+                                onChangeTerm={this.onChangeTerm}
+                                term={this.props.relay.variables.term}
+                            />
+                        </Paper>
+                        : null
+                }
                 <FileList
                     files={org.files}
                     memberGroupId={org.memberGroup.id}
