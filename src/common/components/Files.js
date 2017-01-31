@@ -6,6 +6,7 @@ import axios from 'axios';
 
 import getMuiTheme from 'material-ui/styles/getMuiTheme';
 import RaisedButton from 'material-ui/RaisedButton';
+import Dialog from 'material-ui/Dialog';
 
 import theme from '../theme';
 import FileList from './FileList';
@@ -33,6 +34,10 @@ class Files extends React.Component {
     constructor(props) {
         super(props);
         this.muiTheme = getMuiTheme(theme);
+    }
+
+    state = {
+        addFile: false,
     }
 
     getChildContext() {
@@ -77,19 +82,40 @@ class Files extends React.Component {
         });
     }
 
+    toggleAddFile = () => {
+        this.setState({ addFile: !this.state.addFile });
+    }
+
+    closeAddFile = () => {
+        this.setState({ addFile: false });
+    }
+
     render() {
-        const viewer = this.props.viewer;
         const org = this.props.organization;
         const isMember = org.isMember;
         return (
             <div className="row">
-                <h1>Filer</h1>
                 {isMember ?
-                    <FileUpload
-                        viewer={this.props.viewer}
-                        onDrop={this.onDrop}
-                    />
+                    <div style={{ float: 'right' }}>
+                        <RaisedButton
+                            label="Last opp filer"
+                            onTouchTap={this.toggleAddFile}
+                        />
+                        <Dialog
+                            title="Last opp filer"
+                            open={this.state.addFile}
+                            onRequestClose={this.closeAddFile}
+                            autoScrollBodyContent
+                        >
+                            <FileUpload
+                                viewer={this.props.viewer}
+                                onDrop={this.onDrop}
+                            />
+                            <RaisedButton label="Ferdig" primary onTouchTap={this.closeAddFile} />
+                        </Dialog>
+                    </div>
                 : null}
+                <h1>Filer</h1>
                 <FileList
                     files={org.files}
                     memberGroupId={org.memberGroup.id}

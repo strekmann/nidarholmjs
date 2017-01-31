@@ -1,7 +1,7 @@
 import React from 'react';
 
 import AutoComplete from 'material-ui/AutoComplete';
-import { List } from 'material-ui/List';
+import { List, ListItem } from 'material-ui/List';
 import Subheader from 'material-ui/Subheader';
 
 import PermissionItem from './PermissionItem';
@@ -61,8 +61,9 @@ export default class PermissionField extends React.Component {
                 <div>
                     <List>
                         <Subheader>Rettigheter</Subheader>
-                        {
-                            this.state.permissions.map(
+                        {!this.state.permissions.length
+                            ? <ListItem primaryText="Bare meg" />
+                            : this.state.permissions.map(
                                 permission => <PermissionItem
                                     key={permission.id}
                                     removePermission={this.removePermission}

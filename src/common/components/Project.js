@@ -10,6 +10,7 @@ import IconButton from 'material-ui/IconButton';
 import IconMenu from 'material-ui/IconMenu';
 import MenuItem from 'material-ui/MenuItem';
 import Paper from 'material-ui/Paper';
+import RaisedButton from 'material-ui/RaisedButton';
 import getMuiTheme from 'material-ui/styles/getMuiTheme';
 
 import Date from './Date';
@@ -300,6 +301,7 @@ class Project extends React.Component {
                                 viewer={this.props.viewer}
                                 style={{ margin: '0 -15px' }}
                             />
+                            <RaisedButton label="Ferdig" primary onTouchTap={this.closeAddFile} />
                         </Dialog>
                     </div>
                     : null
