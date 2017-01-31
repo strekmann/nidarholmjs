@@ -1,10 +1,6 @@
 import React from 'react';
 
 import AutoComplete from 'material-ui/AutoComplete';
-import { List, ListItem } from 'material-ui/List';
-import Subheader from 'material-ui/Subheader';
-
-import PermissionItem from './PermissionItem';
 import PermissionChips from './PermissionChips';
 
 export default class PermissionField extends React.Component {

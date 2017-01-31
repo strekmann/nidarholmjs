@@ -30,6 +30,7 @@ export default class FileList extends React.Component {
                             onSavePermissions={this.props.onSavePermissions}
                             onSetProjectPoster={this.props.onSetProjectPoster}
                             viewer={this.props.viewer}
+                            searchTag={this.props.searchTag}
                             {...edge.node}
                         />
                         ))

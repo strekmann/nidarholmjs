@@ -1,9 +1,7 @@
 import React from 'react';
 
 import AutoComplete from 'material-ui/AutoComplete';
-import { List } from 'material-ui/List';
-import Subheader from 'material-ui/Subheader';
-import TagItem from './TagItem';
+import Chip from 'material-ui/Chip';
 
 export default class TagField extends React.Component {
     static propTypes = {
@@ -45,19 +43,6 @@ export default class TagField extends React.Component {
     render() {
         return (
             <div>
-                <div>
-                    <List>
-                        <Subheader>Merkelapper</Subheader>
-                        {this.state.tags.map(
-                            tag => <TagItem
-                                key={tag}
-                                removeTag={this.removeTag}
-                                tag={tag}
-                            />
-                        )}
-                    </List>
-                </div>
-
                 <AutoComplete
                     id="tags"
                     floatingLabelText="Søk i merkelapper"
@@ -70,6 +55,13 @@ export default class TagField extends React.Component {
                     onNewRequest={this.addTag}
                     onUpdateInput={this.onTagChange}
                 />
+                {this.state.tags.map(tag => <Chip
+                    key={tag}
+                    onRequestDelete={() => this.removeTag(tag)}
+                >
+                    {tag}
+                </Chip>
+                )}
             </div>
         );
     }

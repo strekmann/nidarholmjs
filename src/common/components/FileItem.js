@@ -1,6 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router';
 import { Card, CardTitle, CardText, CardMedia, CardActions } from 'material-ui/Card';
+import Chip from 'material-ui/Chip';
 import ArrowDown from 'material-ui/svg-icons/navigation/arrow-drop-down';
 import Dialog from 'material-ui/Dialog';
 import Download from 'material-ui/svg-icons/file/file-download';
@@ -65,6 +66,10 @@ export default class FileItem extends React.Component {
         this.props.onSetProjectPoster(this.props.id);
     }
 
+    searchTag = (tag) => {
+        this.props.searchTag(tag);
+    }
+
     render() {
         return (
             <Card key={this.props.id} style={{ width: 292, margin: '0 20px 20px 20px' }} >
@@ -109,11 +114,18 @@ export default class FileItem extends React.Component {
                         <Download style={{ height: 100, width: '100%' }} color={grey400} />
                     </Link>
                     }
-                <CardActions>
+                <CardActions style={{ display: 'flex', flexWrap: 'wrap' }}>
                     <PermissionChips
                         memberGroupId={this.props.memberGroupId}
                         permissions={flattenPermissions(this.props.permissions)}
                     />
+                    {this.props.tags.map(tag => <Chip
+                        key={tag}
+                        onTouchTap={() => this.searchTag(tag)}
+                    >
+                        {tag}
+                    </Chip>
+                    )}
                 </CardActions>
                 {this.state.editPermissions
                     ? <Dialog

@@ -107,6 +107,14 @@ class Files extends React.Component {
         this.setState({ search: !this.state.search });
     }
 
+    searchTag = (tag) => {
+        const tags = this.props.relay.variables.tags.split('|');
+        tags.push(tag);
+        const fixedTags = tags.sort().join('|').toLowerCase();
+        this.props.relay.setVariables({ tags: fixedTags });
+        this.setState({ search: true });
+    }
+
     render() {
         const org = this.props.organization;
         const isMember = org.isMember;
@@ -155,6 +163,7 @@ class Files extends React.Component {
                     files={org.files}
                     memberGroupId={org.memberGroup.id}
                     onSavePermissions={this.onSaveFilePermissions}
+                    searchTag={this.searchTag}
                     style={{ margin: '0 -20px' }}
                     viewer={this.props.viewer}
                 />
