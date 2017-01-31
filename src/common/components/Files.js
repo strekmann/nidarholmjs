@@ -137,6 +137,7 @@ class Files extends React.Component {
 export default Relay.createContainer(Files, {
     initialVariables: {
         showFiles: itemsPerPage,
+        tags: ['bilder'],
     },
     fragments: {
         viewer: () => Relay.QL`
@@ -154,7 +155,7 @@ export default Relay.createContainer(Files, {
             memberGroup {
                 id
             }
-            files(first:$showFiles) {
+            files(first:$showFiles, tags:$tags) {
                 edges {
                     node {
                         id

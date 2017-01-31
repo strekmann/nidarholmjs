@@ -829,11 +829,22 @@ organizationType = new GraphQLObjectType({
         },
         files: {
             type: fileConnection.connectionType,
-            args: connectionArgs,
-            resolve: (_, { ...args }, { viewer }) => connectionFromMongooseQuery(
-                authenticate(File.find().sort({ created: -1 }), viewer),
-                args,
-            ),
+            args: {
+                tags: { type: new GraphQLList(GraphQLString) },
+                ...connectionArgs,
+            },
+            resolve: (_, args, { viewer }) => {
+                let query = File.find().sort('-created');
+                if (args.tags.length) {
+                    query = query.where({ tags: {'$all': args.tags } });
+                    console.log(args.tags, "TAGS");
+                    //criteria.tags = {'$all': tags};
+                }
+                return connectionFromMongooseQuery(
+                    authenticate(query, viewer),
+                    args,
+                );
+            },
         },
         piece: {
             type: pieceType,

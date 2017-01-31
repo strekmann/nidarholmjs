@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router';
-import { Card, CardTitle, CardText, CardMedia } from 'material-ui/Card';
+import { Card, CardTitle, CardText, CardMedia, CardActions } from 'material-ui/Card';
 import ArrowDown from 'material-ui/svg-icons/navigation/arrow-drop-down';
 import Dialog from 'material-ui/Dialog';
 import Download from 'material-ui/svg-icons/file/file-download';
@@ -67,7 +67,7 @@ export default class FileItem extends React.Component {
 
     render() {
         return (
-            <Card key={this.props.id} style={{ width: 200, margin: '0 20px 20px 20px' }} >
+            <Card key={this.props.id} style={{ width: 292, margin: '0 20px 20px 20px' }} >
                 <CardTitle style={{ paddingBottom: 0 }}>
                     <div style={{ float: 'right', marginTop: -20, marginRight: -20 }}>
                         <IconMenu
@@ -109,12 +109,12 @@ export default class FileItem extends React.Component {
                         <Download style={{ height: 100, width: '100%' }} color={grey400} />
                     </Link>
                     }
-                <CardText>
+                <CardActions>
                     <PermissionChips
                         memberGroupId={this.props.memberGroupId}
                         permissions={flattenPermissions(this.props.permissions)}
                     />
-                </CardText>
+                </CardActions>
                 {this.state.editPermissions
                     ? <Dialog
                         title="Rediger rettigheter"
