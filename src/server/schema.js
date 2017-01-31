@@ -795,13 +795,14 @@ organizationType = new GraphQLObjectType({
                 },
             }),
             args: {
-                username: { name: 'username', type: GraphQLString },
+                id: { name: 'id', type: GraphQLString },
             },
-            resolve: (_, { username }, { organization, viewer }) => {
+            resolve: (_, { id }, { organization, viewer }) => {
                 if (!member(organization, viewer)) {
                     throw new Error('Nobody');
                 }
-                let query = User.findOne({ username });
+                const userId = fromGlobalId(id).id;
+                let query = User.findById(userId);
                 if (admin(organization, viewer)) {
                     query = query.select('+facebook_id +twitter_id +google_id +nmf_id');
                     query = query.select('+instrument_insurance +reskontro +membership_history');
@@ -1533,6 +1534,41 @@ const mutationSaveProject = mutationWithClientMutationId({
     },
 });
 
+const mutationSetPassword = mutationWithClientMutationId({
+    name: 'SetPassword',
+    inputFields: {
+        oldPassword: { type: new GraphQLNonNull(GraphQLString) },
+        newPassword: { type: new GraphQLNonNull(GraphQLString) },
+    },
+    outputFields: {
+        viewer: {
+            type: userType,
+            resolve: (payload, args, { viewer }) => User.findById(viewer.id),
+        },
+    },
+    mutateAndGetPayload: ({ oldPassword, newPassword }, { viewer }) => {
+        if (!viewer) {
+            throw new Error('Nobody!');
+        }
+        return User
+            .findById(viewer.id)
+            .select('+algorithm +password +salt')
+            .exec()
+            .then(user => user.authenticate(oldPassword)
+                .then((ok) => {
+                    if (!ok) {
+                        throw new Error('Galt gammelt passord');
+                    }
+                    const passwordHash = user.hashPassword(newPassword);
+                    user.algorithm = passwordHash.algorithm;
+                    user.salt = passwordHash.salt;
+                    user.password = passwordHash.hashedPassword;
+                    return user.save();
+                })
+            );
+    },
+});
+
 const mutationType = new GraphQLObjectType({
     name: 'Mutation',
     fields: () => ({
@@ -1550,6 +1586,7 @@ const mutationType = new GraphQLObjectType({
         setProjectPoster: mutationSetProjectPoster,
         addProject: mutationAddProject,
         saveProject: mutationSaveProject,
+        setPassword: mutationSetPassword,
     }),
 });
 

@@ -44,13 +44,14 @@ passport.passportLocal = new LocalStrategy({
         if (!user) {
             return done(null, false, { message: 'Ukjent e-postadresse eller brukernavn' });
         }
-        return user.authenticate(password, (authErr, ok) => {
-            if (authErr) { return done(authErr); }
-            if (ok) {
-                return done(null, user);
-            }
-            return done(null, false, { message: 'Galt passord' });
-        });
+        return user.authenticate(password)
+            .then(ok => {
+                if (ok) {
+                    return done(null, user);
+                }
+                return done(null, false, { message: 'Galt passord' });
+            })
+            .catch(err => done(err, false, { message: err.message }));
     });
 });
 
@@ -81,7 +82,6 @@ if (config.auth.facebook) {
         if (req.user) {
             req.user.facebook_id = profile.id;
             req.user.save((err, user) => {
-                req.session.returnTo = `/users/${req.user.username}`;
                 if (user) {
                     req.flash('success', 'Du kan nå logge inn med Facebook-kontoen');
                 }
@@ -108,7 +108,6 @@ if (config.auth.google) {
         if (req.user) {
             req.user.google_id = profile.id;
             req.user.save((err, user) => {
-                req.session.returnTo = `/users/${req.user.username}`;
                 if (user) {
                     req.flash('success', 'Du kan nå logge inn med Google-kontoen');
                 }
@@ -135,7 +134,6 @@ if (config.auth.twitter) {
         if (req.user) {
             req.user.twitter_id = profile.id;
             req.user.save((err, user) => {
-                req.session.returnTo = `/users/${req.user.username}`;
                 if (user) {
                     req.flash('success', 'Du kan nå logge inn med Twitter-kontoen');
                 }

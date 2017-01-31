@@ -17,7 +17,7 @@ export default class MemberItem extends React.Component {
                 <div style={{ marginBottom: 5 }}>
                     {this.props.isMember
                         ? <div>
-                            <Link to={`/users/${user.username}`}>{user.name}</Link>
+                            <Link to={`/users/${user.id}`}>{user.name}</Link>
                             {' '}
                             {this.props.role.tile || user.instrument
                                 ? <span>({this.props.role.title || user.instrument})</span>

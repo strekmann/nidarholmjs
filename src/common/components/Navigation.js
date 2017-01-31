@@ -138,7 +138,7 @@ class Navigation extends React.Component {
                             }
                             {viewer
                                 ? <Link
-                                    to={`/users/${viewer.username}`}
+                                    to={`/users/${viewer.id}`}
                                     style={{
                                         display: 'flex',
                                         alignItems: 'center',
@@ -173,7 +173,7 @@ class Navigation extends React.Component {
                         {logo}
                     </div>
                     <div>
-                        {this.props.viewer ? <Link to={`/users/${viewer.username}`}>
+                        {this.props.viewer ? <Link to={`/users/${viewer.id}`}>
                             <Avatar
                                 src={viewer.profilePicturePath}
                             />
@@ -309,6 +309,7 @@ export default Relay.createContainer(Navigation, {
         }`,
         viewer: () => Relay.QL`
         fragment on User {
+            id,
             name,
             email,
             username,

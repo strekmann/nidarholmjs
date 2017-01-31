@@ -1,5 +1,6 @@
 import {
     blueGrey500, blueGrey700,
+    lightBlue900,
     grey100, grey300, grey400, grey500,
     orangeA200,
     white, darkBlack, fullBlack,
@@ -22,7 +23,7 @@ export default {
     },
     fontFamily: 'Roboto, sans-serif',
     palette: {
-        primary1Color: blueGrey500,
+        primary1Color: lightBlue900,
         primary2Color: blueGrey700,
         primary3Color: grey400,
         accent1Color: orangeA200,

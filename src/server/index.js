@@ -29,6 +29,7 @@ import universal from './app';
 // import socketRoutes from './socket';
 import { icalEvents } from './icalRoutes';
 import Organization from './models/Organization';
+import User from './models/User';
 import './lib/db';
 import saveFile from './lib/saveFile';
 import findFilePath from './lib/findFilePath';
@@ -347,11 +348,6 @@ if (process.env.NODE_ENV !== 'production') {
 /** Authentication stuff **/
 app.get('/auth/logout', (req, res, next) => {
     req.logout();
-    res.redirect('/');
-});
-
-app.get('/logout', (req, res) => {
-    req.logout();
     req.session.destroy();
     res.clearCookie('remember_me');
     res.redirect('/');
@@ -364,21 +360,6 @@ app.post(
     (req, res, next) => {
         res.redirect('/');
     }
-);
-
-// routes
-app.post(
-    '/login',
-    passport.authenticate('local', {
-        failureRedirect: '/login',
-        failureFlash: true,
-    }),
-    persistentLogin,
-    (req, res) => {
-        const url = req.session.returnTo || '/';
-        delete req.session.returnTo;
-        res.redirect(url);
-    },
 );
 
 app.get(
@@ -433,7 +414,8 @@ app.get('/login', universal);
 app.get('/files', universal);
 // app.use('/files', require('./routes/files'));
 
-app.use('/users/:username', universal);
+app.use('/users/:id', universal);
+app.use('/users/:id/reset', universal);
 // app.use('/users', require('./routes/users'));
 // app.use('/groups', require('./routes/groups'));
 

@@ -7,6 +7,7 @@ import Login from './components/Login';
 import Home from './components/Home';
 import Members from './components/Members';
 import Member from './components/Member';
+import MemberReset from './components/MemberReset';
 import Organization from './components/Organization';
 import Projects from './components/Projects';
 import Project from './components/Project';
@@ -33,7 +34,10 @@ export default createRoutes(
         <IndexRoute component={Home} queries={queries} />
         <Route path="login" component={Login} queryies={queries} />
         <Route path="members" component={Members} queries={organizationQueries} />
-        <Route path="users/:username" component={Member} queries={queries} />
+        <Route path="users/:id">
+            <IndexRoute component={Member} queries={queries} />
+            <Route path="reset" component={MemberReset} queries={queries} />
+        </Route>
         <Route path="projects" component={Projects} queries={queries} />
         <Route path="events/:eventid" component={Event} queries={queries} />
         <Route path="events" component={Events} queries={organizationQueries} />

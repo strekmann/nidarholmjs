@@ -47,14 +47,35 @@ const UserSchema = new mongoose.Schema({
     },
 });
 
-UserSchema.methods.authenticate = function authenticateUser(candidate, callback) {
-    const hashedPassword = crypto.createHash(this.algorithm);
-    hashedPassword.update(this.salt);
-    hashedPassword.update(candidate);
-    if (this.password === hashedPassword.digest('hex')) {
-        return callback(null, this);
-    }
-    return callback('Bad password', null);
+UserSchema.methods.authenticate = function authenticateUser(candidatePassword) {
+    const user = this;
+    return new Promise((resolve) => {
+        if (!user.password) {
+            resolve(false);
+        }
+        const hashedPassword = crypto.createHash(this.algorithm);
+        hashedPassword.update(this.salt);
+        hashedPassword.update(candidatePassword);
+        if (user.password === hashedPassword.digest('hex')) {
+            resolve(true);
+        }
+        else {
+            resolve(false);
+        }
+    });
+};
+
+UserSchema.methods.hashPassword = function hashPassword(candidatePassword) {
+    const algorithm = 'sha256';
+    const salt = crypto.randomBytes(128).toString('base64');
+    const hashedPassword = crypto.createHash(algorithm);
+    hashedPassword.update(salt);
+    hashedPassword.update(candidatePassword);
+    return {
+        algorithm,
+        hashedPassword: hashedPassword.digest('hex'),
+        salt,
+    };
 };
 
 UserSchema.set('toJSON', schemaOptions);

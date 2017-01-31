@@ -5,6 +5,7 @@ import FlatButton from 'material-ui/FlatButton';
 import { Toolbar, ToolbarGroup } from 'material-ui/Toolbar';
 import React from 'react';
 import Relay from 'react-relay';
+import { Link } from 'react-router';
 import getMuiTheme from 'material-ui/styles/getMuiTheme';
 import IconMenu from 'material-ui/IconMenu';
 import MenuItem from 'material-ui/MenuItem';
@@ -333,7 +334,7 @@ class Member extends React.Component {
                             {this.props.viewer.id === user.id
                                 ? <FlatButton
                                     label="Logg ut"
-                                    href="/logout"
+                                    href="/auth/logout"
                                 />
                                 : null
                             }
@@ -343,6 +344,15 @@ class Member extends React.Component {
                                 targetOrigin={{ vertical: 'top', horizontal: 'right' }}
                             >
                                 <MenuItem primaryText="Rediger" onTouchTap={this.openEditMember} />
+                                {this.props.viewer.id === user.id
+                                        ? <MenuItem
+                                            primaryText="Bytt passord"
+                                            containerElement={
+                                                <Link to={`/users/${user.id}/reset`} />
+                                            }
+                                        />
+                                        : null
+                                }
                             </IconMenu>
                         </ToolbarGroup>
                     </Toolbar>
@@ -399,7 +409,7 @@ class Member extends React.Component {
 
 export default Relay.createContainer(Member, {
     initialVariables: {
-        username: null,
+        id: null,
     },
     fragments: {
         viewer: () => Relay.QL`
@@ -410,7 +420,7 @@ export default Relay.createContainer(Member, {
         organization: () => Relay.QL`
         fragment on Organization {
             isMember
-            member(username:$username) {
+            member(id:$id) {
                 id
                 role {
                     title

@@ -98,9 +98,8 @@ class Members extends React.Component {
             groupId: this.state.groupId,
         }), {
             onSuccess: (results) => {
-                console.log(results);
                 this.setState({ addUser: false });
-                this.context.router.push({ pathname: `/users/${results.addUser.newUser.username}` });
+                this.context.router.push({ pathname: `/users/${results.addUser.newUser.id}` });
             },
         });
     }
@@ -227,6 +226,7 @@ export default Relay.createContainer(Members, {
                 members {
                     id
                     user {
+                        id
                         name
                         username
                         email
