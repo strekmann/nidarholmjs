@@ -830,15 +830,15 @@ organizationType = new GraphQLObjectType({
         files: {
             type: fileConnection.connectionType,
             args: {
-                tags: { type: new GraphQLList(GraphQLString) },
+                tags: { type: GraphQLString },
+                term: { type: GraphQLString },
                 ...connectionArgs,
             },
             resolve: (_, args, { viewer }) => {
+                const tags = args.tags.split('|');
                 let query = File.find().sort('-created');
-                if (args.tags.length) {
-                    query = query.where({ tags: {'$all': args.tags } });
-                    console.log(args.tags, "TAGS");
-                    //criteria.tags = {'$all': tags};
+                if (tags.length) {
+                    query = query.where({ tags: { '$all': tags } });
                 }
                 return connectionFromMongooseQuery(
                     authenticate(query, viewer),
@@ -877,6 +877,37 @@ organizationType = new GraphQLObjectType({
                     query.sort({ title: 1 }),
                     args,
                 );
+            },
+        },
+        tags: {
+            type: new GraphQLList(new GraphQLObjectType({
+                name: 'Tag',
+                fields: {
+                    tag: { type: GraphQLString },
+                    count: { type: GraphQLInt },
+                },
+            })),
+            args: {
+                tags: { type: GraphQLString },
+                term: { type: GraphQLString },
+            },
+            resolve: (_, args, { organization, viewer }) => {
+                const tags = args.tags.split('|');
+                return File.aggregate(
+                    { $match: { tags: { $all: tags } } },
+                    { $project: { tags: 1 } },
+                    { $unwind: '$tags' },
+                    { $match: { tags: { $nin: tags, $regex: `^${args.term}` } } },
+                    { $group: { _id: '$tags', count: { $sum: 1 } } },
+                    { $sort: { count: -1 } },
+                    { $limit: 20 },
+                    { $project: { _id: 1, count: 1 } },
+                )
+                    .then(aggregatedTags => {
+                        return aggregatedTags.map(tag => {
+                            return { tag: tag._id, count: tag.count };
+                        });
+                    });
             },
         },
     },

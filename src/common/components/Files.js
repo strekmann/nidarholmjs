@@ -11,6 +11,7 @@ import Dialog from 'material-ui/Dialog';
 import theme from '../theme';
 import FileList from './FileList';
 import FileUpload from './FileUpload';
+import TagField from './TagField';
 import AddFileMutation from '../mutations/addFile';
 import SaveFilePermissionsMutation from '../mutations/saveFilePermissions';
 
@@ -68,7 +69,7 @@ class Files extends React.Component {
                 });
             })
             .catch(error => {
-                console.error("err", error);
+                console.error('err', error);
             });
         });
     }
@@ -81,6 +82,15 @@ class Files extends React.Component {
         }), {
             onSuccess,
         });
+    }
+
+    onTagChange = (tags) => {
+        const fixedTags = tags.sort().join('|').toLowerCase();
+        this.props.relay.setVariables({ tags: fixedTags });
+    }
+
+    onChangeTerm = (term) => {
+        this.props.relay.setVariables({ term });
     }
 
     toggleAddFile = () => {
@@ -117,6 +127,13 @@ class Files extends React.Component {
                     </div>
                 : null}
                 <h1>Filer</h1>
+                <TagField
+                    tags={this.props.relay.variables.tags}
+                    onChange={this.onTagChange}
+                    allTags={this.props.organization.tags}
+                    onChangeTerm={this.onChangeTerm}
+                    term={this.props.relay.variables.term}
+                />
                 <FileList
                     files={org.files}
                     memberGroupId={org.memberGroup.id}
@@ -137,7 +154,8 @@ class Files extends React.Component {
 export default Relay.createContainer(Files, {
     initialVariables: {
         showFiles: itemsPerPage,
-        tags: ['bilder'],
+        tags: '',
+        term: '',
     },
     fragments: {
         viewer: () => Relay.QL`
@@ -154,6 +172,10 @@ export default Relay.createContainer(Files, {
             isMember
             memberGroup {
                 id
+            }
+            tags(tags:$tags, term:$term) {
+                tag
+                count
             }
             files(first:$showFiles, tags:$tags) {
                 edges {
