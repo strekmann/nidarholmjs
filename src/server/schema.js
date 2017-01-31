@@ -956,11 +956,11 @@ const mutationSaveFilePermissions = mutationWithClientMutationId({
         },
     },
     mutateAndGetPayload: ({ fileId, permissions }, { viewer }) => {
-        const id = fromGlobalId(fileId).id;
-        const permissionObj = buildPermissionObject(permissions);
         if (!viewer) {
             throw new Error('Nobody!');
         }
+        const id = fromGlobalId(fileId).id;
+        const permissionObj = buildPermissionObject(permissions);
         const query = File.findByIdAndUpdate(
             id,
             { permissions: permissionObj },
@@ -970,6 +970,7 @@ const mutationSaveFilePermissions = mutationWithClientMutationId({
             if (!file) {
                 throw new Error('Nothing!');
             }
+            Activity.findOneAndUpdate({ content_ids: id }, { permissions: permissionObj }).exec();
             return file;
         });
     },
@@ -1307,46 +1308,44 @@ const mutationAddFile = mutationWithClientMutationId({
     mutateAndGetPayload: ({ filename, hex, permissions, tags }, { viewer, organization }) => {
         const permissionObj = buildPermissionObject(permissions);
         return insertFile(filename, hex, permissionObj, tags, viewer, organization)
-        .then(file => {
-            return Activity.findOne({
-                content_type: 'upload',
-                'changes.user': file.creator,
-                modified: { $gt: moment(file.created).subtract(10, 'minutes').toDate() },
-                project: { $exists: false },
-            })
-            .exec()
-            .then(activity => {
-                let newActivity = activity;
-                if (!newActivity) {
-                    newActivity = new Activity();
-                    newActivity.content_type = 'upload';
-                }
-                newActivity.content_ids.addToSet(file.id);
-                newActivity.title = file.filename;
-                newActivity.changes.push({ user: viewer.id, changed: file.created });
-                newActivity.permissions = file.permissions;
-                newActivity.modified = file.created;
-                file.tags.forEach(tag => {
-                    newActivity.tags.addToSet(tag);
-                });
-                if (!newActivity.content) {
-                    newActivity.content = {};
-                }
-                const images = new Set(newActivity.content.images);
-                const nonImages = new Set(newActivity.content.non_images);
-                if (file.is_image) {
-                    images.add({ thumbnail_path: file.thumbnail_path, _id: file._id });
-                }
-                else {
-                    nonImages.add({ filename: file.filename, _id: file._id });
-                }
-                newActivity.content.images = Array.from(images);
-                newActivity.content.non_images = Array.from(nonImages);
-                newActivity.markModified('content');
-                return newActivity.save();
-            })
-            .then(() => file);
-        });
+        .then(file => Activity.findOne({
+            content_type: 'upload',
+            'changes.user': file.creator,
+            modified: { $gt: moment(file.created).subtract(10, 'minutes').toDate() },
+            project: { $exists: false },
+        })
+        .exec()
+        .then(activity => {
+            let newActivity = activity;
+            if (!newActivity) {
+                newActivity = new Activity();
+                newActivity.content_type = 'upload';
+            }
+            newActivity.content_ids.addToSet(file.id);
+            newActivity.title = file.filename;
+            newActivity.changes.push({ user: viewer.id, changed: file.created });
+            newActivity.permissions = file.permissions;
+            newActivity.modified = file.created;
+            file.tags.forEach(tag => {
+                newActivity.tags.addToSet(tag);
+            });
+            if (!newActivity.content) {
+                newActivity.content = {};
+            }
+            const images = new Set(newActivity.content.images);
+            const nonImages = new Set(newActivity.content.non_images);
+            if (file.is_image) {
+                images.add({ thumbnail_path: file.thumbnail_path, _id: file._id });
+            }
+            else {
+                nonImages.add({ filename: file.filename, _id: file._id });
+            }
+            newActivity.content.images = Array.from(images);
+            newActivity.content.non_images = Array.from(nonImages);
+            newActivity.markModified('content');
+            return newActivity.save();
+        })
+        .then(() => file));
     },
 });
 
