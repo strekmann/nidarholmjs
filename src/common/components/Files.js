@@ -11,6 +11,7 @@ import theme from '../theme';
 import FileList from './FileList';
 import FileUpload from './FileUpload';
 import AddFileMutation from '../mutations/addFile';
+import SaveFilePermissionsMutation from '../mutations/saveFilePermissions';
 
 const itemsPerPage = 10;
 
@@ -66,6 +67,16 @@ class Files extends React.Component {
         });
     }
 
+    onSaveFilePermissions = (file, permissions, onSuccess) => {
+        this.context.relay.commitUpdate(new SaveFilePermissionsMutation({
+            organization: this.props.organization,
+            fileId: file,
+            permissions: permissions.map(permission => permission.id),
+        }), {
+            onSuccess,
+        });
+    }
+
     render() {
         const viewer = this.props.viewer;
         const org = this.props.organization;
@@ -82,7 +93,9 @@ class Files extends React.Component {
                 <FileList
                     files={org.files}
                     memberGroupId={org.memberGroup.id}
+                    onSavePermissions={this.onSaveFilePermissions}
                     style={{ margin: '0 -20px' }}
+                    viewer={this.props.viewer}
                 />
                 {org.files.pageInfo.hasNextPage ?
                     <RaisedButton primary>Mer</RaisedButton>
@@ -143,6 +156,7 @@ export default Relay.createContainer(Files, {
                 }
             }
             ${AddFileMutation.getFragment('organization')},
+            ${SaveFilePermissionsMutation.getFragment('organization')}
         }`,
     },
 });

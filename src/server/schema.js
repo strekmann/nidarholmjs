@@ -27,6 +27,7 @@ import uuid from 'node-uuid';
 
 import { connectionFromMongooseQuery, offsetToCursor } from './connections';
 
+import Activity from './models/Activity';
 import Event from './models/Event';
 import File from './models/File';
 import Group from './models/Group';
@@ -36,6 +37,7 @@ import Piece from './models/Piece';
 import Project from './models/Project';
 import User from './models/User';
 import insertFile from './lib/insertFile';
+import { buildPermissionObject } from './lib/permissions';
 
 let userType;
 let groupType;
@@ -924,22 +926,9 @@ const mutationAddEvent = mutationWithClientMutationId({
         if (!viewer) {
             throw new Error('Nobody!');
         }
-        const userId = viewer.id;
-        const permissionObj = { public: false, groups: [], users: [] };
-        permissions.forEach(permission => {
-            if (permission === 'p') {
-                permissionObj.public = true;
-            }
-            const idObj = fromGlobalId(permission);
-            if (idObj.type === 'Group') {
-                permissionObj.groups.push(idObj.id);
-            }
-            else if (idObj.type === 'User') {
-                permissionObj.users.push(idObj.id);
-            }
-        });
+        const permissionObj = buildPermissionObject(permissions);
         const event = new Event();
-        event.creator = userId;
+        event.creator = viewer.id;
         event.title = title;
         event.location = location;
         event.start = moment.utc(start);
@@ -968,19 +957,7 @@ const mutationSaveFilePermissions = mutationWithClientMutationId({
     },
     mutateAndGetPayload: ({ fileId, permissions }, { viewer }) => {
         const id = fromGlobalId(fileId).id;
-        const permissionObj = { public: false, groups: [], users: [] };
-        permissions.forEach(permission => {
-            if (permission === 'p') {
-                permissionObj.public = true;
-            }
-            const idObj = fromGlobalId(permission);
-            if (idObj.type === 'Group') {
-                permissionObj.groups.push(idObj.id);
-            }
-            else if (idObj.type === 'User') {
-                permissionObj.users.push(idObj.id);
-            }
-        });
+        const permissionObj = buildPermissionObject(permissions);
         if (!viewer) {
             throw new Error('Nobody!');
         }
@@ -1092,19 +1069,7 @@ const mutationAddPage = mutationWithClientMutationId({
             throw new Error('Nobody!');
         }
         const userId = viewer.id;
-        const permissionObj = { public: false, groups: [], users: [] };
-        permissions.forEach(permission => {
-            if (permission === 'p') {
-                permissionObj.public = true;
-            }
-            const idObj = fromGlobalId(permission);
-            if (idObj.type === 'Group') {
-                permissionObj.groups.push(idObj.id);
-            }
-            else if (idObj.type === 'User') {
-                permissionObj.users.push(idObj.id);
-            }
-        });
+        const permissionObj = buildPermissionObject(permissions);
         const page = new Page();
         page._id = uuid.v4();
         page.slug = slug;
@@ -1266,19 +1231,7 @@ const mutationEditPage = mutationWithClientMutationId({
         if (!viewer) {
             throw new Error('Nobody!');
         }
-        const permissionObj = { public: false, groups: [], users: [] };
-        permissions.forEach(permission => {
-            if (permission === 'p') {
-                permissionObj.public = true;
-            }
-            const idObj = fromGlobalId(permission);
-            if (idObj.type === 'Group') {
-                permissionObj.groups.push(idObj.id);
-            }
-            else if (idObj.type === 'User') {
-                permissionObj.users.push(idObj.id);
-            }
-        });
+        const permissionObj = buildPermissionObject(permissions);
         const query = Page.findByIdAndUpdate(
             id,
             {
@@ -1351,21 +1304,49 @@ const mutationAddFile = mutationWithClientMutationId({
             }),
         },
     },
-    mutateAndGetPayload: ({ filename, hex, permissions, tags }, { viewer }) => {
-        const permissionObj = { public: false, groups: [], users: [] };
-        permissions.forEach(permission => {
-            if (permission === 'p') {
-                permissionObj.public = true;
-            }
-            const idObj = fromGlobalId(permission);
-            if (idObj.type === 'Group') {
-                permissionObj.groups.push(idObj.id);
-            }
-            else if (idObj.type === 'User') {
-                permissionObj.users.push(idObj.id);
-            }
+    mutateAndGetPayload: ({ filename, hex, permissions, tags }, { viewer, organization }) => {
+        const permissionObj = buildPermissionObject(permissions);
+        return insertFile(filename, hex, permissionObj, tags, viewer, organization)
+        .then(file => {
+            return Activity.findOne({
+                content_type: 'upload',
+                'changes.user': file.creator,
+                modified: { $gt: moment(file.created).subtract(10, 'minutes').toDate() },
+                project: { $exists: false },
+            })
+            .exec()
+            .then(activity => {
+                let newActivity = activity;
+                if (!newActivity) {
+                    newActivity = new Activity();
+                    newActivity.content_type = 'upload';
+                }
+                newActivity.content_ids.addToSet(file.id);
+                newActivity.title = file.filename;
+                newActivity.changes.push({ user: viewer.id, changed: file.created });
+                newActivity.permissions = file.permissions;
+                newActivity.modified = file.created;
+                file.tags.forEach(tag => {
+                    newActivity.tags.addToSet(tag);
+                });
+                if (!newActivity.content) {
+                    newActivity.content = {};
+                }
+                const images = new Set(newActivity.content.images);
+                const nonImages = new Set(newActivity.content.non_images);
+                if (file.is_image) {
+                    images.add({ thumbnail_path: file.thumbnail_path, _id: file._id });
+                }
+                else {
+                    nonImages.add({ filename: file.filename, _id: file._id });
+                }
+                newActivity.content.images = Array.from(images);
+                newActivity.content.non_images = Array.from(nonImages);
+                newActivity.markModified('content');
+                return newActivity.save();
+            })
+            .then(() => file);
         });
-        return insertFile(filename, hex, permissionObj, tags, config.files.raw_prefix, viewer);
     },
 });
 
@@ -1448,19 +1429,7 @@ const mutationAddProject = mutationWithClientMutationId({
         if (!viewer) {
             throw new Error('Nobody!');
         }
-        const permissionObj = { public: false, groups: [], users: [] };
-        permissions.forEach(permission => {
-            if (permission === 'p') {
-                permissionObj.public = true;
-            }
-            const idObj = fromGlobalId(permission);
-            if (idObj.type === 'Group') {
-                permissionObj.groups.push(idObj.id);
-            }
-            else if (idObj.type === 'User') {
-                permissionObj.users.push(idObj.id);
-            }
-        });
+        const permissionObj = buildPermissionObject(permissions);
         const project = new Project();
         project.creator = viewer.id;
         project.title = title;
@@ -1503,19 +1472,7 @@ const mutationSaveProject = mutationWithClientMutationId({
         if (!viewer) {
             throw new Error('Nobody!');
         }
-        const permissionObj = { public: false, groups: [], users: [] };
-        permissions.forEach(permission => {
-            if (permission === 'p') {
-                permissionObj.public = true;
-            }
-            const idObj = fromGlobalId(permission);
-            if (idObj.type === 'Group') {
-                permissionObj.groups.push(idObj.id);
-            }
-            else if (idObj.type === 'User') {
-                permissionObj.users.push(idObj.id);
-            }
-        });
+        const permissionObj = buildPermissionObject(permissions);
         let startMoment = null;
         if (start) {
             startMoment = moment.utc(start);

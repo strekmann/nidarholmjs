@@ -127,7 +127,7 @@ export default class FileItem extends React.Component {
                             groups={this.props.viewer.groups}
                             users={this.props.viewer.friends}
                         />
-                        <RaisedButton label="Lagre" onClick={this.savePermissions} />
+                        <RaisedButton label="Lagre" onClick={this.savePermissions} primary />
                     </Dialog>
                     : null
                 }
