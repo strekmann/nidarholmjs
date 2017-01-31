@@ -118,28 +118,33 @@ class Members extends React.Component {
 
     render() {
         const org = this.props.organization;
+        const isAdmin = org.isAdmin;
         return (
             <Paper className="row">
                 <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                     <div>
                         <h1>Medlemmer</h1>
                     </div>
-                    <IconMenu
-                        iconButtonElement={<IconButton><ArrowDown /></IconButton>}
-                        anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
-                        targetOrigin={{ vertical: 'top', horizontal: 'right' }}
-                    >
-                        <MenuItem
-                            primaryText="Finn / legg til medlem"
-                            onTouchTap={this.toggleAddUser}
-                        />
-                    </IconMenu>
+                    {isAdmin
+                        ? <IconMenu
+                            iconButtonElement={<IconButton><ArrowDown /></IconButton>}
+                            anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
+                            targetOrigin={{ vertical: 'top', horizontal: 'right' }}
+                        >
+                            <MenuItem
+                                primaryText="Finn / legg til medlem"
+                                onTouchTap={this.toggleAddUser}
+                            />
+                        </IconMenu>
+                        : null
+                    }
                     <Dialog
                         title="Finn / legg til medlem"
                         open={this.state.addUser}
                         onRequestClose={this.closeAddUser}
                         autoScrollBodyContent
                     >
+                        <p>Mens du skriver inn navn, søker vi opp de med likest navn, i tilfelle personen allerede er registrert. For å legge inn en ny person, skriver du hele navnet og trykker enter.</p>
                         <AutoComplete
                             hintText="Navn"
                             dataSource={org.users.map(
@@ -220,6 +225,7 @@ export default Relay.createContainer(Members, {
         organization: () => Relay.QL`
         fragment on Organization {
             isMember
+            isAdmin
             instrumentGroups {
                 id
                 name

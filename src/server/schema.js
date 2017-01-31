@@ -290,11 +290,20 @@ groupType = new GraphQLObjectType({
                     id: { type: GraphQLString },
                     user: {
                         type: userType,
-                        resolve: groupMember => User.findById(groupMember.user).where({
-                            on_leave: false,
-                            in_list: true,
-                            //membership_status: { $lt: 5 },
-                        }).exec(),
+                        resolve: (groupMember, args, { viewer, organization }) => {
+                            let query = User.findById(groupMember.user).where({
+                                on_leave: false,
+                                in_list: true,
+                                //membership_status: { $lt: 5 },
+                            });
+                            if (isMember(organization, viewer)) {
+                                query = query.select('id name email phone');
+                            }
+                            else {
+                                query = query.select('name');
+                            }
+                            return query.exec();
+                        },
                     },
                     role: { type: new GraphQLObjectType({
                         name: 'GroupRole',
