@@ -364,21 +364,47 @@ app.post(
     }
 );
 
-app.get('/login/reset/:code', (req, res, next) => PasswordCode.findById(req.params.code).exec()
-        .then(passwordCode => {
-            if (!passwordCode || passwordCode.created < moment().subtract(1, 'hours')) {
-                return res.redirect('/login/reset');
-            }
-            return User.findById(passwordCode.user).exec()
-            .then(user => {
-                req.logIn(user, err => {
-                    if (err) {
-                        throw err;
-                    }
-                    return res.redirect('/');
-                });
+app.get('/login/reset/:code', (req, res, next) => (
+    PasswordCode.findById(req.params.code).exec()
+    .then(passwordCode => {
+        if (!passwordCode || passwordCode.created < moment().subtract(1, 'hours')) {
+            return res.redirect('/login/reset');
+        }
+        return User.findById(passwordCode.user).exec()
+        .then(user => {
+            req.logIn(user, err => {
+                if (err) {
+                    throw err;
+                }
+                return res.redirect('/');
             });
-        }));
+        });
+    })
+));
+
+app.post('/login/register', (req, res, next) => {
+    const email = req.body.email.trim();
+    const name = req.body.name.trim();
+    if (email && name && req.body.password) {
+        const user = new User();
+        user.email = email;
+        user.name = name;
+        user.username = email;
+        const hashedPassword = user.hashPassword(req.body.password);
+        user.password = hashedPassword.hashedPassword;
+        user.algorithm = hashedPassword.algorithm;
+        user.salt = hashedPassword.salt;
+        return user.save().then(newUser => {
+            req.logIn(newUser, (err) => {
+                if (err) {
+                    throw err;
+                }
+                return res.redirect('/');
+            });
+        });
+    }
+    return res.redirect('/login');
+});
 
 app.get(
     '/auth/google',

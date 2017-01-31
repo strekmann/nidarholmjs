@@ -143,7 +143,7 @@ class Members extends React.Component {
                         <AutoComplete
                             hintText="Navn"
                             dataSource={org.users.map(
-                                user => ({ text: user.name, value: user.username })
+                                user => ({ text: user.name, value: user.id })
                             )}
                             floatingLabelText="Navn"
                             onUpdateInput={this.onChangeUserName}

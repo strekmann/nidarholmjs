@@ -89,7 +89,7 @@ class Member extends React.Component {
 
     saveMember = (event) => {
         event.preventDefault();
-        this.context.relay.commitUpdate(new EditUserMutation({
+        const data = {
             organization: this.props.organization,
             userId: this.props.organization.member.user.id,
             username: this.state.username,
@@ -102,14 +102,17 @@ class Member extends React.Component {
             postcode: this.state.postcode,
             city: this.state.city,
             country: this.state.country,
-            joined: this.state.joined,
-            nmfId: this.state.nmfId,
-            reskontro: this.state.reskontro,
-            membershipHistory: this.state.membershipHistory,
-            inList: this.state.inList,
-            onLeave: this.state.onLeave,
-            noEmail: this.state.noEmail,
-        }), {
+        };
+        if (this.props.organization.isAdmin) {
+            data.joined = this.state.joined;
+            data.nmfId = this.state.nmfId;
+            data.reskontro = this.state.reskontro;
+            data.membershipHistory = this.state.membershipHistory;
+            data.inList = this.state.inList;
+            data.onLeave = this.state.onLeave;
+            data.noEmail = this.state.noEmail;
+        }
+        this.context.relay.commitUpdate(new EditUserMutation(data), {
             onSuccess: () => {
                 this.setState({
                     edit: false,
@@ -174,10 +177,7 @@ class Member extends React.Component {
     render() {
         const member = this.props.organization.member;
         const user = member.user;
-        const isMember = this.props.organization.isMember;
-        if (!isMember) {
-            return <div />;
-        }
+        const isAdmin = this.props.organization.isAdmin;
         if (this.state.editMember) {
             return (
                 <Paper className="row">
@@ -257,67 +257,72 @@ class Member extends React.Component {
                                 value={this.state.country}
                             />
                         </div>
-                        <div>
-                            <TextField
-                                id="nmfId"
-                                floatingLabelText="NMF-nummer"
-                                onChange={this.onChangeNmfId}
-                                value={this.state.nmfId}
-                            />
-                        </div>
-                        <div>
-                            <TextField
-                                id="reskontro"
-                                floatingLabelText="Reskontro"
-                                onChange={this.onChangeReskontro}
-                                value={this.state.reskontro}
-                            />
-                        </div>
-                        <div>
-                            <DatePicker
-                                id="joined"
-                                floatingLabelText="Startet i korpset"
-                                onChange={this.onChangeJoined}
-                                value={this.state.joined}
-                                mode="landscape"
-                                locale="nb"
-                                DateTimeFormat={DateTimeFormat}
-                            />
-                        </div>
-                        <div>
-                            <TextField
-                                id="membershipHistory"
-                                floatingLabelText="Medlemskapshistorikk"
-                                onChange={this.onChangeMembershipHistory}
-                                value={this.state.membershipHistory}
-                                multiLine
-                                fullWidth
-                            />
-                        </div>
-                        <div>
-                            <Checkbox
-                                id="inList"
-                                label="Synlig i medlemslista"
-                                onCheck={this.onChangeInList}
-                                checked={this.state.inList}
-                            />
-                        </div>
-                        <div>
-                            <Checkbox
-                                id="onLeave"
-                                label="Har permisjon"
-                                onCheck={this.onChangeOnLeave}
-                                checked={this.state.onLeave}
-                            />
-                        </div>
-                        <div>
-                            <Checkbox
-                                id="noEmail"
-                                label="Ikke epost"
-                                onCheck={this.onChangeNoEmail}
-                                checked={this.state.noEmail}
-                            />
-                        </div>
+                        {isAdmin
+                            ? <div>
+                                <div>
+                                    <TextField
+                                        id="nmfId"
+                                        floatingLabelText="NMF-nummer"
+                                        onChange={this.onChangeNmfId}
+                                        value={this.state.nmfId}
+                                    />
+                                </div>
+                                <div>
+                                    <TextField
+                                        id="reskontro"
+                                        floatingLabelText="Reskontro"
+                                        onChange={this.onChangeReskontro}
+                                        value={this.state.reskontro}
+                                    />
+                                </div>
+                                <div>
+                                    <DatePicker
+                                        id="joined"
+                                        floatingLabelText="Startet i korpset"
+                                        onChange={this.onChangeJoined}
+                                        value={this.state.joined}
+                                        mode="landscape"
+                                        locale="nb"
+                                        DateTimeFormat={DateTimeFormat}
+                                    />
+                                </div>
+                                <div>
+                                    <TextField
+                                        id="membershipHistory"
+                                        floatingLabelText="Medlemskapshistorikk"
+                                        onChange={this.onChangeMembershipHistory}
+                                        value={this.state.membershipHistory}
+                                        multiLine
+                                        fullWidth
+                                    />
+                                </div>
+                                <div>
+                                    <Checkbox
+                                        id="inList"
+                                        label="Synlig i medlemslista"
+                                        onCheck={this.onChangeInList}
+                                        checked={this.state.inList}
+                                    />
+                                </div>
+                                <div>
+                                    <Checkbox
+                                        id="onLeave"
+                                        label="Har permisjon"
+                                        onCheck={this.onChangeOnLeave}
+                                        checked={this.state.onLeave}
+                                    />
+                                </div>
+                                <div>
+                                    <Checkbox
+                                        id="noEmail"
+                                        label="Ikke epost"
+                                        onCheck={this.onChangeNoEmail}
+                                        checked={this.state.noEmail}
+                                    />
+                                </div>
+                            </div>
+                            : null
+                        }
                         <div>
                             <RaisedButton type="submit" label="Lagre" primary />
                         </div>
@@ -373,33 +378,47 @@ class Member extends React.Component {
                             {user.postcode} {user.city}
                         </div>
                         <div>
-                            <h3>Grupper</h3>
-                            <ul>
-                                {user.groups.map(group => <li key={group.id}>{group.name}</li>)}
-                            </ul>
+                            {user.groups.length
+                                ? <div>
+                                    <h3>Grupper</h3>
+                                    <ul>
+                                        {user.groups.map(group => <li key={group.id}>{group.name}</li>)}
+                                    </ul>
+                                </div>
+                                : null
+                            }
                         </div>
-                        <div style={{ backgroundColor: lightBlue100 }}>
-                            <div>
-                                Reskontro: {user.reskontro}
+                        {isAdmin
+                            ? <div style={{ backgroundColor: lightBlue100 }}>
+                                <div>
+                                    Reskontro: {user.reskontro}
+                                </div>
+                                <Text text={user.membershipHistory} />
+                                <div>
+                                    Brukernavn {user.username},
+                                    aktiv: <Yesno value={user.isActive} />,
+                                    i medlemslista: <Yesno value={user.inList} />,
+                                    unngår epost: <Yesno value={user.noEmail} />,
+                                    permisjon: <Yesno value={user.onLeave} />
+                                </div>
                             </div>
-                            <Text text={user.membershipHistory} />
-                            <div>
-                                Brukernavn {user.username},
-                                aktiv: <Yesno value={user.isActive} />,
-                                i medlemslista: <Yesno value={user.inList} />,
-                                unngår epost: <Yesno value={user.noEmail} />,
-                                permisjon: <Yesno value={user.onLeave} />
-                            </div>
-                        </div>
+                            : null
+                        }
                     </div>
                     <div style={{ padding: '0 20px', width: '25%', minWidth: 230 }}>
                         <Paper>
                             <img src={user.profilePicturePath} alt={`Bilde av ${user.name}`} />
                         </Paper>
-                        <div>Bursdag <Date date={user.born} format="Do MMMM" /></div>
-                        <div>
-                            Startet for <DateFromNow date={user.joined} /> og har NMF-nummer {user.nmfId}
-                        </div>
+                        {user.born
+                            ? <div>Bursdag <Date date={user.born} format="Do MMMM" /></div>
+                            : null
+                        }
+                        {user.joined
+                            ? <div>
+                                Startet for <DateFromNow date={user.joined} />{ user.nmfId ? ` og har NMF-nummer ${user.nmfId}` : null }
+                            </div>
+                            : null
+                        }
                     </div>
                 </div>
             </Paper>
@@ -420,6 +439,7 @@ export default Relay.createContainer(Member, {
         organization: () => Relay.QL`
         fragment on Organization {
             isMember
+            isAdmin
             member(id:$id) {
                 id
                 role {

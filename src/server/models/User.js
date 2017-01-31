@@ -1,9 +1,10 @@
-import mongoose from 'mongoose';
 import crypto from 'crypto';
+import mongoose from 'mongoose';
+import uuid from 'node-uuid';
 import schemaOptions from './schemaOptions';
 
 const UserSchema = new mongoose.Schema({
-    _id: { type: String, lowercase: true, trim: true, required: true, unique: true },
+    _id: { type: String, required: true, unique: true, default: uuid.v4 },
     username: { type: String, lowercase: true, trim: true, required: true, unique: true },
     name: { type: String, required: true },
     email: { type: String },

@@ -71,7 +71,7 @@ class Login extends React.Component {
                     </Card>
                 </form>
                 <form
-                    action="/auth/login"
+                    action="/login/register"
                     method="POST"
                     style={{
                         width: '50%',
@@ -109,9 +109,9 @@ class Login extends React.Component {
                         <CardActions>
                             <div>
                                 <RaisedButton
-                                    type="submit"
-                                    primary
                                     label="Registrer deg"
+                                    primary
+                                    type="submit"
                                 />
                             </div>
                         </CardActions>

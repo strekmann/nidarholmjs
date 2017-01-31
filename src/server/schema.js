@@ -114,7 +114,7 @@ const { nodeInterface, nodeField } = nodeDefinitions(
 );
 
 function member(organization, user) {
-    let organizationMember = null;
+    let organizationMember = { user, role: null };
     if (user) {
         organization.member_group.members.forEach(_m => {
             if (
@@ -127,6 +127,10 @@ function member(organization, user) {
         });
     }
     return organizationMember;
+}
+
+function isMember(organization, user) {
+    return !!member(organization, user)._id;
 }
 
 function admin(organization, user) {
@@ -631,7 +635,7 @@ organizationType = new GraphQLObjectType({
         },
         isMember: {
             type: GraphQLBoolean,
-            resolve: (_, args, { organization, viewer }) => member(organization, viewer),
+            resolve: (_, args, { organization, viewer }) => isMember(organization, viewer),
         },
         isAdmin: {
             type: GraphQLBoolean,
@@ -802,10 +806,10 @@ organizationType = new GraphQLObjectType({
                 id: { name: 'id', type: GraphQLString },
             },
             resolve: (_, { id }, { organization, viewer }) => {
-                if (!member(organization, viewer)) {
+                const userId = fromGlobalId(id).id;
+                if (!isMember(organization, viewer) && !viewer.id === userId) {
                     throw new Error('Nobody');
                 }
-                const userId = fromGlobalId(id).id;
                 let query = User.findById(userId);
                 if (admin(organization, viewer)) {
                     query = query.select('+facebook_id +twitter_id +google_id +nmf_id');
@@ -1156,7 +1160,7 @@ const mutationEditUser = mutationWithClientMutationId({
         country: { type: GraphQLString },
         joined: { type: GraphQLString },
         nmfId: { type: GraphQLString },
-        reskontro: { type: GraphQLInt },
+        reskontro: { type: GraphQLString },
         membershipHistory: { type: GraphQLString },
         inList: { type: GraphQLBoolean },
         onLeave: { type: GraphQLBoolean },
@@ -1195,7 +1199,7 @@ const mutationEditUser = mutationWithClientMutationId({
                 no_email: noEmail,
             });
         }
-        if (viewer.id === userId) {
+        if (viewer.id === id) {
             Object.assign(fields, {
                 username,
                 name,
