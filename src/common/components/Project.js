@@ -82,6 +82,7 @@ class Project extends React.Component {
                     permissions,
                     tags: [this.props.organization.project.tag],
                     filename: file.name,
+                    projectTag: this.props.organization.project.tag,
                 }), {
                     onSuccess: () => {
                         // console.log("successfile");
@@ -240,7 +241,7 @@ class Project extends React.Component {
                             </div>
                             : null
                         }
-                        {isMember && project.files.length
+                        {isMember && project.files.edges.length
                             ? <FileList
                                 files={project.files}
                                 memberGroupId={org.memberGroup.id}
@@ -293,14 +294,6 @@ class Project extends React.Component {
                             autoScrollBodyContent
                         >
                             <FileUpload viewer={viewer} organization={org} onDrop={this.onDrop} />
-                            <FileList
-                                files={project.files}
-                                memberGroupId={org.memberGroup.id}
-                                onSavePermissions={this.onSaveFilePermissions}
-                                onSetProjectPoster={this.onSetProjectPoster}
-                                viewer={this.props.viewer}
-                                style={{ margin: '0 -15px' }}
-                            />
                             <RaisedButton label="Ferdig" primary onTouchTap={this.closeAddFile} />
                         </Dialog>
                     </div>

@@ -57,6 +57,7 @@ class Files extends React.Component {
                     hex: response.data.hex,
                     permissions,
                     filename: file.name,
+                    projectTag: null,
                 }), {
                     onSuccess: () => {
                         // console.log("successfile");

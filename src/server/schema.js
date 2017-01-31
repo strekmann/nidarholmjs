@@ -1291,6 +1291,9 @@ const mutationAddFile = mutationWithClientMutationId({
         tags: {
             type: new GraphQLList(GraphQLString),
         },
+        projectTag: {
+            type: GraphQLID,
+        },
     },
     outputFields: {
         organization: {
@@ -1305,14 +1308,17 @@ const mutationAddFile = mutationWithClientMutationId({
             }),
         },
     },
-    mutateAndGetPayload: ({ filename, hex, permissions, tags }, { viewer, organization }) => {
+    mutateAndGetPayload: (
+        { filename, hex, permissions, tags, projectTag },
+        { viewer, organization },
+    ) => {
         const permissionObj = buildPermissionObject(permissions);
         return insertFile(filename, hex, permissionObj, tags, viewer, organization)
         .then(file => Activity.findOne({
             content_type: 'upload',
             'changes.user': file.creator,
             modified: { $gt: moment(file.created).subtract(10, 'minutes').toDate() },
-            project: { $exists: false },
+            project: projectTag,
         })
         .exec()
         .then(activity => {
@@ -1320,6 +1326,7 @@ const mutationAddFile = mutationWithClientMutationId({
             if (!newActivity) {
                 newActivity = new Activity();
                 newActivity.content_type = 'upload';
+                newActivity.project = projectTag;
             }
             newActivity.content_ids.addToSet(file.id);
             newActivity.title = file.filename;
@@ -1335,10 +1342,10 @@ const mutationAddFile = mutationWithClientMutationId({
             const images = new Set(newActivity.content.images);
             const nonImages = new Set(newActivity.content.non_images);
             if (file.is_image) {
-                images.add({ thumbnail_path: file.thumbnail_path, _id: file._id });
+                images.add({ thumbnail_path: file.thumbnail_path, _id: file.id });
             }
             else {
-                nonImages.add({ filename: file.filename, _id: file._id });
+                nonImages.add({ filename: file.filename, _id: file.id });
             }
             newActivity.content.images = Array.from(images);
             newActivity.content.non_images = Array.from(nonImages);
