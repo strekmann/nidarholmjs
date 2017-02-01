@@ -224,7 +224,8 @@ export default Relay.createContainer(Files, {
                         }
                         tags
                         isImage
-                        normalPath
+                        path
+                        thumbnailPath
                     }
                 }
                 pageInfo {

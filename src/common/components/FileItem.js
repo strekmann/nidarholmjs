@@ -24,8 +24,8 @@ export default class FileItem extends React.Component {
         tags: React.PropTypes.array,
         permissions: React.PropTypes.object.isRequired,
         memberGroupId: React.PropTypes.string,
-        is_image: React.PropTypes.bool,
-        normal_path: React.PropTypes.string,
+        isImage: React.PropTypes.bool,
+        thumbnailPath: React.PropTypes.string,
         path: React.PropTypes.string,
         onSavePermissions: React.PropTypes.func.isRequired,
         onSetProjectPoster: React.PropTypes.func,
@@ -104,8 +104,8 @@ export default class FileItem extends React.Component {
                         {this.props.filename}
                     </Link>
                 </CardTitle>
-                {this.props.is_image
-                    ? <CardMedia><img alt="" src={this.props.normal_path} /></CardMedia>
+                {this.props.isImage
+                    ? <CardMedia><img alt="" src={this.props.thumbnailPath} /></CardMedia>
                     : <Link
                         style={{ display: 'block', textAlign: 'center' }}
                         href={this.props.path}

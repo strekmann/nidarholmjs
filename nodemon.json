@@ -10,6 +10,7 @@
         "setup/",
         "test/",
         "tmp/",
-        "uploaded_files/"
+        "uploaded_files/",
+        "files/"
     ]
 }
