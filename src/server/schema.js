@@ -692,7 +692,10 @@ organizationType = new GraphQLObjectType({
             type: projectType,
             resolve: (_, args, { viewer }) => authenticate(
                 Project
-                .findOne({ end: { $gte: moment().startOf('day').toDate() } })
+                .findOne({
+                    end: { $gte: moment().startOf('day').toDate() },
+                    public_mdtext: { $exists: true },
+                })
                 .sort({ end: 1 }),
                 viewer,
                 { exclude: ['private_mdtext'] },
