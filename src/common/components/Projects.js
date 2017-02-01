@@ -180,7 +180,7 @@ export default Relay.createContainer(Projects, {
                         tag
                         poster {
                             filename
-                            largePath
+                            normalPath
                         }
                     }
                 }

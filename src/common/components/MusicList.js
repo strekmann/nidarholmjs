@@ -6,6 +6,7 @@ export default class MusicList extends React.Component {
     static propTypes = {
         music: React.PropTypes.array,
         memberGroupId: React.PropTypes.string,
+        isMember: React.PropTypes.bool,
     }
     render() {
         return (
@@ -13,6 +14,7 @@ export default class MusicList extends React.Component {
                 {this.props.music.map(music => (
                     <MusicItem
                         key={music.piece.id}
+                        isMember={this.props.isMember}
                         {...music}
                     />
                     ))

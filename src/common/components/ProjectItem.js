@@ -13,8 +13,8 @@ export default class ProjectItem extends React.Component {
         tag: React.PropTypes.string,
         year: React.PropTypes.string,
         mdtext: React.PropTypes.string,
-        public_mdtext: React.PropTypes.string,
-        private_mdtext: React.PropTypes.string,
+        publicMdtext: React.PropTypes.string,
+        privateMdtext: React.PropTypes.string,
         poster: React.PropTypes.object,
     }
 
@@ -31,12 +31,12 @@ export default class ProjectItem extends React.Component {
                         {this.props.start ? <span><Date date={this.props.start} /> – </span> : null}
                         <Date date={this.props.end} />
                     </div>
-                    <Text text={this.props.public_mdtext} />
+                    <Text text={this.props.publicMdtext} />
                 </div>
                 {this.props.poster
                     ? <img
                         alt="Konsertplakat"
-                        src={this.props.poster.large_path}
+                        src={this.props.poster.normalPath}
                         style={{
                             display: 'inline-block',
                             width: '50%',

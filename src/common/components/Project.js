@@ -219,13 +219,13 @@ class Project extends React.Component {
                         margin: '0 -15px',
                     }}
                 >
-                    <div style={{ padding: '0 15px', maxWidth: 700 }}>
-                        {isMember && project.music.length
-                            ? <div>
-                                <h2>Repertoar</h2>
-                                <MusicList music={project.music} />
-                            </div>
-                            : null
+                    <div style={{ padding: '0 15px', maxWidth: 640 }}>
+                        {project.music.length
+                                ? <div>
+                                    <h2>Repertoar</h2>
+                                    <MusicList music={project.music} isMember={isMember} />
+                                </div>
+                                : null
                         }
                         {project.publicMdtext
                             ? <div>
