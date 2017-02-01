@@ -161,7 +161,7 @@ export default Relay.createContainer(Projects, {
                         publicMdtext
                         poster {
                             filename
-                            largePath
+                            normalPath
                         }
                     }
                 }
