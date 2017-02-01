@@ -60,6 +60,7 @@ class Group extends React.Component {
     render() {
         const org = this.props.organization;
         const { group, isAdmin } = org;
+        const members = group.members.filter(member => member.user);
         return (
             <section>
                 {isAdmin
@@ -72,7 +73,7 @@ class Group extends React.Component {
                             >
                                 <AutoComplete
                                     dataSource={org.users.map(
-                                        user => ({ text: user.name, value: user })
+                                        user => ({ text: `${user.name} (${user.username})`, value: user })
                                     )}
                                     floatingLabelText="Navn"
                                     onNewRequest={this.addMember}
@@ -87,15 +88,13 @@ class Group extends React.Component {
                                 style={{ float: 'right' }}
                             />
                             <h1>{group.name}</h1>
-                            {group.members.map(member => (
-                                member.user
-                                ? <div key={member.id}>
+                            {members.sort((a, b) => a.user.name > b.user.name).map(member => (
+                                <div key={member.id}>
                                     {member.user.name} <small>{member.role.title}</small>
                                     <IconButton onTouchTap={() => this.removeMember(member, group)}>
                                         <Close />
                                     </IconButton>
                                 </div>
-                                : null
                             ))}
                         </Paper>
                         : null
