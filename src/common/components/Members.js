@@ -228,6 +228,7 @@ class Members extends React.Component {
                     group => <GroupItem
                         key={group.id}
                         isMember={this.props.organization.isMember}
+                        isAdmin={this.props.organization.isAdmin}
                         {...group}
                     />
                     )

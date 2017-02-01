@@ -532,15 +532,14 @@ app.get('/projects', universal);
 // app.delete('/projects/:project_id/music', project_routes.remove_piece);
 
 // app.use('/', require('./routes/pages'));
-app.use('/', universal);
+//app.use('/', universal);
 
 /** API endpoints **/
 // app.use('/api/1/auth', api.auth);
 
 /** Universal app endpoint **/
-app.get('*', universal);
+app.get('/*', universal);
 
-/*
 app.use((err, req, res, next) => {
     log.error(err);
     res.format({
@@ -554,9 +553,7 @@ app.use((err, req, res, next) => {
         },
     });
 });
-*/
 
-/*
 app.use((req, res, next) => {
     res.format({
         html: () => {
@@ -570,7 +567,6 @@ app.use((req, res, next) => {
         },
     });
 });
-*/
 
 process.on('uncaughtException', (err) => {
     log.fatal(err);

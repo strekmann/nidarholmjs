@@ -5,9 +5,18 @@ import MemberItem from './MemberItem';
 
 export default class GroupItem extends React.Component {
     static propTypes = {
+        id: React.PropTypes.string,
+        isAdmin: React.PropTypes.bool,
         isMember: React.PropTypes.bool,
         name: React.PropTypes.string,
         members: React.PropTypes.array,
+    }
+
+    renderHeader() {
+        if (this.props.isAdmin) {
+            return <h2><Link to={`/group/${this.props.id}`}>{this.props.name}</Link></h2>;
+        }
+        return <h2>{this.props.name}</h2>;
     }
 
     render() {
@@ -16,7 +25,7 @@ export default class GroupItem extends React.Component {
         }
         return (
             <div>
-                <h2>{this.props.name}</h2>
+                {this.renderHeader()}
                 {this.props.members.map(member => <MemberItem
                     key={member.id}
                     isMember={this.props.isMember}

@@ -3,6 +3,8 @@ import Relay from 'react-relay';
 import { Route, IndexRoute, createRoutes } from 'react-router';
 
 import App from './components/App';
+import Group from './components/Group';
+import Groups from './components/Groups';
 import Login from './components/Login';
 import Home from './components/Home';
 import Members from './components/Members';
@@ -48,6 +50,8 @@ export default createRoutes(
         <Route path="music/:pieceId" component={Piece} queries={organizationQueries} />
         <Route path="music" component={Pieces} queries={organizationQueries} />
         <Route path="files" component={Files} queries={queries} />
+        <Route path="groups" component={Groups} queries={queries} />
+        <Route path="group/:groupId" component={Group} queries={queries} />
         <Route path="org" component={Organization} queries={organizationQueries} />
         <Route path="pages" component={Pages} queries={queries} />
         <Route path=":slug" component={Page} queries={queries} />

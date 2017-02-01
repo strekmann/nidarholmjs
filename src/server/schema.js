@@ -282,7 +282,10 @@ groupType = new GraphQLObjectType({
     fields: {
         id: globalIdField('Group'),
         name: { type: GraphQLString },
-        externally_hidden: { type: GraphQLBoolean },
+        externallyHidden: {
+            type: GraphQLBoolean,
+            resolve: group => group.externally_hidden,
+        },
         members: {
             type: new GraphQLList(new GraphQLObjectType({
                 name: 'GroupMember',
@@ -911,6 +914,29 @@ organizationType = new GraphQLObjectType({
                             return { tag: tag._id, count: tag.count };
                         });
                     });
+            },
+        },
+        group: {
+            type: groupType,
+            args: {
+                groupId: { type: GraphQLID },
+            },
+            resolve: (_, { groupId }, { viewer, organization }) => {
+                const gId = fromGlobalId(groupId).id;
+                const query = Group.findById(gId);
+                if (!isMember(organization, viewer)) {
+                    throw new Error('Noboby');
+                }
+                return query.exec();
+            },
+        },
+        groups: {
+            type: new GraphQLList(groupType),
+            resolve: (_, args, { organization, viewer }) => {
+                if (!admin(organization, viewer)) {
+                    throw new Error('Nobody');
+                }
+                return Group.find().sort('name');
             },
         },
     },
@@ -1640,6 +1666,28 @@ const mutationSendReset = mutationWithClientMutationId({
     },
 });
 
+const mutationRemoveMember = mutationWithClientMutationId({
+    name: 'RemoveMember',
+    inputFields: {
+        groupId: { type: GraphQLID },
+        memberId: { type: GraphQLID },
+    },
+    outputFields: {
+        group: {
+            type: groupType,
+            resolve: payload => payload,
+        },
+    },
+    mutateAndGetPayload: ({ groupId, memberId }, { viewer, organization }) => {
+        if (!admin(organization, viewer)) {
+            throw new Error('No admin');
+        }
+        const gId = fromGlobalId(groupId).id;
+        const mId = fromGlobalId(memberId).id;
+        return Group.findByIdAndUpdate(gId, { members: { $pull: mId } }, { new: true }).exec();
+    },
+});
+
 const mutationType = new GraphQLObjectType({
     name: 'Mutation',
     fields: () => ({
@@ -1659,6 +1707,7 @@ const mutationType = new GraphQLObjectType({
         saveProject: mutationSaveProject,
         setPassword: mutationSetPassword,
         sendReset: mutationSendReset,
+        removeMember: mutationRemoveMember,
     }),
 });
 
