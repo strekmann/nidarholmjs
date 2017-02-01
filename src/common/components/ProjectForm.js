@@ -132,6 +132,7 @@ class ProjectForm extends React.Component {
                 title={this.props.id ? 'Rediger prosjekt' : 'Nytt prosjekt'}
                 open={this.props.open}
                 onRequestClose={this.toggle}
+                autoScrollBodyContent
             >
                 <form onSubmit={this.saveProject}>
                     <div>

@@ -132,6 +132,7 @@ export default class FileItem extends React.Component {
                         title="Rediger rettigheter"
                         open={this.state.editPermissions}
                         onRequestClose={this.closeEditPermissions}
+                        autoScrollBodyContent
                     >
                         <PermissionField
                             permissions={this.state.permissions}
