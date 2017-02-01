@@ -332,6 +332,25 @@ app.get('/files/th/:path/:filename', (req, res) => {
     });
 });
 
+app.get('/files/o/:path/:filename', (req, res) => {
+    const filepath = req.params.path;
+    const fullpath = path.join(
+        findFilePath('originals'),
+        filepath.substr(0, 2),
+        filepath.substr(2, 2),
+        filepath,
+    );
+
+    fs.exists(fullpath, (exists) => {
+        if (exists) {
+            res.sendFile(fullpath);
+        }
+        else {
+            res.sendStatus(404);
+        }
+    });
+});
+
 app.get('/events/public.ics', icalEvents);
 app.get('/events/export.ics', icalEvents);
 

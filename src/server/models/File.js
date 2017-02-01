@@ -29,7 +29,7 @@ FileSchema.virtual('is_image').get(function isImage() {
 
 FileSchema.virtual('path').get(function filePath() {
     if (this.hash && this.filename) { // useful until implementation stabilizes
-        return path.join('/files', this.hash, this.filename);
+        return path.join('/files/o', this.hash, this.filename);
     }
     return null;
 });

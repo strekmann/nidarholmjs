@@ -26,11 +26,8 @@ module.exports = {
     override: {
         site: '{{ project_name }}',
     },
-    files: {
-        raw_prefix: '{{ deploy_helper.shared_path }}/uploaded_files',
-        normal_prefix: '{{ deploy_helper.shared_path }}/uploaded_files/normal',
-        large_prefix: '{{ deploy_helper.shared_path }}/uploaded_files/large',
-        thumbnail_prefix: '{{ deploy_helper.shared_path }}/uploaded_files/thumbnail'
+    paths: {
+        files: '/srv/nidarholm/shared/files'
     },
     mongodb: {
         servers: ['mongodb://localhost/{{ project_name }}'],
