@@ -20,13 +20,14 @@ export default class GroupItem extends React.Component {
     }
 
     render() {
-        if (!this.props.members.filter(member => member.user).length) {
+        const members = this.props.members.filter(member => member.user);
+        if (!members.length) {
             return null;
         }
         return (
             <div>
                 {this.renderHeader()}
-                {this.props.members.map(member => <MemberItem
+                {members.sort((a, b) => a.user.name > b.user.name).map(member => <MemberItem
                     key={member.id}
                     isMember={this.props.isMember}
                     {...member}
