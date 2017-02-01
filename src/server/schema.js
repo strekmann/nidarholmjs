@@ -1666,6 +1666,30 @@ const mutationSendReset = mutationWithClientMutationId({
     },
 });
 
+const mutationAddMember = mutationWithClientMutationId({
+    name: 'AddMember',
+    inputFields: {
+        groupId: { type: GraphQLID },
+        userId: { type: GraphQLID },
+    },
+    outputFields: {
+        group: {
+            type: groupType,
+            resolve: payload => payload,
+        },
+    },
+    mutateAndGetPayload: ({ groupId, userId }, { viewer, organization }) => {
+        if (!admin(organization, viewer)) {
+            throw new Error('No admin');
+        }
+        const gId = fromGlobalId(groupId).id;
+        const uId = fromGlobalId(userId).id;
+        return Group.findByIdAndUpdate(gId, {
+            $addToSet: { members: { user: uId } },
+        }, { new: true }).exec();
+    },
+});
+
 const mutationRemoveMember = mutationWithClientMutationId({
     name: 'RemoveMember',
     inputFields: {
@@ -1707,6 +1731,7 @@ const mutationType = new GraphQLObjectType({
         saveProject: mutationSaveProject,
         setPassword: mutationSetPassword,
         sendReset: mutationSendReset,
+        addMember: mutationAddMember,
         removeMember: mutationRemoveMember,
     }),
 });

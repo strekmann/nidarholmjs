@@ -1,3 +1,6 @@
+import AutoComplete from 'material-ui/AutoComplete';
+import Dialog from 'material-ui/Dialog';
+import FlatButton from 'material-ui/FlatButton';
 import IconButton from 'material-ui/IconButton';
 import Paper from 'material-ui/Paper';
 import getMuiTheme from 'material-ui/styles/getMuiTheme';
@@ -6,6 +9,7 @@ import React from 'react';
 import Relay from 'react-relay';
 
 import theme from '../theme';
+import AddMemberMutation from '../mutations/addMember';
 import RemoveMemberMutation from '../mutations/removeMember';
 
 class Group extends React.Component {
@@ -26,34 +30,76 @@ class Group extends React.Component {
         this.muiTheme = getMuiTheme(theme);
     }
 
+    state = {
+        addMember: false,
+    }
+
     getChildContext() {
         return { muiTheme: this.muiTheme };
     }
 
-    removeMember(member, group) {
+    addMember = (selection) => {
+        this.closeAddMember();
+        this.context.relay.commitUpdate(new AddMemberMutation({
+            group: this.props.organization.group,
+            user: selection.value,
+        }));
+    }
+
+    removeMember = (member, group) => {
         this.context.relay.commitUpdate(new RemoveMemberMutation({
             group,
             member,
         }));
     }
 
+    closeAddMember = () => {
+        this.setState({ addMember: false });
+    }
+
     render() {
-        const { group } = this.props.organization;
+        const org = this.props.organization;
+        const { group, isAdmin } = org;
         return (
             <section>
-                <Paper style={{ padding: 20 }}>
-                    <h1>{group.name}</h1>
-                    {group.members.map(member => (
-                        member.user
-                        ? <div key={member.id}>
-                            {member.user.name} <small>{member.role.title}</small>
-                            <IconButton onTouchTap={() => this.removeMember(member, group)}>
-                                <Close />
-                            </IconButton>
-                        </div>
+                {isAdmin
+                        ? <Paper style={{ padding: 20 }}>
+                            <Dialog
+                                title="Legg til gruppemedlem"
+                                open={this.state.addMember}
+                                onRequestClose={this.closeAddMember}
+                                autoScrollBodyContent
+                            >
+                                <AutoComplete
+                                    dataSource={org.users.map(
+                                        user => ({ text: user.name, value: user })
+                                    )}
+                                    floatingLabelText="Navn"
+                                    onNewRequest={this.addMember}
+                                    filter={AutoComplete.fuzzyFilter}
+                                />
+                            </Dialog>
+                            <FlatButton
+                                label="Legg til gruppemedlem"
+                                onTouchTap={() => {
+                                    this.setState({ addMember: !this.state.addMember });
+                                }}
+                                style={{ float: 'right' }}
+                            />
+                            <h1>{group.name}</h1>
+                            {group.members.map(member => (
+                                member.user
+                                ? <div key={member.id}>
+                                    {member.user.name} <small>{member.role.title}</small>
+                                    <IconButton onTouchTap={() => this.removeMember(member, group)}>
+                                        <Close />
+                                    </IconButton>
+                                </div>
+                                : null
+                            ))}
+                        </Paper>
                         : null
-                    ))}
-                </Paper>
+                }
             </section>
         );
     }
@@ -71,6 +117,12 @@ export default Relay.createContainer(Group, {
         `,
         organization: () => Relay.QL`
         fragment on Organization {
+            isAdmin
+            users {
+                id
+                name
+                username
+            }
             group(groupId:$groupId) {
                 id
                 name
@@ -84,6 +136,7 @@ export default Relay.createContainer(Group, {
                     }
                 }
                 externallyHidden
+                ${AddMemberMutation.getFragment('group')}
                 ${RemoveMemberMutation.getFragment('group')}
             }
         }
