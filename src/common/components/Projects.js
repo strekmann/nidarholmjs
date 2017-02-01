@@ -86,12 +86,15 @@ class Projects extends React.Component {
         const isMember = this.props.organization.isMember;
         return (
             <section>
-                <ProjectForm
-                    open={this.state.addProject}
-                    save={this.saveProject}
-                    toggle={this.toggleAddProject}
-                    viewer={this.props.viewer}
-                />
+                {isMember
+                        ? <ProjectForm
+                            open={this.state.addProject}
+                            save={this.saveProject}
+                            toggle={this.toggleAddProject}
+                            viewer={this.props.viewer}
+                        />
+                        : null
+                }
                 <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
                     {isMember
                         ? <IconMenu
