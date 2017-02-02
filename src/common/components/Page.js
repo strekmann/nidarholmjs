@@ -95,6 +95,7 @@ class Page extends React.Component {
 
     render() {
         const org = this.props.organization;
+        const isMember = org.isMember;
         if (!org.page || !org.page.slug) {
             return (
                 <Paper className="row">
@@ -116,15 +117,18 @@ class Page extends React.Component {
         }
         return (
             <Paper className="row">
-                <div style={{ float: 'right' }}>
-                    <IconMenu
-                        iconButtonElement={<IconButton><ArrowDown /></IconButton>}
-                        anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
-                        targetOrigin={{ vertical: 'top', horizontal: 'right' }}
-                    >
-                        <MenuItem primaryText="Rediger" onTouchTap={this.toggleEdit} />
-                    </IconMenu>
-                </div>
+                {isMember
+                        ? <div style={{ float: 'right' }}>
+                            <IconMenu
+                                iconButtonElement={<IconButton><ArrowDown /></IconButton>}
+                                anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
+                                targetOrigin={{ vertical: 'top', horizontal: 'right' }}
+                            >
+                                <MenuItem primaryText="Rediger" onTouchTap={this.toggleEdit} />
+                            </IconMenu>
+                        </div>
+                        : null
+                }
                 <Text text={org.page.mdtext} />
             </Paper>
         );
@@ -148,6 +152,7 @@ export default Relay.createContainer(Page, {
         `,
         organization: () => Relay.QL`
         fragment on Organization {
+            isMember
             memberGroup {
                 id
             }

@@ -628,6 +628,7 @@ organizationType = new GraphQLObjectType({
         website: { type: GraphQLString },
         twitter: { type: GraphQLString },
         facebook: { type: GraphQLString },
+        instagram: { type: GraphQLString },
         description_nb: { type: GraphQLString }, // TODO: Migrate
         mapUrl: {
             type: GraphQLString,

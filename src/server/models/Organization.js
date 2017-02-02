@@ -35,6 +35,8 @@ const OrganizationSchema = new mongoose.Schema({
 });
 
 OrganizationSchema.virtual('encoded_email').get(function email() {
+    // const lexer = new marked.InlineLexer([]);
+    // return lexer.mangle(`mailto:${this.email}`);
     return marked(`<${this.email}>`);
 });
 OrganizationSchema.virtual('website').get(function website() {
@@ -45,6 +47,9 @@ OrganizationSchema.virtual('twitter').get(function twitter() {
 });
 OrganizationSchema.virtual('facebook').get(function facebook() {
     return this.social_media.facebook;
+});
+OrganizationSchema.virtual('instagram').get(function facebook() {
+    return this.social_media.instagram;
 });
 OrganizationSchema.virtual('_type').get(() => 'Organization');
 OrganizationSchema.set('toObject', schemaOptions);

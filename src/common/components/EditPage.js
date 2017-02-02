@@ -70,6 +70,7 @@ export default class EditPage extends React.Component {
                     </div>
                     <Paper style={{ padding: 15 }}>
                         <h2>Forsidesnutt</h2>
+                        <p>Tittel og introduksjon til bruk på forsida. Det er ennå ikke automatikk i legge snutten til på forsida.</p>
                         <TextField
                             id="title"
                             value={this.state.title}

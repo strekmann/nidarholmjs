@@ -78,8 +78,10 @@ class Pages extends React.Component {
     }
 
     render() {
-        const viewer = this.props.viewer;
         const org = this.props.organization;
+        if (!org.isMember) {
+            return <div />;
+        }
         return (
             <Paper className="row">
                 {this.state.addPage
@@ -135,6 +137,7 @@ export default Relay.createContainer(Pages, {
         organization: () => Relay.QL`
         fragment on Organization {
             id
+            isMember
             memberGroup {
                 id
             }

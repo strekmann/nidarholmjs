@@ -1,6 +1,8 @@
 import React from 'react';
+import Relay from 'react-relay';
 import getMuiTheme from 'material-ui/styles/getMuiTheme';
 import theme from '../theme';
+import Email from './Email';
 
 class Footer extends React.Component {
     getChildContext() {
@@ -12,13 +14,16 @@ class Footer extends React.Component {
         return (
             <footer>
                 <div style={{ textAlign: 'center', marginTop: 50, marginBottom: 80 }}>
-                    <a href={`https://facebook.com/${org.facebook}`}>
+                    <Email email={org.email}>
                         <i className="fa fa-fw fa-envelope fa-3x" />
-                    </a>
+                    </Email>
                     <a href={`https://facebook.com/${org.facebook}`}>
                         <i className="fa fa-fw fa-facebook fa-3x" />
                     </a>
-                    <i className="fa fa-fw fa-instagram fa-3x" />
+
+                    <a href={`https://www.instagram.com/${org.instagram}/`}>
+                        <i className="fa fa-fw fa-instagram fa-3x" />
+                    </a>
                     <a href={`https://twitter.com/${org.twitter}`}>
                         <i className="fa fa-fw fa-twitter fa-3x" />
                     </a>
@@ -46,4 +51,15 @@ Footer.childContextTypes = {
     muiTheme: React.PropTypes.object.isRequired,
 };
 
-export default Footer;
+export default Relay.createContainer(Footer, {
+    fragments: {
+        organization: () => Relay.QL`
+        fragment on Organization {
+            email
+            facebook
+            instagram
+            twitter
+        }
+        `,
+    },
+});

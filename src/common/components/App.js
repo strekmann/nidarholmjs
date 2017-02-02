@@ -52,6 +52,7 @@ export default Relay.createContainer(App, {
         organization: () => Relay.QL`
         fragment on Organization {
             ${Navigation.getFragment('organization')}
+            ${Footer.getFragment('organization')}
         }`,
     },
 });
