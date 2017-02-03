@@ -296,23 +296,12 @@ export default Relay.createContainer(Navigation, {
         organization: () => Relay.QL`
         fragment on Organization {
             id
-            name,
-            mailAddress,
-            postcode,
-            city,
-            publicBankAccount,
-            organizationNumber,
-            encodedEmail,
-            twitter,
-            facebook,
             isMember,
         }`,
         viewer: () => Relay.QL`
         fragment on User {
             id,
             name,
-            email,
-            username,
             profilePicturePath,
         }`,
     },

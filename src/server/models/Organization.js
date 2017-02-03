@@ -35,9 +35,8 @@ const OrganizationSchema = new mongoose.Schema({
 });
 
 OrganizationSchema.virtual('encoded_email').get(function email() {
-    // const lexer = new marked.InlineLexer([]);
-    // return lexer.mangle(`mailto:${this.email}`);
-    return marked(`<${this.email}>`);
+    const lexer = new marked.InlineLexer([]);
+    return lexer.mangle(this.email);
 });
 OrganizationSchema.virtual('website').get(function website() {
     return this.social_media.website;

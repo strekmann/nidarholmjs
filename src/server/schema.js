@@ -183,6 +183,35 @@ function authenticate(query, viewer, options = {}) {
     return query;
 }
 
+function sendContactEmail({ name, email, text, organization }) {
+    if (config && config.auth && config.auth.smtp && config.auth.smtp.host) {
+        const transporter = nodemailer.createTransport(config.auth.smtp);
+        const data = {
+            from: `${name} <${email}>`,
+            to: organization.email,
+            subject: `Melding fra ${name} via nidarholm.no`,
+            text: text.replace('\n', '\r\n'),
+        };
+        transporter.sendMail(data, (emailErr, emailInfo) => {
+            console.info('EMAIL', emailErr, emailInfo, data);
+            if (!emailErr) {
+                const receipt = {
+                    from: organization.email,
+                    to: `${name} <${email}>`,
+                    subject: 'Melding sendt',
+                    text: 'Takk!\r\n\r\nMeldingen du sendte til styret via nidarholm.no har blitt mottatt.',
+                };
+                transporter.sendMail(receipt, (receiptErr, receiptInfo) => {
+                    console.info('RECEIPT:', receiptErr, receiptInfo, receipt);
+                });
+            }
+        });
+    }
+    else {
+        console.info('EMAIL', name, email, text);
+    }
+}
+
 userType = new GraphQLObjectType({
     name: 'User',
     description: 'A person',
@@ -1713,6 +1742,27 @@ const mutationRemoveMember = mutationWithClientMutationId({
     },
 });
 
+const mutationEmailContact = mutationWithClientMutationId({
+    name: 'EmailContact',
+    inputFields: {
+        name: { type: new GraphQLNonNull(GraphQLString) },
+        email: { type: new GraphQLNonNull(GraphQLString) },
+        text: { type: new GraphQLNonNull(GraphQLString) },
+    },
+    outputFields: {
+        organization: {
+            type: organizationType,
+            resolve: payload => payload,
+        },
+    },
+    mutateAndGetPayload: ({ name, email, text }, { organization }) => {
+        // TODO: Check email
+        return Organization.findById(organization.id).exec().then(org => {
+            sendContactEmail({ name, email, text, org });
+            return org;
+        });
+    },
+});
 const mutationType = new GraphQLObjectType({
     name: 'Mutation',
     fields: () => ({

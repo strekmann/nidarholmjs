@@ -15,6 +15,15 @@ module.exports = {
             clientSecret: '{{ twitter_client_secret }}',
             callbackURL: '{{ server_url }}/auth/twitter/callback'
         },
+        smtp: {
+            host: '{{ smtp.host }}',
+            port: '{{ smtp.port }}',
+            auth: {
+                user: '{{ smtp.auth.user }}',
+                pass: '{{ smtp.auth.pass }}',
+            },
+            noreplyAddress: '{{ smtp.noreply_address }}',
+        },
     },
     express: {
         port: {{ server_port }},

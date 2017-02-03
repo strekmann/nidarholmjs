@@ -1,3 +1,4 @@
+import FlatButton from 'material-ui/FlatButton';
 import React from 'react';
 import Relay from 'react-relay';
 import getMuiTheme from 'material-ui/styles/getMuiTheme';
@@ -5,7 +6,7 @@ import Paper from 'material-ui/Paper';
 import { Link } from 'react-router';
 import Text from './Text';
 import Date from './Date';
-import Email from './Email';
+import ContactForm from './ContactForm';
 
 import theme from '../theme';
 
@@ -30,8 +31,24 @@ class Home extends React.Component {
         this.muiTheme = getMuiTheme(theme);
     }
 
+    state = {
+        contactDialogOpen: false,
+    }
+
     getChildContext() {
         return { muiTheme: this.muiTheme };
+    }
+
+    sendEmail = (form) => {
+        console.log(form, "F");
+    }
+
+    openEmailDialog = () => {
+        this.setState({ contactDialogOpen: true });
+    }
+
+    closeEmailDialog = () => {
+        this.setState({ contactDialogOpen: false });
     }
 
     render() {
@@ -178,6 +195,12 @@ class Home extends React.Component {
                     : null }
                 </div>
                 <div>
+                    <ContactForm
+                        open={this.state.contactDialogOpen}
+                        close={this.closeEmailDialog}
+                        save={this.sendEmail}
+                        organization={this.props.organization}
+                    />
                     <h2>Kontakt</h2>
                     <div
                         style={{
@@ -199,7 +222,9 @@ class Home extends React.Component {
                         </div>
                         <div style={{ width: '50%', minWidth: 270, padding: '0 15px' }}>
                             <h3>E-post</h3>
-                            <Email email={org.email} />
+                            <FlatButton onTouchTap={this.openEmailDialog}>
+                                <span dangerouslySetInnerHTML={{ __html: org.encodedEmail }} />
+                            </FlatButton>
                             <h3>Øvelser</h3>
                             <Text text={org.contactText} />
                         </div>
@@ -223,7 +248,7 @@ export default Relay.createContainer(Home, {
         fragment on Organization {
             id
             name
-            email
+            encodedEmail
             mapUrl
             contactText
             summaries {
@@ -256,6 +281,7 @@ export default Relay.createContainer(Home, {
                     }
                 }
             }
+            ${ContactForm.getFragment('organization')}
         }`,
     },
 });

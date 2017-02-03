@@ -6,3 +6,10 @@ google_client_secret: "{{ vault_google_client_secret }}"
 twitter_client_id: "{{ vault_twitter_client_id }}"
 twitter_client_secret: "{{ vault_twitter_client_secret }}"
 admin_email: "{{ vault_admin_email }}"
+smtp:
+    host: "{{ vault.smtp.host }}"
+    port: "{{ vault.smtp.port }}"
+    auth:
+        user: "{{ vault.smtp.auth.user }}"
+        pass: "{{ vault.smtp.auth.pass }}"
+    noreply_address: "{{ vault.smtp.noreply_address }}"
