@@ -2,11 +2,38 @@ import React from 'react';
 import Relay from 'react-relay';
 import getMuiTheme from 'material-ui/styles/getMuiTheme';
 import theme from '../theme';
-import Email from './Email';
+import ContactForm from './ContactForm';
+import SendContactEmailMutation from '../mutations/sendContactEmail';
 
 class Footer extends React.Component {
+    static contextTypes = {
+        relay: Relay.PropTypes.Environment,
+    }
+
+    state = {
+        contactDialogOpen: false,
+    }
+
     getChildContext() {
         return { muiTheme: getMuiTheme(theme) };
+    }
+
+    sendEmail = (form) => {
+        this.setState({ sent: true });
+        this.context.relay.commitUpdate(new SendContactEmailMutation({
+            email: form.email,
+            name: form.name,
+            text: form.text,
+            organization: this.props.organization,
+        }));
+    }
+
+    openEmailDialog = () => {
+        this.setState({ contactDialogOpen: true });
+    }
+
+    closeEmailDialog = () => {
+        this.setState({ contactDialogOpen: false });
     }
 
     render() {
@@ -14,9 +41,15 @@ class Footer extends React.Component {
         return (
             <footer>
                 <div style={{ textAlign: 'center', marginTop: 50, marginBottom: 80 }}>
-                    <Email email={org.email}>
+                    <ContactForm
+                        open={this.state.contactDialogOpen}
+                        close={this.closeEmailDialog}
+                        save={this.sendEmail}
+                        organization={this.props.organization}
+                    />
+                    <a onTouchTap={this.openEmailDialog}>
                         <i className="fa fa-fw fa-envelope fa-3x" />
-                    </Email>
+                    </a>
                     <a href={`https://facebook.com/${org.facebook}`}>
                         <i className="fa fa-fw fa-facebook fa-3x" />
                     </a>
@@ -59,6 +92,8 @@ export default Relay.createContainer(Footer, {
             facebook
             instagram
             twitter
+            ${ContactForm.getFragment('organization')}
+            ${SendContactEmailMutation.getFragment('organization')}
         }
         `,
     },

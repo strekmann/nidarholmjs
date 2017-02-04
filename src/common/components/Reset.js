@@ -41,14 +41,11 @@ class Reset extends React.Component {
 
     sendReset = (event) => {
         event.preventDefault();
+        this.setState({ sent: true });
         this.context.relay.commitUpdate(new SendResetMutation({
             email: this.state.email,
             organization: this.props.organization,
-        }), {
-            onSuccess: () => {
-                this.setState({ sent: true });
-            },
-        });
+        }));
     }
 
     render() {

@@ -1676,7 +1676,7 @@ const mutationSendReset = mutationWithClientMutationId({
                         if (config.auth && config.auth.smtp && config.auth.smtp.host) {
                             const transporter = nodemailer.createTransport(config.auth.smtp);
                             const mailOptions = {
-                                from: config.auth.smtp.noreply_address,
+                                from: config.auth.smtp.noreplyAddress,
                                 to: `${user.name} <${user.email}>`,
                                 subject: 'Nytt passord',
                                 text: message,
@@ -1742,8 +1742,8 @@ const mutationRemoveMember = mutationWithClientMutationId({
     },
 });
 
-const mutationEmailContact = mutationWithClientMutationId({
-    name: 'EmailContact',
+const mutationSendContactEmail = mutationWithClientMutationId({
+    name: 'SendContactEmail',
     inputFields: {
         name: { type: new GraphQLNonNull(GraphQLString) },
         email: { type: new GraphQLNonNull(GraphQLString) },
@@ -1784,6 +1784,7 @@ const mutationType = new GraphQLObjectType({
         sendReset: mutationSendReset,
         addMember: mutationAddMember,
         removeMember: mutationRemoveMember,
+        sendContactEmail: mutationSendContactEmail,
     }),
 });
 

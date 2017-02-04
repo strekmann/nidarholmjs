@@ -1,4 +1,3 @@
-import FlatButton from 'material-ui/FlatButton';
 import React from 'react';
 import Relay from 'react-relay';
 import getMuiTheme from 'material-ui/styles/getMuiTheme';
@@ -7,10 +6,11 @@ import { Link } from 'react-router';
 import Text from './Text';
 import Date from './Date';
 import ContactForm from './ContactForm';
+import EventList from './EventList';
 
 import theme from '../theme';
+import SendContactEmailMutation from '../mutations/sendContactEmail';
 
-import EventList from './EventList';
 
 class Home extends React.Component {
     static contextTypes = {
@@ -40,7 +40,13 @@ class Home extends React.Component {
     }
 
     sendEmail = (form) => {
-        console.log(form, "F");
+        this.setState({ sent: true });
+        this.context.relay.commitUpdate(new SendContactEmailMutation({
+            email: form.email,
+            name: form.name,
+            text: form.text,
+            organization: this.props.organization,
+        }));
     }
 
     openEmailDialog = () => {
@@ -222,9 +228,9 @@ class Home extends React.Component {
                         </div>
                         <div style={{ width: '50%', minWidth: 270, padding: '0 15px' }}>
                             <h3>E-post</h3>
-                            <FlatButton onTouchTap={this.openEmailDialog}>
+                            <a onTouchTap={this.openEmailDialog}>
                                 <span dangerouslySetInnerHTML={{ __html: org.encodedEmail }} />
-                            </FlatButton>
+                            </a>
                             <h3>Øvelser</h3>
                             <Text text={org.contactText} />
                         </div>
@@ -282,6 +288,7 @@ export default Relay.createContainer(Home, {
                 }
             }
             ${ContactForm.getFragment('organization')}
+            ${SendContactEmailMutation.getFragment('organization')}
         }`,
     },
 });
