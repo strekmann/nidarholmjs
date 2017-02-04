@@ -1757,10 +1757,8 @@ const mutationSendContactEmail = mutationWithClientMutationId({
     },
     mutateAndGetPayload: ({ name, email, text }, { organization }) => {
         // TODO: Check email
-        return Organization.findById(organization.id).exec().then(org => {
-            sendContactEmail({ name, email, text, org });
-            return org;
-        });
+        sendContactEmail({ name, email, text, organization });
+        return organization;
     },
 });
 const mutationType = new GraphQLObjectType({
