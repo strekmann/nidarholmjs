@@ -62,7 +62,7 @@ class Home extends React.Component {
         const nextProject = org.nextProject;
         return (
             <Paper
-                className="main"
+                className="home"
                 style={{ maxWidth: 1000, margin: '0 auto', padding: '0 20px 2em' }}
             >
                 <div

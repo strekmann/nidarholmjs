@@ -60,7 +60,6 @@ module.exports = {
     sassLoader: {
         includePaths: [
             path.resolve(__dirname, 'node_modules/font-awesome/scss'),
-            path.resolve(__dirname, 'node_modules/foundation-sites/scss'),
         ],
     },
 };

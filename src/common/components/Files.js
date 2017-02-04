@@ -176,10 +176,9 @@ class Files extends React.Component {
                 {org.files.pageInfo.hasNextPage
                         ? <RaisedButton
                             onTouchTap={this.fetchMore}
+                            label="Mer"
                             primary
-                        >
-                            Mer
-                        </RaisedButton>
+                        />
                         : null
                 }
             </div>

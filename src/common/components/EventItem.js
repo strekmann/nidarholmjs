@@ -65,7 +65,12 @@ export default class EventItem extends React.Component {
                 className={isEnded(this.props.start, this.props.end) ? 'shade' : ''}
             >
                 <div style={{ float: 'right' }}>
-                    <IconButton onClick={this.expandEvent}><ArrowDown /></IconButton>
+                    <IconButton
+                        style={{ padding: 0, height: 'inherit', width: 'inherit' }}
+                        onClick={this.expandEvent}
+                    >
+                        <ArrowDown />
+                    </IconButton>
                 </div>
                 <h3 style={{ marginBottom: 0 }}>
                     <Link to={`/events/${this.props.id}`}>{this.props.title}</Link>

@@ -9,7 +9,7 @@ export default class EventList extends React.Component {
     }
     render() {
         return (
-            <div>
+            <div id="eventList">
                 {this.props.events.edges.map(edge => (
                     <EventItem key={edge.node.id} {...edge.node} saveEvent={this.props.saveEvent} />
                     ))

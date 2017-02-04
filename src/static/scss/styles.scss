@@ -51,39 +51,50 @@
   src: local('Open Sans Italic'), local('OpenSans-Italic'), url(/fonts/OpenSans-Italic.ttf) format('truetype');
 }
 
+@import 'node_modules/sass-material-colors/sass/sass-material-colors';
+
 $sans-font: "Open Sans", sans-serif;
 $serif-font: "Merriweather", serif;
+$rem-base: 14px;
+$line-height: 150%;
 
-// our variables
-//@import "settings";
+html {
+    box-sizing: border-box;
+}
 
-// normalize lib
-//@import "normalize";
+*, *:before, *:after {
+    box-sizing: inherit;
+}
 
-// foundation lib
-//@import "foundation";
-
-$grey100: #fafafa;
-$grey200: #eeeeee;
-$grey600: #757575;
-
-$dark-orange: #f2784b;
-
-
-// our styles
 body {
+    margin: 0;
+    font-family: $sans-font;
+    color: material-color('grey', '900');
     background: #f5f5f5;
+    font-size: $rem-base;
+    line-height: $line-height;
+}
+
+a {
+    color: material-color('light-blue', '900');
+    text-decoration: none;
+    &:hover {
+        text-decoration: underline;
+    }
 }
 
 h1 {
     font-family: $sans-font;
+    font-size: 28px;
 }
 
-h2, h3 {
+h2 {
     font-family: $sans-font;
+    font-size: 22px;
 }
 h3 {
-    font-weight: normal;
+    font-family: $sans-font;
+    font-size: 18px;
 }
 
 .phone {
@@ -124,18 +135,6 @@ a:focus {
     min-height: 100px;
 }
 
-html {
-    box-sizing: border-box;
-}
-
-*, *:before, *:after {
-    box-sizing: inherit;
-}
-
-body {
-    margin: 0;
-    font-family: sans-serif;
-}
 
 section {
     max-width: 1000px;
@@ -148,8 +147,8 @@ section {
     padding: 0 20px;
 }
 
-.main h2 {
-    border-top: 1px solid #dddddd;
+.home h2 {
+    border-top: 1px solid material-color('grey', '300');
     margin-top: 2rem;
     padding-top: 1rem;
 }
@@ -207,14 +206,21 @@ nav a {
 }
 
 .shade {
-    color: $grey600;
+    color: material-color('grey', '600');
     a {
-        color: $grey600;
+        color: material-color('grey', '600');
     }
 }
 
 .draggable {
     &:hover {
-        background-color: $grey200;
+        background-color: material-color('grey', '200');
+    }
+}
+
+#eventList {
+    font-size: 12px;
+    ul {
+        padding-left: 20px;
     }
 }
