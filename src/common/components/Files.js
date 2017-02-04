@@ -115,6 +115,12 @@ class Files extends React.Component {
         this.setState({ search: true });
     }
 
+    fetchMore = () => {
+        this.props.relay.setVariables({
+            showFiles: this.props.relay.variables.showFiles + itemsPerPage,
+        });
+    }
+
     render() {
         const org = this.props.organization;
         const isMember = org.isMember;
@@ -167,10 +173,14 @@ class Files extends React.Component {
                     style={{ margin: '0 -20px' }}
                     viewer={this.props.viewer}
                 />
-                {org.files.pageInfo.hasNextPage ?
-                    <RaisedButton primary>Mer</RaisedButton>
-                    :
-                    null
+                {org.files.pageInfo.hasNextPage
+                        ? <RaisedButton
+                            onTouchTap={this.fetchMore}
+                            primary
+                        >
+                            Mer
+                        </RaisedButton>
+                        : null
                 }
             </div>
         );
