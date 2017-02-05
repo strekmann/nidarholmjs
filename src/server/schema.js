@@ -285,15 +285,7 @@ userType = new GraphQLObjectType({
         },
         groups: {
             type: new GraphQLList(groupType),
-            resolve: user => User
-            .findById(user.id)
-            .populate({
-                path: 'groups',
-            })
-            .exec()
-            .then(
-                _user => _user.groups
-            ),
+            resolve: user => Group.find({ 'members.user': user._id }).exec(),
         },
     }),
     interfaces: [nodeInterface],
@@ -1727,26 +1719,36 @@ const mutationAddMember = mutationWithClientMutationId({
     },
 });
 
-const mutationRemoveMember = mutationWithClientMutationId({
-    name: 'RemoveMember',
+const mutationLeaveGroup = mutationWithClientMutationId({
+    name: 'LeaveGroup',
     inputFields: {
         groupId: { type: GraphQLID },
-        memberId: { type: GraphQLID },
+        userId: { type: GraphQLID },
     },
     outputFields: {
+        user: {
+            type: userType,
+            resolve: payload => payload.user,
+        },
         group: {
             type: groupType,
-            resolve: payload => payload,
+            resolve: payload => payload.group,
         },
     },
-    mutateAndGetPayload: ({ groupId, memberId }, { viewer, organization }) => {
+    mutateAndGetPayload: ({ groupId, userId }, { viewer, organization }) => {
         if (!admin(organization, viewer)) {
             throw new Error('No admin');
         }
+        const uId = fromGlobalId(userId).id;
         const gId = fromGlobalId(groupId).id;
-        return Group.findByIdAndUpdate(gId, {
-            $pull: { members: { _id: memberId } },
-        }, { new: true }).exec();
+        return Promise.all([
+            Group.findByIdAndUpdate(gId, {
+                $pull: { members: { 'user': uId } },
+            }, { new: true }).exec(),
+            User.findByIdAndUpdate(uId, {
+                $pull: { groups: gId },
+            }, { new: true }).exec(),
+        ]).then(results => ({ group: results[0], user: results[1] }));
     },
 });
 
@@ -1789,7 +1791,7 @@ const mutationType = new GraphQLObjectType({
         setPassword: mutationSetPassword,
         sendReset: mutationSendReset,
         addMember: mutationAddMember,
-        removeMember: mutationRemoveMember,
+        leaveGroup: mutationLeaveGroup,
         sendContactEmail: mutationSendContactEmail,
     }),
 });

@@ -15,6 +15,7 @@ import RaisedButton from 'material-ui/RaisedButton';
 import TextField from 'material-ui/TextField';
 import ArrowDown from 'material-ui/svg-icons/navigation/arrow-drop-down';
 import { lightBlue100 } from 'material-ui/styles/colors';
+import Close from 'material-ui/svg-icons/navigation/close';
 import moment from 'moment';
 
 import theme from '../theme';
@@ -24,6 +25,7 @@ import Date from './Date';
 import DateFromNow from './DateFromNow';
 import Yesno from './Yesno';
 import EditUserMutation from '../mutations/editUser';
+import LeaveGroupMutation from '../mutations/leaveGroup';
 
 let DateTimeFormat;
 if (areIntlLocalesSupported(['nb'])) {
@@ -172,6 +174,12 @@ class Member extends React.Component {
     }
     onChangeNoEmail = (event, noEmail) => {
         this.setState({ noEmail });
+    }
+    leaveGroup = (user, group) => {
+        this.context.relay.commitUpdate(new LeaveGroupMutation({
+            group,
+            user,
+        }));
     }
 
     render() {
@@ -382,7 +390,15 @@ class Member extends React.Component {
                                 ? <div>
                                     <h3>Grupper</h3>
                                     <ul>
-                                        {user.groups.map(group => <li key={group.id}>{group.name}</li>)}
+                                        {user.groups.map(group => (
+                                            <li key={group.id}>
+                                                <Link to={`/group/${group.id}`}>{group.name}</Link> <IconButton
+                                                    onTouchTap={() => this.leaveGroup(user, group)}
+                                                >
+                                                    <Close />
+                                                </IconButton>
+                                            </li>
+                                        ))}
                                     </ul>
                                 </div>
                                 : null
@@ -479,6 +495,7 @@ export default Relay.createContainer(Member, {
                     inList
                     onLeave
                     noEmail
+                    ${LeaveGroupMutation.getFragment('user')}
                 }
             }
             ${EditUserMutation.getFragment('organization')}

@@ -6,11 +6,12 @@ import Paper from 'material-ui/Paper';
 import getMuiTheme from 'material-ui/styles/getMuiTheme';
 import Close from 'material-ui/svg-icons/navigation/close';
 import React from 'react';
+import { Link } from 'react-router';
 import Relay from 'react-relay';
 
 import theme from '../theme';
 import AddMemberMutation from '../mutations/addMember';
-import RemoveMemberMutation from '../mutations/removeMember';
+import LeaveGroupMutation from '../mutations/leaveGroup';
 
 class Group extends React.Component {
     static contextTypes = {
@@ -46,10 +47,10 @@ class Group extends React.Component {
         }));
     }
 
-    removeMember = (member, group) => {
-        this.context.relay.commitUpdate(new RemoveMemberMutation({
+    leaveGroup = (user, group) => {
+        this.context.relay.commitUpdate(new LeaveGroupMutation({
             group,
-            member,
+            user,
         }));
     }
 
@@ -80,6 +81,7 @@ class Group extends React.Component {
                                     filter={AutoComplete.fuzzyFilter}
                                 />
                             </Dialog>
+                            <Link to="/groups">Alle grupper</Link>
                             <FlatButton
                                 label="Legg til gruppemedlem"
                                 onTouchTap={() => {
@@ -90,8 +92,8 @@ class Group extends React.Component {
                             <h1>{group.name}</h1>
                             {members.sort((a, b) => a.user.name > b.user.name).map(member => (
                                 <div key={member.id}>
-                                    {member.user.name} <small>{member.role.title}</small>
-                                    <IconButton onTouchTap={() => this.removeMember(member, group)}>
+                                    <Link to={`/users/${member.user.id}`}>{member.user.name}</Link> <small>{member.role.title}</small>
+                                    <IconButton onTouchTap={() => this.leaveGroup(member.user, group)}>
                                         <Close />
                                     </IconButton>
                                 </div>
@@ -128,7 +130,9 @@ export default Relay.createContainer(Group, {
                 members {
                     id
                     user {
+                        id
                         name
+                        ${LeaveGroupMutation.getFragment('user')}
                     }
                     role {
                         title
@@ -136,7 +140,6 @@ export default Relay.createContainer(Group, {
                 }
                 externallyHidden
                 ${AddMemberMutation.getFragment('group')}
-                ${RemoveMemberMutation.getFragment('group')}
             }
         }
         `,
