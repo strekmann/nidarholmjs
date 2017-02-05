@@ -348,14 +348,21 @@ groupType = new GraphQLObjectType({
             })),
             resolve: (group, args, { organization }) => {
                 const members = organization.member_group.members.map(
-                    organizationMember => organizationMember.user
+                    (organizationMember) => {
+                        if (typeof organizationMember.user === 'object') {
+                            // "self" is acutally an object. strange populate?
+                            return organizationMember.user._id;
+                        }
+                        return organizationMember.user;
+                    },
                 );
-                return group.members.filter(groupMember => {
+                const active = group.members.filter((groupMember) => {
                     if (members.includes(groupMember.user)) {
                         return true;
                     }
                     return false;
                 });
+                return active;
             },
         },
     },
