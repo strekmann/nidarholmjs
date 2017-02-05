@@ -98,7 +98,7 @@ class Page extends React.Component {
         const isMember = org.isMember;
         if (!org.page || !org.page.slug) {
             return (
-                <Paper className="row">
+                <Paper className="row" style={{ padding: 20 }}>
                     <h1>Ikke funnet: {this.props.location.pathname}</h1>
                     <p>Denne sida fins ikke</p>
                 </Paper>
@@ -116,7 +116,7 @@ class Page extends React.Component {
             );
         }
         return (
-            <Paper className="row">
+            <Paper className="row" style={{ padding: 20 }}>
                 {isMember
                         ? <div style={{ float: 'right' }}>
                             <IconMenu
