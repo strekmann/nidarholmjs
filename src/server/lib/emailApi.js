@@ -37,7 +37,8 @@ export default function groupEmailApiRoute(req, res) {
                         else {
                             const emails = g.members.reduce((list, member) => {
                                 if (
-                                    member.user.email
+                                    member.user
+                                && member.user.email
                                 && member.user.in_list
                                 && !member.user.no_email
                                 && member.user.groups.find(
