@@ -731,7 +731,7 @@ organizationType = new GraphQLObjectType({
                 Project
                 .findOne({
                     end: { $gte: moment().startOf('day').toDate() },
-                    public_mdtext: { $exists: true },
+                    public_mdtext: { $ne: '' },
                 })
                 .sort({ end: 1 }),
                 viewer,
@@ -744,12 +744,18 @@ organizationType = new GraphQLObjectType({
                 nodeType: projectType,
             }).connectionType,
             args: connectionArgs,
-            resolve: (_, { ...args }) => connectionFromMongooseQuery(
-                Project.find({
+            resolve: (_, args, { viewer, organization }) => {
+                let query = Project.find({
                     end: { $gte: moment().startOf('day').toDate() },
-                }).sort({ end: 1 }),
-                args,
-            ),
+                });
+                if (!isMember(organization, viewer)) {
+                    query = query.where({ public_mdtext: { $ne: '' } });
+                }
+                return connectionFromMongooseQuery(
+                    query.sort({ end: 1 }),
+                    args,
+                );
+            },
         },
         previousProjects: {
             type: projectConnection.connectionType,
