@@ -435,11 +435,14 @@ class Member extends React.Component {
                                     <ul>
                                         {user.groups.map(group => (
                                             <li key={group.id}>
-                                                <Link to={`/group/${group.id}`}>{group.name}</Link> <IconButton
-                                                    onTouchTap={() => this.leaveGroup(user, group)}
-                                                >
-                                                    <Close />
-                                                </IconButton>
+                                                <Link to={`/group/${group.id}`}>{group.name}</Link> {isAdmin
+                                                        ? <IconButton
+                                                            onTouchTap={() => this.leaveGroup(user, group)}
+                                                        >
+                                                            <Close />
+                                                        </IconButton>
+                                                        : null
+                                                }
                                             </li>
                                         ))}
                                     </ul>
