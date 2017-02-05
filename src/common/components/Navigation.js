@@ -214,7 +214,7 @@ class Navigation extends React.Component {
                                 <Menu>
                                     <MenuItem>
                                         <Link
-                                            to="about"
+                                            to="/about"
                                             onClick={this.handleClose}
                                         >
                                             Om oss
