@@ -52,27 +52,11 @@ const upload = multer({ storage: multer.diskStorage({}) }).single('file');
 
 // const io = socketIO(httpServer, { path: '/s' });
 
-/*
-function get_member_group() {
-    return Group.findOne({ name: 'Medlemmer' })
-    .then((group) => {
-        if (!group) {
-            group = new Group();
-            group._id = 'medlemmer';
-            group.name = 'Medlemmer';
-            return group.save();
-        }
-        return group;
-    });
-}
-*/
-
 if (config.get('express.trust_proxy')) {
     app.set('trust proxy', 1);
 }
 
 app.use(cookieParser(config.get('express.session.secret')));
-//app.use(flash());
 
 if (config.util.getEnv('NODE_ENV') === 'test') {
     app.use(errorHandler({
@@ -148,8 +132,6 @@ app.use(bodyParser.json());
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'jade');
 
-// init org
-// NEW
 // Fetch active organization from hostname, config override
 // or pick the default.
 app.use((req, res, next) => {
@@ -166,87 +148,10 @@ app.use((req, res, next) => {
     .populate('administration_group')
     .exec((err, organization) => {
         if (err) { return next(err); }
-        req.organization = res.locals.organization = organization;
+        req.organization = organization;
         return next();
     });
-    if (req.user) {
-        res.locals.active_user = req.user;
-    }
 });
-
-/*
-app.use((req, res, next) => {
-    Organization.findById('nidarholm')
-    .populate('member_group')
-    .populate('administration_group') // no need to select fields, ids only
-    .exec((err, organization) => {
-        if (err) { return next(err); }
-        if (organization) {
-            req.organization = res.locals.organization = organization;
-            // is it a hack?
-            if (!organization.description) {
-                organization.description = {};
-            }
-            if (!organization.administration_group) {
-                organization.administration_group = organization.member_group;
-            }
-            res.locals.address = `${req.protocol}://${organization.webdomain}`;
-            res.locals.path = req.path;
-            return next();
-        }
-        return get_member_group().then((group) => {
-            organization = new Organization();
-            organization._id = 'nidarholm';
-            organization.webdomain = 'nidarholm.no';
-            organization.instrument_groups = [];
-            organization.member_group = group;
-
-            return organization.save((err) => {
-                if (err) { return next(err); }
-                group.organization = organization;
-                return group.save((err) => {
-                    if (err) { return next(err); }
-                    req.organization = res.locals.organization = organization;
-                    if (!organization.description) {
-                        organization.description = {};
-                    }
-                    if (!organization.administration_group) {
-                        organization.administration_group = organization.member_group;
-                    }
-                    res.locals.address = `${req.protocol}://${organization.webdomain}`;
-                    res.locals.path = req.path;
-                    return next();
-                });
-            });
-        });
-    });
-});
-*/
-// has to go after passport.session()
-/*
-app.use((req, res, next) => {
-    if (req.user) {
-        req.user.populate('groups', 'name', (err, user) => {
-            if (err) { return next(err); }
-            // or do we need the name or organization of the groups? At least name
-            req.user = res.locals.active_user = user;
-            req.is_member = res.locals.is_member = some(
-                req.organization.member_group.members,
-                (member) => member.user === req.user._id,
-            );
-            req.is_admin = res.locals.is_admin = some(
-                req.organization.administration_group.members,
-                (member) => member.user === req.user._id,
-            );
-            return User.populate(req.user, 'friends', (err) => {
-                if (err) { return next(err); }
-                return next();
-            });
-        });
-    }
-    return next();
-});
-*/
 
 /** Static stuff **/
 app.use(serveStatic(path.join(__dirname, '..', 'static')));
@@ -266,7 +171,7 @@ app.use('/graphql', graphqlHTTP(req => {
 app.post('/upload', upload, (req, res, next) => {
     // FIXME: Add check on org membership
     return saveFile(req.file.path, config.files.raw_prefix).then(
-        _file => res.json(_file)
+        _file => res.json(_file),
     )
     .catch(error => {
         console.error(error);
