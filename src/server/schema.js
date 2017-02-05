@@ -1744,8 +1744,9 @@ const mutationRemoveMember = mutationWithClientMutationId({
             throw new Error('No admin');
         }
         const gId = fromGlobalId(groupId).id;
-        const mId = fromGlobalId(memberId).id;
-        return Group.findByIdAndUpdate(gId, { members: { $pull: mId } }, { new: true }).exec();
+        return Group.findByIdAndUpdate(gId, {
+            $pull: { members: { _id: memberId } },
+        }, { new: true }).exec();
     },
 });
 
