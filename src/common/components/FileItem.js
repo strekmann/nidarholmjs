@@ -74,9 +74,15 @@ export default class FileItem extends React.Component {
         return (
             <Card key={this.props.id} style={{ width: 292, margin: '0 20px 20px 20px' }} >
                 <CardTitle style={{ paddingBottom: 0 }}>
-                    <div style={{ float: 'right', marginTop: -20, marginRight: -20 }}>
+                    <div style={{ float: 'right' }}>
                         <IconMenu
-                            iconButtonElement={<IconButton><ArrowDown /></IconButton>}
+                            iconButtonElement={
+                                <IconButton
+                                    style={{ padding: 0, height: 'inherit', width: 'inherit' }}
+                                >
+                                    <ArrowDown />
+                                </IconButton>
+                            }
                             anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
                             targetOrigin={{ vertical: 'top', horizontal: 'right' }}
                         >
@@ -97,8 +103,6 @@ export default class FileItem extends React.Component {
                         style={{
                             textOverflow: 'ellipsis',
                             overflow: 'hidden',
-                            width: 120,
-                            display: 'inline-block',
                         }}
                     >
                         {this.props.filename}
