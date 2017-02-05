@@ -41,6 +41,7 @@ class Files extends React.Component {
     state = {
         addFile: false,
         search: false,
+        tags: [],
     }
 
     getChildContext() {
@@ -108,11 +109,11 @@ class Files extends React.Component {
     }
 
     searchTag = (tag) => {
-        const tags = this.props.relay.variables.tags.split('|');
+        const tags = this.props.relay.variables.tags.split('|').filter(t => !!t);
         tags.push(tag);
         const fixedTags = tags.sort().join('|').toLowerCase();
         this.props.relay.setVariables({ tags: fixedTags });
-        this.setState({ search: true });
+        this.setState({ search: true, tags });
     }
 
     fetchMore = () => {
@@ -156,7 +157,7 @@ class Files extends React.Component {
                         ? <Paper style={{ padding: 20, marginBottom: 20 }}>
                             <h2>Søk i merkelapper</h2>
                             <TagField
-                                tags={this.props.relay.variables.tags}
+                                tags={this.state.tags}
                                 onChange={this.onTagChange}
                                 allTags={this.props.organization.tags}
                                 onChangeTerm={this.onChangeTerm}

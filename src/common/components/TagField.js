@@ -13,7 +13,7 @@ export default class TagField extends React.Component {
     }
 
     state = {
-        tags: this.props.tags ? this.props.tags.split('|') : [],
+        tags: this.props.tags || [],
         tag: this.props.term || '',
     }
 
