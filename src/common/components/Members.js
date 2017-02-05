@@ -154,6 +154,7 @@ class Members extends React.Component {
                             onUpdateInput={this.onChangeUserName}
                             onNewRequest={this.onAutoCompleteChoose}
                             filter={AutoComplete.fuzzyFilter}
+                            fullWidth
                         />
                         {this.state.exists
                             ? <div>{this.state.name} finnes i systemet fra før, gå til <Link to={`/users/${this.state.exists.value}`}>brukersiden</Link></div>

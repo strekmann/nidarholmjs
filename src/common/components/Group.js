@@ -80,6 +80,7 @@ class Group extends React.Component {
                                     floatingLabelText="Navn"
                                     onNewRequest={this.joinGroup}
                                     filter={AutoComplete.fuzzyFilter}
+                                    fullWidth
                                 />
                             </Dialog>
                             <Link to="/groups">Alle grupper</Link>

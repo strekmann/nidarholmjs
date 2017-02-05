@@ -372,6 +372,7 @@ class Member extends React.Component {
                                     floatingLabelText="Gruppe"
                                     onNewRequest={this.joinGroup}
                                     filter={AutoComplete.fuzzyFilter}
+                                    fullWidth
                                 />
                             </Dialog>
                             : null
