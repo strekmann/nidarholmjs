@@ -1695,8 +1695,8 @@ const mutationSendReset = mutationWithClientMutationId({
     },
 });
 
-const mutationAddMember = mutationWithClientMutationId({
-    name: 'AddMember',
+const mutationJoinGroup = mutationWithClientMutationId({
+    name: 'JoinGroup',
     inputFields: {
         groupId: { type: GraphQLID },
         userId: { type: GraphQLID },
@@ -1704,7 +1704,11 @@ const mutationAddMember = mutationWithClientMutationId({
     outputFields: {
         group: {
             type: groupType,
-            resolve: payload => payload,
+            resolve: payload => payload.group,
+        },
+        user: {
+            type: userType,
+            resolve: payload => payload.user,
         },
     },
     mutateAndGetPayload: ({ groupId, userId }, { viewer, organization }) => {
@@ -1713,9 +1717,14 @@ const mutationAddMember = mutationWithClientMutationId({
         }
         const gId = fromGlobalId(groupId).id;
         const uId = fromGlobalId(userId).id;
-        return Group.findByIdAndUpdate(gId, {
-            $addToSet: { members: { user: uId } },
-        }, { new: true }).exec();
+        return Promise.all([
+            Group.findByIdAndUpdate(gId, {
+                $addToSet: { members: { user: uId } },
+            }, { new: true }).exec(),
+            User.findByIdAndUpdate(uId, {
+                $addToSet: { groups: gId },
+            }, { new: true }).exec(),
+        ]).then(results => ({ group: results[0], user: results[1] }));
     },
 });
 
@@ -1743,7 +1752,7 @@ const mutationLeaveGroup = mutationWithClientMutationId({
         const gId = fromGlobalId(groupId).id;
         return Promise.all([
             Group.findByIdAndUpdate(gId, {
-                $pull: { members: { 'user': uId } },
+                $pull: { members: { user: uId } },
             }, { new: true }).exec(),
             User.findByIdAndUpdate(uId, {
                 $pull: { groups: gId },
@@ -1790,7 +1799,7 @@ const mutationType = new GraphQLObjectType({
         saveProject: mutationSaveProject,
         setPassword: mutationSetPassword,
         sendReset: mutationSendReset,
-        addMember: mutationAddMember,
+        joinGroup: mutationJoinGroup,
         leaveGroup: mutationLeaveGroup,
         sendContactEmail: mutationSendContactEmail,
     }),

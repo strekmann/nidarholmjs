@@ -10,7 +10,7 @@ import { Link } from 'react-router';
 import Relay from 'react-relay';
 
 import theme from '../theme';
-import AddMemberMutation from '../mutations/addMember';
+import JoinGroupMutation from '../mutations/joinGroup';
 import LeaveGroupMutation from '../mutations/leaveGroup';
 
 class Group extends React.Component {
@@ -32,16 +32,16 @@ class Group extends React.Component {
     }
 
     state = {
-        addMember: false,
+        joinGroup: false,
     }
 
     getChildContext() {
         return { muiTheme: this.muiTheme };
     }
 
-    addMember = (selection) => {
-        this.closeAddMember();
-        this.context.relay.commitUpdate(new AddMemberMutation({
+    joinGroup = (selection) => {
+        this.setState({ joinGroup: false });
+        this.context.relay.commitUpdate(new JoinGroupMutation({
             group: this.props.organization.group,
             user: selection.value,
         }));
@@ -54,8 +54,8 @@ class Group extends React.Component {
         }));
     }
 
-    closeAddMember = () => {
-        this.setState({ addMember: false });
+    closeJoinGroup = () => {
+        this.setState({ joinGroup: false });
     }
 
     render() {
@@ -68,16 +68,17 @@ class Group extends React.Component {
                         ? <Paper style={{ padding: 20 }}>
                             <Dialog
                                 title="Legg til gruppemedlem"
-                                open={this.state.addMember}
-                                onRequestClose={this.closeAddMember}
+                                open={this.state.joinGroup}
+                                onRequestClose={this.closeJoinGroup}
                                 autoScrollBodyContent
+                                actions={<FlatButton label="Avbryt" onTouchTap={this.closeJoinGroup} />}
                             >
                                 <AutoComplete
                                     dataSource={org.users.map(
                                         user => ({ text: `${user.name} (${user.username})`, value: user })
                                     )}
                                     floatingLabelText="Navn"
-                                    onNewRequest={this.addMember}
+                                    onNewRequest={this.joinGroup}
                                     filter={AutoComplete.fuzzyFilter}
                                 />
                             </Dialog>
@@ -85,7 +86,7 @@ class Group extends React.Component {
                             <FlatButton
                                 label="Legg til gruppemedlem"
                                 onTouchTap={() => {
-                                    this.setState({ addMember: !this.state.addMember });
+                                    this.setState({ joinGroup: !this.state.joinGroup });
                                 }}
                                 style={{ float: 'right' }}
                             />
@@ -132,6 +133,7 @@ export default Relay.createContainer(Group, {
                     user {
                         id
                         name
+                        ${JoinGroupMutation.getFragment('user')}
                         ${LeaveGroupMutation.getFragment('user')}
                     }
                     role {
@@ -139,7 +141,6 @@ export default Relay.createContainer(Group, {
                     }
                 }
                 externallyHidden
-                ${AddMemberMutation.getFragment('group')}
             }
         }
         `,

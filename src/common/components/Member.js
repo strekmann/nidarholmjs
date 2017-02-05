@@ -1,6 +1,8 @@
 import areIntlLocalesSupported from 'intl-locales-supported';
+import AutoComplete from 'material-ui/AutoComplete';
 import Checkbox from 'material-ui/Checkbox';
 import DatePicker from 'material-ui/DatePicker';
+import Dialog from 'material-ui/Dialog';
 import FlatButton from 'material-ui/FlatButton';
 import { Toolbar, ToolbarGroup } from 'material-ui/Toolbar';
 import React from 'react';
@@ -25,6 +27,7 @@ import Date from './Date';
 import DateFromNow from './DateFromNow';
 import Yesno from './Yesno';
 import EditUserMutation from '../mutations/editUser';
+import JoinGroupMutation from '../mutations/joinGroup';
 import LeaveGroupMutation from '../mutations/leaveGroup';
 
 let DateTimeFormat;
@@ -54,6 +57,7 @@ class Member extends React.Component {
     state = {
         edit: false,
         editMember: false,
+        joinGroup: false,
         name: this.props.organization.member.user.name || '',
         username: this.props.organization.member.user.username || '',
         phone: this.props.organization.member.user.phone || '',
@@ -175,17 +179,28 @@ class Member extends React.Component {
     onChangeNoEmail = (event, noEmail) => {
         this.setState({ noEmail });
     }
+    joinGroup = (selection) => {
+        this.setState({ joinGroup: false });
+        this.context.relay.commitUpdate(new JoinGroupMutation({
+            group: selection.value,
+            user: this.props.organization.member.user,
+        }));
+    }
     leaveGroup = (user, group) => {
         this.context.relay.commitUpdate(new LeaveGroupMutation({
             group,
             user,
         }));
     }
+    closeJoinGroup = () => {
+        this.setState({ joinGroup: false });
+    }
 
     render() {
-        const member = this.props.organization.member;
+        const org = this.props.organization;
+        const member = org.member;
         const user = member.user;
-        const isAdmin = this.props.organization.isAdmin;
+        const isAdmin = org.isAdmin;
         if (this.state.editMember) {
             return (
                 <Paper className="row">
@@ -342,6 +357,25 @@ class Member extends React.Component {
             <Paper className="row">
                 <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                     <h1>{user.name}</h1>
+                    {isAdmin
+                            ? <Dialog
+                                title="Legg til i gruppe"
+                                open={this.state.joinGroup}
+                                onRequestClose={this.closeJoinGroup}
+                                autoScrollBodyContent
+                                actions={<FlatButton label="Avbryt" onTouchTap={this.closeJoinGroup} />}
+                            >
+                                <AutoComplete
+                                    dataSource={org.groups.map(
+                                        group => ({ text: `${group.name}`, value: group })
+                                    )}
+                                    floatingLabelText="Gruppe"
+                                    onNewRequest={this.joinGroup}
+                                    filter={AutoComplete.fuzzyFilter}
+                                />
+                            </Dialog>
+                            : null
+                    }
                     <Toolbar style={{ backgroundColor: theme.palette.fullWhite }}>
                         <ToolbarGroup lastChild>
                             {this.props.viewer.id === user.id
@@ -363,6 +397,15 @@ class Member extends React.Component {
                                             containerElement={
                                                 <Link to={`/users/${user.id}/reset`} />
                                             }
+                                        />
+                                        : null
+                                }
+                                {isAdmin
+                                        ? <MenuItem
+                                            primaryText="Legg til i gruppe"
+                                            onTouchTap={() => {
+                                                this.setState({ joinGroup: !this.state.joinGroup });
+                                            }}
                                         />
                                         : null
                                 }
@@ -495,8 +538,13 @@ export default Relay.createContainer(Member, {
                     inList
                     onLeave
                     noEmail
+                    ${JoinGroupMutation.getFragment('user')}
                     ${LeaveGroupMutation.getFragment('user')}
                 }
+            }
+            groups {
+                id
+                name
             }
             ${EditUserMutation.getFragment('organization')}
         }

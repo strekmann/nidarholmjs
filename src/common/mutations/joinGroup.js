@@ -1,16 +1,16 @@
 import Relay from 'react-relay';
 
-export default class AddMemberMutation extends Relay.Mutation {
+export default class JoinGroupMutation extends Relay.Mutation {
     static fragments = {
-        group: () => Relay.QL`
-        fragment on Group {
+        user: () => Relay.QL`
+        fragment on User {
             id
         }
         `,
     }
 
     getMutation() {
-        return Relay.QL`mutation {addMember}`;
+        return Relay.QL`mutation {joinGroup}`;
     }
 
     getVariables() {
@@ -22,8 +22,9 @@ export default class AddMemberMutation extends Relay.Mutation {
 
     getFatQuery() {
         return Relay.QL`
-        fragment on AddMemberPayload {
+        fragment on JoinGroupPayload {
             group { members }
+            user { groups }
         }`;
     }
 
@@ -32,6 +33,7 @@ export default class AddMemberMutation extends Relay.Mutation {
             type: 'FIELDS_CHANGE',
             fieldIDs: {
                 group: this.props.group.id,
+                user: this.props.user.id,
             },
         }];
     }
