@@ -551,7 +551,12 @@ projectType = new GraphQLObjectType({
         },
         privateMdtext: {
             type: GraphQLString,
-            resolve: project => project.private_mdtext,
+            resolve: (project, args, { viewer, organization }) => {
+                if (isMember(organization, viewer)) {
+                    return project.private_mdtext;
+                }
+                return null;
+            },
         },
         conductors: { type: new GraphQLList(userType) },
         poster: {
