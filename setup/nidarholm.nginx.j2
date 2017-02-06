@@ -42,7 +42,7 @@ server {
         root {{ deploy_helper.current_path }}/static;
         access_log off;
         log_not_found off;
-        expires 1d;
+        expires 1h;
     }
 
     location / {
