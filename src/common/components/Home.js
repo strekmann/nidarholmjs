@@ -73,6 +73,7 @@ class Home extends React.Component {
                         backgroundSize: 'cover',
                         height: '30vw',
                         margin: '0 -20px',
+                        position: 'relative',
                     }}
                 >
                     <h1
@@ -87,6 +88,18 @@ class Home extends React.Component {
                     >
                         {org.name}
                     </h1>
+                    <div
+                        style={{
+                            position: 'absolute',
+                            bottom: 0,
+                            right: 0,
+                            paddingRight: 15,
+                            paddingLeft: 15,
+                            color: theme.palette.accent3Color,
+                        }}
+                    >
+                        Foto: Vilde Marie Steen Angell
+                    </div>
                 </div>
                 {nextProject ?
                     <div>
