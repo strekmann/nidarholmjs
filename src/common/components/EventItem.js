@@ -2,7 +2,8 @@ import React from 'react';
 import Relay from 'react-relay';
 import { Link } from 'react-router';
 import IconButton from 'material-ui/IconButton';
-import ArrowDown from 'material-ui/svg-icons/navigation/arrow-drop-down';
+import ExpandLess from 'material-ui/svg-icons/navigation/expand-less';
+import ExpandMore from 'material-ui/svg-icons/navigation/expand-more';
 import moment from 'moment';
 
 import Daterange from './Daterange';
@@ -46,7 +47,10 @@ class EventItem extends React.Component {
                         style={{ padding: 0, height: 'inherit', width: 'inherit' }}
                         onClick={this.expandEvent}
                     >
-                        <ArrowDown />
+                        {this.state.expanded
+                                ? <ExpandMore />
+                                : <ExpandLess />
+                        }
                     </IconButton>
                 </div>
                 <h3 style={{ marginBottom: 0 }}>

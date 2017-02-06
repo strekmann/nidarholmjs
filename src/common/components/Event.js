@@ -75,34 +75,41 @@ class Event extends React.Component {
 
     render() {
         const event = this.props.organization.event;
+        const isMember = this.props.organization.isMember;
         return (
             <Paper className="row">
                 <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                     <h1>{event.title}</h1>
-                    <IconMenu
-                        iconButtonElement={<IconButton><ArrowDown /></IconButton>}
-                        anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
-                        targetOrigin={{ vertical: 'top', horizontal: 'right' }}
-                    >
-                        <MenuItem primaryText="Rediger" onTouchTap={this.toggleEdit} />
-                    </IconMenu>
+                    {isMember
+                            ? <IconMenu
+                                iconButtonElement={<IconButton><ArrowDown /></IconButton>}
+                                anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
+                                targetOrigin={{ vertical: 'top', horizontal: 'right' }}
+                            >
+                                <MenuItem primaryText="Rediger" onTouchTap={this.toggleEdit} />
+                            </IconMenu>
+                            : null
+                    }
                 </div>
                 <div className="meta">
                     {event.location} <Daterange start={event.start} end={event.end} />
                 </div>
                 <Text text={event.mdtext} />
-                <Dialog
-                    title="Rediger aktivitet"
-                    open={this.state.edit}
-                    onRequestClose={this.closeEdit}
-                    autoScrollBodyContent
-                >
-                    <EditEvent
-                        saveEvent={this.saveEvent}
-                        closeEdit={this.closeEdit}
-                        {...event}
-                    />
-                </Dialog>
+                {isMember
+                        ? <Dialog
+                            title="Rediger aktivitet"
+                            open={this.state.edit}
+                            onRequestClose={this.closeEdit}
+                            autoScrollBodyContent
+                        >
+                            <EditEvent
+                                saveEvent={this.saveEvent}
+                                closeEdit={this.closeEdit}
+                                {...event}
+                            />
+                        </Dialog>
+                        : null
+                }
             </Paper>
         );
     }
@@ -121,6 +128,7 @@ export default Relay.createContainer(Event, {
         `,
         organization: () => Relay.QL`
         fragment on Organization {
+            isMember
             event(eventid:$eventid) {
                 id
                 title

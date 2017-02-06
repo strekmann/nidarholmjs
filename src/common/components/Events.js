@@ -46,7 +46,7 @@ class Events extends React.Component {
         return (
             <Paper className="row" style={{ padding: 20 }}>
                 <h1>Aktiviteter</h1>
-                <div id="eventList">
+                <div>
                     {events.edges.map(edge => (
                         <EventItem
                             key={edge.node.id}
