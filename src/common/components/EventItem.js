@@ -1,4 +1,5 @@
 import React from 'react';
+import Relay from 'react-relay';
 import { Link } from 'react-router';
 import IconButton from 'material-ui/IconButton';
 import ArrowDown from 'material-ui/svg-icons/navigation/arrow-drop-down';
@@ -18,38 +19,13 @@ function isSoon(date) {
     return false;
 }
 
-function isEnded(start, end) {
-    // if start or end of event is before start of today, it is no longer
-    // interesting
-    if (!start) {
-        return false;
-    }
-    if (end) {
-        if (moment(end) < moment().startOf('day')) {
-            return true;
-        }
-    }
-    if (moment(start) < moment().startOf('day')) {
-        return true;
-    }
-    return false;
-}
-
-export default class EventItem extends React.Component {
+class EventItem extends React.Component {
     static propTypes = {
-        id: React.PropTypes.string,
-        title: React.PropTypes.string,
-        location: React.PropTypes.string,
-        start: React.PropTypes.string,
-        end: React.PropTypes.string,
-        tag: React.PropTypes.string,
-        year: React.PropTypes.string,
-        mdtext: React.PropTypes.string,
-        saveEvent: React.PropTypes.func,
+        event: React.PropTypes.object,
     }
 
     state = {
-        expanded: isSoon(this.props.start),
+        expanded: isSoon(this.props.event.start),
     }
 
     expandEvent = () => {
@@ -59,10 +35,11 @@ export default class EventItem extends React.Component {
     }
 
     render() {
+        const { id, title, location, start, end, mdtext, isEnded } = this.props.event;
         return (
             <div
                 style={{ marginBottom: 10 }}
-                className={isEnded(this.props.start, this.props.end) ? 'shade' : ''}
+                className={isEnded ? 'shade' : ''}
             >
                 <div style={{ float: 'right' }}>
                     <IconButton
@@ -73,16 +50,41 @@ export default class EventItem extends React.Component {
                     </IconButton>
                 </div>
                 <h3 style={{ marginBottom: 0 }}>
-                    <Link to={`/events/${this.props.id}`}>{this.props.title}</Link>
+                    <Link to={`/events/${id}`}>{title}</Link>
                 </h3>
                 <div className="meta">
-                    <Daterange start={this.props.start} end={this.props.end} />
+                    <Daterange start={start} end={end} /> {location}
                 </div>
                 {this.state.expanded
-                    ? <Text text={this.props.mdtext} />
+                    ? <Text text={mdtext} />
                     : null
                 }
             </div>
         );
     }
 }
+
+export default Relay.createContainer(EventItem, {
+    fragments: {
+        event: () => Relay.QL`
+        fragment on Event {
+            id
+            title
+            start
+            end
+            isEnded
+            permissions {
+                public
+                groups {
+                    id
+                    name
+                }
+                users {
+                    id
+                    name
+                }
+            }
+            mdtext
+        }`,
+    },
+});

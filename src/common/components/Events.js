@@ -4,7 +4,7 @@ import RaisedButton from 'material-ui/RaisedButton';
 import Relay from 'react-relay';
 import getMuiTheme from 'material-ui/styles/getMuiTheme';
 
-import EventList from './EventList';
+import EventItem from './EventItem';
 import theme from '../theme';
 
 const itemsPerPage = 10;
@@ -44,13 +44,23 @@ class Events extends React.Component {
         const org = this.props.organization;
         const events = org.events;
         return (
-            <Paper className="row">
+            <Paper className="row" style={{ padding: 20 }}>
                 <h1>Aktiviteter</h1>
-                <EventList events={events} />
-                {events.pageInfo.hasNextPage ?
-                    <RaisedButton primary onClick={this.loadMoreEvents}>Mer</RaisedButton>
-                    :
-                    null
+                <div id="eventList">
+                    {events.edges.map(edge => (
+                        <EventItem
+                            key={edge.node.id}
+                            event={edge.node}
+                        />
+                    ))}
+                </div>
+                {events.pageInfo.hasNextPage
+                        ? <RaisedButton
+                            primary
+                            onClick={this.loadMoreEvents}
+                            label="Mer"
+                        />
+                        : null
                 }
             </Paper>
         );
@@ -72,21 +82,7 @@ export default Relay.createContainer(Events, {
                 edges {
                     node {
                         id
-                        title
-                        start
-                        end
-                        permissions {
-                            public
-                            groups {
-                                id
-                                name
-                            }
-                            users {
-                                id
-                                name
-                            }
-                        }
-                        mdtext
+                        ${EventItem.getFragment('event')}
                     }
                 }
                 pageInfo {

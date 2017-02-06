@@ -15,7 +15,7 @@ import getMuiTheme from 'material-ui/styles/getMuiTheme';
 
 import Date from './Date';
 import Text from './Text';
-import EventList from './EventList';
+import EventItem from './EventItem';
 import EditEvent from './EditEvent';
 import ProjectForm from './ProjectForm';
 import FileList from './FileList';
@@ -52,6 +52,7 @@ class Project extends React.Component {
         addEvent: false,
         addFile: false,
         editProject: false,
+        showEnded: false,
         event: {
             title: '',
             location: '',
@@ -173,11 +174,16 @@ class Project extends React.Component {
         });
     }
 
+    showEnded = () => {
+        this.setState({ showEnded: true });
+    }
+
     render() {
         const viewer = this.props.viewer;
         const org = this.props.organization;
         const project = this.props.organization.project;
         const isMember = this.props.organization.isMember;
+        const hasEndedActivities = project.events.edges.filter(edge => edge.node.isEnded).length > 0;
         return (
             <Paper className="row">
                 <div style={{ display: 'flex', justifyContent: 'space-between' }}>
@@ -195,6 +201,13 @@ class Project extends React.Component {
                             anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
                             targetOrigin={{ vertical: 'top', horizontal: 'right' }}
                         >
+                            {hasEndedActivities
+                                    ? <MenuItem
+                                        primaryText="Vis tidligere aktiviteter"
+                                        onTouchTap={this.showEnded}
+                                    />
+                                    : null
+                            }
                             <MenuItem
                                 primaryText="Rediger prosjektinfo"
                                 onTouchTap={this.toggleEditProject}
@@ -219,7 +232,7 @@ class Project extends React.Component {
                         margin: '0 -15px',
                     }}
                 >
-                    <div style={{ padding: '0 15px', maxWidth: 640 }}>
+                    <div style={{ padding: '0 15px', maxWidth: 664 }}>
                         {project.music.length
                                 ? <div>
                                     <h2>Repertoar</h2>
@@ -260,9 +273,19 @@ class Project extends React.Component {
                             :
                             null
                         }
-                        {project.events.length
-                            ? <EventList events={project.events} />
-                            : null
+                        {project.events.edges.length
+                                ? <div id="eventList">
+                                    {project.events.edges
+                                            .filter(edge => this.state.showEnded || !edge.node.isEnded)
+                                            .map(edge => (
+                                                <EventItem
+                                                    key={edge.node.id}
+                                                    event={edge.node}
+                                                />
+                                            ))
+                                    }
+                                </div>
+                                : null
                         }
                     </div>
                 </div>
@@ -346,21 +369,8 @@ export default Relay.createContainer(Project, {
                     edges {
                         node {
                             id
-                            title
-                            start
-                            end
-                            permissions {
-                                public
-                                groups {
-                                    id
-                                    name
-                                }
-                                users {
-                                    id
-                                    name
-                                }
-                            }
-                            mdtext
+                            isEnded
+                            ${EventItem.getFragment('event')}
                         }
                     }
                 }

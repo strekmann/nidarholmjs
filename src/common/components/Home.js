@@ -6,7 +6,7 @@ import { Link } from 'react-router';
 import Text from './Text';
 import Date from './Date';
 import ContactForm from './ContactForm';
-import EventList from './EventList';
+import EventItem from './EventItem';
 
 import theme from '../theme';
 import SendContactEmailMutation from '../mutations/sendContactEmail';
@@ -100,7 +100,7 @@ class Home extends React.Component {
                         >
                             <div
                                 style={{
-                                    width: nextProject.poster ? '50%' : '75%',
+                                    width: nextProject.poster ? '40%' : '70%',
                                     minWidth: 260,
                                     padding: '0 20px',
                                     display: 'flex',
@@ -132,7 +132,7 @@ class Home extends React.Component {
                             {nextProject.poster ?
                                 <div
                                     style={{
-                                        width: '25%',
+                                        width: '30%',
                                         minWidth: 230,
                                         padding: '0 20px',
                                         marginTop: '2em',
@@ -150,9 +150,16 @@ class Home extends React.Component {
                                     </Paper>
                                 </div>
                             : null }
-                            <div style={{ width: '25%', minWidth: 230, padding: '0 20px' }}>
+                            <div style={{ width: '30%', minWidth: 230, padding: '0 20px' }}>
                                 <h2>Neste aktiviteter</h2>
-                                <EventList events={org.nextEvents} saveEvent={this.saveEvent} />
+                                <div id="eventList">
+                                    {org.nextEvents.edges.map(edge => (
+                                        <EventItem
+                                            key={edge.node.id}
+                                            event={edge.node}
+                                        />
+                                    ))}
+                                </div>
                                 <div>
                                     <Link to="events">
                                         Aktivitetskalender
@@ -278,12 +285,7 @@ export default Relay.createContainer(Home, {
                 edges {
                     node {
                         id
-                        title
-                        location
-                        start
-                        end
-                        tags
-                        mdtext
+                        ${EventItem.getFragment('event')}
                     }
                 }
             }

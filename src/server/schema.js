@@ -438,6 +438,25 @@ eventType = new GraphQLObjectType({
         tags: { type: new GraphQLList(GraphQLString) },
         mdtext: { type: GraphQLString },
         permissions: { type: permissionsType },
+        isEnded: {
+            type: GraphQLBoolean,
+            resolve: (event) => {
+                // if start or end of event is before start of today, it is no longer
+                // interesting
+                if (!event.start) {
+                    return false;
+                }
+                if (event.end) {
+                    if (moment(event.end) < moment().startOf('day')) {
+                        return true;
+                    }
+                }
+                if (moment(event.start) < moment().startOf('day')) {
+                    return true;
+                }
+                return false;
+            },
+        },
     },
     interfaces: [nodeInterface],
 });
@@ -727,16 +746,19 @@ organizationType = new GraphQLObjectType({
         },
         nextProject: {
             type: projectType,
-            resolve: (_, args, { viewer }) => authenticate(
-                Project
-                .findOne({
+            resolve: (_, args, { viewer, organization }) => {
+                let query = Project.findOne({
                     end: { $gte: moment().startOf('day').toDate() },
-                    public_mdtext: { $ne: '' },
-                })
-                .sort({ end: 1 }),
-                viewer,
-                { exclude: ['private_mdtext'] },
-            ),
+                });
+                if (!isMember(organization, viewer)) {
+                    query = query.where({ public_mdtext: { $ne: '' } });
+                }
+                return authenticate(
+                    query.sort({ end: 1 }),
+                    viewer,
+                    { exclude: ['private_mdtext'] },
+                );
+            },
         },
         nextProjects: {
             type: connectionDefinitions({
