@@ -43,3 +43,12 @@ The `Date` and `DateFromNow` component has to support input of three types:
 * string, as is the case for server rendering
 * moment object, as is the case for client rendering when server has rendered
   from string to moment first
+
+Restore database dump
+---------------------
+
+When dumping from 3.2 and restoring in 3.4, we need to pass --noIndexRestore:
+
+`mongorestore -d nidarholm-dev dump/nidarholm --noIndexRestore`
+
+[https://stackoverflow.com/questions/41036442/mongodb-dump-from-3-2-restore-with-3-4-error-index-save-null]
