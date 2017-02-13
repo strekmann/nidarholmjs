@@ -269,7 +269,7 @@ class Project extends React.Component {
                     </div>
                     <div style={{ width: 300, padding: '0 15px' }}>
                         {project.poster ?
-                            <img alt="Konsertplakat" src={project.poster.largePath} />
+                            <img alt="Konsertplakat" src={project.poster.largePath} className="responsive" />
                             :
                             null
                         }

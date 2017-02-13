@@ -85,6 +85,9 @@ a {
 
 img {
     border: none;
+    &.responsive {
+        width: 100%;
+    }
 }
 
 h1 {
