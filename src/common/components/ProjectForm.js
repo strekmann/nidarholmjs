@@ -8,6 +8,7 @@ import React from 'react';
 import Relay from 'react-relay';
 
 import PermissionField from './PermissionField';
+import { flattenPermissions } from '../utils';
 
 let DateTimeFormat;
 if (areIntlLocalesSupported(['nb'])) {
@@ -27,7 +28,7 @@ class ProjectForm extends React.Component {
         publicMdtext: React.PropTypes.string,
         start: React.PropTypes.string,
         end: React.PropTypes.string,
-        permissions: React.PropTypes.array,
+        permissions: React.PropTypes.object,
     }
 
     state = {
@@ -37,7 +38,7 @@ class ProjectForm extends React.Component {
         publicMdtext: this.props.publicMdtext || '',
         start: this.props.start ? moment(this.props.start).toDate() : null,
         end: this.props.end ? moment(this.props.end).toDate() : null,
-        permissions: this.props.permissions || [],
+        permissions: this.props.permissions ? flattenPermissions(this.props.permissions) : [],
     };
 
     onChangeTitle = (event, title) => {
@@ -99,7 +100,7 @@ class ProjectForm extends React.Component {
             publicMdtext: this.state.publicMdtext,
             start: this.state.start,
             end: this.state.end,
-            permissions: this.state.permissions,
+            permissions: this.state.permissions.map(p => p.id),
         }, {
             onSuccess: () => {
                 if (!this.props.id) {

@@ -611,6 +611,9 @@ projectType = new GraphQLObjectType({
                 },
             })),
         },
+        permissions: {
+            type: permissionsType,
+        },
     },
     interfaces: [nodeInterface],
 });

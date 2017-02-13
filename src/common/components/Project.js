@@ -21,11 +21,13 @@ import ProjectForm from './ProjectForm';
 import FileList from './FileList';
 import FileUpload from './FileUpload';
 import MusicList from './MusicList';
+import PermissionChips from './PermissionChips';
 import AddEventMutation from '../mutations/addEvent';
 import AddFileMutation from '../mutations/addFile';
 import SaveFilePermissionsMutation from '../mutations/saveFilePermissions';
 import SaveProjectMutation from '../mutations/saveProject';
 import SetProjectPosterMutation from '../mutations/setProjectPoster';
+import { flattenPermissions } from '../utils';
 import theme from '../theme';
 
 class Project extends React.Component {
@@ -233,6 +235,10 @@ class Project extends React.Component {
                     }}
                 >
                     <div style={{ padding: '0 15px', maxWidth: 664 }}>
+                        <PermissionChips
+                            permissions={flattenPermissions(project.permissions)}
+                            memberGroupId={org.memberGroup.id}
+                        />
                         {project.publicMdtext
                             ? <div>
                                 <h2>Informasjon</h2>
@@ -405,6 +411,17 @@ export default Relay.createContainer(Project, {
                         id
                         title
                         composers
+                    }
+                }
+                permissions {
+                    public
+                    groups {
+                        id
+                        name
+                    }
+                    users {
+                        id
+                        name
                     }
                 }
             }
