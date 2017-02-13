@@ -127,10 +127,9 @@ class Projects extends React.Component {
                         <ProjectList
                             projects={org.previousProjects}
                         />
-                        {org.previousProjects.pageInfo.hasNextPage ?
-                            <RaisedButton primary onClick={this.loadMorePreviousProjects}>Mer</RaisedButton>
-                            :
-                                null
+                        {org.previousProjects.pageInfo.hasNextPage
+                                ? <RaisedButton primary onClick={this.loadMorePreviousProjects} label="Mer" />
+                                : null
                         }
                     </div>
                 </div>
