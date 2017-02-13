@@ -20,7 +20,7 @@ export default class ProjectItem extends React.Component {
     }
 
     render() {
-        const widePoster = moment(this.props.end).isAfter(moment([2017, 0, 31]));
+        const widePoster = moment(this.props.end).isAfter(moment([2016, 7, 1]));
         if (widePoster) {
             return (
                 <Paper style={{ marginBottom: 20 }}>
