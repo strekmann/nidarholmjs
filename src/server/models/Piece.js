@@ -1,8 +1,9 @@
 import mongoose from 'mongoose';
+import uuid from 'node-uuid';
 import schemaOptions from './schemaOptions';
 
 const PieceSchema = new mongoose.Schema({
-    _id: { type: String, required: true, unique: true },
+    _id: { type: String, required: true, unique: true, default: uuid.v4 },
     title: { type: String, trim: true, required: true },
     subtitle: { type: String, trim: true },
     description: { type: String, trim: true },
