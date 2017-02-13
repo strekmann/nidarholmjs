@@ -1636,11 +1636,11 @@ const mutationSaveProject = mutationWithClientMutationId({
         return Project.findByIdAndUpdate(projectId, {
             title,
             tag,
-            privateMdtext,
-            publicMdtext,
+            private_mdtext: privateMdtext,
+            public_mdtext: publicMdtext,
             start: startMoment,
             end: endMoment,
-            permissions,
+            permissions: permissionObj,
         }).exec();
     },
 });
