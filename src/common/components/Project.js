@@ -233,13 +233,6 @@ class Project extends React.Component {
                     }}
                 >
                     <div style={{ padding: '0 15px', maxWidth: 664 }}>
-                        {project.music.length
-                                ? <div>
-                                    <h2>Repertoar</h2>
-                                    <MusicList music={project.music} isMember={isMember} />
-                                </div>
-                                : null
-                        }
                         {project.publicMdtext
                             ? <div>
                                 <h2>Informasjon</h2>
@@ -253,6 +246,13 @@ class Project extends React.Component {
                                 <Text text={project.privateMdtext} />
                             </div>
                             : null
+                        }
+                        {project.music.length
+                                ? <div>
+                                    <h2>Repertoar</h2>
+                                    <MusicList music={project.music} isMember={isMember} />
+                                </div>
+                                : null
                         }
                         {isMember && project.files.edges.length
                             ? <FileList
