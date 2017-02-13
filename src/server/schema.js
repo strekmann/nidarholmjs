@@ -1675,7 +1675,7 @@ const mutationSetPassword = mutationWithClientMutationId({
                     user.salt = passwordHash.salt;
                     user.password = passwordHash.hashedPassword;
                     return user.save();
-                })
+                }),
             );
     },
 });
@@ -1699,12 +1699,12 @@ const mutationSendReset = mutationWithClientMutationId({
         return User
             .findOne({ email: { $regex: pattern } })
             .exec()
-            .then(user => {
+            .then((user) => {
                 if (user) {
                     const code = new PasswordCode();
                     code.user = user._id;
-                    return code.save().then(newCode => {
-                        const message =  `Hei ${user.name}\r\n\r\nDet kan se ut som du holder på å sette nytt passord. Hvis du ikke prøver på dette, ber vi deg se bort fra denne eposten. For å sette nytt passord, må du gå til lenka:\r\n${config.site.domain}/login/reset/${newCode._id}`;
+                    return code.save().then((newCode) => {
+                        const message = `Hei ${user.name}\r\n\r\nDet kan se ut som du holder på å sette nytt passord. Hvis du ikke prøver på dette, ber vi deg se bort fra denne eposten. For å sette nytt passord, må du gå til lenka:\r\n${config.site.domain}/login/reset/${newCode._id}`;
                         if (config.auth && config.auth.smtp && config.auth.smtp.host) {
                             const transporter = nodemailer.createTransport(config.auth.smtp);
                             const mailOptions = {
