@@ -395,7 +395,7 @@ export default Relay.createContainer(Project, {
                             }
                             tags
                             isImage
-                            normalPath
+                            thumbnailPath
                             path
                         }
                     }
