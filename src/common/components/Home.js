@@ -113,7 +113,7 @@ class Home extends React.Component {
                         >
                             <div
                                 style={{
-                                    width: nextProject.poster ? '40%' : '70%',
+                                    width: '70%',
                                     minWidth: 260,
                                     padding: '0 20px',
                                     display: 'flex',
@@ -122,10 +122,24 @@ class Home extends React.Component {
                                 }}
                             >
                                 <h2>Neste konsert</h2>
+                                {nextProject.poster ?
+                                        <Link
+                                            to={`/${nextProject.year}/${nextProject.tag}`}
+                                        >
+                                            <img
+                                                alt="Konsertplakat"
+                                                src={nextProject.poster.normalPath}
+                                                className="responsive"
+                                            />
+                                        </Link>
+                                        : null
+                                }
                                 <Link
                                     to={`/${nextProject.year}/${nextProject.tag}`}
                                     style={{
                                         fontSize: '3rem',
+                                        paddingTop: '1.5rem',
+                                        paddingBottom: '1.5rem',
                                     }}
                                 >
                                     {nextProject.title}
@@ -142,27 +156,6 @@ class Home extends React.Component {
                                     </Link>
                                 </div>
                             </div>
-                            {nextProject.poster ?
-                                <div
-                                    style={{
-                                        width: '30%',
-                                        minWidth: 230,
-                                        padding: '0 20px',
-                                        marginTop: '2em',
-                                    }}
-                                >
-                                    <Paper>
-                                        <Link
-                                            to={`/${nextProject.year}/${nextProject.tag}`}
-                                        >
-                                            <img
-                                                alt="Konsertplakat"
-                                                src={nextProject.poster.normalPath}
-                                            />
-                                        </Link>
-                                    </Paper>
-                                </div>
-                            : null }
                             <div style={{ width: '30%', minWidth: 230, padding: '0 20px' }}>
                                 <h2>Neste aktiviteter</h2>
                                 <div id="eventList">
