@@ -36,8 +36,15 @@ class Project extends React.Component {
         relay: Relay.PropTypes.Environment,
     };
 
+    static defaultProps = {
+        viewer: {
+            groups: [],
+            friends: [],
+        },
+    }
+
     static propTypes = {
-        organization: React.PropTypes.object,
+        organization: React.PropTypes.object.isRequired,
         viewer: React.PropTypes.object,
     }
 
@@ -73,7 +80,7 @@ class Project extends React.Component {
     }
 
     onDrop = (files, permissions) => {
-        files.forEach(file => {
+        files.forEach((file) => {
             const data = new FormData();
             data.append('file', file);
 
@@ -87,18 +94,26 @@ class Project extends React.Component {
                     tags: [this.props.organization.project.tag],
                     filename: file.name,
                     projectTag: this.props.organization.project.tag,
-                }), {
-                    onSuccess: () => {
-                        // console.log("successfile");
-                    },
-                    onFailure: transaction => {
-                        console.error(transaction.getError().source.errors);
-                    },
-                });
-            })
-            .catch(error => {
-                console.error("err", error);
+                }));
             });
+        });
+    }
+
+    onSetProjectPoster = (file) => {
+        this.context.relay.commitUpdate(new SetProjectPosterMutation({
+            organization: this.props.organization,
+            fileId: file,
+            projectId: this.props.organization.project.id,
+        }));
+    }
+
+    onSaveFilePermissions = (file, permissions, onSuccess) => {
+        this.context.relay.commitUpdate(new SaveFilePermissionsMutation({
+            organization: this.props.organization,
+            fileId: file,
+            permissions: permissions.map(permission => permission.id),
+        }), {
+            onSuccess,
         });
     }
 
@@ -140,28 +155,7 @@ class Project extends React.Component {
             onSuccess: () => {
                 this.closeAddEvent();
             },
-            onFailure: (error, ost, kake) => {
-                console.error('AD', error, ost, kake);
-            },
         });
-    }
-
-    onSaveFilePermissions = (file, permissions, onSuccess) => {
-        this.context.relay.commitUpdate(new SaveFilePermissionsMutation({
-            organization: this.props.organization,
-            fileId: file,
-            permissions: permissions.map(permission => permission.id),
-        }), {
-            onSuccess,
-        });
-    }
-
-    onSetProjectPoster = (file) => {
-        this.context.relay.commitUpdate(new SetProjectPosterMutation({
-            organization: this.props.organization,
-            fileId: file,
-            projectId: this.props.organization.project.id,
-        }));
     }
 
     saveProject = (project, callbacks) => {
@@ -292,13 +286,13 @@ class Project extends React.Component {
                         {project.events.edges.length
                                 ? <div id="eventList">
                                     {project.events.edges
-                                            .filter(edge => this.state.showEnded || !edge.node.isEnded)
-                                            .map(edge => (
-                                                <EventItem
-                                                    key={edge.node.id}
-                                                    event={edge.node}
-                                                />
-                                            ))
+                                        .filter(edge => this.state.showEnded || !edge.node.isEnded)
+                                        .map(edge => (
+                                            <EventItem
+                                                key={edge.node.id}
+                                                event={edge.node}
+                                            />
+                                        ))
                                     }
                                 </div>
                                 : null

@@ -1,6 +1,8 @@
+/* eslint "react/require-default-props": 0 */
+
 import React from 'react';
 import { Link } from 'react-router';
-import { Card, CardTitle, CardText, CardMedia, CardActions } from 'material-ui/Card';
+import { Card, CardTitle, CardMedia, CardActions } from 'material-ui/Card';
 import Chip from 'material-ui/Chip';
 import ArrowDown from 'material-ui/svg-icons/navigation/arrow-drop-down';
 import Dialog from 'material-ui/Dialog';
@@ -16,20 +18,21 @@ import { flattenPermissions } from '../utils';
 
 export default class FileItem extends React.Component {
     static propTypes = {
-        id: React.PropTypes.string,
-        filename: React.PropTypes.string,
-        created: React.PropTypes.string,
-        mimetype: React.PropTypes.string,
-        size: React.PropTypes.number,
+        id: React.PropTypes.string.isRequired,
+        filename: React.PropTypes.string.isRequired,
+        // created: React.PropTypes.string.isRequired,
+        // mimetype: React.PropTypes.string.isRequired,
+        // size: React.PropTypes.number.isRequired,
         tags: React.PropTypes.array,
         permissions: React.PropTypes.object.isRequired,
-        memberGroupId: React.PropTypes.string,
-        isImage: React.PropTypes.bool,
-        thumbnailPath: React.PropTypes.string,
+        memberGroupId: React.PropTypes.string.isRequired,
+        isImage: React.PropTypes.bool.isRequired,
+        thumbnailPath: React.PropTypes.string.isRequired,
         path: React.PropTypes.string,
         onSavePermissions: React.PropTypes.func.isRequired,
         onSetProjectPoster: React.PropTypes.func,
         viewer: React.PropTypes.object,
+        searchTag: React.PropTypes.func,
     }
 
     state = {
@@ -41,16 +44,8 @@ export default class FileItem extends React.Component {
         this.setState({ permissions });
     }
 
-    toggleEditPermissions = () => {
-        this.setState({
-            editPermissions: !this.state.editPermissions,
-        });
-    }
-
-    closeEditPermissions = () => {
-        this.setState({
-            editPermissions: false,
-        });
+    setProjectPoster = () => {
+        this.props.onSetProjectPoster(this.props.id);
     }
 
     savePermissions = (event) => {
@@ -62,8 +57,16 @@ export default class FileItem extends React.Component {
         });
     }
 
-    setProjectPoster = () => {
-        this.props.onSetProjectPoster(this.props.id);
+    closeEditPermissions = () => {
+        this.setState({
+            editPermissions: false,
+        });
+    }
+
+    toggleEditPermissions = () => {
+        this.setState({
+            editPermissions: !this.state.editPermissions,
+        });
     }
 
     searchTag = (tag) => {
@@ -128,7 +131,7 @@ export default class FileItem extends React.Component {
                         onTouchTap={() => this.searchTag(tag)}
                     >
                         {tag}
-                    </Chip>
+                    </Chip>,
                     )}
                 </CardActions>
                 {this.state.editPermissions

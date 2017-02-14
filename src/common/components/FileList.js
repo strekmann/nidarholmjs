@@ -1,3 +1,5 @@
+/* eslint "react/require-default-props": 0 */
+
 import React from 'react';
 
 import FileItem from './FileItem';
@@ -11,6 +13,7 @@ export default class FileList extends React.Component {
         onSavePermissions: React.PropTypes.func,
         onSetProjectPoster: React.PropTypes.func,
         viewer: React.PropTypes.object,
+        searchTag: React.PropTypes.func,
     }
     render() {
         const style = this.props.style || {};
