@@ -19,7 +19,7 @@ class Piece extends React.Component {
     };
 
     static propTypes = {
-        organization: React.PropTypes.object,
+        organization: React.PropTypes.object.isRequired,
     }
 
     static childContextTypes = {
@@ -36,7 +36,7 @@ class Piece extends React.Component {
     }
 
     uploadScores = (files, group) => {
-        files.forEach(file => {
+        files.forEach((file) => {
             const data = new FormData();
             data.append('file', file);
 
@@ -49,17 +49,7 @@ class Piece extends React.Component {
                     filename: file.name,
                     group,
                     piece: this.props.organization.piece,
-                }), {
-                    onSuccess: () => {
-                        // console.log("successfile");
-                    },
-                    onFailure: transaction => {
-                        console.error(transaction.getError().source.errors);
-                    },
-                });
-            })
-            .catch(error => {
-                console.error("err", error);
+                }));
             });
         });
     }
@@ -74,24 +64,22 @@ class Piece extends React.Component {
                 <h2>
                     <List items={piece.composers} /> <small><List items={piece.arrangers} /></small>
                 </h2>
-                {piece.files.edges.map(
-                    edge => <div key={edge.node.id}>
+                {piece.files.edges.map(edge => (
+                    <div key={edge.node.id}>
                         <FlatButton href={edge.node.path} label={edge.node.filename} />
                     </div>
-                    )
-                }
+                ))}
 
                 {org.isMusicscoreadmin ?
                     <div>
                         <h2>Admin</h2>
-                        {piece.groupscores.map(
-                            group => <GroupScores
+                        {piece.groupscores.map(group => (
+                            <GroupScores
                                 key={group.id}
                                 uploadScores={this.uploadScores}
                                 {...group}
                             />
-                            )
-                        }
+                        ))}
                     </div>
                     : null}
             </section>
@@ -142,4 +130,3 @@ export default Relay.createContainer(Piece, {
         }`,
     },
 });
-
