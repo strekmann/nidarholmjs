@@ -79,6 +79,7 @@ module.exports = {
     organization: 'nidarholm',
     profile_picture_tag: 'profilbilde',
     site: {
+        protocol: 'https',
         domain: 'nidarholm.no',
     },
 };

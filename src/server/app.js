@@ -4,28 +4,24 @@ import RelayLocalSchema from 'relay-local-schema';
 import 'cookie-parser';
 import config from 'config';
 import moment from 'moment';
-// import Helmet from 'react-helmet';
+import Helmet from 'react-helmet';
 import { match } from 'react-router';
 import routes from '../common/routes';
 // import headconfig from '../common/components/Meta';
 import schema from './schema';
 
-function renderFullPage(renderedContent, initialState, head = {
-    title: '<title>Nidarholm</title>',
-    meta: '<meta name="viewport" content="width=device-width, initial-scale=1" />',
-    link: '<link rel="stylesheet" href="/styles.css"/>',
-}) {
+function renderFullPage(renderedContent, initialState, head) {
     let link = '';
     if (config.get('html.style')) {
-        link = head.link;
+        link = head.link.toString();
     }
     return `
     <!doctype html>
     <html>
     <head>
         <meta charset="utf-8" />
-        ${head.title}
-        ${head.meta}
+        ${head.title.toString()}
+        ${head.meta.toString()}
         ${link}
     </head>
     <body>
@@ -67,9 +63,9 @@ export default function render(req, res, next) {
                 try {
                     global.navigator = { userAgent: req.headers['user-agent'] };
                     const renderedContent = ReactDOMServer.renderToString(Router.render(props));
-                    // const helmet = Helmet.rewind();
+                    const head = Helmet.rewind();
 
-                    const renderedPage = renderFullPage(renderedContent, data);
+                    const renderedPage = renderFullPage(renderedContent, data, head);
                     return res.send(renderedPage);
                 }
                 catch (err) {

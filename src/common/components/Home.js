@@ -1,3 +1,5 @@
+/* eslint "react/no-danger": 0 */
+
 import React from 'react';
 import Relay from 'react-relay';
 import getMuiTheme from 'material-ui/styles/getMuiTheme';
@@ -22,8 +24,7 @@ class Home extends React.Component {
     }
 
     static propTypes = {
-        viewer: React.PropTypes.object,
-        organization: React.PropTypes.object,
+        organization: React.PropTypes.object.isRequired,
     }
 
     constructor(props) {
@@ -123,16 +124,16 @@ class Home extends React.Component {
                             >
                                 <h2>Neste konsert</h2>
                                 {nextProject.poster ?
-                                        <Link
-                                            to={`/${nextProject.year}/${nextProject.tag}`}
-                                        >
-                                            <img
-                                                alt="Konsertplakat"
-                                                src={nextProject.poster.normalPath}
-                                                className="responsive"
-                                            />
-                                        </Link>
-                                        : null
+                                    <Link
+                                        to={`/${nextProject.year}/${nextProject.tag}`}
+                                    >
+                                        <img
+                                            alt="Konsertplakat"
+                                            src={nextProject.poster.normalPath}
+                                            className="responsive"
+                                        />
+                                    </Link>
+                                    : null
                                 }
                                 <Link
                                     to={`/${nextProject.year}/${nextProject.tag}`}

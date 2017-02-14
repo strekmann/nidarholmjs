@@ -689,6 +689,14 @@ organizationType = new GraphQLObjectType({
             type: GraphQLString,
             resolve: organization => organization.map_url,
         },
+        facebookAppid: {
+            type: GraphQLString,
+            resolve: () => config.auth.facebook.clientId,
+        },
+        baseurl: {
+            type: GraphQLString,
+            resolve: () => `${config.site.protocol}://${config.site.domain}`,
+        },
         contactText: {
             type: GraphQLString,
             resolve: organization => organization.contact_text,
