@@ -1,6 +1,7 @@
 /* global FormData */
 
 import React from 'react';
+import Helmet from 'react-helmet';
 import Relay from 'react-relay';
 import axios from 'axios';
 
@@ -185,9 +186,18 @@ class Project extends React.Component {
         const org = this.props.organization;
         const project = this.props.organization.project;
         const isMember = this.props.organization.isMember;
-        const hasEndedActivities = project.events.edges.filter(edge => edge.node.isEnded).length > 0;
+        const hasEndedActivities = project.events.edges.filter(edge => edge.node.isEnded).length;
         return (
             <Paper className="row">
+                <Helmet
+                    title={project.title}
+                    meta={[
+                        { property: 'og:title', content: project.title },
+                        { property: 'og:description', content: project.publicMdtext },
+                        { property: 'og:image', content: project.poster ? `${org.baseurl}/${project.poster.largePath}` : '' },
+                        { property: 'og:url', content: `${org.baseurl}/${project.year}/${project.tag}` },
+                    ]}
+                />
                 <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                     <div>
                         <h1>{project.title}</h1>
@@ -355,6 +365,7 @@ export default Relay.createContainer(Project, {
             memberGroup {
                 id
             }
+            baseurl
             project(year:$year, tag:$tag) {
                 id
                 title
