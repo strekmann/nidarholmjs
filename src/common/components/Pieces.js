@@ -26,9 +26,8 @@ class Pieces extends React.Component {
     };
 
     static propTypes = {
-        viewer: React.PropTypes.object,
-        organization: React.PropTypes.object,
-        relay: React.PropTypes.object,
+        organization: React.PropTypes.object.isRequired,
+        relay: React.PropTypes.object.isRequired,
     }
 
     static childContextTypes = {
@@ -53,22 +52,6 @@ class Pieces extends React.Component {
         return { muiTheme: this.muiTheme };
     }
 
-    handleClickNewPiece = () => {
-        this.setState({ newPiece: true });
-    }
-
-    handleSubmitNewPiece = (event) => {
-        event.preventDefault();
-        this.setState({ addPiece: false });
-        this.context.relay.commitUpdate(new CreatePieceMutation({
-            composers: this.state.composers.split(','),
-            arrangers: this.state.arrangers.split(','),
-            title: this.state.term,
-            subtitle: this.state.subtitle,
-            organization: this.props.organization,
-        }));
-    }
-
     onSearchChange = (event, term) => {
         this.setState({
             term,
@@ -89,6 +72,22 @@ class Pieces extends React.Component {
         this.props.relay.setVariables({
             term: '',
         });
+    }
+
+    handleClickNewPiece = () => {
+        this.setState({ newPiece: true });
+    }
+
+    handleSubmitNewPiece = (event) => {
+        event.preventDefault();
+        this.setState({ addPiece: false });
+        this.context.relay.commitUpdate(new CreatePieceMutation({
+            composers: this.state.composers.split(','),
+            arrangers: this.state.arrangers.split(','),
+            title: this.state.term,
+            subtitle: this.state.subtitle,
+            organization: this.props.organization,
+        }));
     }
 
     handleChangeTitle = (event, title) => {
