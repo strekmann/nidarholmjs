@@ -189,7 +189,7 @@ class Navigation extends React.Component {
                     <div>
                         <IconButton
                             className="flex-menu-handler"
-                            onClick={this.handleOpen}
+                            onTouchTap={this.handleOpen}
                             touch
                         >
                             <NavigationMenu color={fullWhite} />
