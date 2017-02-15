@@ -8,8 +8,8 @@ import Helmet from 'react-helmet';
 import { match } from 'react-router';
 import injectTapEventPlugin from 'react-tap-event-plugin';
 import routes from '../common/routes';
-// import headconfig from '../common/components/Meta';
 import schema from './schema';
+
 injectTapEventPlugin();
 
 function renderFullPage(renderedContent, initialState, head) {

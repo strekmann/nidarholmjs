@@ -157,7 +157,7 @@ app.use((req, res, next) => {
 app.use(serveStatic(path.join(__dirname, '..', 'static')));
 
 /** GraphQL **/
-app.use('/graphql', graphqlHTTP(req => {
+app.use('/graphql', graphqlHTTP((req) => {
     const contextValue = { viewer: req.user, organization: req.organization, file: req.file };
     return {
         schema,
@@ -168,15 +168,15 @@ app.use('/graphql', graphqlHTTP(req => {
     };
 }));
 
-app.post('/upload', upload, (req, res, next) => {
+app.post('/upload', upload, (req, res, next) => (
     // FIXME: Add check on org membership
-    return saveFile(req.file.path, config.files.raw_prefix).then(
+    saveFile(req.file.path, config.files.raw_prefix).then(
         _file => res.json(_file),
     )
-    .catch(error => {
+    .catch((error) => {
         console.error(error);
-    });
-});
+    })
+));
 
 app.get('/organization/updated_email_lists.json/:groups', groupEmailApiRoute);
 
@@ -285,18 +285,18 @@ app.post(
     persistentLogin,
     (req, res, next) => {
         res.redirect('/');
-    }
+    },
 );
 
 app.get('/login/reset/:code', (req, res, next) => (
     PasswordCode.findById(req.params.code).exec()
-    .then(passwordCode => {
+    .then((passwordCode) => {
         if (!passwordCode || passwordCode.created < moment().subtract(1, 'hours')) {
             return res.redirect('/login/reset');
         }
         return User.findById(passwordCode.user).exec()
-        .then(user => {
-            req.logIn(user, err => {
+        .then((user) => {
+            req.logIn(user, (err) => {
                 if (err) {
                     throw err;
                 }
@@ -318,7 +318,7 @@ app.post('/login/register', (req, res, next) => {
         user.password = hashedPassword.hashedPassword;
         user.algorithm = hashedPassword.algorithm;
         user.salt = hashedPassword.salt;
-        return user.save().then(newUser => {
+        return user.save().then((newUser) => {
             req.logIn(newUser, (err) => {
                 if (err) {
                     throw err;
@@ -418,7 +418,8 @@ app.get(
 );
 */
 // app.put('/organization/admin/admin_group', organization_routes.set_admin_group);
-// app.put('/organization/admin/musicscoreadmin_group', organization_routes.set_musicscoreadmin_group);
+// app.put('/organization/admin/musicscoreadmin_group',
+// organization_routes.set_musicscoreadmin_group);
 
 // app.get('/projects', project_routes.index);
 app.get('/projects', universal);
@@ -437,7 +438,7 @@ app.get('/projects', universal);
 // app.delete('/projects/:project_id/music', project_routes.remove_piece);
 
 // app.use('/', require('./routes/pages'));
-//app.use('/', universal);
+// app.use('/', universal);
 
 /** API endpoints **/
 // app.use('/api/1/auth', api.auth);

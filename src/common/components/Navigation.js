@@ -1,3 +1,5 @@
+/* eslint "react/require-default-props": 0 */
+
 import React from 'react';
 import Relay from 'react-relay';
 import ActionLockOpen from 'material-ui/svg-icons/action/lock-open';

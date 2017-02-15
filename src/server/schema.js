@@ -49,7 +49,6 @@ let projectType;
 let fileType;
 let pageType;
 let pieceType;
-let groupScoreType;
 
 const { nodeInterface, nodeField } = nodeDefinitions(
     // FIXME: Add permission checks
@@ -110,13 +109,13 @@ const { nodeInterface, nodeField } = nodeDefinitions(
             return pageType;
         }
         return null;
-    }
+    },
 );
 
 function member(organization, user) {
     let organizationMember = { user, role: null };
     if (user) {
-        organization.member_group.members.forEach(_m => {
+        organization.member_group.members.forEach((_m) => {
             if (
                 (_m.user !== null && typeof _m.user === 'object' && _m.user.id === user.id) ||
                 _m.user === user.id
@@ -136,7 +135,7 @@ function isMember(organization, user) {
 function admin(organization, user) {
     let organizationAdmin = null;
     if (user) {
-        organization.administration_group.members.forEach(_m => {
+        organization.administration_group.members.forEach((_m) => {
             if (
                 (_m.user !== null && typeof _m.user === 'object' && _m.user.id === user.id) ||
                 _m.user === user.id
@@ -153,7 +152,7 @@ function admin(organization, user) {
 function musicscoreadmin(organization, user) {
     if (user) {
         return Group.findById(organization.musicscoreadmin_group).exec().then(
-            group => group.members.map(_member => _member.user).includes(user.id)
+            group => group.members.map(_member => _member.user).includes(user.id),
         );
     }
     return false;
@@ -172,10 +171,10 @@ function authenticate(query, viewer, options = {}) {
         query.where({ 'permissions.public': true });
         const select = {};
         if (options.exclude) {
-            options.exclude.forEach(exclude => { select[exclude] = 0; });
+            options.exclude.forEach((exclude) => { select[exclude] = 0; });
         }
         if (options.include) {
-            options.include.forEach(include => { select[include] = 1; });
+            options.include.forEach((include) => { select[include] = 1; });
         }
 
         query.select(select);
@@ -465,13 +464,13 @@ const eventConnection = connectionDefinitions({
     nodeType: eventType,
 });
 
-groupScoreType = new GraphQLObjectType({
+const groupScoreType = new GraphQLObjectType({
     name: 'Groupscore',
     fields: () => ({
         id: globalIdField('Groupscore'),
         name: {
             type: GraphQLString,
-            resolve: (group) => group.name,
+            resolve: group => group.name,
         },
         files: {
             type: fileConnection.connectionType,
@@ -519,7 +518,7 @@ pieceType = new GraphQLObjectType({
                 return organization.instrument_groups
                 .map(groupId => Group.findById(groupId)
                      .exec()
-                     .then(_group => {
+                     .then((_group) => {
                          const group = _group.toObject();
                          group.scores = piece.scores;
                          return group;
@@ -580,7 +579,7 @@ projectType = new GraphQLObjectType({
         conductors: { type: new GraphQLList(userType) },
         poster: {
             type: fileType,
-            resolve: (a) => File.findById(a.poster).exec(),
+            resolve: a => File.findById(a.poster).exec(),
         },
         events: {
             type: eventConnection.connectionType,
@@ -605,7 +604,7 @@ projectType = new GraphQLObjectType({
                     id: { type: GraphQLString },
                     piece: {
                         type: pieceType,
-                        resolve: (music) => Piece.findById(music.piece).exec(),
+                        resolve: music => Piece.findById(music.piece).exec(),
                     },
                     parts: { type: GraphQLString },
                 },
@@ -635,12 +634,12 @@ pageType = new GraphQLObjectType({
         created: { type: GraphQLDate },
         creator: {
             type: userType,
-            resolve: (page) => User.findById(page.creator).exec(),
+            resolve: page => User.findById(page.creator).exec(),
         },
         updated: { type: GraphQLDate },
         updator: {
             type: userType,
-            resolve: (page) => User.findById(page.updator).exec(),
+            resolve: page => User.findById(page.updator).exec(),
         },
         permissions: {
             type: permissionsType,
@@ -730,9 +729,7 @@ organizationType = new GraphQLObjectType({
                 match: { externally_hidden: { $ne: true } },
             })
             .exec()
-            .then(
-                _organization => _organization.instrument_groups
-            ),
+            .then(_organization => _organization.instrument_groups),
         },
         users: {
             type: new GraphQLList(userType),
@@ -866,7 +863,7 @@ organizationType = new GraphQLObjectType({
         },
         summaries: {
             type: new GraphQLList(pageType),
-            resolve: (organization) => Organization
+            resolve: organization => Organization
             .findById(organization.id)
             .populate({ path: 'summaries', select: 'summary title slug' })
             .exec()
@@ -879,7 +876,7 @@ organizationType = new GraphQLObjectType({
                     id: { type: GraphQLString },
                     user: {
                         type: userType,
-                        resolve: (_member) => _member.user,
+                        resolve: _member => _member.user,
                     },
                     role: { type: new GraphQLObjectType({
                         name: 'Role',
@@ -917,7 +914,7 @@ organizationType = new GraphQLObjectType({
                 const tags = args.tags.split('|');
                 let query = File.find().sort('-created');
                 if (args.tags.length) {
-                    query = query.where({ tags: { '$all': tags } });
+                    query = query.where({ tags: { $all: tags } });
                 }
                 return connectionFromMongooseQuery(
                     authenticate(query, viewer),
@@ -982,11 +979,10 @@ organizationType = new GraphQLObjectType({
                     { $limit: 20 },
                     { $project: { _id: 1, count: 1 } },
                 )
-                    .then(aggregatedTags => {
-                        return aggregatedTags.map(tag => {
-                            return { tag: tag._id, count: tag.count };
-                        });
-                    });
+                    .then(aggregatedTags => aggregatedTags.map(tag => ({
+                        tag: tag._id,
+                        count: tag.count,
+                    })));
             },
         },
         group: {
@@ -1039,7 +1035,7 @@ const mutationEditDescription = mutationWithClientMutationId({
     outputFields: {
         organization: {
             type: organizationType,
-            resolve: (payload) => payload,
+            resolve: payload => payload,
         },
     },
     mutateAndGetPayload: ({ orgid, description_nb }) => {
@@ -1111,7 +1107,7 @@ const mutationSaveFilePermissions = mutationWithClientMutationId({
     outputFields: {
         file: {
             type: fileType,
-            resolve: (payload) => payload,
+            resolve: payload => payload,
         },
     },
     mutateAndGetPayload: ({ fileId, permissions }, { viewer }) => {
@@ -1123,9 +1119,9 @@ const mutationSaveFilePermissions = mutationWithClientMutationId({
         const query = File.findByIdAndUpdate(
             id,
             { permissions: permissionObj },
-            { new: true }
+            { new: true },
         );
-        return authenticate(query, viewer).exec().then(file => {
+        return authenticate(query, viewer).exec().then((file) => {
             if (!file) {
                 throw new Error('Nothing!');
             }
@@ -1144,7 +1140,7 @@ const mutationSetProjectPoster = mutationWithClientMutationId({
     outputFields: {
         project: {
             type: projectType,
-            resolve: (payload) => payload,
+            resolve: payload => payload,
         },
     },
     mutateAndGetPayload: ({ projectId, fileId }, { viewer }) => {
@@ -1158,7 +1154,7 @@ const mutationSetProjectPoster = mutationWithClientMutationId({
             { poster: posterId },
             { new: true },
         );
-        return authenticate(query, viewer).exec().then(project => {
+        return authenticate(query, viewer).exec().then((project) => {
             if (!project) {
                 throw new Error('Nothing!');
             }
@@ -1180,7 +1176,7 @@ const mutationEditEvent = mutationWithClientMutationId({
     outputFields: {
         event: {
             type: eventType,
-            resolve: (payload) => payload,
+            resolve: payload => payload,
         },
     },
     mutateAndGetPayload: ({ eventid, title, location, start, end, mdtext }, { viewer }) => {
@@ -1193,7 +1189,7 @@ const mutationEditEvent = mutationWithClientMutationId({
             { title, location, start, end, mdtext },
             { new: true },
         );
-        return authenticate(query, viewer).exec().then(event => {
+        return authenticate(query, viewer).exec().then((event) => {
             if (!event) {
                 throw new Error('Nothing!');
             }
@@ -1273,7 +1269,7 @@ const mutationAddUser = mutationWithClientMutationId({
         .findById(organization.id)
         .populate('member_group')
         .exec()
-        .then(_organization => {
+        .then((_organization) => {
             const userId = uuid.v4();
             const user = new User({ _id: userId, username: userId, instrument, name });
             let p = Promise.resolve(_organization);
@@ -1282,10 +1278,10 @@ const mutationAddUser = mutationWithClientMutationId({
                 _organization.member_group.members.push({ user, role: instrument });
                 p = _organization.member_group.save();
             }
-            return p.then(_org => {
+            return p.then((_org) => {
                 if (groupId) {
                     const gId = fromGlobalId(groupId).id;
-                    return Group.findById(gId).exec().then(group => {
+                    return Group.findById(gId).exec().then((group) => {
                         user.groups.push(group);
                         group.members.push({ user });
                         return group.save();
@@ -1383,7 +1379,7 @@ const mutationEditPage = mutationWithClientMutationId({
     outputFields: {
         page: {
             type: pageType,
-            resolve: (payload) => payload,
+            resolve: payload => payload,
         },
     },
     mutateAndGetPayload: ({ pageid, slug, mdtext, title, summary, permissions }, { viewer }) => {
@@ -1405,7 +1401,7 @@ const mutationEditPage = mutationWithClientMutationId({
             },
             { new: true },
         );
-        return authenticate(query, viewer).exec().then(page => {
+        return authenticate(query, viewer).exec().then((page) => {
             if (!page) {
                 throw new Error('Nothing!');
             }
@@ -1480,7 +1476,7 @@ const mutationAddFile = mutationWithClientMutationId({
             project: projectTag,
         })
         .exec()
-        .then(activity => {
+        .then((activity) => {
             let newActivity = activity;
             if (!newActivity) {
                 newActivity = new Activity();
@@ -1492,7 +1488,7 @@ const mutationAddFile = mutationWithClientMutationId({
             newActivity.changes.push({ user: viewer.id, changed: file.created });
             newActivity.permissions = file.permissions;
             newActivity.modified = file.created;
-            file.tags.forEach(tag => {
+            file.tags.forEach((tag) => {
                 newActivity.tags.addToSet(tag);
             });
             if (!newActivity.content) {
@@ -1538,7 +1534,7 @@ const mutationAddScore = mutationWithClientMutationId({
         },
         newScoreEdge: {
             type: fileConnection.edgeType,
-            resolve: (payload) => ({
+            resolve: payload => ({
                 cursor: offsetToCursor(0),
                 node: payload.file,
             }),
@@ -1550,7 +1546,7 @@ const mutationAddScore = mutationWithClientMutationId({
         const permissionObj = { public: false, groups: [groupDbId], users: [] };
         return insertFile(
             filename, hex, permissionObj, [], config.files.raw_prefix, viewer, pieceDbId,
-        ).then(file => {
+        ).then((file) => {
             if (!viewer) {
                 throw new Error('Nobody!');
             }
@@ -1725,7 +1721,7 @@ const mutationSendReset = mutationWithClientMutationId({
                                 text: message,
                             };
                             return transporter.sendMail(mailOptions)
-                            .then(info => {
+                            .then((info) => {
                                 console.info('Email info:', info);
                                 return organization;
                             });
