@@ -1857,6 +1857,37 @@ const mutationCreatePiece = mutationWithClientMutationId({
     },
 });
 
+const mutationUpdatePiece = mutationWithClientMutationId({
+    name: 'UpdatePiece',
+    inputFields: {
+        id: { type: GraphQLID },
+        title: { type: new GraphQLNonNull(GraphQLString) },
+        subtitle: { type: GraphQLString },
+        composers: { type: new GraphQLList(GraphQLString) },
+        arrangers: { type: new GraphQLList(GraphQLString) },
+    },
+    outputFields: {
+        piece: {
+            type: pieceType,
+            resolve: payload => payload,
+        },
+    },
+    mutateAndGetPayload: (
+        { id, title, subtitle, composers, arrangers },
+        { viewer },
+    ) => {
+        if (!viewer) {
+            throw new Error('Nobody!');
+        }
+        const pId = fromGlobalId(id).id;
+        return Piece.findByIdAndUpdate(
+            pId,
+            { $set: { title, subtitle, composers, arrangers, creator: viewer.id } },
+            { new: true },
+        );
+    },
+});
+
 const mutationType = new GraphQLObjectType({
     name: 'Mutation',
     fields: () => ({
@@ -1880,6 +1911,7 @@ const mutationType = new GraphQLObjectType({
         leaveGroup: mutationLeaveGroup,
         sendContactEmail: mutationSendContactEmail,
         createPiece: mutationCreatePiece,
+        updatePiece: mutationUpdatePiece,
     }),
 });
 
