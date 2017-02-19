@@ -9,7 +9,7 @@ import { Strategy as FacebookStrategy } from 'passport-facebook';
 import { Strategy as TwitterStrategy } from 'passport-twitter';
 
 import RememberMeToken from '../models/RememberMeToken';
-import User from '../models/User'
+import User from '../models/User';
 
 function fetchUser(userId, callback) {
     return User
@@ -25,9 +25,13 @@ function fetchUser(userId, callback) {
     });
 }
 
-passport.serializeUser((user, done) => done(null, user._id));
+passport.serializeUser((user, done) => {
+    return done(null, user._id);
+});
 
-passport.deserializeUser((userId, done) => fetchUser(userId, done));
+passport.deserializeUser((userId, done) => {
+    return fetchUser(userId, done);
+});
 
 passport.passportLocal = new LocalStrategy({
     usernameField: 'email',
@@ -45,13 +49,15 @@ passport.passportLocal = new LocalStrategy({
             return done(null, false, { message: 'Ukjent e-postadresse eller brukernavn' });
         }
         return user.authenticate(password)
-            .then(ok => {
+            .then((ok) => {
                 if (ok) {
                     return done(null, user);
                 }
                 return done(null, false, { message: 'Galt passord' });
             })
-            .catch(err => done(err, false, { message: err.message }));
+            .catch((err) => {
+                return done(err, false, { message: err.message });
+            });
     });
 });
 

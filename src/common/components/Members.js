@@ -147,9 +147,9 @@ class Members extends React.Component {
                         <p>Mens du skriver inn navn, søker vi opp de med likest navn, i tilfelle personen allerede er registrert. For å legge inn en ny person, skriver du hele navnet og trykker enter.</p>
                         <AutoComplete
                             hintText="Navn"
-                            dataSource={org.users.map(
-                                user => ({ text: user.name, value: user.id })
-                            )}
+                            dataSource={org.users.map((user) => {
+                                return { text: user.name, value: user.id };
+                            })}
                             floatingLabelText="Navn"
                             onUpdateInput={this.onChangeUserName}
                             onNewRequest={this.onAutoCompleteChoose}
@@ -195,11 +195,15 @@ class Members extends React.Component {
                                         onChange={this.onChangeGroup}
                                     >
                                         <MenuItem primaryText="(Ingen)" />
-                                        {org.instrumentGroups.map(group => <MenuItem
-                                            key={group.id}
-                                            value={group.id}
-                                            primaryText={group.name}
-                                        />)}
+                                        {org.instrumentGroups.map((group) => {
+                                            return (
+                                                <MenuItem
+                                                    key={group.id}
+                                                    value={group.id}
+                                                    primaryText={group.name}
+                                                />
+                                            );
+                                        })}
                                     </SelectField>
                                 </div>
                                 <div>
@@ -225,15 +229,16 @@ class Members extends React.Component {
                         }
                     </Dialog>
                 </div>
-                {org.instrumentGroups.map(
-                    group => <GroupItem
-                        key={group.id}
-                        isMember={this.props.organization.isMember}
-                        isAdmin={this.props.organization.isAdmin}
-                        {...group}
-                    />
-                    )
-                }
+                {org.instrumentGroups.map((group) => {
+                    return (
+                        <GroupItem
+                            key={group.id}
+                            isMember={this.props.organization.isMember}
+                            isAdmin={this.props.organization.isAdmin}
+                            {...group}
+                        />
+                    );
+                })}
             </Paper>
         );
     }
@@ -241,36 +246,38 @@ class Members extends React.Component {
 
 export default Relay.createContainer(Members, {
     fragments: {
-        organization: () => Relay.QL`
-        fragment on Organization {
-            isMember
-            isAdmin
-            instrumentGroups {
-                id
-                name
-                members {
+        organization: () => {
+            return Relay.QL`
+            fragment on Organization {
+                isMember
+                isAdmin
+                instrumentGroups {
                     id
-                    user {
+                    name
+                    members {
                         id
-                        name
-                        username
-                        email
-                        phone
-                        membershipStatus
-                        instrument
-                    }
-                    role {
-                        title
-                        email
+                        user {
+                            id
+                            name
+                            username
+                            email
+                            phone
+                            membershipStatus
+                            instrument
+                        }
+                        role {
+                            title
+                            email
+                        }
                     }
                 }
-            }
-            users {
-                id
-                name
-                username
-            }
-            ${AddUserMutation.getFragment('organization')}
-        }`,
+                users {
+                    id
+                    name
+                    username
+                }
+                ${AddUserMutation.getFragment('organization')}
+            }`;
+        },
     },
 });
