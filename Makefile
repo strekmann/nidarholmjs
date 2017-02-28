@@ -1,9 +1,6 @@
 build:
 	npm run build
 
-watch:
-	npm run watch
-
 lint:
 	npm run lint
 
@@ -19,7 +16,10 @@ update:
 run:
 	npm run nodemon
 
+frontend:
+	npm run dev
+
 clean:
 	rm -r ./node_modules ./public
 
-.PHONY: build watch lint schema install update run clean
+.PHONY: build lint schema install update run frontend clean
