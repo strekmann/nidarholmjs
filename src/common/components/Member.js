@@ -204,7 +204,11 @@ class Member extends React.Component {
         if (user.profilePicture) {
             return (
                 <Paper>
-                    <img src={user.profilePicture.normalPath} alt={`Bilde av ${user.name}`} />
+                    <img
+                        src={user.profilePicture.normalPath}
+                        alt={`Bilde av ${user.name}`}
+                        className="responsive"
+                    />
                 </Paper>
             );
         }
