@@ -4,6 +4,7 @@ import Checkbox from 'material-ui/Checkbox';
 import DatePicker from 'material-ui/DatePicker';
 import Dialog from 'material-ui/Dialog';
 import FlatButton from 'material-ui/FlatButton';
+import { List, ListItem } from 'material-ui/List';
 import { Toolbar, ToolbarGroup } from 'material-ui/Toolbar';
 import React from 'react';
 import Relay from 'react-relay';
@@ -456,20 +457,30 @@ class Member extends React.Component {
                             {user.groups.length
                                 ? <div>
                                     <h3>Grupper</h3>
-                                    <ul>
-                                        {user.groups.map(group => (
-                                            <li key={group.id}>
-                                                <Link to={`/group/${group.id}`}>{group.name}</Link> {isAdmin
+                                    <List>
+                                        {user.groups.map((group) => {
+                                            return (
+                                                <ListItem
+                                                    key={group.id}
+                                                    primaryText={group.name}
+                                                    containerElement={
+                                                        <Link to={`/group/${group.id}`} />
+                                                    }
+                                                    rightIconButton={isAdmin
                                                         ? <IconButton
-                                                            onTouchTap={() => this.leaveGroup(user, group)}
+                                                            onClick={(event) => {
+                                                                event.preventDefault();
+                                                                return this.leaveGroup(user, group);
+                                                            }}
                                                         >
                                                             <Close />
                                                         </IconButton>
                                                         : null
-                                                }
-                                            </li>
-                                        ))}
-                                    </ul>
+                                                    }
+                                                />
+                                            );
+                                        })}
+                                    </List>
                                 </div>
                                 : null
                             }

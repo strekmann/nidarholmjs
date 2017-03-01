@@ -2,6 +2,7 @@ import AutoComplete from 'material-ui/AutoComplete';
 import Dialog from 'material-ui/Dialog';
 import FlatButton from 'material-ui/FlatButton';
 import IconButton from 'material-ui/IconButton';
+import { List, ListItem } from 'material-ui/List';
 import Paper from 'material-ui/Paper';
 import getMuiTheme from 'material-ui/styles/getMuiTheme';
 import Close from 'material-ui/svg-icons/navigation/close';
@@ -92,14 +93,33 @@ class Group extends React.Component {
                                 style={{ float: 'right' }}
                             />
                             <h1>{group.name}</h1>
-                            {members.sort((a, b) => a.user.name > b.user.name).map(member => (
-                                <div key={member.id}>
-                                    <Link to={`/users/${member.user.id}`}>{member.user.name}</Link> <small>{member.role.title}</small>
-                                    <IconButton onTouchTap={() => this.leaveGroup(member.user, group)}>
-                                        <Close />
-                                    </IconButton>
-                                </div>
-                            ))}
+                            <List>
+                                {members.sort((a, b) => {
+                                    return a.user.name > b.user.name;
+                                }).map((member) => {
+                                    return (
+                                        <ListItem
+                                            key={member.id}
+                                            containerElement={
+                                                <Link to={`/users/${member.user.id}`} />
+                                            }
+                                            primaryText={member.user.name}
+                                            secondaryText={member.role.title}
+                                            rightIconButton={isAdmin
+                                                ? <IconButton
+                                                    onClick={(event) => {
+                                                        event.preventDefault();
+                                                        return this.leaveGroup(member.user, group);
+                                                    }}
+                                                >
+                                                    <Close />
+                                                </IconButton>
+                                                : null
+                                            }
+                                        />
+                                    );
+                                })}
+                            </List>
                         </Paper>
                         : null
                 }
