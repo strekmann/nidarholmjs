@@ -8,10 +8,10 @@ schema:
 	npm run build:schema
 
 install:
-	npm install
+	yarn install
 
 update:
-	npm update
+	yarn update
 
 run:
 	npm run nodemon
@@ -19,7 +19,10 @@ run:
 frontend:
 	npm run dev
 
+deploy:
+	npm run deploy
+
 clean:
 	rm -r ./node_modules ./public
 
-.PHONY: build lint schema install update run frontend clean
+.PHONY: build lint schema install update run frontend deploy clean
