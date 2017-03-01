@@ -16,6 +16,7 @@ import Paper from 'material-ui/Paper';
 import RaisedButton from 'material-ui/RaisedButton';
 import TextField from 'material-ui/TextField';
 import ArrowDown from 'material-ui/svg-icons/navigation/arrow-drop-down';
+import Person from 'material-ui/svg-icons/social/person';
 import { lightBlue100 } from 'material-ui/styles/colors';
 import Close from 'material-ui/svg-icons/navigation/close';
 import moment from 'moment';
@@ -194,6 +195,24 @@ class Member extends React.Component {
     }
     closeJoinGroup = () => {
         this.setState({ joinGroup: false });
+    }
+
+    renderImage = () => {
+        const org = this.props.organization;
+        const member = org.member;
+        const user = member.user;
+        if (user.profilePicture) {
+            return (
+                <Paper>
+                    <img src={user.profilePicture.normalPath} alt={`Bilde av ${user.name}`} />
+                </Paper>
+            );
+        }
+        return (
+            <Paper>
+                <Person alt={`Bilde av ${user.name}`} style={{ height: 100, width: '100%', color: theme.palette.pickerHeaderColor }} />
+            </Paper>
+        );
     }
 
     render() {
@@ -469,9 +488,7 @@ class Member extends React.Component {
                         }
                     </div>
                     <div style={{ padding: '0 20px', width: '25%', minWidth: 230 }}>
-                        <Paper>
-                            <img src={user.profilePicturePath} alt={`Bilde av ${user.name}`} />
-                        </Paper>
+                        {this.renderImage()}
                         {user.born
                             ? <div>Bursdag <Date date={user.born} format="Do MMMM" /></div>
                             : null
@@ -536,8 +553,9 @@ export default Relay.createContainer(Member, {
                     instrumentInsurance
                     reskontro
                     membershipHistory
-                    profilePicture
-                    profilePicturePath
+                    profilePicture {
+                        normalPath
+                    }
                     membershipStatus
                     inList
                     onLeave

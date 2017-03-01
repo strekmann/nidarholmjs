@@ -3,6 +3,7 @@
 import React from 'react';
 import Relay from 'react-relay';
 import ActionLockOpen from 'material-ui/svg-icons/action/lock-open';
+import Person from 'material-ui/svg-icons/social/person';
 import Avatar from 'material-ui/Avatar';
 import { Menu, MenuItem } from 'material-ui/Menu';
 import IconButton from 'material-ui/IconButton';
@@ -50,6 +51,24 @@ class Navigation extends React.Component {
         });
     }
 
+    renderAvatar = () => {
+        const viewer = this.props.viewer;
+        if (viewer.profilePicture) {
+            return (
+                <Avatar
+                    src={viewer.profilePicture.thumbnailPath}
+                    style={{ margin: '0 5px' }}
+                />
+            );
+        }
+        return (
+            <Avatar
+                icon={<Person />}
+                style={{ margin: '0 5px' }}
+            />
+        );
+    }
+
     render() {
         const viewer = this.props.viewer;
         const org = this.props.organization;
@@ -74,7 +93,6 @@ class Navigation extends React.Component {
                 />
             </Link>
         );
-
         return (
             <div style={{ backgroundColor: lightBlue900 }}>
                 <div className="flex-menu-desktop">
@@ -148,10 +166,7 @@ class Navigation extends React.Component {
                                         color: 'white',
                                     }}
                                 >
-                                    <Avatar
-                                        src={viewer.profilePicturePath}
-                                        style={{ margin: '0 5px' }}
-                                    />
+                                    {this.renderAvatar()}
                                     <span>{viewer.name}</span>
                                 </Link>
                                 : <Link
@@ -176,9 +191,7 @@ class Navigation extends React.Component {
                     </div>
                     <div>
                         {this.props.viewer ? <Link to={`/users/${viewer.id}`}>
-                            <Avatar
-                                src={viewer.profilePicturePath}
-                            />
+                            {this.renderAvatar()}
                         </Link>
                         : <Link to="/login">
                             <RaisedButton
@@ -304,7 +317,9 @@ export default Relay.createContainer(Navigation, {
         fragment on User {
             id,
             name,
-            profilePicturePath,
+            profilePicture {
+                thumbnailPath
+            },
         }`,
     },
 });

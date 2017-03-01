@@ -13,7 +13,7 @@ import User from '../models/User';
 
 function fetchUser(userId, callback) {
     return User
-    .findById(userId, 'name username profile_picture_path groups')
+    .findById(userId, 'name username profile_picture groups')
     .exec((err, user) => {
         if (err) {
             return callback(err.message, null);

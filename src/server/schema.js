@@ -255,13 +255,16 @@ userType = new GraphQLObjectType({
         },
         reskontro: { type: GraphQLString },
         profilePicture: {
-            type: GraphQLString,
-            resolve: user => user.profile_picture,
+            type: fileType,
+            resolve: (user) => {
+                return File.findById(user.profile_picture).exec();
+            },
         },
-        profilePicturePath: {
-            type: GraphQLString,
-            resolve: user => user.profile_picture_path,
-        },
+        // Deprecated:
+        // profilePicturePath: {
+            // type: GraphQLString,
+            // resolve: user => user.profile_picture_path,
+        // },
         membershipStatus: {
             type: GraphQLInt,
             resolve: user => user.membership_status,
