@@ -26,6 +26,8 @@ module.exports = {
             'response-hrtime',
             'user-agent',
         ],
-        format: () => '',
+        format: () => {
+            return '';
+        },
     },
 };

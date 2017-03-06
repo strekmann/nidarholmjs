@@ -516,7 +516,7 @@ pieceType = new GraphQLObjectType({
             type: new GraphQLList(groupScoreType),
             resolve: (piece, args, { organization, viewer }) => {
                 if (!musicscoreadmin(organization, viewer)) {
-                    throw new Error('Nobody');
+                    throw new Error('Not music admin. Can not see group scores.');
                 }
                 return organization.instrument_groups
                 .map(groupId => Group.findById(groupId)
@@ -896,7 +896,7 @@ organizationType = new GraphQLObjectType({
             resolve: (_, { id }, { organization, viewer }) => {
                 const userId = fromGlobalId(id).id;
                 if (!isMember(organization, viewer) && !viewer.id === userId) {
-                    throw new Error('Nobody');
+                    throw new Error('Not a member and not self');
                 }
                 let query = User.findById(userId);
                 if (admin(organization, viewer)) {
@@ -932,7 +932,7 @@ organizationType = new GraphQLObjectType({
             },
             resolve: (_, { pieceId }, { viewer, organization }) => {
                 if (!member(organization, viewer)) {
-                    throw new Error('Nobody');
+                    throw new Error('Not a member, cannot see piece');
                 }
                 const id = fromGlobalId(pieceId).id;
                 return Piece.findById(id).exec();
@@ -1006,7 +1006,7 @@ organizationType = new GraphQLObjectType({
             type: new GraphQLList(groupType),
             resolve: (_, args, { organization, viewer }) => {
                 if (!admin(organization, viewer)) {
-                    throw new Error('Nobody');
+                    return [];
                 }
                 return Group.find().sort('name');
             },

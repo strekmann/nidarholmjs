@@ -132,6 +132,19 @@ app.use(bodyParser.json());
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'jade');
 
+// We have a possibility to override user login during development
+app.use((req, res, next) => {
+    if (process.NODE_ENV !== 'production' && config.override && config.override.user) {
+        User.findById(config.override.user).exec().then((user) => {
+            req.user = user;
+            next();
+        });
+    }
+    else {
+        next();
+    }
+});
+
 // Fetch active organization from hostname, config override
 // or pick the default.
 app.use((req, res, next) => {
