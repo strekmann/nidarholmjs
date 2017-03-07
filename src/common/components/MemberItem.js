@@ -18,6 +18,7 @@ export default class MemberItem extends React.Component {
                 <div>
                     {this.props.isMember
                         ? <ListItem
+                            disabled
                             primaryText={
                                 <div>
                                     <Link to={`/users/${user.id}`}>{user.name}</Link>
