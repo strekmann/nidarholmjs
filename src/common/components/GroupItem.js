@@ -1,4 +1,5 @@
 import { List } from 'material-ui/List';
+import Subheader from 'material-ui/Subheader';
 import React from 'react';
 import { Link } from 'react-router';
 
@@ -15,9 +16,9 @@ export default class GroupItem extends React.Component {
 
     renderHeader() {
         if (this.props.isAdmin) {
-            return <h2><Link to={`/group/${this.props.id}`}>{this.props.name}</Link></h2>;
+            return <Subheader style={{ textTransform: 'uppercase' }}><Link to={`/group/${this.props.id}`}>{this.props.name}</Link></Subheader>;
         }
-        return <h2>{this.props.name}</h2>;
+        return <Subheader style={{ textTransform: 'uppercase' }}>{this.props.name}</Subheader>;
     }
 
     render() {
