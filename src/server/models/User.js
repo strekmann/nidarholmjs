@@ -81,5 +81,7 @@ UserSchema.methods.hashPassword = function hashPassword(candidatePassword) {
 
 UserSchema.set('toJSON', schemaOptions);
 UserSchema.set('toObject', schemaOptions);
-UserSchema.virtual('_type').get(() => 'User');
+UserSchema.virtual('_type').get(() => {
+    return 'User';
+});
 export default mongoose.model('User', UserSchema);

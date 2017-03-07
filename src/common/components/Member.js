@@ -127,9 +127,6 @@ class Member extends React.Component {
                     editMember: false,
                 });
             },
-            onFailure: (error, ost, kake) => {
-                console.error('AD', error, ost, kake);
-            },
         });
     }
 
@@ -390,9 +387,9 @@ class Member extends React.Component {
                                 actions={<FlatButton label="Avbryt" onTouchTap={this.closeJoinGroup} />}
                             >
                                 <AutoComplete
-                                    dataSource={org.groups.map(
-                                        group => ({ text: `${group.name}`, value: group })
-                                    )}
+                                    dataSource={org.groups.map((group) => {
+                                        return { text: `${group.name}`, value: group };
+                                    })}
                                     floatingLabelText="Gruppe"
                                     onNewRequest={this.joinGroup}
                                     filter={AutoComplete.fuzzyFilter}
@@ -526,65 +523,69 @@ export default Relay.createContainer(Member, {
         id: null,
     },
     fragments: {
-        viewer: () => Relay.QL`
-        fragment on User {
-            id
-        }
-        `,
-        organization: () => Relay.QL`
-        fragment on Organization {
-            isMember
-            isAdmin
-            member(id:$id) {
+        viewer: () => {
+            return Relay.QL`
+            fragment on User {
                 id
-                role {
-                    title
-                    email
-                }
-                user {
+            }
+            `;
+        },
+        organization: () => {
+            return Relay.QL`
+            fragment on Organization {
+                isMember
+                isAdmin
+                member(id:$id) {
                     id
-                    username
-                    name
-                    email
-                    groups {
+                    role {
+                        title
+                        email
+                    }
+                    user {
                         id
+                        username
                         name
+                        email
+                        groups {
+                            id
+                            name
+                        }
+                        isActive
+                        isAdmin
+                        created
+                        facebookId
+                        googleId
+                        twitterId
+                        nmfId
+                        phone
+                        address
+                        postcode
+                        city
+                        country
+                        born
+                        joined
+                        instrument
+                        instrumentInsurance
+                        reskontro
+                        membershipHistory
+                        profilePicture {
+                            normalPath
+                        }
+                        membershipStatus
+                        inList
+                        onLeave
+                        noEmail
+                        ${JoinGroupMutation.getFragment('user')}
+                        ${LeaveGroupMutation.getFragment('user')}
                     }
-                    isActive
-                    isAdmin
-                    created
-                    facebookId
-                    googleId
-                    twitterId
-                    nmfId
-                    phone
-                    address
-                    postcode
-                    city
-                    country
-                    born
-                    joined
-                    instrument
-                    instrumentInsurance
-                    reskontro
-                    membershipHistory
-                    profilePicture {
-                        normalPath
-                    }
-                    membershipStatus
-                    inList
-                    onLeave
-                    noEmail
-                    ${JoinGroupMutation.getFragment('user')}
-                    ${LeaveGroupMutation.getFragment('user')}
                 }
+                groups {
+                    id
+                    name
+                }
+                ${EditUserMutation.getFragment('organization')}
             }
-            groups {
-                id
-                name
-            }
-            ${EditUserMutation.getFragment('organization')}
-        }
-        `,
+            `;
+        },
     },
 });

@@ -308,18 +308,22 @@ class Navigation extends React.Component {
 
 export default Relay.createContainer(Navigation, {
     fragments: {
-        organization: () => Relay.QL`
-        fragment on Organization {
-            id
-            isMember,
-        }`,
-        viewer: () => Relay.QL`
-        fragment on User {
-            id,
-            name,
-            profilePicture {
-                thumbnailPath
-            },
-        }`,
+        organization: () => {
+            return Relay.QL`
+            fragment on Organization {
+                id
+                isMember,
+            }`;
+        },
+        viewer: () => {
+            return Relay.QL`
+            fragment on User {
+                id,
+                name,
+                profilePicture {
+                    thumbnailPath
+                },
+            }`;
+        },
     },
 });

@@ -126,13 +126,18 @@ export default class FileItem extends React.Component {
                         memberGroupId={this.props.memberGroupId}
                         permissions={flattenPermissions(this.props.permissions)}
                     />
-                    {this.props.tags.map(tag => <Chip
-                        key={tag}
-                        onTouchTap={() => this.searchTag(tag)}
-                    >
-                        {tag}
-                    </Chip>,
-                    )}
+                    {this.props.tags.map((tag) => {
+                        return (
+                            <Chip
+                                key={tag}
+                                onTouchTap={() => {
+                                    this.searchTag(tag);
+                                }}
+                            >
+                                {tag}
+                            </Chip>
+                        );
+                    })}
                 </CardActions>
                 {this.state.editPermissions
                     ? <Dialog

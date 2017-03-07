@@ -160,12 +160,14 @@ class Home extends React.Component {
                             <div style={{ width: '30%', minWidth: 230, padding: '0 20px' }}>
                                 <h2>Neste aktiviteter</h2>
                                 <div id="eventList">
-                                    {org.nextEvents.edges.map(edge => (
-                                        <EventItem
-                                            key={edge.node.id}
-                                            event={edge.node}
-                                        />
-                                    ))}
+                                    {org.nextEvents.edges.map((edge) => {
+                                        return (
+                                            <EventItem
+                                                key={edge.node.id}
+                                                event={edge.node}
+                                            />
+                                        );
+                                    })}
                                 </div>
                                 <div>
                                     <Link to="events">
@@ -257,47 +259,51 @@ class Home extends React.Component {
 
 export default Relay.createContainer(Home, {
     fragments: {
-        viewer: () => Relay.QL`
-        fragment on User {
-            id
-            name
-            email
-            username
-        }`,
-        organization: () => Relay.QL`
-        fragment on Organization {
-            id
-            name
-            encodedEmail
-            mapUrl
-            contactText
-            summaries {
-                title
-                summary
-                slug
-            }
-            nextProject {
-                title
-                start
-                end
-                year
-                tag
-                publicMdtext
-                poster {
-                    filename
-                    normalPath
+        viewer: () => {
+            return Relay.QL`
+            fragment on User {
+                id
+                name
+                email
+                username
+            }`;
+        },
+        organization: () => {
+            return Relay.QL`
+            fragment on Organization {
+                id
+                name
+                encodedEmail
+                mapUrl
+                contactText
+                summaries {
+                    title
+                    summary
+                    slug
                 }
-            }
-            nextEvents(first:4) {
-                edges {
-                    node {
-                        id
-                        ${EventItem.getFragment('event')}
+                nextProject {
+                    title
+                    start
+                    end
+                    year
+                    tag
+                    publicMdtext
+                    poster {
+                        filename
+                        normalPath
                     }
                 }
-            }
-            ${ContactForm.getFragment('organization')}
-            ${SendContactEmailMutation.getFragment('organization')}
-        }`,
+                nextEvents(first:4) {
+                    edges {
+                        node {
+                            id
+                            ${EventItem.getFragment('event')}
+                        }
+                    }
+                }
+                ${ContactForm.getFragment('organization')}
+                ${SendContactEmailMutation.getFragment('organization')}
+            }`;
+        },
     },
 });

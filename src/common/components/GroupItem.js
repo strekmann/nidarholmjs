@@ -22,18 +22,26 @@ export default class GroupItem extends React.Component {
     }
 
     render() {
-        const members = this.props.members.filter(member => member.user);
+        const members = this.props.members.filter((member) => {
+            return member.user;
+        });
         if (!members.length) {
             return null;
         }
         return (
             <List>
                 {this.renderHeader()}
-                {members.sort((a, b) => a.user.name > b.user.name).map(member => <MemberItem
-                    key={member.id}
-                    isMember={this.props.isMember}
-                    {...member}
-                />)}
+                {members.sort((a, b) => {
+                    return a.user.name > b.user.name;
+                }).map((member) => {
+                    return (
+                        <MemberItem
+                            key={member.id}
+                            isMember={this.props.isMember}
+                            {...member}
+                        />
+                    );
+                })}
             </List>
         );
     }

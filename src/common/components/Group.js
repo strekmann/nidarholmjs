@@ -62,7 +62,9 @@ class Group extends React.Component {
     render() {
         const org = this.props.organization;
         const { group, isAdmin } = org;
-        const members = group.members.filter(member => member.user);
+        const members = group.members.filter((member) => {
+            return member.user;
+        });
         return (
             <section>
                 {isAdmin
@@ -75,9 +77,9 @@ class Group extends React.Component {
                                 actions={<FlatButton label="Avbryt" onTouchTap={this.closeJoinGroup} />}
                             >
                                 <AutoComplete
-                                    dataSource={org.users.map(
-                                        user => ({ text: `${user.name} (${user.username})`, value: user })
-                                    )}
+                                    dataSource={org.users.map((user) => {
+                                        return { text: `${user.name} (${user.username})`, value: user };
+                                    })}
                                     floatingLabelText="Navn"
                                     onNewRequest={this.joinGroup}
                                     filter={AutoComplete.fuzzyFilter}
@@ -133,37 +135,41 @@ export default Relay.createContainer(Group, {
         groupId: null,
     },
     fragments: {
-        viewer: () => Relay.QL`
-        fragment on User {
-            id
-        }
-        `,
-        organization: () => Relay.QL`
-        fragment on Organization {
-            isAdmin
-            users {
+        viewer: () => {
+            return Relay.QL`
+            fragment on User {
                 id
-                name
-                username
             }
-            group(groupId:$groupId) {
-                id
-                name
-                members {
+            `;
+        },
+        organization: () => {
+            return Relay.QL`
+            fragment on Organization {
+                isAdmin
+                users {
                     id
-                    user {
-                        id
-                        name
-                        ${JoinGroupMutation.getFragment('user')}
-                        ${LeaveGroupMutation.getFragment('user')}
-                    }
-                    role {
-                        title
-                    }
+                    name
+                    username
                 }
-                externallyHidden
+                group(groupId:$groupId) {
+                    id
+                    name
+                    members {
+                        id
+                        user {
+                            id
+                            name
+                            ${JoinGroupMutation.getFragment('user')}
+                            ${LeaveGroupMutation.getFragment('user')}
+                        }
+                        role {
+                            title
+                        }
+                    }
+                    externallyHidden
+                }
             }
-        }
-        `,
+            `;
+        },
     },
 });

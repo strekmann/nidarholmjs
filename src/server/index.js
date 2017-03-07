@@ -181,15 +181,16 @@ app.use('/graphql', graphqlHTTP((req) => {
     };
 }));
 
-app.post('/upload', upload, (req, res, next) => (
+app.post('/upload', upload, (req, res, next) => {
     // FIXME: Add check on org membership
-    saveFile(req.file.path, config.files.raw_prefix).then(
-        _file => res.json(_file),
-    )
-    .catch((error) => {
-        console.error(error);
+    return saveFile(req.file.path, config.files.raw_prefix)
+    .then((_file) => {
+        return res.json(_file);
     })
-));
+    .catch((error) => {
+        log.error(error);
+    });
+});
 
 app.get('/organization/updated_email_lists.json/:groups', groupEmailApiRoute);
 
@@ -301,8 +302,8 @@ app.post(
     },
 );
 
-app.get('/login/reset/:code', (req, res, next) => (
-    PasswordCode.findById(req.params.code).exec()
+app.get('/login/reset/:code', (req, res, next) => {
+    return PasswordCode.findById(req.params.code).exec()
     .then((passwordCode) => {
         if (!passwordCode || passwordCode.created < moment().subtract(1, 'hours')) {
             return res.redirect('/login/reset');
@@ -316,8 +317,8 @@ app.get('/login/reset/:code', (req, res, next) => (
                 return res.redirect('/');
             });
         });
-    })
-));
+    });
+});
 
 app.post('/login/register', (req, res, next) => {
     const email = req.body.email.trim();
