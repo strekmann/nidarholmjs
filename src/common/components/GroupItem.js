@@ -1,3 +1,4 @@
+import { List } from 'material-ui/List';
 import React from 'react';
 import { Link } from 'react-router';
 
@@ -25,14 +26,14 @@ export default class GroupItem extends React.Component {
             return null;
         }
         return (
-            <div>
+            <List>
                 {this.renderHeader()}
                 {members.sort((a, b) => a.user.name > b.user.name).map(member => <MemberItem
                     key={member.id}
                     isMember={this.props.isMember}
                     {...member}
                 />)}
-            </div>
+            </List>
         );
     }
 }

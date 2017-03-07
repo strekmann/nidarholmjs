@@ -148,7 +148,9 @@ class Members extends React.Component {
                         onRequestClose={this.closeAddUser}
                         autoScrollBodyContent
                     >
-                        <p>Mens du skriver inn navn, søker vi opp de med likest navn, i tilfelle personen allerede er registrert. For å legge inn en ny person, skriver du hele navnet og trykker enter.</p>
+                        <p>Mens du skriver inn navn, søker vi opp de med likest navn, i tilfelle
+                        personen allerede er registrert. For å legge inn en ny person, skriver du
+                        hele navnet og trykker enter.</p>
                         <AutoComplete
                             hintText="Navn"
                             dataSource={org.users.map((user) => {
