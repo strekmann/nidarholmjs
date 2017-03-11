@@ -313,7 +313,13 @@ const memberType = new GraphQLObjectType({
     fields: () => {
         return {
             id: { type: GraphQLString },
-            roles: { type: new GraphQLList(roleType) },
+            roles: {
+                type: new GraphQLList(roleType),
+                resolve: (_member) => {
+                    // populating
+                    return Role.find().where('_id').in(_member.roles).exec();
+                },
+            },
             user: {
                 type: userType,
                 /*
@@ -1994,10 +2000,16 @@ const mutationAddRole = mutationWithClientMutationId({
         if (!admin(organization, viewer)) {
             return null;
         }
-        console.log("Gr", roleId, memberId);
         const rId = fromGlobalId(roleId).id;
-        return Group.findOneAndUpdate({ 'members._id': memberId }, { $addToSet: { 'members.$.roles': rId } }).exec().then((group) => {
-            console.log("Gr", rId, group);
+        return Group.findOneAndUpdate(
+            { 'members._id': memberId },
+            { $addToSet: { 'members.$.roles': rId } },
+            { new: true },
+        ).exec().then((group) => {
+            const all = group.members.filter((_member) => {
+                return _member._id.equals(memberId);
+            });
+            return all[0];
         });
     },
 });
