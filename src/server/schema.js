@@ -308,6 +308,35 @@ const userConnection = connectionDefinitions({
 });
 */
 
+const memberType = new GraphQLObjectType({
+    name: 'Member',
+    fields: () => {
+        return {
+            id: { type: GraphQLString },
+            roles: { type: new GraphQLList(roleType) },
+            user: {
+                type: userType,
+                /*
+                resolve: (groupMember, args, { viewer, organization }) => {
+                    let query = User.findById(groupMember.user).where({
+                        on_leave: false,
+                        in_list: true,
+                        //membership_status: { $lt: 5 },
+                    });
+                    if (isMember(organization, viewer)) {
+                        query = query.select('id name email phone');
+                    }
+                    else {
+                        query = query.select('name');
+                    }
+                    return query.exec();
+                },
+                */
+            },
+        };
+    },
+});
+
 groupType = new GraphQLObjectType({
     name: 'Group',
     fields: {
@@ -318,36 +347,7 @@ groupType = new GraphQLObjectType({
             resolve: group => group.externally_hidden,
         },
         members: {
-            type: new GraphQLList(new GraphQLObjectType({
-                name: 'GroupMember',
-                fields: {
-                    id: { type: GraphQLString },
-                    user: {
-                        type: userType,
-                        resolve: (groupMember, args, { viewer, organization }) => {
-                            let query = User.findById(groupMember.user).where({
-                                on_leave: false,
-                                in_list: true,
-                                //membership_status: { $lt: 5 },
-                            });
-                            if (isMember(organization, viewer)) {
-                                query = query.select('id name email phone');
-                            }
-                            else {
-                                query = query.select('name');
-                            }
-                            return query.exec();
-                        },
-                    },
-                    role: { type: new GraphQLObjectType({
-                        name: 'GroupRole',
-                        fields: {
-                            title: { type: GraphQLString },
-                            email: { type: GraphQLString },
-                        },
-                    }) },
-                },
-            })),
+            type: new GraphQLList(memberType),
             resolve: (group, args, { organization }) => {
                 const members = organization.member_group.members.map(
                     (organizationMember) => {
@@ -899,24 +899,7 @@ organizationType = new GraphQLObjectType({
             .then(org => org.summaries),
         },
         member: {
-            type: new GraphQLObjectType({
-                name: 'Member',
-                fields: {
-                    id: { type: GraphQLString },
-                    user: {
-                        type: userType,
-                        resolve: _member => _member.user,
-                    },
-                    role: { type: new GraphQLObjectType({
-                        name: 'MemberRole',
-                        fields: {
-                            title: { type: GraphQLString },
-                            email: { type: GraphQLString },
-                        },
-                    }) },
-                    roles: { type: new GraphQLList(roleType) },
-                },
-            }),
+            type: memberType,
             args: {
                 id: { name: 'id', type: GraphQLString },
             },
@@ -1992,6 +1975,33 @@ const mutationDeleteRole = mutationWithClientMutationId({
     },
 });
 
+const mutationAddRole = mutationWithClientMutationId({
+    name: 'AddRole',
+    description: 'Give a role to a member of a group',
+    inputFields: {
+        roleId: { type: GraphQLID },
+        memberId: { type: GraphQLID },
+    },
+    outputFields: {
+        member: {
+            type: memberType,
+            resolve: (payload) => {
+                return payload;
+            },
+        },
+    },
+    mutateAndGetPayload: ({ roleId, memberId }, { viewer, organization }) => {
+        if (!admin(organization, viewer)) {
+            return null;
+        }
+        console.log("Gr", roleId, memberId);
+        const rId = fromGlobalId(roleId).id;
+        return Group.findOneAndUpdate({ 'members._id': memberId }, { $addToSet: { 'members.$.roles': rId } }).exec().then((group) => {
+            console.log("Gr", rId, group);
+        });
+    },
+});
+
 const mutationType = new GraphQLObjectType({
     name: 'Mutation',
     fields: () => ({
@@ -2018,6 +2028,7 @@ const mutationType = new GraphQLObjectType({
         updatePiece: mutationUpdatePiece,
         createRole: mutationCreateRole,
         deleteRole: mutationDeleteRole,
+        addRole: mutationAddRole,
     }),
 });
 

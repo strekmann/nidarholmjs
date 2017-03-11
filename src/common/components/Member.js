@@ -31,6 +31,7 @@ import Yesno from './Yesno';
 import EditUserMutation from '../mutations/editUser';
 import JoinGroupMutation from '../mutations/joinGroup';
 import LeaveGroupMutation from '../mutations/leaveGroup';
+import AddRoleMutation from '../mutations/addRole';
 
 let DateTimeFormat;
 if (areIntlLocalesSupported(['nb'])) {
@@ -60,6 +61,7 @@ class Member extends React.Component {
         edit: false,
         editMember: false,
         joinGroup: false,
+        addingRole: false,
         name: this.props.organization.member.user.name || '',
         username: this.props.organization.member.user.username || '',
         phone: this.props.organization.member.user.phone || '',
@@ -178,6 +180,14 @@ class Member extends React.Component {
     onChangeNoEmail = (event, noEmail) => {
         this.setState({ noEmail });
     }
+    onAddRole = (roleId) => {
+        console.log("her", roleId, this.props.organization.member);
+        this.setState({ addingRole: false });
+        this.context.relay.commitUpdate(new AddRoleMutation({
+            roleId,
+            member: this.props.organization.member,
+        }));
+    }
     joinGroup = (selection) => {
         this.setState({ joinGroup: false });
         this.context.relay.commitUpdate(new JoinGroupMutation({
@@ -193,6 +203,10 @@ class Member extends React.Component {
     }
     closeJoinGroup = () => {
         this.setState({ joinGroup: false });
+    }
+
+    closeAddingRole = () => {
+        this.setState({ addingRole: false });
     }
 
     renderImage = () => {
@@ -398,6 +412,30 @@ class Member extends React.Component {
                             </Dialog>
                             : null
                     }
+                    {isAdmin
+                            ? <Dialog
+                                title="Legg til verv"
+                                open={this.state.addingRole}
+                                onRequestClose={this.closeAddingRole}
+                                autoScrollBodyContent
+                                actions={<RaisedButton label="Avbryt" onTouchTap={this.closeAddingRole} />}
+                            >
+                                <List>
+                                    {org.roles.edges.map((edge) => {
+                                        return (
+                                            <ListItem
+                                                key={edge.node.id}
+                                                primaryText={edge.node.name}
+                                                onTouchTap={() => {
+                                                    this.onAddRole(edge.node.id);
+                                                }}
+                                            />
+                                        );
+                                    })}
+                                </List>
+                            </Dialog>
+                            : null
+                    }
                     <Toolbar style={{ backgroundColor: theme.palette.fullWhite }}>
                         <ToolbarGroup lastChild>
                             {this.props.viewer.id === user.id
@@ -431,6 +469,15 @@ class Member extends React.Component {
                                         />
                                         : null
                                 }
+                                {isAdmin
+                                        ? <MenuItem
+                                            primaryText="Legg til verv"
+                                            onTouchTap={() => {
+                                                this.setState({ addingRole: !this.state.addingRole });
+                                            }}
+                                        />
+                                        : null
+                                }
                             </IconMenu>
                         </ToolbarGroup>
                     </Toolbar>
@@ -450,6 +497,17 @@ class Member extends React.Component {
                             <br />
                             {user.postcode} {user.city}
                         </div>
+                        {member.roles.length
+                            ? <div>
+                                <h3>Verv</h3>
+                                <ul>
+                                    {member.roles.map((role) => {
+                                        return <li key={role.id}>{role.name}</li>;
+                                    })}
+                                </ul>
+                            </div>
+                            : null
+                        }
                         <div>
                             {user.groups.length
                                 ? <div>
@@ -537,8 +595,9 @@ export default Relay.createContainer(Member, {
                 isAdmin
                 member(id:$id) {
                     id
-                    role {
-                        title
+                    roles {
+                        id
+                        name
                         email
                     }
                     user {
@@ -578,10 +637,19 @@ export default Relay.createContainer(Member, {
                         ${JoinGroupMutation.getFragment('user')}
                         ${LeaveGroupMutation.getFragment('user')}
                     }
+                    ${AddRoleMutation.getFragment('member')}
                 }
                 groups {
                     id
                     name
+                }
+                roles(first:100) {
+                    edges {
+                        node {
+                            id
+                            name
+                        }
+                    }
                 }
                 ${EditUserMutation.getFragment('organization')}
             }

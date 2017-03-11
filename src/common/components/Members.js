@@ -271,8 +271,8 @@ export default Relay.createContainer(Members, {
                             membershipStatus
                             instrument
                         }
-                        role {
-                            title
+                        roles {
+                            name
                             email
                         }
                     }

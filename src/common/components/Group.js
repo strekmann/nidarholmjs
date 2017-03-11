@@ -162,8 +162,8 @@ export default Relay.createContainer(Group, {
                             ${JoinGroupMutation.getFragment('user')}
                             ${LeaveGroupMutation.getFragment('user')}
                         }
-                        role {
-                            title
+                        roles {
+                            name
                         }
                     }
                     externallyHidden
