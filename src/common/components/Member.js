@@ -32,6 +32,7 @@ import EditUserMutation from '../mutations/editUser';
 import JoinGroupMutation from '../mutations/joinGroup';
 import LeaveGroupMutation from '../mutations/leaveGroup';
 import AddRoleMutation from '../mutations/addRole';
+import RemoveRoleMutation from '../mutations/removeRole';
 
 let DateTimeFormat;
 if (areIntlLocalesSupported(['nb'])) {
@@ -180,10 +181,15 @@ class Member extends React.Component {
     onChangeNoEmail = (event, noEmail) => {
         this.setState({ noEmail });
     }
-    onAddRole = (roleId) => {
-        console.log("her", roleId, this.props.organization.member);
+    addRole = (roleId) => {
         this.setState({ addingRole: false });
         this.context.relay.commitUpdate(new AddRoleMutation({
+            roleId,
+            member: this.props.organization.member,
+        }));
+    }
+    removeRole= (roleId) => {
+        this.context.relay.commitUpdate(new RemoveRoleMutation({
             roleId,
             member: this.props.organization.member,
         }));
@@ -427,7 +433,7 @@ class Member extends React.Component {
                                                 key={edge.node.id}
                                                 primaryText={edge.node.name}
                                                 onTouchTap={() => {
-                                                    this.onAddRole(edge.node.id);
+                                                    this.addRole(edge.node.id);
                                                 }}
                                             />
                                         );
@@ -500,11 +506,28 @@ class Member extends React.Component {
                         {member.roles.length
                             ? <div>
                                 <h3>Verv</h3>
-                                <ul>
+                                <List>
                                     {member.roles.map((role) => {
-                                        return <li key={role.id}>{role.name}</li>;
+                                        return (
+                                            <ListItem
+                                                key={role.id}
+                                                disabled
+                                                primaryText={role.name}
+                                                rightIconButton={isAdmin
+                                                    ? <IconButton
+                                                        onClick={(event) => {
+                                                            event.preventDefault();
+                                                            return this.removeRole(role.id);
+                                                        }}
+                                                    >
+                                                        <Close />
+                                                    </IconButton>
+                                                    : null
+                                                }
+                                            />
+                                        );
                                     })}
-                                </ul>
+                                </List>
                             </div>
                             : null
                         }
@@ -638,6 +661,7 @@ export default Relay.createContainer(Member, {
                         ${LeaveGroupMutation.getFragment('user')}
                     }
                     ${AddRoleMutation.getFragment('member')}
+                    ${RemoveRoleMutation.getFragment('member')}
                 }
                 groups {
                     id

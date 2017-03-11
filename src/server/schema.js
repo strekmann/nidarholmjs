@@ -2014,6 +2014,39 @@ const mutationAddRole = mutationWithClientMutationId({
     },
 });
 
+const mutationRemoveRole = mutationWithClientMutationId({
+    name: 'RemoveRole',
+    description: 'Remove a role from a member',
+    inputFields: {
+        roleId: { type: GraphQLID },
+        memberId: { type: GraphQLID },
+    },
+    outputFields: {
+        member: {
+            type: memberType,
+            resolve: (payload) => {
+                return payload;
+            },
+        },
+    },
+    mutateAndGetPayload: ({ roleId, memberId }, { viewer, organization }) => {
+        if (!admin(organization, viewer)) {
+            return null;
+        }
+        const rId = fromGlobalId(roleId).id;
+        return Group.findOneAndUpdate(
+            { 'members._id': memberId },
+            { $pull: { 'members.$.roles': rId } },
+            { new: true },
+        ).exec().then((group) => {
+            const all = group.members.filter((_member) => {
+                return _member._id.equals(memberId);
+            });
+            return all[0];
+        });
+    },
+});
+
 const mutationType = new GraphQLObjectType({
     name: 'Mutation',
     fields: () => ({
@@ -2041,6 +2074,7 @@ const mutationType = new GraphQLObjectType({
         createRole: mutationCreateRole,
         deleteRole: mutationDeleteRole,
         addRole: mutationAddRole,
+        removeRole: mutationRemoveRole,
     }),
 });
 
