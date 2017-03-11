@@ -5,6 +5,7 @@ import getMuiTheme from 'material-ui/styles/getMuiTheme';
 import React from 'react';
 import Relay from 'react-relay';
 import CreateRoleMutation from '../mutations/createRole';
+import DeleteRoleMutation from '../mutations/deleteRole';
 import theme from '../theme';
 
 class Roles extends React.Component {
@@ -37,6 +38,15 @@ class Roles extends React.Component {
 
     onClose = () => {
         this.setState({ creating: false });
+    }
+
+    onDelete = (event, id) => {
+        event.preventDefault();
+        console.log("id", id);
+        this.context.relay.commitUpdate(new DeleteRoleMutation({
+            id,
+            organization: this.props.organization,
+        }));
     }
 
     onSave = (event) => {
@@ -109,7 +119,9 @@ class Roles extends React.Component {
                 <h1>Roller</h1>
                 <ul>
                     {this.props.organization.roles.edges.map((edge) => {
-                        return <li key={edge.node.id}>{edge.node.name} ({edge.node.email})</li>;
+                        return (
+                            <li key={edge.node.id}>{edge.node.name} ({edge.node.email}) <a href="" onClick={(event) => { this.onDelete(event, edge.node.id); }}>Slett</a></li>
+                        );
                     })}
                 </ul>
             </div>
@@ -132,6 +144,7 @@ export default Relay.createContainer(Roles, {
                     }
                 }
                 ${CreateRoleMutation.getFragment('organization')}
+                ${DeleteRoleMutation.getFragment('organization')}
             }`;
         },
     },

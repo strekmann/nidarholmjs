@@ -1954,11 +1954,40 @@ const mutationCreateRole = mutationWithClientMutationId({
         if (!admin(organization, viewer)) {
             return null;
         }
-        console.log("CREA", name, email, organization);
         return Role.create({
             name,
             email,
             organization: organization._id,
+        });
+    },
+});
+
+const mutationDeleteRole = mutationWithClientMutationId({
+    name: 'DeleteRole',
+    inputFields: {
+        id: { type: GraphQLID },
+    },
+    outputFields: {
+        organization: {
+            type: organizationType,
+            resolve: (_, args, { organization }) => {
+                return organization;
+            },
+        },
+        deletedRoleID: {
+            type: GraphQLID,
+            resolve: (payload) => {
+                return payload.id;
+            },
+        },
+    },
+    mutateAndGetPayload: ({ id }, { viewer, organization }) => {
+        if (!admin(organization, viewer)) {
+            return null;
+        }
+        const rId = fromGlobalId(id).id;
+        return Role.findByIdAndRemove(rId).then(() => {
+            return { id };
         });
     },
 });
@@ -1988,6 +2017,7 @@ const mutationType = new GraphQLObjectType({
         createPiece: mutationCreatePiece,
         updatePiece: mutationUpdatePiece,
         createRole: mutationCreateRole,
+        deleteRole: mutationDeleteRole,
     }),
 });
 
