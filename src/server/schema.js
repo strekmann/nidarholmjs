@@ -388,11 +388,12 @@ roleType = new GraphQLObjectType({
             email: { type: GraphQLString },
         };
     },
+    interfaces: [nodeInterface],
 });
 
 const {
     connectionType: roleConnection,
-    // edgeType: roleType,
+    edgeType: roleEdge,
 } = connectionDefinitions({ name: 'Role', nodeType: roleType });
 
 const permissionsType = new GraphQLObjectType({
@@ -1926,6 +1927,42 @@ const mutationUpdatePiece = mutationWithClientMutationId({
     },
 });
 
+const mutationCreateRole = mutationWithClientMutationId({
+    name: 'CreateRole',
+    inputFields: {
+        name: { type: new GraphQLNonNull(GraphQLString) },
+        email: { type: GraphQLString },
+    },
+    outputFields: {
+        organization: {
+            type: organizationType,
+            resolve: (_, args, { organization }) => {
+                return organization;
+            },
+        },
+        newRoleEdge: {
+            type: roleEdge,
+            resolve: (payload) => {
+                return {
+                    cursor: offsetToCursor(0),
+                    node: payload,
+                };
+            },
+        },
+    },
+    mutateAndGetPayload: ({ name, email }, { viewer, organization }) => {
+        if (!admin(organization, viewer)) {
+            return null;
+        }
+        console.log("CREA", name, email, organization);
+        return Role.create({
+            name,
+            email,
+            organization: organization._id,
+        });
+    },
+});
+
 const mutationType = new GraphQLObjectType({
     name: 'Mutation',
     fields: () => ({
@@ -1950,6 +1987,7 @@ const mutationType = new GraphQLObjectType({
         sendContactEmail: mutationSendContactEmail,
         createPiece: mutationCreatePiece,
         updatePiece: mutationUpdatePiece,
+        createRole: mutationCreateRole,
     }),
 });
 
