@@ -37,6 +37,7 @@ import Page from './models/Page';
 import PasswordCode from './models/PasswordCode';
 import Piece from './models/Piece';
 import Project from './models/Project';
+import Role from './models/Role';
 import User from './models/User';
 import insertFile from './lib/insertFile';
 import { buildPermissionObject } from './lib/permissions';
@@ -49,6 +50,7 @@ let projectType;
 let fileType;
 let pageType;
 let pieceType;
+let roleType;
 
 const { nodeInterface, nodeField } = nodeDefinitions(
     // FIXME: Add permission checks
@@ -81,6 +83,9 @@ const { nodeInterface, nodeField } = nodeDefinitions(
         if (type === 'Groupscore') {
             return Group.findById(id).exec();
         }
+        if (type === 'Role') {
+            return Role.findById(id).exec();
+        }
         return null;
     },
     (obj) => {
@@ -107,6 +112,9 @@ const { nodeInterface, nodeField } = nodeDefinitions(
         }
         if (obj._type === 'Page') {
             return pageType;
+        }
+        if (obj._type === 'Role') {
+            return roleType;
         }
         return null;
     },
@@ -369,6 +377,23 @@ const groupConnection = connectionDefinitions({
     nodeType: groupType,
 });
 */
+
+roleType = new GraphQLObjectType({
+    name: 'Role',
+    description: 'A member of an organization may have one or more roles: Titles and email address',
+    fields: () => {
+        return {
+            id: globalIdField('Role'),
+            name: { type: new GraphQLNonNull(GraphQLString) },
+            email: { type: GraphQLString },
+        };
+    },
+});
+
+const {
+    connectionType: roleConnection,
+    // edgeType: roleType,
+} = connectionDefinitions({ name: 'Role', nodeType: roleType });
 
 const permissionsType = new GraphQLObjectType({
     name: 'Permissions',
@@ -882,12 +907,13 @@ organizationType = new GraphQLObjectType({
                         resolve: _member => _member.user,
                     },
                     role: { type: new GraphQLObjectType({
-                        name: 'Role',
+                        name: 'MemberRole',
                         fields: {
                             title: { type: GraphQLString },
                             email: { type: GraphQLString },
                         },
                     }) },
+                    roles: { type: new GraphQLList(roleType) },
                 },
             }),
             args: {
@@ -1009,6 +1035,19 @@ organizationType = new GraphQLObjectType({
                     return [];
                 }
                 return Group.find().sort('name');
+            },
+        },
+        roles: {
+            type: roleConnection,
+            args: connectionArgs,
+            resolve: (_, args, { organization, viewer }) => {
+                if (!admin(organization, viewer)) {
+                    return null;
+                }
+                return connectionFromMongooseQuery(
+                    Role.find({ organization: organization.id }),
+                    args,
+                );
             },
         },
     },

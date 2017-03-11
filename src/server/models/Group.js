@@ -11,6 +11,7 @@ const GroupSchema = new mongoose.Schema({
             title: { type: String, trim: true },
             email: { type: String, trim: true },
         },
+        roles: [{ type: String, ref: 'Role' }],
     }],
     group_email: { type: String, lowercase: true, trim: true },
     group_leader_email: { type: String, lowercase: true, trim: true },
