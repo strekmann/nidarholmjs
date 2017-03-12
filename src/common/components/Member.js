@@ -477,7 +477,7 @@ class Member extends React.Component {
                                 }
                                 {isAdmin
                                         ? <MenuItem
-                                            primaryText="Legg til verv"
+                                            primaryText="Legg til verv/rolle"
                                             onTouchTap={() => {
                                                 this.setState({ addingRole: !this.state.addingRole });
                                             }}
