@@ -135,8 +135,12 @@ class Members extends React.Component {
                                 onTouchTap={this.toggleAddUser}
                             />
                             <MenuItem
-                                primaryText="Rediger grupper"
+                                primaryText="Grupper"
                                 containerElement={<Link to="/groups" />}
+                            />
+                            <MenuItem
+                                primaryText="Verv og roller"
+                                containerElement={<Link to="/members/roles" />}
                             />
                         </IconMenu>
                         : null

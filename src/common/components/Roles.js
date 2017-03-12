@@ -1,11 +1,16 @@
 import Dialog from 'material-ui/Dialog';
+import IconButton from 'material-ui/IconButton';
+import IconMenu from 'material-ui/IconMenu';
 import {
     List,
     ListItem,
 } from 'material-ui/List';
+import MenuItem from 'material-ui/MenuItem';
+import Paper from 'material-ui/Paper';
 import RaisedButton from 'material-ui/RaisedButton';
 import TextField from 'material-ui/TextField';
 import getMuiTheme from 'material-ui/styles/getMuiTheme';
+import ArrowDown from 'material-ui/svg-icons/navigation/arrow-drop-down';
 import React from 'react';
 import Relay from 'react-relay';
 import CreateRoleMutation from '../mutations/createRole';
@@ -73,24 +78,8 @@ class Roles extends React.Component {
         });
     }
 
-    renderAvatar = (user) => {
-        if (user.profilePicture) {
-            return (
-                <Avatar
-                    src={user.profilePicture.thumbnailPath}
-                    style={{ margin: '0 5px' }}
-                />
-            );
-        }
-        return (
-            <Avatar
-                icon={<Person />}
-                style={{ margin: '0 5px' }}
-            />
-        );
-    }
-
     render() {
+        const { isAdmin } = this.props.organization;
         const actions = [
             <RaisedButton
                 label="Avbryt"
@@ -103,7 +92,25 @@ class Roles extends React.Component {
             />,
         ];
         return (
-            <div>
+            <Paper className="row">
+                <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                    <h1>Roller</h1>
+                    {isAdmin
+                        ? <IconMenu
+                            iconButtonElement={<IconButton><ArrowDown /></IconButton>}
+                            anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
+                            targetOrigin={{ vertical: 'top', horizontal: 'right' }}
+                        >
+                            <MenuItem
+                                primaryText="Legg til ny rolle"
+                                onTouchTap={() => {
+                                    this.setState({ creating: true });
+                                }}
+                            />
+                        </IconMenu>
+                        : null
+                    }
+                </div>
                 <Dialog
                     open={this.state.creating}
                     title="Legg til ny rolle"
@@ -130,13 +137,6 @@ class Roles extends React.Component {
                         />
                     </div>
                 </Dialog>
-                <RaisedButton
-                    label="Legg til ny rolle"
-                    onTouchTap={() => {
-                        this.setState({ creating: true });
-                    }}
-                />
-                <h1>Roller</h1>
                 <List>
                     {this.props.organization.roles.edges.map((edge) => {
                         const {
@@ -169,7 +169,7 @@ class Roles extends React.Component {
                         );
                     })}
                 </List>
-            </div>
+            </Paper>
         );
     }
 }
@@ -179,6 +179,7 @@ export default Relay.createContainer(Roles, {
         organization: () => {
             return Relay.QL`
             fragment on Organization {
+                isAdmin
                 roles(first:100) {
                     edges {
                         node {

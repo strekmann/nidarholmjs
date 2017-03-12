@@ -1070,7 +1070,10 @@ organizationType = new GraphQLObjectType({
             args: connectionArgs,
             resolve: (_, args, { organization, viewer }) => {
                 if (!admin(organization, viewer)) {
-                    return null;
+                    return connectionFromMongooseQuery(
+                        Role.find({ organization: null }),
+                        args,
+                    );
                 }
                 return connectionFromMongooseQuery(
                     Role.find({ organization: organization.id }),
