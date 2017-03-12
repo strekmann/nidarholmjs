@@ -1,8 +1,8 @@
 # -*- encoding: utf-8 -*-
 
+import os
 import json
 import base64
-#import subprocess
 from Crypto.Cipher import AES
 from urllib2 import urlopen
 
@@ -17,7 +17,8 @@ def unpad(padded):
     return padded[:-pad]
 
 def main():
-    with open('settings.json') as settings_file:
+    dir = os.path.dirname(os.path.abspath(__file__))
+    with open(dir + '/settings.json') as settings_file:
         settings = json.load(settings_file)
         password = settings['password']
         server_address = settings['server_address']
