@@ -1,5 +1,6 @@
 # -*- encoding: utf-8 -*-
 
+import os
 import json
 import base64
 import subprocess
@@ -34,7 +35,8 @@ def decrypt(edata, password):
 
 
 def request(groups):
-    with open('settings.json') as settings_file:
+    dir = os.path.dirname(os.path.abspath(__file__))
+    with open(dir + '/settings.json') as settings_file:
         settings = json.load(settings_file)
         password = settings['password']
         server_address = settings['server_address']
@@ -69,7 +71,7 @@ def request(groups):
 
 
 def main():
-    request(["Medlemmer", "Styret", "Plankom"])
+    request(["Medlemmer", "Styret", "Plankom", "Jubileum"])
     request(["Fløyte", "Obo", "Fagott", "Klarinett", "Saksofon", "Horn",
              "Småmessing", "Trombone", "Euph", "Tuba", "Slagverk"])
 
