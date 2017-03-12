@@ -35,7 +35,10 @@ class MemberItem extends React.Component {
                                             <span key={role.id} style={{ textTransform: 'lowercase' }}>, {role.name}</span>
                                         );
                                     })}
-                                    <span style={{ textTransform: 'lowercase' }}>, {user.instrument}</span>
+                                    {user.instrument
+                                        ? <span style={{ textTransform: 'lowercase' }}>, {user.instrument}</span>
+                                        : null
+                                    }
                                 </div>
                             }
                             secondaryText={
@@ -67,7 +70,10 @@ class MemberItem extends React.Component {
                                             <span key={role.id} style={{ textTransform: 'lowercase' }}>, {role.name}</span>
                                         );
                                     })}
-                                    <span style={{ textTransform: 'lowercase' }}>, {user.instrument}</span>
+                                    {user.instrument
+                                        ? <span style={{ textTransform: 'lowercase' }}>, {user.instrument}</span>
+                                        : null
+                                    }
                                 </div>
                             }
                         />
