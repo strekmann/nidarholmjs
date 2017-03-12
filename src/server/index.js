@@ -39,7 +39,10 @@ import findFilePath from './lib/findFilePath';
 // import project_routes from './routes/projects';
 // import organization_routes from './routes/organization';
 import persistentLogin from './lib/persistentLoginMiddleware';
-import groupEmailApiRoute from './lib/emailApi';
+import {
+    groupEmailApiRoute,
+    roleEmailApiRoute,
+} from './lib/emailApi';
 
 import schema from './schema';
 
@@ -193,6 +196,7 @@ app.post('/upload', upload, (req, res, next) => {
 });
 
 app.get('/organization/updated_email_lists.json/:groups', groupEmailApiRoute);
+app.get('/organization/role_aliases.json', roleEmailApiRoute);
 
 app.get('/files/l/:path/:filename', (req, res) => {
     const filepath = req.params.path;

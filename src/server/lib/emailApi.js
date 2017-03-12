@@ -3,13 +3,15 @@
 import async from 'async';
 import config from 'config';
 import Group from '../models/Group';
+import Role from '../models/Role';
+import User from '../models/User';
 import { aes } from './crypto';
 
 function translate(string) {
     return string.replace('æ', 'a').replace('ø', 'o').replace('å', 'a').replace(/\s+/, '');
 }
 
-export default function groupEmailApiRoute(req, res) {
+export function groupEmailApiRoute(req, res) {
     if (!req.params.groups) {
         res.send(400, 'Nothing to do');
     }
@@ -74,4 +76,46 @@ export default function groupEmailApiRoute(req, res) {
             });
         });
     }
+}
+
+export function roleEmailApiRoute(req, res) {
+    let secret = config.sessionSecret;
+    secret = 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa';
+
+    const memberPromises = [];
+    const members = req.organization.member_group.members.map((member) => {
+        if (member.roles.length) {
+            memberPromises.push(Promise.all([
+                User.findById(member.user).exec(),
+                Role.find().where('_id').in(member.roles),
+            ]).then((results) => {
+                const [user, roles] = results;
+                const emailRoles = roles.filter((role) => {
+                    return role.email;
+                });
+                return {
+                    user,
+                    roles: emailRoles,
+                };
+            }));
+        }
+    });
+    const aliases = {};
+    Promise.all(memberPromises).then((results) => {
+        results.forEach((result) => {
+            const { user, roles } = result;
+            roles.forEach((role) => {
+                if (!aliases[role]) {
+                    aliases.role = [];
+                }
+                aliases.role.push(user.email);
+            });
+        });
+        aes.encrypt(JSON.stringify(aliases), secret, (err, encryptedData) => {
+            if (err) {
+                console.error(err);
+            }
+            res.send(encryptedData);
+        });
+    });
 }
