@@ -1,19 +1,21 @@
 import { ListItem } from 'material-ui/List';
 import React from 'react';
+import Relay from 'react-relay';
 import { Link } from 'react-router';
-
 import Phone from './Phone';
 
-export default class MemberItem extends React.Component {
+class MemberItem extends React.Component {
     static propTypes = {
         isMember: React.PropTypes.bool,
-        user: React.PropTypes.object,
-        role: React.PropTypes.object,
+        member: React.PropTypes.object,
     }
 
     render() {
-        if (this.props.user) {
-            const user = this.props.user;
+        const {
+            user,
+            roles,
+        } = this.props.member;
+        if (user) {
             return (
                 <div>
                     {this.props.isMember
@@ -22,11 +24,17 @@ export default class MemberItem extends React.Component {
                             primaryText={
                                 <div>
                                     <Link to={`/users/${user.id}`}>{user.name}</Link>
-                                    {' '}
-                                    {this.props.role.tile || user.instrument
-                                        ? <span>({this.props.role.title || user.instrument})</span>
-                                        : null
-                                    }
+                                    {roles.map((role) => {
+                                        return (
+                                            <div>
+                                                {' '}
+                                                {role.name || user.instrument
+                                                    ? <span>({role.name || user.instrument})</span>
+                                                    : null
+                                                }
+                                            </div>
+                                        );
+                                    })}
                                 </div>
                             }
                             secondaryText={
@@ -45,16 +53,18 @@ export default class MemberItem extends React.Component {
                             }
                         />
                         : <ListItem
-                            primaryText={
-                                <div>
-                                    {user.name}
-                                    {' '}
-                                    {this.props.role.tile || user.instrument
-                                        ? <span>({this.props.role.title || user.instrument})</span>
-                                        : null
-                                    }
-                                </div>
-                            }
+                            primaryText={roles.map((role) => {
+                                return (
+                                    <div>
+                                        {user.name}
+                                        {' '}
+                                        {role.name || user.instrument
+                                            ? <span>({role.name || user.instrument})</span>
+                                            : null
+                                        }
+                                    </div>
+                                );
+                            })}
                         />
                     }
                 </div>
@@ -63,3 +73,28 @@ export default class MemberItem extends React.Component {
         return null;
     }
 }
+
+export default Relay.createContainer(MemberItem, {
+    fragments: {
+        member: () => {
+            return Relay.QL`
+            fragment on Member {
+                id
+                user(active:true) {
+                    id
+                    name
+                    username
+                    email
+                    phone
+                    membershipStatus
+                    instrument
+                }
+                roles {
+                    id
+                    name
+                    email
+                }
+            }`;
+        },
+    },
+});

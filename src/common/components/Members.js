@@ -13,7 +13,6 @@ import ArrowDown from 'material-ui/svg-icons/navigation/arrow-drop-down';
 import React from 'react';
 import Relay from 'react-relay';
 import { Link } from 'react-router';
-
 import AddUserMutation from '../mutations/addUser';
 import theme from '../theme';
 import GroupItem from './GroupItem';
@@ -238,10 +237,10 @@ class Members extends React.Component {
                 {org.instrumentGroups.map((group) => {
                     return (
                         <GroupItem
+                            group={group}
                             key={group.id}
                             isMember={this.props.organization.isMember}
                             isAdmin={this.props.organization.isAdmin}
-                            {...group}
                         />
                     );
                 })}
@@ -259,23 +258,7 @@ export default Relay.createContainer(Members, {
                 isAdmin
                 instrumentGroups {
                     id
-                    name
-                    members {
-                        id
-                        user {
-                            id
-                            name
-                            username
-                            email
-                            phone
-                            membershipStatus
-                            instrument
-                        }
-                        roles {
-                            name
-                            email
-                        }
-                    }
+                    ${GroupItem.getFragment('group')}
                 }
                 users {
                     id

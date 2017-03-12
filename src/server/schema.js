@@ -322,22 +322,25 @@ const memberType = new GraphQLObjectType({
             },
             user: {
                 type: userType,
-                /*
-                resolve: (groupMember, args, { viewer, organization }) => {
-                    let query = User.findById(groupMember.user).where({
-                        on_leave: false,
-                        in_list: true,
-                        //membership_status: { $lt: 5 },
-                    });
-                    if (isMember(organization, viewer)) {
-                        query = query.select('id name email phone');
+                args: {
+                    active: { name: 'active', type: GraphQLBoolean },
+                },
+                resolve: (_member, { active }, { viewer, organization }) => {
+                    // TODO: Move member features from user to member, like:
+                    // on_leave, in_list, etc
+                    let query = User.findById(_member.user);
+                    if (active) {
+                        query = query.where({
+                            on_leave: false,
+                            in_list: true,
+                            //membership_status: { $lt: 5 },
+                        });
                     }
-                    else {
+                    if (!isMember(organization, viewer)) {
                         query = query.select('name');
                     }
                     return query.exec();
                 },
-                */
             },
         };
     },

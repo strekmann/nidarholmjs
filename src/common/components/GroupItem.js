@@ -1,28 +1,30 @@
 import { List } from 'material-ui/List';
 import Subheader from 'material-ui/Subheader';
 import React from 'react';
+import Relay from 'react-relay';
 import { Link } from 'react-router';
-
 import MemberItem from './MemberItem';
 
-export default class GroupItem extends React.Component {
+class GroupItem extends React.Component {
     static propTypes = {
-        id: React.PropTypes.string,
+        group: React.PropTypes.object,
         isAdmin: React.PropTypes.bool,
         isMember: React.PropTypes.bool,
-        name: React.PropTypes.string,
-        members: React.PropTypes.array,
     }
 
     renderHeader() {
+        const {
+            id,
+            name,
+        } = this.props.group;
         if (this.props.isAdmin) {
-            return <Subheader style={{ textTransform: 'uppercase' }}><Link to={`/group/${this.props.id}`}>{this.props.name}</Link></Subheader>;
+            return <Subheader style={{ textTransform: 'uppercase' }}><Link to={`/group/${id}`}>{name}</Link></Subheader>;
         }
-        return <Subheader style={{ textTransform: 'uppercase' }}>{this.props.name}</Subheader>;
+        return <Subheader style={{ textTransform: 'uppercase' }}>{name}</Subheader>;
     }
 
     render() {
-        const members = this.props.members.filter((member) => {
+        const members = this.props.group.members.filter((member) => {
             return member.user;
         });
         if (!members.length) {
@@ -38,7 +40,7 @@ export default class GroupItem extends React.Component {
                         <MemberItem
                             key={member.id}
                             isMember={this.props.isMember}
-                            {...member}
+                            member={member}
                         />
                     );
                 })}
@@ -46,3 +48,22 @@ export default class GroupItem extends React.Component {
         );
     }
 }
+
+export default Relay.createContainer(GroupItem, {
+    fragments: {
+        group: () => {
+            return Relay.QL`
+            fragment on Group {
+                id
+                name
+                members {
+                    id
+                    user {
+                        id
+                    }
+                    ${MemberItem.getFragment('member')}
+                }
+            }`;
+        },
+    },
+});
