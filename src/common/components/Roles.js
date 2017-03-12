@@ -1,4 +1,8 @@
 import Dialog from 'material-ui/Dialog';
+import {
+    List,
+    ListItem,
+} from 'material-ui/List';
 import RaisedButton from 'material-ui/RaisedButton';
 import TextField from 'material-ui/TextField';
 import getMuiTheme from 'material-ui/styles/getMuiTheme';
@@ -42,7 +46,6 @@ class Roles extends React.Component {
 
     onDelete = (event, id) => {
         event.preventDefault();
-        console.log("id", id);
         this.context.relay.commitUpdate(new DeleteRoleMutation({
             id,
             organization: this.props.organization,
@@ -68,6 +71,23 @@ class Roles extends React.Component {
                 });
             },
         });
+    }
+
+    renderAvatar = (user) => {
+        if (user.profilePicture) {
+            return (
+                <Avatar
+                    src={user.profilePicture.thumbnailPath}
+                    style={{ margin: '0 5px' }}
+                />
+            );
+        }
+        return (
+            <Avatar
+                icon={<Person />}
+                style={{ margin: '0 5px' }}
+            />
+        );
     }
 
     render() {
@@ -117,13 +137,38 @@ class Roles extends React.Component {
                     }}
                 />
                 <h1>Roller</h1>
-                <ul>
+                <List>
                     {this.props.organization.roles.edges.map((edge) => {
+                        const {
+                            id,
+                            name,
+                            email,
+                            users,
+                        } = edge.node;
+                        // <a href="" onClick={(event) => { this.onDelete(event, id); }}>Slett</a>
                         return (
-                            <li key={edge.node.id}>{edge.node.name} ({edge.node.email}) <a href="" onClick={(event) => { this.onDelete(event, edge.node.id); }}>Slett</a></li>
+                            <ListItem
+                                key={id}
+                                primaryText={name}
+                                secondaryText={email}
+                                style={{ textTransform: 'uppercase' }}
+                                disabled
+                                initiallyOpen
+                                nestedItems={users.map((user) => {
+                                    return (
+                                        <ListItem
+                                            key={user.id}
+                                            primaryText={user.name}
+                                            secondaryText={user.email}
+                                            disabled
+                                            insetChildren
+                                        />
+                                    );
+                                })}
+                            />
                         );
                     })}
-                </ul>
+                </List>
             </div>
         );
     }
@@ -140,6 +185,11 @@ export default Relay.createContainer(Roles, {
                             id
                             name
                             email
+                            users {
+                                id
+                                name
+                                email
+                            }
                         }
                     }
                 }

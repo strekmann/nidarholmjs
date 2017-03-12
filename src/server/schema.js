@@ -412,6 +412,24 @@ roleType = new GraphQLObjectType({
             id: globalIdField('Role'),
             name: { type: new GraphQLNonNull(GraphQLString) },
             email: { type: GraphQLString },
+            users: {
+                type: new GraphQLList(userType),
+                resolve: (role, args, { viewer, organization }) => {
+                    if (!admin(organization, viewer)) {
+                        return null;
+                    }
+                    const userIds = organization.member_group.members.filter((_member) => {
+                        return _member.roles.includes(role.id);
+                    }).map((_member) => {
+                        if (typeof _member.user === 'object') {
+                            // "self" is acutally an object. strange populate?
+                            return _member.user._id;
+                        }
+                        return _member.user;
+                    });
+                    return User.find().where('_id').in(userIds).exec();
+                },
+            },
         };
     },
     interfaces: [nodeInterface],
