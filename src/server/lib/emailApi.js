@@ -1,7 +1,9 @@
+/* eslint "no-console": 0 */
+
 import async from 'async';
 import config from 'config';
-import { aes } from './crypto';
 import Group from '../models/Group';
+import { aes } from './crypto';
 
 function translate(string) {
     return string.replace('æ', 'a').replace('ø', 'o').replace('å', 'a').replace(/\s+/, '');
@@ -19,7 +21,7 @@ export default function groupEmailApiRoute(req, res) {
                 console.error(err);
             }
             const parsedData = JSON.parse(data);
-            async.map(parsedData.groups, function (group, callback) {
+            async.map(parsedData.groups, (group, callback) => {
                 const listname = parsedData.prefix + translate(group.toLowerCase());
                 Group.findOne({ name: group })
                     .populate('members.user', 'email groups in_list on_leave no_email')
@@ -41,9 +43,9 @@ export default function groupEmailApiRoute(req, res) {
                                 && member.user.email
                                 && member.user.in_list
                                 && !member.user.no_email
-                                && member.user.groups.find(
-                                    userGroup => userGroup === req.organization.member_group._id
-                                )) {
+                                && member.user.groups.find((userGroup) => {
+                                    return userGroup === req.organization.member_group._id;
+                                })) {
                                     list.push(member.user.email);
                                 }
                                 return list;
@@ -60,7 +62,7 @@ export default function groupEmailApiRoute(req, res) {
                     console.error(err);
                 }
                 const mailinglists = {};
-                lists.forEach(list => {
+                lists.forEach((list) => {
                     mailinglists[list.name] = list.emails;
                 });
                 aes.encrypt(JSON.stringify(mailinglists), secret, (err, encryptedData) => {
