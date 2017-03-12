@@ -83,7 +83,7 @@ export function roleEmailApiRoute(req, res) {
     secret = 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa';
 
     const memberPromises = [];
-    const members = req.organization.member_group.members.map((member) => {
+    req.organization.member_group.members.forEach((member) => {
         if (member.roles.length) {
             memberPromises.push(Promise.all([
                 User.findById(member.user).exec(),
