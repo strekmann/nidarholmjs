@@ -105,10 +105,11 @@ export function roleEmailApiRoute(req, res) {
         results.forEach((result) => {
             const { user, roles } = result;
             roles.forEach((role) => {
-                if (!aliases[role]) {
-                    aliases.role = [];
+                const email = role.email;
+                if (!aliases[email]) {
+                    aliases[email] = [];
                 }
-                aliases.role.push(user.email);
+                aliases[email].push(user.email);
             });
         });
         aes.encrypt(JSON.stringify(aliases), secret, (err, encryptedData) => {

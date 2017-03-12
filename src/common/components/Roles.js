@@ -11,6 +11,7 @@ import RaisedButton from 'material-ui/RaisedButton';
 import TextField from 'material-ui/TextField';
 import getMuiTheme from 'material-ui/styles/getMuiTheme';
 import ArrowDown from 'material-ui/svg-icons/navigation/arrow-drop-down';
+import Delete from 'material-ui/svg-icons/action/delete';
 import React from 'react';
 import Relay from 'react-relay';
 import CreateRoleMutation from '../mutations/createRole';
@@ -94,7 +95,7 @@ class Roles extends React.Component {
         return (
             <Paper className="row">
                 <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                    <h1>Roller</h1>
+                    <h1>Verv og roller</h1>
                     {isAdmin
                         ? <IconMenu
                             iconButtonElement={<IconButton><ArrowDown /></IconButton>}
@@ -119,7 +120,7 @@ class Roles extends React.Component {
                 >
                     <div>
                         <TextField
-                            floatingLabelText="Verv"
+                            floatingLabelText="Rolle"
                             onChange={(_, name) => {
                                 this.setState({ name });
                             }}
@@ -154,6 +155,11 @@ class Roles extends React.Component {
                                 style={{ textTransform: 'uppercase' }}
                                 disabled
                                 initiallyOpen
+                                rightIconButton={
+                                    <IconButton onTouchTap={(event) => { this.onDelete(event, id); }}>
+                                        <Delete />
+                                    </IconButton>
+                                }
                                 nestedItems={users.map((user) => {
                                     return (
                                         <ListItem
