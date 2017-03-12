@@ -320,6 +320,23 @@ const memberType = new GraphQLObjectType({
                     return Role.find().where('_id').in(_member.roles).exec();
                 },
             },
+            organizationRoles: {
+                // Roles are always added at organization level
+                type: new GraphQLList(roleType),
+                resolve: (_member, args, { organization }) => {
+                    const organizationMember = organization.member_group.members.find((m) => {
+                        if (typeof m.user === 'object') {
+                            // "self" is actually an object. Strange populate?
+                            return m.user._id === _member.user;
+                        }
+                        return m.user === _member.user;
+                    });
+                    if (organizationMember) {
+                        return Role.find().where('_id').in(organizationMember.roles).exec();
+                    }
+                    return [];
+                },
+            },
             user: {
                 type: userType,
                 args: {

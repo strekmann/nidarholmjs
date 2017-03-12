@@ -14,6 +14,7 @@ class MemberItem extends React.Component {
         const {
             user,
             roles,
+            organizationRoles,
         } = this.props.member;
         if (user) {
             return (
@@ -24,17 +25,17 @@ class MemberItem extends React.Component {
                             primaryText={
                                 <div>
                                     <Link to={`/users/${user.id}`}>{user.name}</Link>
-                                    {roles.map((role) => {
+                                    {organizationRoles.map((role) => {
                                         return (
-                                            <div>
-                                                {' '}
-                                                {role.name || user.instrument
-                                                    ? <span>({role.name || user.instrument})</span>
-                                                    : null
-                                                }
-                                            </div>
+                                            <span key={role.id} style={{ textTransform: 'lowercase' }}>, {role.name}</span>
                                         );
                                     })}
+                                    {roles.map((role) => {
+                                        return (
+                                            <span key={role.id} style={{ textTransform: 'lowercase' }}>, {role.name}</span>
+                                        );
+                                    })}
+                                    <span style={{ textTransform: 'lowercase' }}>, {user.instrument}</span>
                                 </div>
                             }
                             secondaryText={
@@ -53,18 +54,22 @@ class MemberItem extends React.Component {
                             }
                         />
                         : <ListItem
-                            primaryText={roles.map((role) => {
-                                return (
-                                    <div>
-                                        {user.name}
-                                        {' '}
-                                        {role.name || user.instrument
-                                            ? <span>({role.name || user.instrument})</span>
-                                            : null
-                                        }
-                                    </div>
-                                );
-                            })}
+                            primaryText={
+                                <div>
+                                    {user.name}
+                                    {organizationRoles.map((role) => {
+                                        return (
+                                            <span key={role.id} style={{ textTransform: 'lowercase' }}>, {role.name}</span>
+                                        );
+                                    })}
+                                    {roles.map((role) => {
+                                        return (
+                                            <span key={role.id} style={{ textTransform: 'lowercase' }}>, {role.name}</span>
+                                        );
+                                    })}
+                                    <span style={{ textTransform: 'lowercase' }}>, {user.instrument}</span>
+                                </div>
+                            }
                         />
                     }
                 </div>
@@ -90,6 +95,11 @@ export default Relay.createContainer(MemberItem, {
                     instrument
                 }
                 roles {
+                    id
+                    name
+                    email
+                }
+                organizationRoles {
                     id
                     name
                     email
