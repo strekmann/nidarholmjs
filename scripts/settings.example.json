@@ -1,4 +1,9 @@
 {
     "password": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
-    "server_address": "http://nidarholm.no"
+    "server_address": "https://nidarholm.no",
+    "database": "mailserver",
+    "database_host": "localhost",
+    "database_user": "nidarholmsync",
+    "database_password": "aa7jltq{5_NH/Ql4",
+    "domain_id": "3"
 }
