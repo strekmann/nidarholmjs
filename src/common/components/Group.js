@@ -209,11 +209,11 @@ class Group extends React.Component {
                         <div>
                             <h1>{group.name}</h1>
                             {group.email
-                                ? <p>Epost til liste: <a href="mailto:{group.email}">{group.email}</a></p>
+                                ? <p>Epost til liste: <a href={`mailto:${group.email}`}>{group.email}</a></p>
                                 : null
                             }
                             {group.groupLeaderEmail
-                                ? <p>Epost til gruppeleder <a href="mailto:{group.groupLeaderEmail}">{group.groupLeaderEmail}</a></p>
+                                ? <p>Epost til gruppeleder <a href={`mailto:${group.groupLeaderEmail}`}>{group.groupLeaderEmail}</a></p>
                                 : null
                             }
                             <List>

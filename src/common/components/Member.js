@@ -513,6 +513,10 @@ class Member extends React.Component {
                                                 key={role.id}
                                                 disabled
                                                 primaryText={role.name}
+                                                secondaryText={role.email
+                                                    ? <a href={`mailto:${role.email}`}>{role.email}</a>
+                                                    : null
+                                                }
                                                 rightIconButton={isAdmin
                                                     ? <IconButton
                                                         onClick={(event) => {
