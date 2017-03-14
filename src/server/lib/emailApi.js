@@ -100,23 +100,43 @@ export function roleEmailApiRoute(req, res) {
             }));
         }
     });
-    const aliases = {};
-    Promise.all(memberPromises).then((results) => {
-        results.forEach((result) => {
-            const { user, roles } = result;
-            roles.forEach((role) => {
-                const email = role.email;
-                if (!aliases[email]) {
-                    aliases[email] = [];
-                }
-                aliases[email].push(user.email);
+    Group.find({ organization: 'nidarholm' }).where('_id').in(req.organization.instrument_groups).exec()
+    .then((groups) => {
+        groups.forEach((group) => {
+            group.members.forEach((member) => {
+                memberPromises.push(Promise.all([
+                    User.findById(member.user).exec(),
+                    Role.find().where('_id').in(member.roles),
+                ]).then((results) => {
+                    const [user, roles] = results;
+                    const emailRoles = roles.filter((role) => {
+                        return role.email;
+                    });
+                    return {
+                        user,
+                        roles: emailRoles,
+                    };
+                }));
             });
         });
-        aes.encrypt(JSON.stringify(aliases), secret, (err, encryptedData) => {
-            if (err) {
-                console.error(err);
-            }
-            res.send(encryptedData);
+        const aliases = {};
+        Promise.all(memberPromises).then((results) => {
+            results.forEach((result) => {
+                const { user, roles } = result;
+                roles.forEach((role) => {
+                    const email = role.email;
+                    if (!aliases[email]) {
+                        aliases[email] = [];
+                    }
+                    aliases[email].push(user.email);
+                });
+            });
+            aes.encrypt(JSON.stringify(aliases), secret, (err, encryptedData) => {
+                if (err) {
+                    console.error(err);
+                }
+                res.send(encryptedData);
+            });
         });
     });
 }

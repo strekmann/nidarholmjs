@@ -2,17 +2,20 @@ import AutoComplete from 'material-ui/AutoComplete';
 import Dialog from 'material-ui/Dialog';
 import FlatButton from 'material-ui/FlatButton';
 import IconButton from 'material-ui/IconButton';
+import IconMenu from 'material-ui/IconMenu';
 import { List, ListItem } from 'material-ui/List';
+import MenuItem from 'material-ui/MenuItem';
 import Paper from 'material-ui/Paper';
+import ArrowDown from 'material-ui/svg-icons/navigation/arrow-drop-down';
 import getMuiTheme from 'material-ui/styles/getMuiTheme';
-import Close from 'material-ui/svg-icons/navigation/close';
 import React from 'react';
 import { Link } from 'react-router';
 import Relay from 'react-relay';
-
 import theme from '../theme';
+import AddRoleMutation from '../mutations/addRole';
 import JoinGroupMutation from '../mutations/joinGroup';
 import LeaveGroupMutation from '../mutations/leaveGroup';
+import RemoveRoleMutation from '../mutations/removeRole';
 
 class Group extends React.Component {
     static contextTypes = {
@@ -34,10 +37,19 @@ class Group extends React.Component {
 
     state = {
         joinGroup: false,
+        addingGroupLeader: false,
     }
 
     getChildContext() {
         return { muiTheme: this.muiTheme };
+    }
+
+    setGroupLeader = (role) => {
+        this.context.relay.commitUpdate(new AddRoleMutation({
+            roleId: role.value,
+            member: this.state.addingGroupLeader,
+        }));
+        this.setState({ addingGroupLeader: false });
     }
 
     joinGroup = (selection) => {
@@ -59,9 +71,31 @@ class Group extends React.Component {
         this.setState({ joinGroup: false });
     }
 
+    toggleGroupLeader = (member, isGroupLeader) => {
+        if (isGroupLeader) {
+            // remove group leader status
+            // FIXME: We assume the first role for this group is a group leader
+            // role. We also assume that there is a role set when we get
+            // isGroupLeader.
+            const role = member.roles[0];
+            this.context.relay.commitUpdate(new RemoveRoleMutation({
+                roleId: role.id,
+                member,
+            }));
+        }
+        else {
+            // add group leader status
+            this.setState({ addingGroupLeader: member });
+        }
+    }
+
+    closeAddingGroupLeader = () => {
+        this.setState({ addingGroupLeader: false });
+    }
+
     render() {
         const org = this.props.organization;
-        const { group, isAdmin } = org;
+        const { group, isAdmin, roles } = org;
         const members = group.members.filter((member) => {
             return member.user;
         });
@@ -99,26 +133,67 @@ class Group extends React.Component {
                                 {members.sort((a, b) => {
                                     return a.user.name > b.user.name;
                                 }).map((member) => {
+                                    const isGroupLeader = member.roles.some((role) => {
+                                        return !!role.name;
+                                    });
                                     return (
-                                        <ListItem
+                                        <div
                                             key={member.id}
-                                            containerElement={
-                                                <Link to={`/users/${member.user.id}`} />
-                                            }
-                                            primaryText={member.user.name}
-                                            secondaryText={member.role.title}
-                                            rightIconButton={isAdmin
-                                                ? <IconButton
-                                                    onClick={(event) => {
-                                                        event.preventDefault();
-                                                        return this.leaveGroup(member.user, group);
-                                                    }}
-                                                >
-                                                    <Close />
-                                                </IconButton>
-                                                : null
-                                            }
-                                        />
+                                        >
+                                            <Dialog
+                                                title="Sett som gruppeleder"
+                                                open={!!this.state.addingGroupLeader}
+                                                onRequestClose={this.closeAddingGroupLeader}
+                                            >
+                                                <p>Velg en rolle fra lista under</p>
+                                                <AutoComplete
+                                                    dataSource={roles.edges.map((edge) => {
+                                                        return { text: edge.node.name, value: edge.node.id };
+                                                    })}
+                                                    floatingLabelText="Rolle"
+                                                    onNewRequest={this.setGroupLeader}
+                                                    openOnFocus
+                                                    filter={AutoComplete.fuzzyFilter}
+                                                    fullWidth
+                                                />
+                                            </Dialog>
+                                            <ListItem
+                                                disabled
+                                                primaryText={member.user.name}
+                                                secondaryText={member.roles.map((role) => {
+                                                    return role.name;
+                                                }).join(', ')}
+                                                rightIconButton={
+                                                    <IconMenu
+                                                        iconButtonElement={<IconButton><ArrowDown /></IconButton>}
+                                                        anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
+                                                        targetOrigin={{ vertical: 'top', horizontal: 'right' }}
+                                                    >
+                                                        <MenuItem
+                                                            primaryText="Gå til brukerside"
+                                                            insetChildren
+                                                            containerElement={<Link to={`/users/${member.user.id}`} />}
+                                                        />
+                                                        <MenuItem
+                                                            primaryText="Fjern fra gruppe"
+                                                            insetChildren
+                                                            onClick={(event) => {
+                                                                event.preventDefault();
+                                                                return this.leaveGroup(member.user, group);
+                                                            }}
+                                                        />
+                                                        <MenuItem
+                                                            primaryText="Gruppeleder"
+                                                            checked={isGroupLeader}
+                                                            insetChildren
+                                                            onClick={() => {
+                                                                this.toggleGroupLeader(member, isGroupLeader);
+                                                            }}
+                                                        />
+                                                    </IconMenu>
+                                                }
+                                            />
+                                        </div>
                                     );
                                 })}
                             </List>
@@ -163,13 +238,24 @@ export default Relay.createContainer(Group, {
                             ${LeaveGroupMutation.getFragment('user')}
                         }
                         roles {
+                            id
                             name
                         }
+                        ${AddRoleMutation.getFragment('member')}
+                        ${RemoveRoleMutation.getFragment('member')}
                     }
                     externallyHidden
                 }
-            }
-            `;
+                roles(first:100) {
+                    edges {
+                        node {
+                            id
+                            name
+
+                        }
+                    }
+                }
+            }`;
         },
     },
 });
