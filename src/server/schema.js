@@ -368,6 +368,18 @@ groupType = new GraphQLObjectType({
     fields: {
         id: globalIdField('Group'),
         name: { type: GraphQLString },
+        email: {
+            type: GraphQLString,
+            resolve: (group) => {
+                return group.group_email;
+            },
+        },
+        groupLeaderEmail: {
+            type: GraphQLString,
+            resolve: (group) => {
+                return group.group_leader_email;
+            },
+        },
         externallyHidden: {
             type: GraphQLBoolean,
             resolve: group => group.externally_hidden,
@@ -2088,6 +2100,35 @@ const mutationRemoveRole = mutationWithClientMutationId({
     },
 });
 
+const mutationSaveGroup = mutationWithClientMutationId({
+    name: 'SaveGroup',
+    description: 'Saving email address to email list and group leader',
+    inputFields: {
+        groupId: { type: GraphQLID },
+        email: { type: GraphQLString },
+        groupLeaderEmail: { type: GraphQLString },
+    },
+    outputFields: {
+        group: {
+            type: groupType,
+            resolve: (payload) => {
+                return payload;
+            },
+        },
+    },
+    mutateAndGetPayload: ({ groupId, email, groupLeaderEmail }, { viewer, organization }) => {
+        if (!admin(organization, viewer)) {
+            return null;
+        }
+        const gId = fromGlobalId(groupId).id;
+        return Group.findByIdAndUpdate(gId, {
+            group_email: email,
+            group_leader_email: groupLeaderEmail,
+        },
+        { new: true });
+    },
+});
+
 const mutationType = new GraphQLObjectType({
     name: 'Mutation',
     fields: () => ({
@@ -2116,6 +2157,7 @@ const mutationType = new GraphQLObjectType({
         deleteRole: mutationDeleteRole,
         addRole: mutationAddRole,
         removeRole: mutationRemoveRole,
+        saveGroup: mutationSaveGroup,
     }),
 });
 

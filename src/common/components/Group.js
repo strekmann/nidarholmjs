@@ -1,11 +1,14 @@
 import AutoComplete from 'material-ui/AutoComplete';
 import Dialog from 'material-ui/Dialog';
+import Divider from 'material-ui/Divider';
 import FlatButton from 'material-ui/FlatButton';
 import IconButton from 'material-ui/IconButton';
 import IconMenu from 'material-ui/IconMenu';
 import { List, ListItem } from 'material-ui/List';
 import MenuItem from 'material-ui/MenuItem';
 import Paper from 'material-ui/Paper';
+import TextField from 'material-ui/TextField';
+import { Toolbar, ToolbarGroup } from 'material-ui/Toolbar';
 import MoreVertIcon from 'material-ui/svg-icons/navigation/more-vert';
 import getMuiTheme from 'material-ui/styles/getMuiTheme';
 import React from 'react';
@@ -16,6 +19,7 @@ import AddRoleMutation from '../mutations/addRole';
 import JoinGroupMutation from '../mutations/joinGroup';
 import LeaveGroupMutation from '../mutations/leaveGroup';
 import RemoveRoleMutation from '../mutations/removeRole';
+import SaveGroupMutation from '../mutations/saveGroup';
 
 class Group extends React.Component {
     static contextTypes = {
@@ -38,6 +42,9 @@ class Group extends React.Component {
     state = {
         joinGroup: false,
         addingGroupLeader: false,
+        editing: false,
+        email: this.props.organization.group.email || '',
+        groupLeaderEmail: this.props.organization.group.groupLeaderEmail || '',
     }
 
     getChildContext() {
@@ -93,9 +100,23 @@ class Group extends React.Component {
         this.setState({ addingGroupLeader: false });
     }
 
+    closeEditing = () => {
+        this.setState({ editing: false });
+    }
+
+    onSave = (event) => {
+        event.preventDefault();
+        this.setState({ editing: false });
+        this.context.relay.commitUpdate(new SaveGroupMutation({
+            group: this.props.organization.group,
+            email: this.state.email,
+            groupLeaderEmail: this.state.groupLeaderEmail,
+        }));
+    }
+
     render() {
         const org = this.props.organization;
-        const { group, isAdmin, roles } = org;
+        const { group, isAdmin, roles, instrumentGroups } = org;
         const members = group.members.filter((member) => {
             return member.user;
         });
@@ -108,34 +129,95 @@ class Group extends React.Component {
         return (
             <section>
                 {isAdmin
-                        ? <Paper style={{ padding: 20 }}>
-                            <Dialog
-                                title="Legg til gruppemedlem"
-                                open={this.state.joinGroup}
-                                onRequestClose={this.closeJoinGroup}
-                                autoScrollBodyContent
-                                actions={<FlatButton label="Avbryt" onTouchTap={this.closeJoinGroup} />}
-                            >
-                                <AutoComplete
-                                    dataSource={org.users.map((user) => {
-                                        return { text: `${user.name} (${user.username})`, value: user };
-                                    })}
-                                    floatingLabelText="Navn"
-                                    onNewRequest={this.joinGroup}
-                                    filter={AutoComplete.fuzzyFilter}
-                                    fullWidth
-                                />
-                            </Dialog>
-                            <Link to="/groups">Alle grupper</Link>
-                            <FlatButton
-                                label="Legg til gruppemedlem"
-                                onTouchTap={() => {
-                                    this.setState({ joinGroup: !this.state.joinGroup });
-                                }}
-                                style={{ float: 'right' }}
+                    ? <Paper style={{ padding: 20 }}>
+                        <Dialog
+                            title="Legg til gruppemedlem"
+                            open={this.state.joinGroup}
+                            onRequestClose={this.closeJoinGroup}
+                            autoScrollBodyContent
+                            actions={<FlatButton label="Avbryt" onTouchTap={this.closeJoinGroup} />}
+                        >
+                            <AutoComplete
+                                dataSource={org.users.map((user) => {
+                                    return { text: `${user.name} (${user.username})`, value: user };
+                                })}
+                                floatingLabelText="Navn"
+                                onNewRequest={this.joinGroup}
+                                filter={AutoComplete.fuzzyFilter}
+                                fullWidth
                             />
+                        </Dialog>
+                        <Dialog
+                            title="Epostinnstillinger"
+                            open={this.state.editing}
+                            onRequestClose={this.closeEditing}
+                            autoScrollBodyContent
+                            actions={[
+                                <FlatButton label="Avbryt" onTouchTap={this.closeEditing} />,
+                                <FlatButton label="Lagre" primary onTouchTap={this.onSave} />,
+                            ]}
+                        >
+                            <div>
+                                <TextField
+                                    floatingLabelText="Epost til liste"
+                                    onChange={(event, email) => {
+                                        this.setState({ email });
+                                    }}
+                                    value={this.state.email}
+                                />
+                            </div>
+                            {instrumentGroups.some((g) => {
+                                return group.id === g.id;
+                            })
+                                ? <div>
+                                    <TextField
+                                        floatingLabelText="Epostalias til gruppeleder"
+                                        onChange={(event, groupLeaderEmail) => {
+                                            this.setState({ groupLeaderEmail });
+                                        }}
+                                        value={this.state.groupLeaderEmail}
+                                    />
+                                </div>
+                                : null
+                            }
+                        </Dialog>
+                        <Toolbar style={{ backgroundColor: theme.palette.fullWhite }}>
+                            <ToolbarGroup firstChild>
+                                <Link to="/groups">Alle grupper</Link>
+                            </ToolbarGroup>
+                            <ToolbarGroup lastChild>
+                                <IconMenu
+                                    iconButtonElement={<IconButton><MoreVertIcon /></IconButton>}
+                                    anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
+                                    targetOrigin={{ vertical: 'top', horizontal: 'right' }}
+                                >
+                                    <MenuItem
+                                        primaryText="Legg til gruppemedlem"
+                                        onTouchTap={() => {
+                                            this.setState({ joinGroup: !this.state.joinGroup });
+                                        }}
+                                    />
+                                    <MenuItem
+                                        primaryText="Epostinnstillinger"
+                                        onTouchTap={() => {
+                                            this.setState({ editing: true });
+                                        }}
+                                    />
+                                </IconMenu>
+                            </ToolbarGroup>
+                        </Toolbar>
+                        <div>
                             <h1>{group.name}</h1>
+                            {group.email
+                                ? <p>Epost til liste: <a href="mailto:{group.email}">{group.email}</a></p>
+                                : null
+                            }
+                            {group.groupLeaderEmail
+                                ? <p>Epost til gruppeleder <a href="mailto:{group.groupLeaderEmail}">{group.groupLeaderEmail}</a></p>
+                                : null
+                            }
                             <List>
+                                <Divider />
                                 {members.map((member) => {
                                     const isGroupLeader = member.roles.some((role) => {
                                         return !!role.name;
@@ -201,8 +283,9 @@ class Group extends React.Component {
                                     );
                                 })}
                             </List>
-                        </Paper>
-                        : null
+                        </div>
+                    </Paper>
+                    : null
                 }
             </section>
         );
@@ -233,6 +316,8 @@ export default Relay.createContainer(Group, {
                 group(groupId:$groupId) {
                     id
                     name
+                    email
+                    groupLeaderEmail
                     members {
                         id
                         user(active:true) {
@@ -249,6 +334,10 @@ export default Relay.createContainer(Group, {
                         ${RemoveRoleMutation.getFragment('member')}
                     }
                     externallyHidden
+                    ${SaveGroupMutation.getFragment('group')}
+                }
+                instrumentGroups {
+                    id
                 }
                 roles(first:100) {
                     edges {
