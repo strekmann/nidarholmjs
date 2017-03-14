@@ -31,13 +31,17 @@ class GroupItem extends React.Component {
         if (!members.length) {
             return null;
         }
+        members.sort((a, b) => {
+            if (a.user.name > b.user.name) {
+                return 1;
+            }
+            return -1;
+        });
         return (
             <List>
                 <Divider />
                 {this.renderHeader()}
-                {members.sort((a, b) => {
-                    return a.user.name > b.user.name;
-                }).map((member) => {
+                {members.map((member) => {
                     return (
                         <MemberItem
                             key={member.id}
@@ -62,6 +66,7 @@ export default Relay.createContainer(GroupItem, {
                     id
                     user(active:true) {
                         id
+                        name
                     }
                     ${MemberItem.getFragment('member')}
                 }

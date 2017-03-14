@@ -99,6 +99,12 @@ class Group extends React.Component {
         const members = group.members.filter((member) => {
             return member.user;
         });
+        members.sort((a, b) => {
+            if (a.user.name > b.user.name) {
+                return 1;
+            }
+            return -1;
+        });
         return (
             <section>
                 {isAdmin
@@ -130,9 +136,7 @@ class Group extends React.Component {
                             />
                             <h1>{group.name}</h1>
                             <List>
-                                {members.sort((a, b) => {
-                                    return a.user.name > b.user.name;
-                                }).map((member) => {
+                                {members.map((member) => {
                                     const isGroupLeader = member.roles.some((role) => {
                                         return !!role.name;
                                     });
@@ -231,7 +235,7 @@ export default Relay.createContainer(Group, {
                     name
                     members {
                         id
-                        user {
+                        user(active:true) {
                             id
                             name
                             ${JoinGroupMutation.getFragment('user')}
