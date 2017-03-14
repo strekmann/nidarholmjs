@@ -14,7 +14,7 @@ import RaisedButton from 'material-ui/RaisedButton';
 import { Toolbar, ToolbarGroup } from 'material-ui/Toolbar';
 import TextField from 'material-ui/TextField';
 import getMuiTheme from 'material-ui/styles/getMuiTheme';
-import ArrowDown from 'material-ui/svg-icons/navigation/arrow-drop-down';
+import MoreVertIcon from 'material-ui/svg-icons/navigation/more-vert';
 
 import theme from '../theme';
 
@@ -169,7 +169,7 @@ class Piece extends React.Component {
                     <Toolbar style={{ backgroundColor: theme.palette.fullWhite }}>
                         <ToolbarGroup lastChild>
                             <IconMenu
-                                iconButtonElement={<IconButton><ArrowDown /></IconButton>}
+                                iconButtonElement={<IconButton><MoreVertIcon /></IconButton>}
                                 anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
                                 targetOrigin={{ vertical: 'top', horizontal: 'right' }}
                             >

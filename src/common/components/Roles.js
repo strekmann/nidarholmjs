@@ -10,7 +10,7 @@ import Paper from 'material-ui/Paper';
 import RaisedButton from 'material-ui/RaisedButton';
 import TextField from 'material-ui/TextField';
 import getMuiTheme from 'material-ui/styles/getMuiTheme';
-import ArrowDown from 'material-ui/svg-icons/navigation/arrow-drop-down';
+import MoreVertIcon from 'material-ui/svg-icons/navigation/more-vert';
 import Delete from 'material-ui/svg-icons/action/delete';
 import React from 'react';
 import Relay from 'react-relay';
@@ -98,7 +98,7 @@ class Roles extends React.Component {
                     <h1>Verv og roller</h1>
                     {isAdmin
                         ? <IconMenu
-                            iconButtonElement={<IconButton><ArrowDown /></IconButton>}
+                            iconButtonElement={<IconButton><MoreVertIcon /></IconButton>}
                             anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
                             targetOrigin={{ vertical: 'top', horizontal: 'right' }}
                         >

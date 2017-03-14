@@ -16,7 +16,7 @@ import IconButton from 'material-ui/IconButton';
 import Paper from 'material-ui/Paper';
 import RaisedButton from 'material-ui/RaisedButton';
 import TextField from 'material-ui/TextField';
-import ArrowDown from 'material-ui/svg-icons/navigation/arrow-drop-down';
+import MoreVertIcon from 'material-ui/svg-icons/navigation/more-vert';
 import Person from 'material-ui/svg-icons/social/person';
 import { lightBlue100 } from 'material-ui/styles/colors';
 import Close from 'material-ui/svg-icons/navigation/close';
@@ -452,7 +452,7 @@ class Member extends React.Component {
                                 : null
                             }
                             <IconMenu
-                                iconButtonElement={<IconButton><ArrowDown /></IconButton>}
+                                iconButtonElement={<IconButton><MoreVertIcon /></IconButton>}
                                 anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
                                 targetOrigin={{ vertical: 'top', horizontal: 'right' }}
                             >

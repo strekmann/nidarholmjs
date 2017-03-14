@@ -6,7 +6,7 @@ import IconMenu from 'material-ui/IconMenu';
 import { List, ListItem } from 'material-ui/List';
 import MenuItem from 'material-ui/MenuItem';
 import Paper from 'material-ui/Paper';
-import ArrowDown from 'material-ui/svg-icons/navigation/arrow-drop-down';
+import MoreVertIcon from 'material-ui/svg-icons/navigation/more-vert';
 import getMuiTheme from 'material-ui/styles/getMuiTheme';
 import React from 'react';
 import { Link } from 'react-router';
@@ -165,7 +165,7 @@ class Group extends React.Component {
                                                 }).join(', ')}
                                                 rightIconButton={
                                                     <IconMenu
-                                                        iconButtonElement={<IconButton><ArrowDown /></IconButton>}
+                                                        iconButtonElement={<IconButton><MoreVertIcon /></IconButton>}
                                                         anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
                                                         targetOrigin={{ vertical: 'top', horizontal: 'right' }}
                                                     >

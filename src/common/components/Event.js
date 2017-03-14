@@ -6,7 +6,7 @@ import IconMenu from 'material-ui/IconMenu';
 import MenuItem from 'material-ui/MenuItem';
 import IconButton from 'material-ui/IconButton';
 import Paper from 'material-ui/Paper';
-import ArrowDown from 'material-ui/svg-icons/navigation/arrow-drop-down';
+import MoreVertIcon from 'material-ui/svg-icons/navigation/more-vert';
 
 import theme from '../theme';
 import EditEventMutation from '../mutations/editEvent';
@@ -82,7 +82,7 @@ class Event extends React.Component {
                     <h1>{event.title}</h1>
                     {isMember
                             ? <IconMenu
-                                iconButtonElement={<IconButton><ArrowDown /></IconButton>}
+                                iconButtonElement={<IconButton><MoreVertIcon /></IconButton>}
                                 anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
                                 targetOrigin={{ vertical: 'top', horizontal: 'right' }}
                             >

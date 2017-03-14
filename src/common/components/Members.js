@@ -9,7 +9,7 @@ import RaisedButton from 'material-ui/RaisedButton';
 import SelectField from 'material-ui/SelectField';
 import TextField from 'material-ui/TextField';
 import getMuiTheme from 'material-ui/styles/getMuiTheme';
-import ArrowDown from 'material-ui/svg-icons/navigation/arrow-drop-down';
+import MoreVertIcon from 'material-ui/svg-icons/navigation/more-vert';
 import React from 'react';
 import Relay from 'react-relay';
 import { Link } from 'react-router';
@@ -126,7 +126,7 @@ class Members extends React.Component {
                     </div>
                     {isAdmin
                         ? <IconMenu
-                            iconButtonElement={<IconButton><ArrowDown /></IconButton>}
+                            iconButtonElement={<IconButton><MoreVertIcon /></IconButton>}
                             anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
                             targetOrigin={{ vertical: 'top', horizontal: 'right' }}
                         >

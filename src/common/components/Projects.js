@@ -3,7 +3,7 @@ import IconMenu from 'material-ui/IconMenu';
 import MenuItem from 'material-ui/MenuItem';
 import RaisedButton from 'material-ui/RaisedButton';
 import getMuiTheme from 'material-ui/styles/getMuiTheme';
-import ArrowDown from 'material-ui/svg-icons/navigation/arrow-drop-down';
+import MoreVertIcon from 'material-ui/svg-icons/navigation/more-vert';
 import React from 'react';
 import Relay from 'react-relay';
 
@@ -98,7 +98,7 @@ class Projects extends React.Component {
                 <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
                     {isMember
                         ? <IconMenu
-                            iconButtonElement={<IconButton><ArrowDown /></IconButton>}
+                            iconButtonElement={<IconButton><MoreVertIcon /></IconButton>}
                             anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
                             targetOrigin={{ vertical: 'top', horizontal: 'right' }}
                         >

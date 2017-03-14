@@ -4,7 +4,7 @@ import React from 'react';
 import { Link } from 'react-router';
 import { Card, CardTitle, CardMedia, CardActions } from 'material-ui/Card';
 import Chip from 'material-ui/Chip';
-import ArrowDown from 'material-ui/svg-icons/navigation/arrow-drop-down';
+import MoreVertIcon from 'material-ui/svg-icons/navigation/more-vert';
 import Dialog from 'material-ui/Dialog';
 import Download from 'material-ui/svg-icons/file/file-download';
 import IconMenu from 'material-ui/IconMenu';
@@ -83,7 +83,7 @@ export default class FileItem extends React.Component {
                                 <IconButton
                                     style={{ padding: 0, height: 'inherit', width: 'inherit' }}
                                 >
-                                    <ArrowDown />
+                                    <MoreVertIcon />
                                 </IconButton>
                             }
                             anchorOrigin={{ vertical: 'top', horizontal: 'right' }}

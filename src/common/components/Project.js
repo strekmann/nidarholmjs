@@ -5,7 +5,7 @@ import Helmet from 'react-helmet';
 import Relay from 'react-relay';
 import axios from 'axios';
 
-import ArrowDown from 'material-ui/svg-icons/navigation/arrow-drop-down';
+import MoreVertIcon from 'material-ui/svg-icons/navigation/more-vert';
 import Dialog from 'material-ui/Dialog';
 import IconButton from 'material-ui/IconButton';
 import IconMenu from 'material-ui/IconMenu';
@@ -203,7 +203,7 @@ class Project extends React.Component {
                     </div>
                     {isMember
                         ? <IconMenu
-                            iconButtonElement={<IconButton><ArrowDown /></IconButton>}
+                            iconButtonElement={<IconButton><MoreVertIcon /></IconButton>}
                             anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
                             targetOrigin={{ vertical: 'top', horizontal: 'right' }}
                         >

@@ -10,7 +10,7 @@ import { Table, TableHeader, TableBody, TableRow, TableHeaderColumn } from 'mate
 import TextField from 'material-ui/TextField';
 import { Toolbar, ToolbarGroup } from 'material-ui/Toolbar';
 import getMuiTheme from 'material-ui/styles/getMuiTheme';
-import ArrowDown from 'material-ui/svg-icons/navigation/arrow-drop-down';
+import MoreVertIcon from 'material-ui/svg-icons/navigation/more-vert';
 import React from 'react';
 import Relay from 'react-relay';
 
@@ -211,7 +211,7 @@ class Pieces extends React.Component {
                     <Toolbar style={{ backgroundColor: theme.palette.fullWhite }}>
                         <ToolbarGroup lastChild>
                             <IconMenu
-                                iconButtonElement={<IconButton><ArrowDown /></IconButton>}
+                                iconButtonElement={<IconButton><MoreVertIcon /></IconButton>}
                                 anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
                                 targetOrigin={{ vertical: 'top', horizontal: 'right' }}
                             >
