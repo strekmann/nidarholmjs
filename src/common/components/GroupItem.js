@@ -1,3 +1,4 @@
+import Divider from 'material-ui/Divider';
 import { List } from 'material-ui/List';
 import Subheader from 'material-ui/Subheader';
 import React from 'react';
@@ -32,6 +33,7 @@ class GroupItem extends React.Component {
         }
         return (
             <List>
+                <Divider />
                 {this.renderHeader()}
                 {members.sort((a, b) => {
                     return a.user.name > b.user.name;
@@ -58,7 +60,7 @@ export default Relay.createContainer(GroupItem, {
                 name
                 members {
                     id
-                    user {
+                    user(active:true) {
                         id
                     }
                     ${MemberItem.getFragment('member')}
