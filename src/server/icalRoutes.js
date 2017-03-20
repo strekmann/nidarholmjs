@@ -1,3 +1,4 @@
+import { toGlobalId } from 'graphql-relay';
 import icalendar from 'icalendar';
 import moment from 'moment';
 import Event from './models/Event';
@@ -31,7 +32,7 @@ export function icalEvents(req, res, next) {
             event.setDate(e.start, e.end);
             event.setDescription(e.mdtext.replace(/\r/g, '').replace(/(<([^>]+)>)/ig, ''));
             event.setLocation(e.location);
-            event.addProperty('URL', `https://nidarholm.no/events/${e.id}`);
+            event.addProperty('URL', `https://nidarholm.no/events/${toGlobalId('event', e.id)}`);
             ical.addComponent(event);
         });
         res.setHeader('Filename', 'nidarholm.ics');

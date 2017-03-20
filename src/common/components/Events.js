@@ -1,8 +1,10 @@
+import FlatButton from 'material-ui/FlatButton';
 import Paper from 'material-ui/Paper';
-import React from 'react';
 import RaisedButton from 'material-ui/RaisedButton';
-import Relay from 'react-relay';
+import { Toolbar, ToolbarGroup } from 'material-ui/Toolbar';
 import getMuiTheme from 'material-ui/styles/getMuiTheme';
+import React from 'react';
+import Relay from 'react-relay';
 import theme from '../theme';
 import EventItem from './EventItem';
 
@@ -42,8 +44,18 @@ class Events extends React.Component {
         const org = this.props.organization;
         const events = org.events;
         return (
-            <Paper className="row" style={{ padding: 20 }}>
-                <h1>Aktiviteter</h1>
+            <Paper className="row">
+                <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                    <h1>Aktiviteter</h1>
+                    <Toolbar style={{ backgroundColor: theme.palette.fullWhite }}>
+                        <ToolbarGroup lastChild>
+                            <FlatButton
+                                label="Kalenderfil"
+                                href="/events/public.ics"
+                            />
+                        </ToolbarGroup>
+                    </Toolbar>
+                </div>
                 <div>
                     {events.edges.map((edge) => {
                         return (
