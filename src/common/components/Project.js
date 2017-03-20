@@ -4,7 +4,6 @@ import React from 'react';
 import Helmet from 'react-helmet';
 import Relay from 'react-relay';
 import axios from 'axios';
-
 import MoreVertIcon from 'material-ui/svg-icons/navigation/more-vert';
 import Dialog from 'material-ui/Dialog';
 import IconButton from 'material-ui/IconButton';
@@ -13,7 +12,13 @@ import MenuItem from 'material-ui/MenuItem';
 import Paper from 'material-ui/Paper';
 import RaisedButton from 'material-ui/RaisedButton';
 import getMuiTheme from 'material-ui/styles/getMuiTheme';
-
+import AddEventMutation from '../mutations/addEvent';
+import AddFileMutation from '../mutations/addFile';
+import SaveFilePermissionsMutation from '../mutations/saveFilePermissions';
+import SaveProjectMutation from '../mutations/saveProject';
+import SetProjectPosterMutation from '../mutations/setProjectPoster';
+import { flattenPermissions } from '../utils';
+import theme from '../theme';
 import Date from './Date';
 import Text from './Text';
 import EventItem from './EventItem';
@@ -23,13 +28,6 @@ import FileList from './FileList';
 import FileUpload from './FileUpload';
 import MusicList from './MusicList';
 import PermissionChips from './PermissionChips';
-import AddEventMutation from '../mutations/addEvent';
-import AddFileMutation from '../mutations/addFile';
-import SaveFilePermissionsMutation from '../mutations/saveFilePermissions';
-import SaveProjectMutation from '../mutations/saveProject';
-import SetProjectPosterMutation from '../mutations/setProjectPoster';
-import { flattenPermissions } from '../utils';
-import theme from '../theme';
 
 class Project extends React.Component {
     static contextTypes = {
@@ -111,7 +109,9 @@ class Project extends React.Component {
         this.context.relay.commitUpdate(new SaveFilePermissionsMutation({
             organization: this.props.organization,
             fileId: file,
-            permissions: permissions.map(permission => permission.id),
+            permissions: permissions.map((permission) => {
+                return permission.id;
+            }),
         }), {
             onSuccess,
         });
@@ -150,7 +150,9 @@ class Project extends React.Component {
             end: event.end,
             tags: [this.props.organization.project.tag],
             mdtext: event.mdtext,
-            permissions: event.permissions.map(permission => permission.value),
+            permissions: event.permissions.map((permission) => {
+                return permission.value;
+            }),
         }), {
             onSuccess: () => {
                 this.closeAddEvent();
@@ -180,7 +182,9 @@ class Project extends React.Component {
         const org = this.props.organization;
         const project = this.props.organization.project;
         const isMember = this.props.organization.isMember;
-        const hasEndedActivities = project.events.edges.filter(edge => edge.node.isEnded).length;
+        const hasEndedActivities = project.events.edges.filter((edge) => {
+            return edge.node.isEnded;
+        }).length;
         return (
             <Paper className="row">
                 <Helmet
@@ -198,7 +202,9 @@ class Project extends React.Component {
                         <div className="meta">
                             {project.start ? <span><Date date={project.start} /> – </span> : null}
                             <Date date={project.end} />
-                            {project.conductors.map(conductor => conductor.name)}
+                            {project.conductors.map((conductor) => {
+                                return conductor.name;
+                            })}
                         </div>
                     </div>
                     {isMember
@@ -286,13 +292,17 @@ class Project extends React.Component {
                         {project.events.edges.length
                                 ? <div id="eventList">
                                     {project.events.edges
-                                        .filter(edge => this.state.showEnded || !edge.node.isEnded)
-                                        .map(edge => (
-                                            <EventItem
-                                                key={edge.node.id}
-                                                event={edge.node}
-                                            />
-                                        ))
+                                        .filter((edge) => {
+                                            return this.state.showEnded || !edge.node.isEnded;
+                                        })
+                                        .map((edge) => {
+                                            return (
+                                                <EventItem
+                                                    key={edge.node.id}
+                                                    event={edge.node}
+                                                />
+                                            );
+                                        })
                                     }
                                 </div>
                                 : null
@@ -343,98 +353,101 @@ export default Relay.createContainer(Project, {
         tag: '',
     },
     fragments: {
-        viewer: () => Relay.QL`
-        fragment on User {
-            groups {
-                id
-                name
-            }
-            ${ProjectForm.getFragment('viewer')}
-        }
-        `,
-        organization: () => Relay.QL`
-        fragment on Organization {
-            name
-            isMember
-            memberGroup {
-                id
-            }
-            baseurl
-            project(year:$year, tag:$tag) {
-                id
-                title
-                tag
-                start
-                end
-                year
-                publicMdtext
-                privateMdtext
-                conductors {
+        viewer: () => {
+            return Relay.QL`
+            fragment on User {
+                groups {
+                    id
                     name
                 }
-                poster {
-                    filename
-                    largePath
+                ${ProjectForm.getFragment('viewer')}
+            }`;
+        },
+        organization: () => {
+            return Relay.QL`
+            fragment on Organization {
+                name
+                isMember
+                memberGroup {
+                    id
                 }
-                events(first:100) {
-                    edges {
-                        node {
-                            id
-                            isEnded
-                            ${EventItem.getFragment('event')}
-                        }
+                baseurl
+                project(year:$year, tag:$tag) {
+                    id
+                    title
+                    tag
+                    start
+                    end
+                    year
+                    publicMdtext
+                    privateMdtext
+                    conductors {
+                        name
                     }
-                }
-                files(first:100) {
-                    edges {
-                        node {
-                            id
-                            filename
-                            created
-                            mimetype
-                            size
-                            permissions {
-                                public
-                                groups {
-                                    id
-                                    name
-                                }
-                                users {
-                                    id
-                                    name
-                                }
+                    poster {
+                        filename
+                        largePath
+                    }
+                    events(first:100) {
+                        edges {
+                            node {
+                                id
+                                isEnded
+                                ${EventItem.getFragment('event')}
                             }
-                            tags
-                            isImage
-                            thumbnailPath
-                            path
+                        }
+                    }
+                    files(first:100) {
+                        edges {
+                            node {
+                                id
+                                filename
+                                created
+                                mimetype
+                                size
+                                permissions {
+                                    public
+                                    groups {
+                                        id
+                                        name
+                                    }
+                                    users {
+                                        id
+                                        name
+                                    }
+                                }
+                                tags
+                                isImage
+                                thumbnailPath
+                                path
+                            }
+                        }
+                    }
+                    music {
+                        piece {
+                            id
+                            title
+                            composers
+                        }
+                    }
+                    permissions {
+                        public
+                        groups {
+                            id
+                            name
+                        }
+                        users {
+                            id
+                            name
                         }
                     }
                 }
-                music {
-                    piece {
-                        id
-                        title
-                        composers
-                    }
-                }
-                permissions {
-                    public
-                    groups {
-                        id
-                        name
-                    }
-                    users {
-                        id
-                        name
-                    }
-                }
-            }
-            ${AddEventMutation.getFragment('organization')}
-            ${AddFileMutation.getFragment('organization')}
-            ${SaveFilePermissionsMutation.getFragment('organization')}
-            ${SaveProjectMutation.getFragment('organization')}
-            ${SetProjectPosterMutation.getFragment('organization')}
-        }`,
+                ${AddEventMutation.getFragment('organization')}
+                ${AddFileMutation.getFragment('organization')}
+                ${SaveFilePermissionsMutation.getFragment('organization')}
+                ${SaveProjectMutation.getFragment('organization')}
+                ${SetProjectPosterMutation.getFragment('organization')}
+            }`;
+        },
     },
 });
