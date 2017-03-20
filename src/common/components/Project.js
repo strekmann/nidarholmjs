@@ -15,6 +15,7 @@ import RaisedButton from 'material-ui/RaisedButton';
 import getMuiTheme from 'material-ui/styles/getMuiTheme';
 import AddEventMutation from '../mutations/addEvent';
 import AddFileMutation from '../mutations/addFile';
+import AddPieceMutation from '../mutations/addPiece';
 import SaveFilePermissionsMutation from '../mutations/saveFilePermissions';
 import SaveProjectMutation from '../mutations/saveProject';
 import SetProjectPosterMutation from '../mutations/setProjectPoster';
@@ -151,6 +152,15 @@ class Project extends React.Component {
 
     closeAddFile = () => {
         this.setState({ addFile: false });
+    }
+
+    addPiece = (piece) => {
+        const { project } = this.props.organization;
+        this.closeAddPiece();
+        this.context.relay.commitUpdate(new AddPieceMutation({
+            piece,
+            project,
+        }));
     }
 
     saveEvent = (event) => {
@@ -374,7 +384,9 @@ class Project extends React.Component {
                                         value: edge.node,
                                     };
                                 })}
-                                onNewRequest={this.addPieceToProject}
+                                onNewRequest={(chosen) => {
+                                    this.addPiece(chosen.value);
+                                }}
                                 onUpdateInput={(searchTerm) => {
                                     this.searchPiece(searchTerm);
                                 }}
@@ -489,6 +501,7 @@ export default Relay.createContainer(Project, {
                             name
                         }
                     }
+                    ${AddPieceMutation.getFragment('project')}
                 }
                 pieces(first:$showPieces,term:$searchTerm) {
                     edges {

@@ -2325,6 +2325,34 @@ const mutationSaveGroup = mutationWithClientMutationId({
     },
 });
 
+const mutationAddPiece = mutationWithClientMutationId({
+    name: 'AddPiece',
+    description: 'Add music to project',
+    inputFields: {
+        projectId: { type: GraphQLID },
+        pieceId: { type: GraphQLID },
+    },
+    outputFields: {
+        project: {
+            type: projectType,
+            resolve: (payload) => {
+                return payload;
+            },
+        },
+    },
+    mutateAndGetPayload: ({ projectId, pieceId }, { organization, viewer }) => {
+        if (!admin(organization, viewer)) {
+            return null;
+        }
+        const prId = fromGlobalId(projectId).id;
+        const pId = fromGlobalId(pieceId).id;
+        return Project.findByIdAndUpdate(prId, {
+            $addToSet: { music: { piece: pId } },
+        }, { new: true })
+        .exec();
+    },
+});
+
 const mutationType = new GraphQLObjectType({
     name: 'Mutation',
     fields: () => {
@@ -2355,6 +2383,7 @@ const mutationType = new GraphQLObjectType({
             addRole: mutationAddRole,
             removeRole: mutationRemoveRole,
             saveGroup: mutationSaveGroup,
+            addPiece: mutationAddPiece,
         };
     },
 });
