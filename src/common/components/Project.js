@@ -5,6 +5,7 @@ import Helmet from 'react-helmet';
 import Relay from 'react-relay';
 import axios from 'axios';
 import MoreVertIcon from 'material-ui/svg-icons/navigation/more-vert';
+import AutoComplete from 'material-ui/AutoComplete';
 import Dialog from 'material-ui/Dialog';
 import IconButton from 'material-ui/IconButton';
 import IconMenu from 'material-ui/IconMenu';
@@ -44,6 +45,7 @@ class Project extends React.Component {
     static propTypes = {
         organization: React.PropTypes.object.isRequired,
         viewer: React.PropTypes.object,
+        relay: React.PropTypes.object.isRequired,
     }
 
     static childContextTypes = {
@@ -59,7 +61,9 @@ class Project extends React.Component {
         public: false,
         addEvent: false,
         addFile: false,
+        addPiece: false,
         editProject: false,
+        searchTerm: '',
         showEnded: false,
         event: {
             title: '',
@@ -115,6 +119,14 @@ class Project extends React.Component {
         }), {
             onSuccess,
         });
+    }
+
+    toggleAddPiece = () => {
+        this.setState({ addPiece: !this.state.addPiece });
+    }
+
+    closeAddPiece = () => {
+        this.setState({ addPiece: false });
     }
 
     togglePublic = () => {
@@ -177,6 +189,11 @@ class Project extends React.Component {
         this.setState({ showEnded: true });
     }
 
+    searchPiece = (searchTerm) => {
+        this.setState({ searchTerm });
+        this.props.relay.setVariables({ searchTerm });
+    }
+
     render() {
         const viewer = this.props.viewer;
         const org = this.props.organization;
@@ -227,6 +244,10 @@ class Project extends React.Component {
                             <MenuItem
                                 primaryText="Legg til aktivitet"
                                 onTouchTap={this.toggleAddEvent}
+                            />
+                            <MenuItem
+                                primaryText="Legg til repertoar"
+                                onTouchTap={this.toggleAddPiece}
                             />
                             <MenuItem
                                 primaryText="Last opp filer"
@@ -339,6 +360,31 @@ class Project extends React.Component {
                             <FileUpload viewer={viewer} organization={org} onDrop={this.onDrop} />
                             <RaisedButton label="Ferdig" primary onTouchTap={this.closeAddFile} />
                         </Dialog>
+                        <Dialog
+                            title="Legg til reperotar"
+                            open={this.state.addPiece}
+                            onRequestClose={this.closeAddPiece}
+                            autoScrollBodyContent
+                        >
+                            <AutoComplete
+                                floatingLabelText="Navn på stykke / komponist / arrangør"
+                                dataSource={this.props.organization.pieces.edges.map((edge) => {
+                                    return {
+                                        text: `${edge.node.scoreCount}: ${edge.node.title} - ${edge.node.composers} (${edge.node.arrangers})`,
+                                        value: edge.node,
+                                    };
+                                })}
+                                onNewRequest={this.addPieceToProject}
+                                onUpdateInput={(searchTerm) => {
+                                    this.searchPiece(searchTerm);
+                                }}
+                                filter={() => {
+                                    return true;
+                                }}
+                                fullWidth
+                                style={{ flexGrow: '1' }}
+                            />
+                        </Dialog>
                     </div>
                     : null
                 }
@@ -351,6 +397,8 @@ export default Relay.createContainer(Project, {
     initialVariables: {
         year: '',
         tag: '',
+        showPieces: 20,
+        searchTerm: '',
     },
     fragments: {
         viewer: () => {
@@ -439,6 +487,17 @@ export default Relay.createContainer(Project, {
                         users {
                             id
                             name
+                        }
+                    }
+                }
+                pieces(first:$showPieces,term:$searchTerm) {
+                    edges {
+                        node {
+                            id
+                            title
+                            composers
+                            arrangers
+                            scoreCount
                         }
                     }
                 }
