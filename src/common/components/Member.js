@@ -21,18 +21,17 @@ import Person from 'material-ui/svg-icons/social/person';
 import { lightBlue100 } from 'material-ui/styles/colors';
 import Close from 'material-ui/svg-icons/navigation/close';
 import moment from 'moment';
-
 import theme from '../theme';
-import Text from './Text';
-import Phone from './Phone';
-import Date from './Date';
-import DateFromNow from './DateFromNow';
-import Yesno from './Yesno';
 import EditUserMutation from '../mutations/editUser';
 import JoinGroupMutation from '../mutations/joinGroup';
 import LeaveGroupMutation from '../mutations/leaveGroup';
 import AddRoleMutation from '../mutations/addRole';
 import RemoveRoleMutation from '../mutations/removeRole';
+import Text from './Text';
+import Phone from './Phone';
+import Date from './Date';
+import DateFromNow from './DateFromNow';
+import Yesno from './Yesno';
 
 let DateTimeFormat;
 if (areIntlLocalesSupported(['nb'])) {
