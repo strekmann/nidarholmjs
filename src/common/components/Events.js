@@ -3,9 +3,8 @@ import React from 'react';
 import RaisedButton from 'material-ui/RaisedButton';
 import Relay from 'react-relay';
 import getMuiTheme from 'material-ui/styles/getMuiTheme';
-
-import EventItem from './EventItem';
 import theme from '../theme';
+import EventItem from './EventItem';
 
 const itemsPerPage = 10;
 
@@ -15,7 +14,6 @@ class Events extends React.Component {
     };
 
     static propTypes = {
-        viewer: React.PropTypes.object,
         organization: React.PropTypes.object,
         relay: React.PropTypes.object,
     }
@@ -47,12 +45,14 @@ class Events extends React.Component {
             <Paper className="row" style={{ padding: 20 }}>
                 <h1>Aktiviteter</h1>
                 <div>
-                    {events.edges.map(edge => (
-                        <EventItem
-                            key={edge.node.id}
-                            event={edge.node}
-                        />
-                    ))}
+                    {events.edges.map((edge) => {
+                        return (
+                            <EventItem
+                                key={edge.node.id}
+                                event={edge.node}
+                            />
+                        );
+                    })}
                 </div>
                 {events.pageInfo.hasNextPage
                         ? <RaisedButton
@@ -72,23 +72,25 @@ export default Relay.createContainer(Events, {
         showItems: itemsPerPage,
     },
     fragments: {
-        organization: () => Relay.QL`
-        fragment on Organization {
-            id
-            memberGroup {
+        organization: () => {
+            return Relay.QL`
+            fragment on Organization {
                 id
-            }
-            events(first:$showItems) {
-                edges {
-                    node {
-                        id
-                        ${EventItem.getFragment('event')}
+                memberGroup {
+                    id
+                }
+                events(first:$showItems) {
+                    edges {
+                        node {
+                            id
+                            ${EventItem.getFragment('event')}
+                        }
+                    }
+                    pageInfo {
+                        hasNextPage
                     }
                 }
-                pageInfo {
-                    hasNextPage
-                }
-            }
-        }`,
+            }`;
+        },
     },
 });
