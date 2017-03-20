@@ -153,6 +153,10 @@ function admin(organization, user) {
     return organizationAdmin;
 }
 
+function isAdmin(organization, user) {
+    return !!admin(organization, user);
+}
+
 // people having permissions to organization music
 function musicscoreadmin(organization, user) {
     if (user) {
@@ -163,6 +167,10 @@ function musicscoreadmin(organization, user) {
         });
     }
     return false;
+}
+
+function isMusicAdmin(organization, user) {
+    return !!musicscoreadmin(organization, user);
 }
 
 function authenticate(query, viewer, options = {}) {
@@ -888,13 +896,13 @@ organizationType = new GraphQLObjectType({
         isAdmin: {
             type: GraphQLBoolean,
             resolve: (_, args, { organization, viewer }) => {
-                return admin(organization, viewer);
+                return isAdmin(organization, viewer);
             },
         },
-        isMusicscoreadmin: {
+        isMusicAdmin: {
             type: GraphQLBoolean,
             resolve: (_, args, { organization, viewer }) => {
-                return musicscoreadmin(organization, viewer);
+                return isMusicAdmin(organization, viewer);
             },
         },
         instrumentGroups: {

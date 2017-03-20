@@ -126,7 +126,7 @@ class Pieces extends React.Component {
     render() {
         const org = this.props.organization;
         const pieces = org.pieces;
-        const isMusicAdmin = org.isMusicscoreadmin;
+        const isMusicAdmin = org.isMusicAdmin;
         return (
             <Paper className="row">
                 <div style={{ display: 'flex', justifyContent: 'space-between' }}>
@@ -386,7 +386,7 @@ export default Relay.createContainer(Pieces, {
         organization: () => Relay.QL`
         fragment on Organization {
             id
-            isMusicscoreadmin
+            isMusicAdmin
             memberGroup {
                 id
             }

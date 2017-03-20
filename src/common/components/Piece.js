@@ -107,7 +107,7 @@ class Piece extends React.Component {
     render() {
         const org = this.props.organization;
         const piece = org.piece;
-        const isMusicAdmin = org.isMusicscoreadmin;
+        const isMusicAdmin = org.isMusicAdmin;
         return (
             <Paper className="row">
                 <div style={{ display: 'flex', justifyContent: 'space-between' }}>
@@ -195,7 +195,7 @@ class Piece extends React.Component {
                     </div>
                 ))}
 
-                {org.isMusicscoreadmin ?
+                {org.isMusicAdmin ?
                     <div>
                         <h2>Admin</h2>
                         {piece.groupscores.map(group => (
@@ -222,7 +222,7 @@ export default Relay.createContainer(Piece, {
             id
             name
             isMember
-            isMusicscoreadmin
+            isMusicAdmin
             piece(pieceId:$pieceId) {
                 id
                 title
