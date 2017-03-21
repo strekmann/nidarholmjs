@@ -2349,13 +2349,40 @@ const mutationAddPiece = mutationWithClientMutationId({
         },
     },
     mutateAndGetPayload: ({ projectId, pieceId }, { organization, viewer }) => {
-        if (!admin(organization, viewer)) {
+        if (!isMusicAdmin(organization, viewer)) {
             return null;
         }
         const prId = fromGlobalId(projectId).id;
         const pId = fromGlobalId(pieceId).id;
         return Project.findByIdAndUpdate(prId, {
             $addToSet: { music: { piece: pId } },
+        }, { new: true })
+        .exec();
+    },
+});
+const mutationRemovePiece = mutationWithClientMutationId({
+    name: 'RemovePiece',
+    description: 'Remove music to project',
+    inputFields: {
+        projectId: { type: GraphQLID },
+        pieceId: { type: GraphQLID },
+    },
+    outputFields: {
+        project: {
+            type: projectType,
+            resolve: (payload) => {
+                return payload;
+            },
+        },
+    },
+    mutateAndGetPayload: ({ projectId, pieceId }, { organization, viewer }) => {
+        if (!isMusicAdmin(organization, viewer)) {
+            return null;
+        }
+        const prId = fromGlobalId(projectId).id;
+        const pId = fromGlobalId(pieceId).id;
+        return Project.findByIdAndUpdate(prId, {
+            $pull: { music: { piece: pId } },
         }, { new: true })
         .exec();
     },
@@ -2392,6 +2419,7 @@ const mutationType = new GraphQLObjectType({
             removeRole: mutationRemoveRole,
             saveGroup: mutationSaveGroup,
             addPiece: mutationAddPiece,
+            removePiece: mutationRemovePiece,
         };
     },
 });

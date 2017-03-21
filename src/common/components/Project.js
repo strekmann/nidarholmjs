@@ -16,6 +16,7 @@ import getMuiTheme from 'material-ui/styles/getMuiTheme';
 import AddEventMutation from '../mutations/addEvent';
 import AddFileMutation from '../mutations/addFile';
 import AddPieceMutation from '../mutations/addPiece';
+import RemovePieceMutation from '../mutations/removePiece';
 import SaveFilePermissionsMutation from '../mutations/saveFilePermissions';
 import SaveProjectMutation from '../mutations/saveProject';
 import SetProjectPosterMutation from '../mutations/setProjectPoster';
@@ -163,6 +164,14 @@ class Project extends React.Component {
         }));
     }
 
+    removePiece = (piece) => {
+        const { project } = this.props.organization;
+        this.context.relay.commitUpdate(new RemovePieceMutation({
+            piece,
+            project,
+        }));
+    }
+
     saveEvent = (event) => {
         this.context.relay.commitUpdate(new AddEventMutation({
             organization: this.props.organization,
@@ -207,8 +216,7 @@ class Project extends React.Component {
     render() {
         const viewer = this.props.viewer;
         const org = this.props.organization;
-        const project = this.props.organization.project;
-        const isMember = this.props.organization.isMember;
+        const { project, isMember, isMusicAdmin } = org;
         const hasEndedActivities = project.events.edges.filter((edge) => {
             return edge.node.isEnded;
         }).length;
@@ -297,7 +305,12 @@ class Project extends React.Component {
                         {project.music.length
                                 ? <div>
                                     <h2>Repertoar</h2>
-                                    <MusicList music={project.music} isMember={isMember} />
+                                    <MusicList
+                                        music={project.music}
+                                        isMember={isMember}
+                                        isMusicAdmin={isMusicAdmin}
+                                        remove={this.removePiece}
+                                    />
                                 </div>
                                 : null
                         }
@@ -428,6 +441,7 @@ export default Relay.createContainer(Project, {
             fragment on Organization {
                 name
                 isMember
+                isMusicAdmin
                 memberGroup {
                     id
                 }
@@ -484,6 +498,7 @@ export default Relay.createContainer(Project, {
                         }
                     }
                     music {
+                        id
                         piece {
                             id
                             title
@@ -502,6 +517,7 @@ export default Relay.createContainer(Project, {
                         }
                     }
                     ${AddPieceMutation.getFragment('project')}
+                    ${RemovePieceMutation.getFragment('project')}
                 }
                 pieces(first:$showPieces,term:$searchTerm) {
                     edges {
