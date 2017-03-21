@@ -59,7 +59,9 @@ export default function render(req, res, next) {
                 schema,
                 contextValue, // the same values in root and context for now
                 rootValue: contextValue, // context should be an authentication token or similar
-                onError: (errors, request) => next(new Error(errors)),
+                onError: (errors, request) => {
+                    return next(new Error(errors));
+                },
             });
             return Router.prepareData(renderProps, networkLayer).then(({ data, props }) => {
                 try {

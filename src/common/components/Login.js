@@ -1,3 +1,5 @@
+/* eslint "max-len": 0 */
+
 import { Card, CardTitle, CardText, CardActions } from 'material-ui/Card';
 import FlatButton from 'material-ui/FlatButton';
 import RaisedButton from 'material-ui/RaisedButton';
@@ -5,7 +7,6 @@ import TextField from 'material-ui/TextField';
 import React from 'react';
 import { Link } from 'react-router';
 import getMuiTheme from 'material-ui/styles/getMuiTheme';
-
 import theme from '../theme';
 
 class Login extends React.Component {

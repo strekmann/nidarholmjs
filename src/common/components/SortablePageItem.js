@@ -19,7 +19,7 @@ const pageSource = {
 };
 
 const pageTarget = {
-    hover(props, monitor, component) {
+    hover(props, monitor) {
         const dragIndex = monitor.getItem().index;
         const hoverIndex = props.index;
 
@@ -33,23 +33,24 @@ const pageTarget = {
     },
 };
 
-@DropTarget(Types.PAGE, pageTarget, connect => ({
-    connectDropTarget: connect.dropTarget(),
-}))
-@DragSource(Types.PAGE, pageSource, (connect, monitor) => ({
-    connectDragSource: connect.dragSource(),
-    isDragging: monitor.isDragging(),
-}))
+@DropTarget(Types.PAGE, pageTarget, (connect) => {
+    return {
+        connectDropTarget: connect.dropTarget(),
+    };
+})
+@DragSource(Types.PAGE, pageSource, (connect, monitor) => {
+    return {
+        connectDragSource: connect.dragSource(),
+        isDragging: monitor.isDragging(),
+    };
+})
 export default class SortablePageItem extends React.Component {
     static propTypes = {
         connectDragSource: React.PropTypes.func.isRequired,
         connectDropTarget: React.PropTypes.func.isRequired,
-        index: React.PropTypes.number.isRequired,
         isDragging: React.PropTypes.bool.isRequired,
-        id: React.PropTypes.any.isRequired,
         slug: React.PropTypes.string.isRequired,
         title: React.PropTypes.string.isRequired,
-        movePage: React.PropTypes.func.isRequired,
         onRemoveSummary: React.PropTypes.func,
     }
 
@@ -71,7 +72,7 @@ export default class SortablePageItem extends React.Component {
                     <div>/{slug}</div>
                 </div>
                 <div>{removeIcon}</div>
-            </div>
+            </div>,
         ));
     }
 }

@@ -20,7 +20,9 @@ const ActivitySchema = new mongoose.Schema({
     modified: { type: Date, default: Date.now },
 });
 
-ActivitySchema.virtual('_type').get(() => 'Activity');
+ActivitySchema.virtual('_type').get(() => {
+    return 'Activity';
+});
 ActivitySchema.set('toObject', schemaOptions);
 ActivitySchema.set('toJSON', schemaOptions);
 export default mongoose.model('Activity', ActivitySchema);

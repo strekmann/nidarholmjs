@@ -4,12 +4,6 @@ import { TableRow, TableRowColumn } from 'material-ui/Table';
 import List from './List';
 
 export default class ProjectItem extends React.Component {
-    static propTypes = {
-        id: React.PropTypes.string,
-        title: React.PropTypes.string,
-        scoreCount: React.PropTypes.number,
-    }
-
     render() {
         const piece = this.props;
         return (

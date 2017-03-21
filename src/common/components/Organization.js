@@ -1,14 +1,16 @@
+/* eslint "max-len": 0 */
+/* eslint "react/no-multi-comp": 0 */
+
 import IconButton from 'material-ui/IconButton';
 import AddCircle from 'material-ui/svg-icons/content/add-circle';
 import Paper from 'material-ui/Paper';
-import React, {Component, PropTypes} from 'react';
+import React, { PropTypes } from 'react';
 import RaisedButton from 'material-ui/RaisedButton';
 import Relay from 'react-relay';
 import getMuiTheme from 'material-ui/styles/getMuiTheme';
-
 import SaveOrganizationMutation from '../mutations/saveOrganization';
-import SortablePageList from './SortablePageList';
 import theme from '../theme';
+import SortablePageList from './SortablePageList';
 
 class PageSummaryItem extends React.Component {
     static propTypes = {
@@ -41,9 +43,7 @@ class Organization extends React.Component {
     };
 
     static propTypes = {
-        viewer: React.PropTypes.object,
         organization: React.PropTypes.object,
-        relay: React.PropTypes.object,
     }
 
     static childContextTypes = {
@@ -78,7 +78,9 @@ class Organization extends React.Component {
         event.preventDefault();
         this.context.relay.commitUpdate(new SaveOrganizationMutation({
             organization: this.props.organization,
-            summaries: this.state.summaries.map(page => page.id),
+            summaries: this.state.summaries.map((page) => {
+                return page.id;
+            }),
         }));
     }
 
@@ -99,14 +101,15 @@ class Organization extends React.Component {
                         <div>
                             <h3>Mulige</h3>
                             <div style={{ height: 400, overflow: 'scroll', overflowX: 'hidden' }}>
-                                {org.pages.edges.map(
-                                    edge => <PageSummaryItem
-                                        key={edge.cursor}
-                                        onAddSummary={this.onAddSummary}
-                                        {...edge.node}
-                                    />
-                                    )
-                                }
+                                {org.pages.edges.map((edge) => {
+                                    return (
+                                        <PageSummaryItem
+                                            key={edge.cursor}
+                                            onAddSummary={this.onAddSummary}
+                                            {...edge.node}
+                                        />
+                                    );
+                                })}
                             </div>
                         </div>
                     </div>
@@ -118,28 +121,30 @@ class Organization extends React.Component {
 
 export default Relay.createContainer(Organization, {
     fragments: {
-        organization: () => Relay.QL`
-        fragment on Organization {
-            id
-            memberGroup {
+        organization: () => {
+            return Relay.QL`
+            fragment on Organization {
                 id
-            }
-            summaries {
-                id
-                title
-                slug
-            }
-            pages(first:100) {
-                edges {
-                    cursor
-                    node {
-                        id
-                        title
-                        slug
+                memberGroup {
+                    id
+                }
+                summaries {
+                    id
+                    title
+                    slug
+                }
+                pages(first:100) {
+                    edges {
+                        cursor
+                        node {
+                            id
+                            title
+                            slug
+                        }
                     }
                 }
-            }
-            ${SaveOrganizationMutation.getFragment('organization')}
-        }`,
+                ${SaveOrganizationMutation.getFragment('organization')}
+            }`;
+        },
     },
 });

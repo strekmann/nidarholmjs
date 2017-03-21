@@ -2,7 +2,6 @@ import React from 'react';
 import { Link } from 'react-router';
 import Paper from 'material-ui/Paper';
 import moment from 'moment';
-
 import Daterange from './Daterange';
 import Text from './Text';
 
@@ -13,9 +12,7 @@ export default class ProjectItem extends React.Component {
         end: React.PropTypes.string,
         tag: React.PropTypes.string,
         year: React.PropTypes.string,
-        mdtext: React.PropTypes.string,
         publicMdtext: React.PropTypes.string,
-        privateMdtext: React.PropTypes.string,
         poster: React.PropTypes.object,
     }
 

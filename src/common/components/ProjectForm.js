@@ -6,9 +6,8 @@ import TextField from 'material-ui/TextField';
 import moment from 'moment';
 import React from 'react';
 import Relay from 'react-relay';
-
-import PermissionField from './PermissionField';
 import { flattenPermissions } from '../utils';
+import PermissionField from './PermissionField';
 
 let DateTimeFormat;
 if (areIntlLocalesSupported(['nb'])) {
@@ -79,7 +78,9 @@ class ProjectForm extends React.Component {
     }
 
     removePermission = (permissionId) => {
-        const permissions = this.state.permissions.filter(_p => _p.value !== permissionId);
+        const permissions = this.state.permissions.filter((_p) => {
+            return _p.value !== permissionId;
+        });
         this.setState({
             permissions,
         });
@@ -100,7 +101,9 @@ class ProjectForm extends React.Component {
             publicMdtext: this.state.publicMdtext,
             start: this.state.start,
             end: this.state.end,
-            permissions: this.state.permissions.map(p => p.id),
+            permissions: this.state.permissions.map((p) => {
+                return p.id;
+            }),
         }, {
             onSuccess: () => {
                 if (!this.props.id) {
@@ -123,7 +126,7 @@ class ProjectForm extends React.Component {
         const permissions = [];
         if (viewer) {
             permissions.push({ value: 'p', text: 'Verden' });
-            viewer.groups.forEach(group => {
+            viewer.groups.forEach((group) => {
                 permissions.push({ value: group.id, text: group.name });
             });
         }
@@ -221,13 +224,15 @@ class ProjectForm extends React.Component {
 
 export default Relay.createContainer(ProjectForm, {
     fragments: {
-        viewer: () => Relay.QL`
-        fragment on User {
-            id
-            groups {
+        viewer: () => {
+            return Relay.QL`
+            fragment on User {
                 id
-                name
-            }
-        }`,
+                groups {
+                    id
+                    name
+                }
+            }`;
+        },
     },
 });

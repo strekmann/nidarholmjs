@@ -21,5 +21,7 @@ const GroupSchema = new mongoose.Schema({
 
 GroupSchema.set('toJSON', schemaOptions);
 GroupSchema.set('toObject', schemaOptions);
-GroupSchema.virtual('_type').get(() => 'Group');
+GroupSchema.virtual('_type').get(() => {
+    return 'Group';
+});
 export default mongoose.model('Group', GroupSchema);

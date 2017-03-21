@@ -1,20 +1,19 @@
 /* global FormData */
+/* eslint "no-console": 0 */
 
 import React from 'react';
 import Relay from 'react-relay';
 import axios from 'axios';
-
 import getMuiTheme from 'material-ui/styles/getMuiTheme';
 import RaisedButton from 'material-ui/RaisedButton';
 import Dialog from 'material-ui/Dialog';
 import Paper from 'material-ui/Paper';
-
 import theme from '../theme';
+import AddFileMutation from '../mutations/addFile';
+import SaveFilePermissionsMutation from '../mutations/saveFilePermissions';
 import FileList from './FileList';
 import FileUpload from './FileUpload';
 import TagField from './TagField';
-import AddFileMutation from '../mutations/addFile';
-import SaveFilePermissionsMutation from '../mutations/saveFilePermissions';
 
 const itemsPerPage = 12;
 
@@ -49,7 +48,7 @@ class Files extends React.Component {
     }
 
     onDrop = (files, permissions) => {
-        files.forEach(file => {
+        files.forEach((file) => {
             const data = new FormData();
             data.append('file', file);
 
@@ -66,12 +65,12 @@ class Files extends React.Component {
                     onSuccess: () => {
                         // console.log("successfile");
                     },
-                    onFailure: transaction => {
+                    onFailure: (transaction) => {
                         console.error(transaction.getError().source.errors);
                     },
                 });
             })
-            .catch(error => {
+            .catch((error) => {
                 console.error('err', error);
             });
         });
@@ -81,7 +80,9 @@ class Files extends React.Component {
         this.context.relay.commitUpdate(new SaveFilePermissionsMutation({
             organization: this.props.organization,
             fileId: file,
-            permissions: permissions.map(permission => permission.id),
+            permissions: permissions.map((permission) => {
+                return permission.id;
+            }),
         }), {
             onSuccess,
         });
@@ -109,7 +110,9 @@ class Files extends React.Component {
     }
 
     searchTag = (tag) => {
-        const tags = this.props.relay.variables.tags.split('|').filter(t => !!t);
+        const tags = this.props.relay.variables.tags.split('|').filter((t) => {
+            return !!t;
+        });
         tags.push(tag);
         const fixedTags = tags.sort().join('|').toLowerCase();
         this.props.relay.setVariables({ tags: fixedTags });
@@ -194,56 +197,59 @@ export default Relay.createContainer(Files, {
         term: '',
     },
     fragments: {
-        viewer: () => Relay.QL`
-        fragment on User {
-            groups {
+        viewer: () => {
+            return Relay.QL`
+            fragment on User {
+                groups {
+                    id
+                    name
+                }
+            }`;
+        },
+        organization: () => {
+            return Relay.QL`
+            fragment on Organization {
                 id
-                name
-            }
-        }
-        `,
-        organization: () => Relay.QL`
-        fragment on Organization {
-            id
-            isMember
-            memberGroup {
-                id
-            }
-            tags(tags:$tags, term:$term) {
-                tag
-                count
-            }
-            files(first:$showFiles, tags:$tags) {
-                edges {
-                    node {
-                        id
-                        filename
-                        created
-                        mimetype
-                        size
-                        permissions {
-                            public
-                            groups {
-                                id
-                                name
+                isMember
+                memberGroup {
+                    id
+                }
+                tags(tags:$tags, term:$term) {
+                    tag
+                    count
+                }
+                files(first:$showFiles, tags:$tags) {
+                    edges {
+                        node {
+                            id
+                            filename
+                            created
+                            mimetype
+                            size
+                            permissions {
+                                public
+                                groups {
+                                    id
+                                    name
+                                }
+                                users {
+                                    id
+                                    name
+                                }
                             }
-                            users {
-                                id
-                                name
-                            }
+                            tags
+                            isImage
+                            path
+                            thumbnailPath
                         }
-                        tags
-                        isImage
-                        path
-                        thumbnailPath
+                    }
+                    pageInfo {
+                        hasNextPage
                     }
                 }
-                pageInfo {
-                    hasNextPage
-                }
-            }
-            ${AddFileMutation.getFragment('organization')},
-            ${SaveFilePermissionsMutation.getFragment('organization')}
-        }`,
+                ${AddFileMutation.getFragment('organization')},
+                ${SaveFilePermissionsMutation.getFragment('organization')}
+            }`;
+        },
     },
 });

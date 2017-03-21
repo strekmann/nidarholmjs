@@ -1,24 +1,19 @@
 import React from 'react';
 import { Link } from 'react-router';
-
+import { flattenPermissions } from '../utils';
 import PermissionChips from './PermissionChips';
 import DateFromNow from './DateFromNow';
-import { flattenPermissions } from '../utils';
 
 export default class PageItem extends React.Component {
     static propTypes = {
-        id: React.PropTypes.string,
         slug: React.PropTypes.string,
-        mdtext: React.PropTypes.string,
         title: React.PropTypes.string,
-        summary: React.PropTypes.string,
         permissions: React.PropTypes.object,
         memberGroupId: React.PropTypes.string,
         creator: React.PropTypes.object,
         created: React.PropTypes.string,
         updator: React.PropTypes.object,
         updated: React.PropTypes.string,
-        savePage: React.PropTypes.func,
     }
 
     render() {

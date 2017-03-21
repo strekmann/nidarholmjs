@@ -1,7 +1,6 @@
-import React from 'react';
-
 import AutoComplete from 'material-ui/AutoComplete';
 import Chip from 'material-ui/Chip';
+import React from 'react';
 
 export default class TagField extends React.Component {
     static propTypes = {
@@ -35,7 +34,9 @@ export default class TagField extends React.Component {
     }
 
     removeTag = (tag) => {
-        const tags = this.state.tags.filter(t => t !== tag);
+        const tags = this.state.tags.filter((t) => {
+            return t !== tag;
+        });
         this.setState({ tags });
         this.props.onChange(tags);
     }
@@ -47,21 +48,26 @@ export default class TagField extends React.Component {
                     id="tags"
                     floatingLabelText="Søk i merkelapper"
                     filter={AutoComplete.fuzzyFilter}
-                    dataSource={this.props.allTags.map(
-                        tag => ({ text: tag.tag, value: tag.tag })
-                    )}
+                    dataSource={this.props.allTags.map((tag) => {
+                        return { text: tag.tag, value: tag.tag };
+                    })}
                     maxSearchResults={8}
                     searchText={this.state.tag}
                     onNewRequest={this.addTag}
                     onUpdateInput={this.onTagChange}
                 />
-                {this.state.tags.map(tag => <Chip
-                    key={tag}
-                    onRequestDelete={() => this.removeTag(tag)}
-                >
-                    {tag}
-                </Chip>
-                )}
+                {this.state.tags.map((tag) => {
+                    return (
+                        <Chip
+                            key={tag}
+                            onRequestDelete={() => {
+                                this.removeTag(tag);
+                            }}
+                        >
+                            {tag}
+                        </Chip>
+                    );
+                })}
             </div>
         );
     }

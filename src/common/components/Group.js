@@ -51,6 +51,16 @@ class Group extends React.Component {
         return { muiTheme: this.muiTheme };
     }
 
+    onSave = (event) => {
+        event.preventDefault();
+        this.setState({ editing: false });
+        this.context.relay.commitUpdate(new SaveGroupMutation({
+            group: this.props.organization.group,
+            email: this.state.email,
+            groupLeaderEmail: this.state.groupLeaderEmail,
+        }));
+    }
+
     setGroupLeader = (role) => {
         this.context.relay.commitUpdate(new AddRoleMutation({
             roleId: role.value,
@@ -102,16 +112,6 @@ class Group extends React.Component {
 
     closeEditing = () => {
         this.setState({ editing: false });
-    }
-
-    onSave = (event) => {
-        event.preventDefault();
-        this.setState({ editing: false });
-        this.context.relay.commitUpdate(new SaveGroupMutation({
-            group: this.props.organization.group,
-            email: this.state.email,
-            groupLeaderEmail: this.state.groupLeaderEmail,
-        }));
     }
 
     render() {
@@ -234,7 +234,10 @@ class Group extends React.Component {
                                                 <p>Velg en rolle fra lista under</p>
                                                 <AutoComplete
                                                     dataSource={roles.edges.map((edge) => {
-                                                        return { text: edge.node.name, value: edge.node.id };
+                                                        return {
+                                                            text: edge.node.name,
+                                                            value: edge.node.id,
+                                                        };
                                                     })}
                                                     floatingLabelText="Rolle"
                                                     onNewRequest={this.setGroupLeader}
@@ -251,7 +254,11 @@ class Group extends React.Component {
                                                 }).join(', ')}
                                                 rightIconButton={
                                                     <IconMenu
-                                                        iconButtonElement={<IconButton><MoreVertIcon /></IconButton>}
+                                                        iconButtonElement={
+                                                            <IconButton>
+                                                                <MoreVertIcon />
+                                                            </IconButton>
+                                                        }
                                                         anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
                                                         targetOrigin={{ vertical: 'top', horizontal: 'right' }}
                                                     >
@@ -265,7 +272,10 @@ class Group extends React.Component {
                                                             insetChildren
                                                             onClick={(event) => {
                                                                 event.preventDefault();
-                                                                return this.leaveGroup(member.user, group);
+                                                                return this.leaveGroup(
+                                                                    member.user,
+                                                                    group,
+                                                                );
                                                             }}
                                                         />
                                                         <MenuItem
@@ -273,7 +283,10 @@ class Group extends React.Component {
                                                             checked={isGroupLeader}
                                                             insetChildren
                                                             onClick={() => {
-                                                                this.toggleGroupLeader(member, isGroupLeader);
+                                                                this.toggleGroupLeader(
+                                                                    member,
+                                                                    isGroupLeader,
+                                                                );
                                                             }}
                                                         />
                                                     </IconMenu>

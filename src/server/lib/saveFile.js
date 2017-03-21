@@ -1,8 +1,10 @@
-import async from 'async';
+/* eslint "no-console": 0 */
+
 import crypto from 'crypto';
 import { exec } from 'child_process';
 import fs from 'fs';
 import path from 'path';
+import async from 'async';
 import mkdirp from 'mkdirp';
 import mmmagic, { Magic } from 'mmmagic';
 import findFilePath from './findFilePath';
@@ -79,57 +81,59 @@ function resize(hex, filepath) {
                     resolve();
                 }
             });
-        }
+        },
     );
 }
 
 export default function saveFile(tmpPath) {
     const magic = new Magic(mmmagic.MAGIC_MIME_TYPE);
     return new Promise(
-        (resolve, reject) => fs.stat(tmpPath, (err, stats) => {
-            if (err) { reject(err); }
-            magic.detectFile(tmpPath, (err, mimetype) => {
+        (resolve, reject) => {
+            return fs.stat(tmpPath, (err, stats) => {
                 if (err) { reject(err); }
+                magic.detectFile(tmpPath, (err, mimetype) => {
+                    if (err) { reject(err); }
 
-                const hash = crypto.createHash('sha256');
-                const stream = fs.createReadStream(tmpPath);
-                stream.on('data', (data) => {
-                    hash.update(data);
-                });
-                stream.on('end', () => {
-                    const hex = hash.digest('hex');
-                    const directory = path.join(findFilePath('originals'), hex.substr(0, 2), hex.substr(2, 2));
-                    const filePath = path.join(directory, hex);
+                    const hash = crypto.createHash('sha256');
+                    const stream = fs.createReadStream(tmpPath);
+                    stream.on('data', (data) => {
+                        hash.update(data);
+                    });
+                    stream.on('end', () => {
+                        const hex = hash.digest('hex');
+                        const directory = path.join(findFilePath('originals'), hex.substr(0, 2), hex.substr(2, 2));
+                        const filePath = path.join(directory, hex);
 
-                    fs.exists(filePath, (exists) => {
-                        if (exists) {
-                            resolve({ hex, mimetype, size: stats.size });
-                        }
-                        mkdirp(directory, (err) => {
-                            if (err) { reject(err); }
+                        fs.exists(filePath, (exists) => {
+                            if (exists) {
+                                resolve({ hex, mimetype, size: stats.size });
+                            }
+                            mkdirp(directory, (err) => {
+                                if (err) { reject(err); }
 
-                            // move file (or copy + unlink)
-                            // fs.rename does not work from tmp to other partition
-                            const is = fs.createReadStream(tmpPath);
-                            const os = fs.createWriteStream(filePath);
+                                // move file (or copy + unlink)
+                                // fs.rename does not work from tmp to other partition
+                                const is = fs.createReadStream(tmpPath);
+                                const os = fs.createWriteStream(filePath);
 
-                            is.pipe(os);
-                            is.on('end', () => {
-                                // remove tmp file
-                                fs.unlinkSync(tmpPath);
-                                if (mimetype.match(/^image\/(png|jpeg|gif)/)) {
-                                    resize(hex, filePath).then(() => {
+                                is.pipe(os);
+                                is.on('end', () => {
+                                    // remove tmp file
+                                    fs.unlinkSync(tmpPath);
+                                    if (mimetype.match(/^image\/(png|jpeg|gif)/)) {
+                                        resize(hex, filePath).then(() => {
+                                            resolve({ hex, mimetype, size: stats.size });
+                                        });
+                                    }
+                                    else {
                                         resolve({ hex, mimetype, size: stats.size });
-                                    });
-                                }
-                                else {
-                                    resolve({ hex, mimetype, size: stats.size });
-                                }
+                                    }
+                                });
                             });
                         });
                     });
                 });
             });
-        }),
+        },
     );
 }

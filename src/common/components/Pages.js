@@ -1,6 +1,5 @@
 import React from 'react';
 import Relay from 'react-relay';
-
 import MoreVertIcon from 'material-ui/svg-icons/navigation/more-vert';
 import IconButton from 'material-ui/IconButton';
 import IconMenu from 'material-ui/IconMenu';
@@ -8,11 +7,10 @@ import MenuItem from 'material-ui/MenuItem';
 import Paper from 'material-ui/Paper';
 import RaisedButton from 'material-ui/RaisedButton';
 import getMuiTheme from 'material-ui/styles/getMuiTheme';
-
 import AddPageMutation from '../mutations/addPage';
+import theme from '../theme';
 import EditPage from './EditPage';
 import PageList from './PageList';
-import theme from '../theme';
 
 const itemsPerPage = 20;
 
@@ -24,7 +22,6 @@ class Pages extends React.Component {
     static propTypes = {
         viewer: React.PropTypes.object,
         organization: React.PropTypes.object,
-        relay: React.PropTypes.object,
     }
 
     static childContextTypes = {
@@ -70,9 +67,6 @@ class Pages extends React.Component {
         }), {
             onSuccess: () => {
                 this.closeAddPage();
-            },
-            onFailure: (error, ost, kake) => {
-                console.error('AD', error, ost, kake);
             },
         });
     }
@@ -126,52 +120,55 @@ export default Relay.createContainer(Pages, {
         showPages: itemsPerPage,
     },
     fragments: {
-        viewer: () => Relay.QL`
-        fragment on User {
-            groups {
+        viewer: () => {
+            return Relay.QL`
+            fragment on User {
+                groups {
+                    id
+                    name
+                }
+            }`;
+        },
+        organization: () => {
+            return Relay.QL`
+            fragment on Organization {
                 id
-                name
-            }
-        }
-        `,
-        organization: () => Relay.QL`
-        fragment on Organization {
-            id
-            isMember
-            memberGroup {
-                id
-            }
-            isAdmin
-            pages(first:$showPages) {
-                edges {
-                    node {
-                        id
-                        slug
-                        mdtext
-                        title
-                        summary
-                        creator {
-                            name
-                        }
-                        created
-                        updator {
-                            name
-                        }
-                        updated
-                        permissions {
-                            public
-                            groups {
-                                id
+                isMember
+                memberGroup {
+                    id
+                }
+                isAdmin
+                pages(first:$showPages) {
+                    edges {
+                        node {
+                            id
+                            slug
+                            mdtext
+                            title
+                            summary
+                            creator {
                                 name
+                            }
+                            created
+                            updator {
+                                name
+                            }
+                            updated
+                            permissions {
+                                public
+                                groups {
+                                    id
+                                    name
+                                }
                             }
                         }
                     }
+                    pageInfo {
+                        hasNextPage
+                    }
                 }
-                pageInfo {
-                    hasNextPage
-                }
-            }
-            ${AddPageMutation.getFragment('organization')},
-        }`,
+                ${AddPageMutation.getFragment('organization')},
+            }`;
+        },
     },
 });

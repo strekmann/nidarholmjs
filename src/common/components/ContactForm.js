@@ -1,3 +1,5 @@
+/* eslint "max-len": 0 */
+
 import Dialog from 'material-ui/Dialog';
 import RaisedButton from 'material-ui/RaisedButton';
 import TextField from 'material-ui/TextField';
@@ -9,6 +11,7 @@ class ContactForm extends React.Component {
         open: React.PropTypes.bool,
         save: React.PropTypes.func,
         close: React.PropTypes.func,
+        encodedEmail: React.PropTypes.string,
     }
 
     state = {
@@ -113,9 +116,11 @@ class ContactForm extends React.Component {
 
 export default Relay.createContainer(ContactForm, {
     fragments: {
-        organization: () => Relay.QL`
-        fragment on Organization {
-            encodedEmail
-        }`,
+        organization: () => {
+            return Relay.QL`
+            fragment on Organization {
+                encodedEmail
+            }`;
+        },
     },
 });

@@ -5,14 +5,12 @@ import Relay from 'react-relay';
 import getMuiTheme from 'material-ui/styles/getMuiTheme';
 import Paper from 'material-ui/Paper';
 import { Link } from 'react-router';
-import Text from './Text';
-import Date from './Date';
-import ContactForm from './ContactForm';
-import EventItem from './EventItem';
-
 import theme from '../theme';
 import SendContactEmailMutation from '../mutations/sendContactEmail';
-
+import ContactForm from './ContactForm';
+import Date from './Date';
+import EventItem from './EventItem';
+import Text from './Text';
 
 class Home extends React.Component {
     static contextTypes = {

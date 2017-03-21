@@ -4,7 +4,6 @@ import React from 'react';
 export default class Date extends React.Component {
     static propTypes = {
         date: React.PropTypes.oneOfType([React.PropTypes.node, React.PropTypes.object]),
-        format: React.PropTypes.string,
     }
 
     render() {

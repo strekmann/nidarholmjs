@@ -36,7 +36,9 @@ const EventSchema = new mongoose.Schema({
     mdtext: { type: String },
 });
 
-EventSchema.virtual('_type').get(() => 'Event');
+EventSchema.virtual('_type').get(() => {
+    return 'Event';
+});
 EventSchema.set('toObject', schemaOptions);
 EventSchema.set('toJSON', schemaOptions);
 export default mongoose.model('Event', EventSchema);

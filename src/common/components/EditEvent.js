@@ -1,6 +1,5 @@
 import React from 'react';
 import moment from 'moment';
-
 import AutoComplete from 'material-ui/AutoComplete';
 import RaisedButton from 'material-ui/RaisedButton';
 import TextField from 'material-ui/TextField';
@@ -9,7 +8,6 @@ import Subheader from 'material-ui/Subheader';
 import TimePicker from 'material-ui/TimePicker';
 import Chip from 'material-ui/Chip';
 import { List } from 'material-ui/List';
-
 import PermissionItem from './PermissionItem';
 
 export default class EditEvent extends React.Component {
@@ -20,11 +18,11 @@ export default class EditEvent extends React.Component {
         start: React.PropTypes.string,
         end: React.PropTypes.string,
         tags: React.PropTypes.array,
-        year: React.PropTypes.string,
         permissions: React.PropTypes.array,
         mdtext: React.PropTypes.string,
         saveEvent: React.PropTypes.func,
         closeEdit: React.PropTypes.func,
+        viewer: React.PropTypes.object,
     }
 
     state = {
@@ -103,7 +101,9 @@ export default class EditEvent extends React.Component {
     }
 
     removePermission = (permissionId) => {
-        const permissions = this.state.permissions.filter(_p => _p.value !== permissionId);
+        const permissions = this.state.permissions.filter((_p) => {
+            return _p.value !== permissionId;
+        });
         this.setState({
             permissions,
         });
@@ -113,7 +113,7 @@ export default class EditEvent extends React.Component {
         this.props.saveEvent(this.state, this.props.closeEdit);
     }
 
-    renderChip(data, key) {
+    renderChip = (data, key) => {
         return (
             <Chip
                 key={key}
@@ -125,11 +125,10 @@ export default class EditEvent extends React.Component {
 
     render() {
         const viewer = this.props.viewer;
-        const org = this.props.organization;
         const permissions = [];
         if (viewer) {
             permissions.push({ value: 'p', text: 'Verden' });
-            viewer.groups.forEach(group => {
+            viewer.groups.forEach((group) => {
                 permissions.push({ value: group.id, text: group.name });
             });
         }
@@ -183,20 +182,25 @@ export default class EditEvent extends React.Component {
                     />
                 </div>
                 <div>
-                    {this.state.tags ? this.state.tags.map((tag, i) => this.renderChip(tag, i)) : null}
+                    {this.state.tags
+                        ? this.state.tags.map((tag, i) => {
+                            return this.renderChip(tag, i);
+                        })
+                        : null
+                    }
                 </div>
                 <div>
                     <List>
                         <Subheader>Rettigheter</Subheader>
-                        {
-                            this.state.permissions.map(
-                                permission => <PermissionItem
+                        {this.state.permissions.map((permission) => {
+                            return (
+                                <PermissionItem
                                     key={permission.value}
                                     removePermission={this.removePermission}
                                     {...permission}
                                 />
-                                )
-                        }
+                            );
+                        })}
                     </List>
                     <AutoComplete
                         id="permissions"

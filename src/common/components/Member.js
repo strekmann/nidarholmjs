@@ -1,3 +1,5 @@
+/* eslint "max-len": 0 */
+
 import areIntlLocalesSupported from 'intl-locales-supported';
 import AutoComplete from 'material-ui/AutoComplete';
 import Checkbox from 'material-ui/Checkbox';
@@ -85,53 +87,6 @@ class Member extends React.Component {
         return { muiTheme: this.muiTheme };
     }
 
-    openEditMember = () => {
-        this.setState({
-            editMember: true,
-        });
-    }
-
-    closeEditMember = () => {
-        this.setState({
-            editMember: false,
-        });
-    }
-
-    saveMember = (event) => {
-        event.preventDefault();
-        const data = {
-            organization: this.props.organization,
-            userId: this.props.organization.member.user.id,
-            username: this.state.username,
-            name: this.state.name,
-            phone: this.state.phone,
-            email: this.state.email,
-            instrument: this.state.instrument,
-            born: this.state.born,
-            address: this.state.address,
-            postcode: this.state.postcode,
-            city: this.state.city,
-            country: this.state.country,
-        };
-        if (this.props.organization.isAdmin) {
-            data.joined = this.state.joined;
-            data.nmfId = this.state.nmfId;
-            data.reskontro = this.state.reskontro;
-            data.membershipHistory = this.state.membershipHistory;
-            data.inList = this.state.inList;
-            data.onLeave = this.state.onLeave;
-            data.noEmail = this.state.noEmail;
-        }
-        this.context.relay.commitUpdate(new EditUserMutation(data), {
-            onSuccess: () => {
-                this.setState({
-                    edit: false,
-                    editMember: false,
-                });
-            },
-        });
-    }
-
     onChangeName = (event, name) => {
         this.setState({ name });
     }
@@ -179,6 +134,50 @@ class Member extends React.Component {
     }
     onChangeNoEmail = (event, noEmail) => {
         this.setState({ noEmail });
+    }
+    saveMember = (event) => {
+        event.preventDefault();
+        const data = {
+            organization: this.props.organization,
+            userId: this.props.organization.member.user.id,
+            username: this.state.username,
+            name: this.state.name,
+            phone: this.state.phone,
+            email: this.state.email,
+            instrument: this.state.instrument,
+            born: this.state.born,
+            address: this.state.address,
+            postcode: this.state.postcode,
+            city: this.state.city,
+            country: this.state.country,
+        };
+        if (this.props.organization.isAdmin) {
+            data.joined = this.state.joined;
+            data.nmfId = this.state.nmfId;
+            data.reskontro = this.state.reskontro;
+            data.membershipHistory = this.state.membershipHistory;
+            data.inList = this.state.inList;
+            data.onLeave = this.state.onLeave;
+            data.noEmail = this.state.noEmail;
+        }
+        this.context.relay.commitUpdate(new EditUserMutation(data), {
+            onSuccess: () => {
+                this.setState({
+                    edit: false,
+                    editMember: false,
+                });
+            },
+        });
+    }
+    closeEditMember = () => {
+        this.setState({
+            editMember: false,
+        });
+    }
+    openEditMember = () => {
+        this.setState({
+            editMember: true,
+        });
     }
     addRole = (roleId) => {
         this.setState({ addingRole: false });
@@ -457,31 +456,31 @@ class Member extends React.Component {
                             >
                                 <MenuItem primaryText="Rediger" onTouchTap={this.openEditMember} />
                                 {this.props.viewer.id === user.id
-                                        ? <MenuItem
-                                            primaryText="Bytt passord"
-                                            containerElement={
-                                                <Link to={`/users/${user.id}/reset`} />
-                                            }
-                                        />
-                                        : null
+                                    ? <MenuItem
+                                        primaryText="Bytt passord"
+                                        containerElement={
+                                            <Link to={`/users/${user.id}/reset`} />
+                                        }
+                                    />
+                                    : null
                                 }
                                 {isAdmin
-                                        ? <MenuItem
-                                            primaryText="Legg til i gruppe"
-                                            onTouchTap={() => {
-                                                this.setState({ joinGroup: !this.state.joinGroup });
-                                            }}
-                                        />
-                                        : null
+                                    ? <MenuItem
+                                        primaryText="Legg til i gruppe"
+                                        onTouchTap={() => {
+                                            this.setState({ joinGroup: !this.state.joinGroup });
+                                        }}
+                                    />
+                                    : null
                                 }
                                 {isAdmin
-                                        ? <MenuItem
-                                            primaryText="Legg til verv/rolle"
-                                            onTouchTap={() => {
-                                                this.setState({ addingRole: !this.state.addingRole });
-                                            }}
-                                        />
-                                        : null
+                                    ? <MenuItem
+                                        primaryText="Legg til verv/rolle"
+                                        onTouchTap={() => {
+                                            this.setState({ addingRole: !this.state.addingRole });
+                                        }}
+                                    />
+                                    : null
                                 }
                             </IconMenu>
                         </ToolbarGroup>

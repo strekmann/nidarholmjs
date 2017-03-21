@@ -2,12 +2,20 @@ import React from 'react';
 import Relay from 'react-relay';
 import getMuiTheme from 'material-ui/styles/getMuiTheme';
 import theme from '../theme';
-import ContactForm from './ContactForm';
 import SendContactEmailMutation from '../mutations/sendContactEmail';
+import ContactForm from './ContactForm';
 
 class Footer extends React.Component {
+    static propTypes = {
+        organization: React.PropTypes.object,
+    }
+
     static contextTypes = {
         relay: Relay.PropTypes.Environment,
+    }
+
+    static childContextTypes = {
+        muiTheme: React.PropTypes.object.isRequired,
     }
 
     state = {
@@ -75,26 +83,18 @@ class Footer extends React.Component {
     }
 }
 
-Footer.propTypes = {
-    viewer: React.PropTypes.object,
-    organization: React.PropTypes.object,
-};
-
-Footer.childContextTypes = {
-    muiTheme: React.PropTypes.object.isRequired,
-};
-
 export default Relay.createContainer(Footer, {
     fragments: {
-        organization: () => Relay.QL`
-        fragment on Organization {
-            email
-            facebook
-            instagram
-            twitter
-            ${ContactForm.getFragment('organization')}
-            ${SendContactEmailMutation.getFragment('organization')}
-        }
-        `,
+        organization: () => {
+            return Relay.QL`
+            fragment on Organization {
+                email
+                facebook
+                instagram
+                twitter
+                ${ContactForm.getFragment('organization')}
+                ${SendContactEmailMutation.getFragment('organization')}
+            }`;
+        },
     },
 });

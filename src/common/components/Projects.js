@@ -6,11 +6,10 @@ import getMuiTheme from 'material-ui/styles/getMuiTheme';
 import MoreVertIcon from 'material-ui/svg-icons/navigation/more-vert';
 import React from 'react';
 import Relay from 'react-relay';
-
 import theme from '../theme';
+import AddProjectMutation from '../mutations/addProject';
 import ProjectList from './ProjectList';
 import ProjectForm from './ProjectForm';
-import AddProjectMutation from '../mutations/addProject';
 
 const showUpcomingProjects = 4;
 const projectsPerPage = 10;
@@ -116,10 +115,11 @@ class Projects extends React.Component {
                         <ProjectList
                             projects={org.nextProjects}
                         />
-                        {org.nextProjects.pageInfo.hasNextPage ?
-                            <RaisedButton primary onClick={this.loadMoreUpcomongProjects}>Mer</RaisedButton>
-                            :
-                                null
+                        {org.nextProjects.pageInfo.hasNextPage
+                            ? <RaisedButton primary onClick={this.loadMoreUpcomongProjects}>
+                                Mer
+                            </RaisedButton>
+                            : null
                         }
                     </div>
                     <div style={{ minWidth: 230, width: '50%', padding: '0 20px' }}>
@@ -145,54 +145,58 @@ export default Relay.createContainer(Projects, {
         projectsPerPage,
     },
     fragments: {
-        organization: () => Relay.QL`
-        fragment on Organization {
-            isMember
-            nextProjects(first:$showUpcomingProjects) {
-                edges {
-                    node {
-                        id
-                        title
-                        start
-                        end
-                        year
-                        tag
-                        publicMdtext
-                        poster {
-                            filename
-                            normalPath
+        organization: () => {
+            return Relay.QL`
+            fragment on Organization {
+                isMember
+                nextProjects(first:$showUpcomingProjects) {
+                    edges {
+                        node {
+                            id
+                            title
+                            start
+                            end
+                            year
+                            tag
+                            publicMdtext
+                            poster {
+                                filename
+                                normalPath
+                            }
                         }
                     }
-                }
-                pageInfo {
-                    hasNextPage
-                }
-            }
-            previousProjects(first:$showProjects) {
-                edges {
-                    node {
-                        id
-                        title
-                        start
-                        end
-                        year
-                        tag
-                        poster {
-                            filename
-                            normalPath
-                        }
+                    pageInfo {
+                        hasNextPage
                     }
                 }
-                pageInfo {
-                    hasNextPage
+                previousProjects(first:$showProjects) {
+                    edges {
+                        node {
+                            id
+                            title
+                            start
+                            end
+                            year
+                            tag
+                            poster {
+                                filename
+                                normalPath
+                            }
+                        }
+                    }
+                    pageInfo {
+                        hasNextPage
+                    }
                 }
-            }
-            ${AddProjectMutation.getFragment('organization')}
-        }`,
-        viewer: () => Relay.QL`
-        fragment on User {
-            id
-            ${ProjectForm.getFragment('viewer')}
-        }`,
+                ${AddProjectMutation.getFragment('organization')}
+            }`;
+        },
+        viewer: () => {
+            return Relay.QL`
+            fragment on User {
+                id
+                ${ProjectForm.getFragment('viewer')}
+            }`;
+        },
     },
 });

@@ -1,10 +1,11 @@
+/* eslint "max-len": 0 */
+
 import Paper from 'material-ui/Paper';
 import RaisedButton from 'material-ui/RaisedButton';
 import TextField from 'material-ui/TextField';
 import getMuiTheme from 'material-ui/styles/getMuiTheme';
 import React from 'react';
 import Relay from 'react-relay';
-
 import theme from '../theme';
 import SendResetMutation from '../mutations/sendReset';
 
@@ -87,10 +88,12 @@ class Reset extends React.Component {
 }
 export default Relay.createContainer(Reset, {
     fragments: {
-        organization: () => Relay.QL`
-        fragment on Organization {
-            id
-            ${SendResetMutation.getFragment('organization')}
-        }`,
+        organization: () => {
+            return Relay.QL`
+            fragment on Organization {
+                id
+                ${SendResetMutation.getFragment('organization')}
+            }`;
+        },
     },
 });

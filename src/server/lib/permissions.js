@@ -1,8 +1,10 @@
+/* eslint "import/prefer-default-export": 0 */
+
 import { fromGlobalId } from 'graphql-relay';
 
 export function buildPermissionObject(permissions) {
     const permissionObj = { public: false, groups: [], users: [] };
-    permissions.forEach(permission => {
+    permissions.forEach((permission) => {
         if (permission === 'p') {
             permissionObj.public = true;
         }

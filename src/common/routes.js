@@ -1,7 +1,6 @@
 import React from 'react';
 import Relay from 'react-relay';
 import { Route, IndexRoute, createRoutes } from 'react-router';
-
 import App from './components/App';
 import Group from './components/Group';
 import Groups from './components/Groups';
@@ -25,12 +24,18 @@ import Roles from './components/Roles';
 import NoMatch from './components/NoMatch';
 
 export const queries = {
-    viewer: () => Relay.QL`query { viewer }`,
-    organization: () => Relay.QL`query { organization }`,
+    viewer: () => {
+        return Relay.QL`query { viewer }`;
+    },
+    organization: () => {
+        return Relay.QL`query { organization }`;
+    },
 };
 
 export const organizationQueries = {
-    organization: () => Relay.QL`query { organization }`,
+    organization: () => {
+        return Relay.QL`query { organization }`;
+    },
 };
 
 export default createRoutes(
@@ -59,5 +64,5 @@ export default createRoutes(
         <Route path=":slug" component={Page} queries={queries} />
         <Route path=":year/:tag" component={Project} queries={queries} />
         <Route path="*" component={NoMatch} />
-    </Route>
+    </Route>,
 );

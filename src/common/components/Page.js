@@ -6,12 +6,11 @@ import MenuItem from 'material-ui/MenuItem';
 import IconButton from 'material-ui/IconButton';
 import Paper from 'material-ui/Paper';
 import MoreVertIcon from 'material-ui/svg-icons/navigation/more-vert';
-
-import EditPage from './EditPage';
 import EditPageMutation from '../mutations/editPage';
-import Text from './Text';
-import { flattenPermissions } from '../utils';
 import theme from '../theme';
+import { flattenPermissions } from '../utils';
+import EditPage from './EditPage';
+import Text from './Text';
 
 class Page extends React.Component {
     static contextTypes = {
@@ -28,10 +27,6 @@ class Page extends React.Component {
         muiTheme: React.PropTypes.object.isRequired,
     }
 
-    static propTypes = {
-        id: React.PropTypes.string,
-    }
-
     constructor(props) {
         super(props);
         this.muiTheme = getMuiTheme(theme);
@@ -39,7 +34,8 @@ class Page extends React.Component {
 
     state = {
         edit: false,
-        permissions: this.props.organization.page && flattenPermissions(this.props.organization.page.permissions),
+        permissions: this.props.organization.page &&
+        flattenPermissions(this.props.organization.page.permissions),
     }
 
     getChildContext() {
@@ -86,9 +82,6 @@ class Page extends React.Component {
         }), {
             onSuccess: () => {
                 this.closeEdit();
-            },
-            onFailure: (error, ost, kake) => {
-                console.error('AD', error, ost, kake);
             },
         });
     }
@@ -140,41 +133,44 @@ export default Relay.createContainer(Page, {
         slug: null,
     },
     fragments: {
-        viewer: () => Relay.QL`
-        fragment on User {
-            id
-            groups {
+        viewer: () => {
+            return Relay.QL`
+            fragment on User {
                 id
-                name
-            }
-            ${EditPageMutation.getFragment('viewer')},
-        }
-        `,
-        organization: () => Relay.QL`
-        fragment on Organization {
-            isMember
-            memberGroup {
-                id
-            }
-            page(slug:$slug) {
-                id
-                slug
-                title
-                summary
-                mdtext
-                permissions {
-                    public
-                    groups {
-                        id
+                groups {
+                    id
+                    name
+                }
+                ${EditPageMutation.getFragment('viewer')},
+            }`;
+        },
+        organization: () => {
+            return Relay.QL`
+            fragment on Organization {
+                isMember
+                memberGroup {
+                    id
+                }
+                page(slug:$slug) {
+                    id
+                    slug
+                    title
+                    summary
+                    mdtext
+                    permissions {
+                        public
+                        groups {
+                            id
+                            name
+                        }
+                    }
+                    created
+                    updated
+                    updator {
                         name
                     }
                 }
-                created
-                updated
-                updator {
-                    name
-                }
-            }
-        }`,
+            }`;
+        },
     },
 });

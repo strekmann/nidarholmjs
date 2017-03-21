@@ -12,9 +12,9 @@ import IconButton from 'material-ui/IconButton';
 import MenuItem from 'material-ui/MenuItem';
 import RaisedButton from 'material-ui/RaisedButton';
 import { grey400 } from 'material-ui/styles/colors';
+import { flattenPermissions } from '../utils';
 import PermissionChips from './PermissionChips';
 import PermissionField from './PermissionField';
-import { flattenPermissions } from '../utils';
 
 export default class FileItem extends React.Component {
     static propTypes = {

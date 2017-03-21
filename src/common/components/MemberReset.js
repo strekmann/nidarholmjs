@@ -1,3 +1,5 @@
+/* eslint "max-len": 0 */
+
 import Paper from 'material-ui/Paper';
 import RaisedButton from 'material-ui/RaisedButton';
 import TextField from 'material-ui/TextField';
@@ -18,7 +20,6 @@ class MemberReset extends React.Component {
     }
 
     static propTypes = {
-        organization: React.PropTypes.object,
         viewer: React.PropTypes.object,
     }
 
@@ -95,14 +96,18 @@ class MemberReset extends React.Component {
 
 export default Relay.createContainer(MemberReset, {
     fragments: {
-        viewer: () => Relay.QL`
-        fragment on User {
-            id
-            ${SetPasswordMutation.getFragment('viewer')}
-        }`,
-        organization: () => Relay.QL`
-        fragment on Organization {
-            id
-        }`,
+        viewer: () => {
+            return Relay.QL`
+            fragment on User {
+                id
+                ${SetPasswordMutation.getFragment('viewer')}
+            }`;
+        },
+        organization: () => {
+            return Relay.QL`
+            fragment on Organization {
+                id
+            }`;
+        },
     },
 });

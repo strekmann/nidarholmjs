@@ -36,7 +36,9 @@ const ProjectSchema = new mongoose.Schema({
     managers: [{ type: String, ref: 'User' }],
 });
 
-ProjectSchema.virtual('_type').get(() => 'Project');
+ProjectSchema.virtual('_type').get(() => {
+    return 'Project';
+});
 ProjectSchema.set('toObject', schemaOptions);
 ProjectSchema.set('toJSON', schemaOptions);
 export default mongoose.model('Project', ProjectSchema);

@@ -2,14 +2,17 @@ import Relay from 'react-relay';
 
 export default class UpdatePieceMutation extends Relay.Mutation {
     static fragments = {
-        piece: () => Relay.QL`
-        fragment on Piece {
-            id
-        }
-        `,
+        piece: () => {
+            return Relay.QL`
+            fragment on Piece {
+                id
+            }`;
+        },
     }
 
-    getMutation = () => Relay.QL`mutation {updatePiece}`
+    getMutation = () => {
+        return Relay.QL`mutation {updatePiece}`;
+    }
 
     getVariables() {
         return {
@@ -21,10 +24,12 @@ export default class UpdatePieceMutation extends Relay.Mutation {
         };
     }
 
-    getFatQuery = () => Relay.QL`
+    getFatQuery = () => {
+        return Relay.QL`
         fragment on UpdatePiecePayload {
             piece
-        }`
+        }`;
+    }
 
     getConfigs() {
         return [{

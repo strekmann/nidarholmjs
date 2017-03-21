@@ -3,7 +3,6 @@ import getMuiTheme from 'material-ui/styles/getMuiTheme';
 import React from 'react';
 import Relay from 'react-relay';
 import { Link } from 'react-router';
-
 import theme from '../theme';
 
 class Groups extends React.Component {
@@ -34,15 +33,17 @@ class Groups extends React.Component {
             <section>
                 <Paper style={{ padding: 20 }}>
                     <h1>Alle grupper</h1>
-                    {groups.map(group => (
-                        <div key={group.id}>
-                            <Link to={`/group/${group.id}`}>{group.name}</Link>
-                            {group.externallyHidden
-                                    ? ' h'
-                                    : null
-                            }
-                        </div>
-                    ))}
+                    {groups.map((group) => {
+                        return (
+                            <div key={group.id}>
+                                <Link to={`/group/${group.id}`}>{group.name}</Link>
+                                {group.externallyHidden
+                                        ? ' h'
+                                        : null
+                                }
+                            </div>
+                        );
+                    })}
                 </Paper>
             </section>
         );
@@ -54,19 +55,21 @@ export default Relay.createContainer(Groups, {
         groupId: null,
     },
     fragments: {
-        viewer: () => Relay.QL`
-        fragment on User {
-            id
-        }
-        `,
-        organization: () => Relay.QL`
-        fragment on Organization {
-            groups {
+        viewer: () => {
+            return Relay.QL`
+            fragment on User {
                 id
-                name
-                externallyHidden
-            }
-        }
-        `,
+            }`;
+        },
+        organization: () => {
+            return Relay.QL`
+            fragment on Organization {
+                groups {
+                    id
+                    name
+                    externallyHidden
+                }
+            }`;
+        },
     },
 });

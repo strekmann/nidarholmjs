@@ -2,11 +2,12 @@ import Relay from 'react-relay';
 
 export default class AddScoreMutation extends Relay.Mutation {
     static fragments = {
-        organization: () => Relay.QL`
-        fragment on Organization {
-            id
-        }
-        `,
+        organization: () => {
+            return Relay.QL`
+            fragment on Organization {
+                id
+            }`;
+        },
     }
 
     getMutation() {
@@ -36,7 +37,6 @@ export default class AddScoreMutation extends Relay.Mutation {
     }
 
     getConfigs() {
-        console.log(this.props);
         return [{
             type: 'RANGE_ADD',
             parentName: 'organization',

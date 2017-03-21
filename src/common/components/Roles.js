@@ -156,7 +156,9 @@ class Roles extends React.Component {
                                 disabled
                                 initiallyOpen
                                 rightIconButton={
-                                    <IconButton onTouchTap={(event) => { this.onDelete(event, id); }}>
+                                    <IconButton
+                                        onTouchTap={(event) => { this.onDelete(event, id); }}
+                                    >
                                         <Delete />
                                     </IconButton>
                                 }

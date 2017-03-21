@@ -1,3 +1,5 @@
+/* eslint "react/no-danger": 0 */
+
 import marked from 'marked';
 import React from 'react';
 

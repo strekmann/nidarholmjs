@@ -13,7 +13,6 @@ import RaisedButton from 'material-ui/RaisedButton';
 import getMuiTheme from 'material-ui/styles/getMuiTheme';
 import { fullWhite, lightBlue900 } from 'material-ui/styles/colors';
 import { Link } from 'react-router';
-
 import theme from '../theme';
 
 class Navigation extends React.Component {

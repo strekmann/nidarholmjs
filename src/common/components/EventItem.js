@@ -5,7 +5,6 @@ import IconButton from 'material-ui/IconButton';
 import ExpandLess from 'material-ui/svg-icons/navigation/expand-less';
 import ExpandMore from 'material-ui/svg-icons/navigation/expand-more';
 import moment from 'moment';
-
 import Daterange from './Daterange';
 import Text from './Text';
 
@@ -70,25 +69,27 @@ class EventItem extends React.Component {
 
 export default Relay.createContainer(EventItem, {
     fragments: {
-        event: () => Relay.QL`
-        fragment on Event {
-            id
-            title
-            start
-            end
-            isEnded
-            permissions {
-                public
-                groups {
-                    id
-                    name
+        event: () => {
+            return Relay.QL`
+            fragment on Event {
+                id
+                title
+                start
+                end
+                isEnded
+                permissions {
+                    public
+                    groups {
+                        id
+                        name
+                    }
+                    users {
+                        id
+                        name
+                    }
                 }
-                users {
-                    id
-                    name
-                }
-            }
-            mdtext
-        }`,
+                mdtext
+            }`;
+        },
     },
 });

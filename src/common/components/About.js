@@ -21,10 +21,11 @@ class About extends React.Component {
 
 export default Relay.createContainer(About, {
     fragments: {
-        organization: () => Relay.QL`
-        fragment on Organization {
-            description_nb,
-        }
-        `,
+        organization: () => {
+            return Relay.QL`
+            fragment on Organization {
+                description_nb,
+            }`;
+        },
     },
 });

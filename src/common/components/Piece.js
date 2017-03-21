@@ -3,7 +3,6 @@
 import React from 'react';
 import Relay from 'react-relay';
 import axios from 'axios';
-
 import Dialog from 'material-ui/Dialog';
 import FlatButton from 'material-ui/FlatButton';
 import IconButton from 'material-ui/IconButton';
@@ -15,13 +14,11 @@ import { Toolbar, ToolbarGroup } from 'material-ui/Toolbar';
 import TextField from 'material-ui/TextField';
 import getMuiTheme from 'material-ui/styles/getMuiTheme';
 import MoreVertIcon from 'material-ui/svg-icons/navigation/more-vert';
-
 import theme from '../theme';
-
-import List from './List';
-import GroupScores from './GroupScores';
 import AddScoreMutation from '../mutations/addScore';
 import UpdatePieceMutation from '../mutations/updatePiece';
+import List from './List';
+import GroupScores from './GroupScores';
 
 class Piece extends React.Component {
     static contextTypes = {
@@ -189,22 +186,25 @@ class Piece extends React.Component {
                 <h2>
                     <List items={piece.composers} /> <small><List items={piece.arrangers} /></small>
                 </h2>
-                {piece.files.edges.map(edge => (
-                    <div key={edge.node.id}>
-                        <FlatButton href={edge.node.path} label={edge.node.filename} />
-                    </div>
-                ))}
-
+                {piece.files.edges.map((edge) => {
+                    return (
+                        <div key={edge.node.id}>
+                            <FlatButton href={edge.node.path} label={edge.node.filename} />
+                        </div>
+                    );
+                })}
                 {org.isMusicAdmin ?
                     <div>
                         <h2>Admin</h2>
-                        {piece.groupscores.map(group => (
-                            <GroupScores
-                                key={group.id}
-                                uploadScores={this.uploadScores}
-                                {...group}
-                            />
-                        ))}
+                        {piece.groupscores.map((group) => {
+                            return (
+                                <GroupScores
+                                    key={group.id}
+                                    uploadScores={this.uploadScores}
+                                    {...group}
+                                />
+                            );
+                        })}
                     </div>
                     : null}
             </Paper>
@@ -217,30 +217,19 @@ export default Relay.createContainer(Piece, {
         pieceId: '',
     },
     fragments: {
-        organization: () => Relay.QL`
-        fragment on Organization {
-            id
-            name
-            isMember
-            isMusicAdmin
-            piece(pieceId:$pieceId) {
+        organization: () => {
+            return Relay.QL`
+            fragment on Organization {
                 id
-                title
-                subtitle
-                composers
-                arrangers
-                files {
-                    edges {
-                        node {
-                            id
-                            filename
-                            path
-                        }
-                    }
-                }
-                groupscores {
+                name
+                isMember
+                isMusicAdmin
+                piece(pieceId:$pieceId) {
                     id
-                    name
+                    title
+                    subtitle
+                    composers
+                    arrangers
                     files {
                         edges {
                             node {
@@ -250,10 +239,23 @@ export default Relay.createContainer(Piece, {
                             }
                         }
                     }
+                    groupscores {
+                        id
+                        name
+                        files {
+                            edges {
+                                node {
+                                    id
+                                    filename
+                                    path
+                                }
+                            }
+                        }
+                    }
+                    ${UpdatePieceMutation.getFragment('piece')}
                 }
-                ${UpdatePieceMutation.getFragment('piece')}
-            }
-            ${AddScoreMutation.getFragment('organization')}
-        }`,
+                ${AddScoreMutation.getFragment('organization')}
+            }`;
+        },
     },
 });

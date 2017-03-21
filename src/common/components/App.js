@@ -2,16 +2,15 @@ import React from 'react';
 import Helmet from 'react-helmet';
 import Relay from 'react-relay';
 import getMuiTheme from 'material-ui/styles/getMuiTheme';
+import theme from '../theme';
 import Footer from './Footer';
 import Navigation from './Navigation';
-import theme from '../theme';
 
 class App extends React.Component {
     static propTypes = {
         children: React.PropTypes.element,
         viewer: React.PropTypes.object,
         organization: React.PropTypes.object,
-        users: React.PropTypes.array,
     }
 
     constructor(props) {
@@ -56,16 +55,20 @@ class App extends React.Component {
 
 export default Relay.createContainer(App, {
     fragments: {
-        viewer: () => Relay.QL`
-        fragment on User {
-            ${Navigation.getFragment('viewer')}
-        }`,
-        organization: () => Relay.QL`
-        fragment on Organization {
-            baseurl
-            facebookAppid
-            ${Navigation.getFragment('organization')}
-            ${Footer.getFragment('organization')}
-        }`,
+        viewer: () => {
+            return Relay.QL`
+            fragment on User {
+                ${Navigation.getFragment('viewer')}
+            }`;
+        },
+        organization: () => {
+            return Relay.QL`
+            fragment on Organization {
+                baseurl
+                facebookAppid
+                ${Navigation.getFragment('organization')}
+                ${Footer.getFragment('organization')}
+            }`;
+        },
     },
 });

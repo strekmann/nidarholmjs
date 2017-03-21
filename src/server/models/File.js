@@ -1,6 +1,6 @@
+import path from 'path';
 import mongoose from 'mongoose';
 import moment from 'moment';
-import path from 'path';
 import uuid from 'node-uuid';
 import schemaOptions from './schemaOptions';
 
@@ -59,7 +59,9 @@ FileSchema.virtual('shortdate').get(function shortdate() {
     return moment(this.created).format('LL');
 });
 
-FileSchema.virtual('_type').get(() => 'File');
+FileSchema.virtual('_type').get(() => {
+    return 'File';
+});
 FileSchema.set('toObject', schemaOptions);
 FileSchema.set('toJSON', schemaOptions);
 export default mongoose.model('File', FileSchema);

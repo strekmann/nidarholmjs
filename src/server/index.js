@@ -3,31 +3,26 @@
 /* eslint no-param-reassign: "off" */
 /* eslint camelcase: "off" */
 
+import fs from 'fs';
+import http from 'http';
+import path from 'path';
 import bodyParser from 'body-parser';
 import cookieParser from 'cookie-parser';
 import session from 'express-session';
 import errorHandler from 'errorhandler';
 import express from 'express';
-import fs from 'fs';
-import http from 'http';
 import httpProxy from 'http-proxy';
 import mongoose from 'mongoose';
 import bunyan from 'bunyan';
 import expressBunyan from 'express-bunyan-logger';
-import path from 'path';
-// import socketIO from 'socket.io';
-// import passportSocketIO from 'passport.socketio';
 import config from 'config';
 import serveStatic from 'serve-static';
 import connectMongo from 'connect-mongo';
 import moment from 'moment';
 import multer from 'multer';
 import graphqlHTTP from 'express-graphql';
-
 import passport from './lib/passport';
-// import api from './api';
 import universal from './app';
-// import socketRoutes from './socket';
 import { icalEvents } from './icalRoutes';
 import Organization from './models/Organization';
 import PasswordCode from './models/PasswordCode';
@@ -35,15 +30,11 @@ import User from './models/User';
 import './lib/db';
 import saveFile from './lib/saveFile';
 import findFilePath from './lib/findFilePath';
-
-// import project_routes from './routes/projects';
-// import organization_routes from './routes/organization';
 import persistentLogin from './lib/persistentLoginMiddleware';
 import {
     groupEmailApiRoute,
     roleEmailApiRoute,
 } from './lib/emailApi';
-
 import schema from './schema';
 
 // import * as profileAPI from './server/api/profile';

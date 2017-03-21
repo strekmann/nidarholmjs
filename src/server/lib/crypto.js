@@ -6,7 +6,7 @@ function encrypt(data, key, callback) {
 }
 
 function decrypt(data, key, callback) {
-    const d = data.replace(/\-/g, '+').replace(/_/g, '/');
+    const d = data.replace(/-/g, '+').replace(/_/g, '/');
     const cipher = crypto.createDecipheriv('aes-256-cbc', key, key.slice(0, 16));
     callback(null, cipher.update(d, 'base64', 'utf8') + cipher.final('utf8'));
 }

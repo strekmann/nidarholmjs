@@ -13,7 +13,6 @@ import getMuiTheme from 'material-ui/styles/getMuiTheme';
 import MoreVertIcon from 'material-ui/svg-icons/navigation/more-vert';
 import React from 'react';
 import Relay from 'react-relay';
-
 import theme from '../theme';
 import CreatePieceMutation from '../mutations/createPiece';
 import PieceItem from './PieceItem';
@@ -185,16 +184,20 @@ class Pieces extends React.Component {
                                         </form>
                                         : <div style={{ display: 'flex' }}>
                                             <AutoComplete
-                                                dataSource={pieces.edges.map(
-                                                    edge => ({
+                                                dataSource={pieces.edges.map((edge) => {
+                                                    return {
                                                         text: `${edge.node.scoreCount}: ${edge.node.title} - ${edge.node.composers} (${edge.node.arrangers})`,
                                                         value: edge.node,
-                                                    }),
-                                                )}
+                                                    };
+                                                })}
                                                 floatingLabelText="Tittel"
                                                 onNewRequest={this.addPiece}
-                                                onUpdateInput={text => this.search(text)}
-                                                filter={() => true}
+                                                onUpdateInput={(text) => {
+                                                    this.search(text);
+                                                }}
+                                                filter={() => {
+                                                    return true;
+                                                }}
                                                 fullWidth
                                                 style={{ flexGrow: '1' }}
                                             />
@@ -255,7 +258,11 @@ class Pieces extends React.Component {
                         </TableRow>
                     </TableHeader>
                     <TableBody>
-                        {pieces.edges.map(edge => <PieceItem key={edge.node.id} {...edge.node} />)}
+                        {pieces.edges.map((edge) => {
+                            return (
+                                <PieceItem key={edge.node.id} {...edge.node} />
+                            );
+                        })}
                     </TableBody>
                 </Table>
                 {pieces.pageInfo.hasNextPage ?
@@ -383,29 +390,31 @@ export default Relay.createContainer(Pieces, {
         term: '',
     },
     fragments: {
-        organization: () => Relay.QL`
-        fragment on Organization {
-            id
-            isMusicAdmin
-            memberGroup {
+        organization: () => {
+            return Relay.QL`
+            fragment on Organization {
                 id
-            }
-            pieces(first:$showItems,term:$term) {
-                edges {
-                    node {
-                        id
-                        title
-                        subtitle
-                        composers
-                        arrangers
-                        scoreCount
+                isMusicAdmin
+                memberGroup {
+                    id
+                }
+                pieces(first:$showItems,term:$term) {
+                    edges {
+                        node {
+                            id
+                            title
+                            subtitle
+                            composers
+                            arrangers
+                            scoreCount
+                        }
+                    }
+                    pageInfo {
+                        hasNextPage
                     }
                 }
-                pageInfo {
-                    hasNextPage
-                }
-            }
-            ${CreatePieceMutation.getFragment('organization')}
-        }`,
+                ${CreatePieceMutation.getFragment('organization')}
+            }`;
+        },
     },
 });

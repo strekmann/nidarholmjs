@@ -18,7 +18,9 @@ const PageSchema = new mongoose.Schema({
     updator: { type: String, ref: 'User' },
 });
 
-PageSchema.virtual('_type').get(() => 'Page');
+PageSchema.virtual('_type').get(() => {
+    return 'Page';
+});
 PageSchema.set('toObject', schemaOptions);
 PageSchema.set('toJSON', schemaOptions);
 export default mongoose.model('Page', PageSchema);

@@ -32,7 +32,9 @@ const PieceSchema = new mongoose.Schema({
     creator: { type: String, ref: 'User', required: true },
 });
 
-PieceSchema.virtual('_type').get(() => 'Piece');
+PieceSchema.virtual('_type').get(() => {
+    return 'Piece';
+});
 PieceSchema.set('toObject', schemaOptions);
 PieceSchema.set('toJSON', schemaOptions);
 export default mongoose.model('Piece', PieceSchema);

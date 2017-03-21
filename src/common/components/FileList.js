@@ -1,7 +1,6 @@
 /* eslint "react/require-default-props": 0 */
 
 import React from 'react';
-
 import FileItem from './FileItem';
 
 export default class FileList extends React.Component {
@@ -26,18 +25,19 @@ export default class FileList extends React.Component {
                     : null
                 }
                 <div style={style}>
-                    {this.props.files.edges.map(edge => (
-                        <FileItem
-                            key={edge.node.id}
-                            memberGroupId={this.props.memberGroupId}
-                            onSavePermissions={this.props.onSavePermissions}
-                            onSetProjectPoster={this.props.onSetProjectPoster}
-                            viewer={this.props.viewer}
-                            searchTag={this.props.searchTag}
-                            {...edge.node}
-                        />
-                        ))
-                    }
+                    {this.props.files.edges.map((edge) => {
+                        return (
+                            <FileItem
+                                key={edge.node.id}
+                                memberGroupId={this.props.memberGroupId}
+                                onSavePermissions={this.props.onSavePermissions}
+                                onSetProjectPoster={this.props.onSetProjectPoster}
+                                viewer={this.props.viewer}
+                                searchTag={this.props.searchTag}
+                                {...edge.node}
+                            />
+                        );
+                    })}
                 </div>
             </div>
         );

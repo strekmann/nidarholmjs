@@ -11,7 +11,7 @@ export default class Date extends React.Component {
     render() {
         const yes = this.props.yes || 'ja';
         const no = this.props.no || 'nei';
-        const maybe = this.props.no || 'kanskje';
+        const maybe = this.props.maybe || 'kanskje';
         if (this.props.value) {
             return <span>{yes}</span>;
         }

@@ -1,9 +1,9 @@
-import React from 'react';
+/* eslint "max-len": 0 */
 
+import React from 'react';
 import Paper from 'material-ui/Paper';
 import RaisedButton from 'material-ui/RaisedButton';
 import TextField from 'material-ui/TextField';
-
 import PermissionField from './PermissionField';
 
 export default class EditPage extends React.Component {

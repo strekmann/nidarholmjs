@@ -1,3 +1,6 @@
+/* eslint "import/prefer-default-export": 0 */
+/* eslint "new-cap": 0 */
+
 import { toGlobalId } from 'graphql-relay';
 import icalendar from 'icalendar';
 import moment from 'moment';
@@ -19,7 +22,7 @@ export function icalEvents(req, res, next) {
         ical.addProperty('METHOD', 'PUBLISH');
         ical.addProperty('CALSCALE', 'GREGORIAN');
         ical.addProperty('X-ORIGINAL', 'https://nidarholm.no/events/');
-        events.forEach(e => {
+        events.forEach((e) => {
             const event = new icalendar.VEvent();
             event.addProperty('UID', e.id);
             if (e.modified) {

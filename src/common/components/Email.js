@@ -1,3 +1,5 @@
+/* eslint "react/no-danger": 0 */
+
 import marked from 'marked';
 import React from 'react';
 import { renderToString } from 'react-dom/server';
@@ -28,4 +30,3 @@ export default class Email extends React.Component {
         );
     }
 }
-

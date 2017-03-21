@@ -1,6 +1,5 @@
 import moment from 'moment';
 import React from 'react';
-
 import Date from './Date';
 
 export default class Daterange extends React.Component {

@@ -1,5 +1,4 @@
 import React from 'react';
-
 import AutoComplete from 'material-ui/AutoComplete';
 import PermissionChips from './PermissionChips';
 
@@ -34,7 +33,9 @@ export default class PermissionField extends React.Component {
     }
 
     removePermission = (permissionId) => {
-        const permissions = this.state.permissions.filter(_p => _p.id !== permissionId);
+        const permissions = this.state.permissions.filter((_p) => {
+            return _p.id !== permissionId;
+        });
         this.setState({
             permissions,
         });
@@ -46,7 +47,7 @@ export default class PermissionField extends React.Component {
         const groups = this.props.groups || [];
         // const users = this.props.users || [];
         permissions.push({ id: 'p', name: 'Verden' });
-        groups.forEach(group => {
+        groups.forEach((group) => {
             permissions.push({ id: group.id, name: group.name });
         });
         /*

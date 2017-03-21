@@ -7,7 +7,6 @@ import MenuItem from 'material-ui/MenuItem';
 import IconButton from 'material-ui/IconButton';
 import Paper from 'material-ui/Paper';
 import MoreVertIcon from 'material-ui/svg-icons/navigation/more-vert';
-
 import theme from '../theme';
 import EditEventMutation from '../mutations/editEvent';
 import Daterange from './Daterange';
@@ -67,9 +66,6 @@ class Event extends React.Component {
             onSuccess: () => {
                 closeEdit();
             },
-            onFailure: (error, ost, kake) => {
-                console.error('AD', error, ost, kake);
-            },
         });
     }
 
@@ -120,25 +116,27 @@ export default Relay.createContainer(Event, {
         eventid: null,
     },
     fragments: {
-        viewer: () => Relay.QL`
-        fragment on User {
-            id
-            ${EditEventMutation.getFragment('viewer')},
-        }
-        `,
-        organization: () => Relay.QL`
-        fragment on Organization {
-            isMember
-            event(eventid:$eventid) {
+        viewer: () => {
+            return Relay.QL`
+            fragment on User {
                 id
-                title
-                location
-                start
-                end
-                tags
-                mdtext
-            }
-        }
-        `,
+                ${EditEventMutation.getFragment('viewer')},
+            }`;
+        },
+        organization: () => {
+            return Relay.QL`
+            fragment on Organization {
+                isMember
+                event(eventid:$eventid) {
+                    id
+                    title
+                    location
+                    start
+                    end
+                    tags
+                    mdtext
+                }
+            }`;
+        },
     },
 });

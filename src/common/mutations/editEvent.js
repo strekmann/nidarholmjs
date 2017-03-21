@@ -2,11 +2,12 @@ import Relay from 'react-relay';
 
 export default class EditEventMutation extends Relay.Mutation {
     static fragments = {
-        viewer: () => Relay.QL`
-        fragment on User {
-            id
-        }
-        `,
+        viewer: () => {
+            return Relay.QL`
+            fragment on User {
+                id
+            }`;
+        },
     }
 
     getMutation() {

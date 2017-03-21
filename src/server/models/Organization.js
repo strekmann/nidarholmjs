@@ -50,7 +50,9 @@ OrganizationSchema.virtual('facebook').get(function facebook() {
 OrganizationSchema.virtual('instagram').get(function facebook() {
     return this.social_media.instagram;
 });
-OrganizationSchema.virtual('_type').get(() => 'Organization');
+OrganizationSchema.virtual('_type').get(() => {
+    return 'Organization';
+});
 OrganizationSchema.set('toObject', schemaOptions);
 OrganizationSchema.set('toJSON', schemaOptions);
 export default mongoose.model('Organization', OrganizationSchema);
