@@ -249,11 +249,11 @@ class Project extends React.Component {
                             targetOrigin={{ vertical: 'top', horizontal: 'right' }}
                         >
                             {hasEndedActivities
-                                    ? <MenuItem
-                                        primaryText="Vis tidligere aktiviteter"
-                                        onTouchTap={this.showEnded}
-                                    />
-                                    : null
+                                ? <MenuItem
+                                    primaryText="Vis tidligere aktiviteter"
+                                    onTouchTap={this.showEnded}
+                                />
+                                : null
                             }
                             <MenuItem
                                 primaryText="Rediger prosjektinfo"
@@ -263,10 +263,13 @@ class Project extends React.Component {
                                 primaryText="Legg til aktivitet"
                                 onTouchTap={this.toggleAddEvent}
                             />
-                            <MenuItem
-                                primaryText="Legg til repertoar"
-                                onTouchTap={this.toggleAddPiece}
-                            />
+                            {isMusicAdmin
+                                ? <MenuItem
+                                    primaryText="Legg til repertoar"
+                                    onTouchTap={this.toggleAddPiece}
+                                />
+                                : null
+                            }
                             <MenuItem
                                 primaryText="Last opp filer"
                                 onTouchTap={this.toggleAddFile}
