@@ -2,6 +2,7 @@ import React from 'react';
 import Relay from 'react-relay';
 import getMuiTheme from 'material-ui/styles/getMuiTheme';
 import Dialog from 'material-ui/Dialog';
+import FlatButton from 'material-ui/FlatButton';
 import IconMenu from 'material-ui/IconMenu';
 import MenuItem from 'material-ui/MenuItem';
 import IconButton from 'material-ui/IconButton';
@@ -9,6 +10,7 @@ import Paper from 'material-ui/Paper';
 import MoreVertIcon from 'material-ui/svg-icons/navigation/more-vert';
 import theme from '../theme';
 import EditEventMutation from '../mutations/editEvent';
+import DeleteEventMutation from '../mutations/deleteEvent';
 import Daterange from './Daterange';
 import Text from './Text';
 import EditEvent from './EditEvent';
@@ -17,6 +19,7 @@ import EditEvent from './EditEvent';
 class Event extends React.Component {
     static contextTypes = {
         relay: Relay.PropTypes.Environment,
+        router: React.PropTypes.object.isRequired,
     }
 
     static childContextTypes = {
@@ -34,6 +37,7 @@ class Event extends React.Component {
 
     state = {
         edit: false,
+        deleting: false,
         extra: true,
     }
 
@@ -47,10 +51,18 @@ class Event extends React.Component {
         });
     }
 
+    toggleDelete = () => {
+        this.setState({ deleting: !this.state.deleting });
+    }
+
     closeEdit = () => {
         this.setState({
             edit: false,
         });
+    }
+
+    closeDelete = () => {
+        this.setState({ deleting: false });
     }
 
     saveEvent = (event, closeEdit) => {
@@ -69,6 +81,18 @@ class Event extends React.Component {
         });
     }
 
+    deleteEvent = () => {
+        const { organization } = this.props;
+        this.context.relay.commitUpdate(new DeleteEventMutation({
+            event: organization.event,
+            organization,
+        }), {
+            onSuccess: () => {
+                this.context.router.goBack();
+            },
+        });
+    }
+
     render() {
         const event = this.props.organization.event;
         const isMember = this.props.organization.isMember;
@@ -83,6 +107,7 @@ class Event extends React.Component {
                                 targetOrigin={{ vertical: 'top', horizontal: 'right' }}
                             >
                                 <MenuItem primaryText="Rediger" onTouchTap={this.toggleEdit} />
+                                <MenuItem primaryText="Slett" onTouchTap={this.toggleDelete} />
                             </IconMenu>
                             : null
                     }
@@ -92,7 +117,8 @@ class Event extends React.Component {
                 </div>
                 <Text text={event.mdtext} />
                 {isMember
-                        ? <Dialog
+                    ? <div>
+                        <Dialog
                             title="Rediger aktivitet"
                             open={this.state.edit}
                             onRequestClose={this.closeEdit}
@@ -104,7 +130,20 @@ class Event extends React.Component {
                                 {...event}
                             />
                         </Dialog>
-                        : null
+                        <Dialog
+                            title="Slett aktivitet"
+                            open={this.state.deleting}
+                            onRequestClose={this.closeDelete}
+                            autoScrollBodyContent
+                            actions={[
+                                <FlatButton onTouchTap={this.closeDelete} label="Avbryt" />,
+                                <FlatButton primary onTouchTap={this.deleteEvent} label="Slett" />,
+                            ]}
+                        >
+                            <p>{event.title}</p>
+                        </Dialog>
+                    </div>
+                    : null
                 }
             </Paper>
         );
@@ -135,6 +174,7 @@ export default Relay.createContainer(Event, {
                     end
                     tags
                     mdtext
+                    ${DeleteEventMutation.getFragment('event')}
                 }
             }`;
         },

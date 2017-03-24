@@ -566,34 +566,42 @@ const scoreConnection = connectionDefinitions({
 
 eventType = new GraphQLObjectType({
     name: 'Event',
-    fields: {
-        id: globalIdField('Event'),
-        title: { type: GraphQLString },
-        location: { type: GraphQLString },
-        start: { type: GraphQLDate },
-        end: { type: GraphQLDate },
-        tags: { type: new GraphQLList(GraphQLString) },
-        mdtext: { type: GraphQLString },
-        permissions: { type: permissionsType },
-        isEnded: {
-            type: GraphQLBoolean,
-            resolve: (event) => {
-                // if start or end of event is before start of today, it is no longer
-                // interesting
-                if (!event.start) {
-                    return false;
-                }
-                if (event.end) {
-                    if (moment(event.end) < moment().startOf('day')) {
+    fields: () => {
+        return {
+            id: globalIdField('Event'),
+            title: { type: GraphQLString },
+            location: { type: GraphQLString },
+            start: { type: GraphQLDate },
+            end: { type: GraphQLDate },
+            tags: { type: new GraphQLList(GraphQLString) },
+            mdtext: { type: GraphQLString },
+            permissions: { type: permissionsType },
+            isEnded: {
+                type: GraphQLBoolean,
+                resolve: (event) => {
+                    // if start or end of event is before start of today, it is no longer
+                    // interesting
+                    if (!event.start) {
+                        return false;
+                    }
+                    if (event.end) {
+                        if (moment(event.end) < moment().startOf('day')) {
+                            return true;
+                        }
+                    }
+                    if (moment(event.start) < moment().startOf('day')) {
                         return true;
                     }
-                }
-                if (moment(event.start) < moment().startOf('day')) {
-                    return true;
-                }
-                return false;
+                    return false;
+                },
             },
-        },
+            projects: {
+                type: new GraphQLList(projectType),
+                resolve: (event) => {
+                    return Project.find().where('tag').in(event.tags).exec();
+                },
+            },
+        };
     },
     interfaces: [nodeInterface],
 });
@@ -2388,6 +2396,47 @@ const mutationRemovePiece = mutationWithClientMutationId({
     },
 });
 
+const mutationDeleteEvent = mutationWithClientMutationId({
+    name: 'DeleteEvent',
+    description: 'Hide event so it is not listed',
+    inputFields: {
+        id: { type: GraphQLID },
+    },
+    outputFields: {
+        organization: {
+            type: organizationType,
+            resolve: (_, { organization }) => {
+                return organization;
+            },
+        },
+        projects: {
+            type: new GraphQLList(projectType),
+            resolve: (payload) => {
+                return payload.projects;
+            },
+        },
+        deletedEventID: {
+            type: GraphQLID,
+            resolve: (payload) => {
+                return payload.event.id;
+            },
+        },
+    },
+    mutateAndGetPayload: ({ id }, { organization, viewer }) => {
+        if (!isMember(organization, viewer)) {
+            return null;
+        }
+        const eId = fromGlobalId(id).id;
+        return Event.findByIdAndRemove(eId).then((event) => {
+            return Project.find().where('tag').in(event.tags).then((projects) => {
+                return {
+                    projects,
+                    event,
+                };
+            });
+        });
+    },
+});
 const mutationType = new GraphQLObjectType({
     name: 'Mutation',
     fields: () => {
@@ -2420,6 +2469,7 @@ const mutationType = new GraphQLObjectType({
             saveGroup: mutationSaveGroup,
             addPiece: mutationAddPiece,
             removePiece: mutationRemovePiece,
+            deleteEvent: mutationDeleteEvent,
         };
     },
 });
