@@ -145,6 +145,7 @@ export default class EditEvent extends React.Component {
                     <TextField
                         value={this.state.location}
                         floatingLabelText="Sted"
+                        onChange={this.onChangeLocation}
                     />
                 </div>
                 <div>
