@@ -51,7 +51,7 @@ class Events extends React.Component {
                         <ToolbarGroup lastChild>
                             <FlatButton
                                 label="Kalenderfil"
-                                href="/events/public.ics"
+                                href={`webcal://${org.webdomain}/events/public.ics`}
                             />
                         </ToolbarGroup>
                     </Toolbar>
@@ -91,6 +91,7 @@ export default Relay.createContainer(Events, {
                 memberGroup {
                     id
                 }
+                webdomain
                 events(first:$showItems) {
                     edges {
                         node {
