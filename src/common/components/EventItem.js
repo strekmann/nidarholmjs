@@ -74,6 +74,7 @@ export default Relay.createContainer(EventItem, {
             fragment on Event {
                 id
                 title
+                location
                 start
                 end
                 isEnded
