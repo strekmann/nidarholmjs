@@ -150,7 +150,7 @@ class EventForm extends React.Component {
                         label="Avbryt"
                     />,
                     <FlatButton
-                        onClick={this.save}
+                        onTouchTap={this.save}
                         label="Lagre"
                         primary
                     />,
