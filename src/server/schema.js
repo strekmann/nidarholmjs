@@ -158,19 +158,16 @@ function isAdmin(organization, user) {
 }
 
 // people having permissions to organization music
-function musicscoreadmin(organization, user) {
+function isMusicAdmin(organization, user) {
     if (user) {
         return Group.findById(organization.musicscoreadmin_group).exec().then((group) => {
-            return group.members.map((_member) => {
+            const groupUsers = group.members.map((_member) => {
                 return _member.user;
-            }).includes(user.id);
+            });
+            return groupUsers.includes(user.id);
         });
     }
     return false;
-}
-
-function isMusicAdmin(organization, user) {
-    return !!musicscoreadmin(organization, user);
 }
 
 function authenticate(query, viewer, options = {}) {
@@ -660,7 +657,7 @@ pieceType = new GraphQLObjectType({
             groupscores: {
                 type: new GraphQLList(groupScoreType),
                 resolve: (piece, args, { organization, viewer }) => {
-                    if (!musicscoreadmin(organization, viewer)) {
+                    if (!isMusicAdmin(organization, viewer)) {
                         throw new Error('Not music admin. Can not see group scores.');
                     }
                     return organization.instrument_groups

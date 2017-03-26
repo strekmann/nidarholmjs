@@ -129,7 +129,7 @@ app.set('view engine', 'jade');
 // We have a possibility to override user login during development
 app.use((req, res, next) => {
     if (process.NODE_ENV !== 'production' && config.override && config.override.user) {
-        User.findById(config.override.user).exec().then((user) => {
+        User.findOne({ email: config.override.user }).exec().then((user) => {
             req.user = user;
             next();
         });
