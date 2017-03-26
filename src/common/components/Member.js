@@ -397,48 +397,48 @@ class Member extends React.Component {
                 <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                     <h1>{user.name}</h1>
                     {isAdmin
-                            ? <Dialog
-                                title="Legg til i gruppe"
-                                open={this.state.joinGroup}
-                                onRequestClose={this.closeJoinGroup}
-                                autoScrollBodyContent
-                                actions={<FlatButton label="Avbryt" onTouchTap={this.closeJoinGroup} />}
-                            >
-                                <AutoComplete
-                                    dataSource={org.groups.map((group) => {
-                                        return { text: `${group.name}`, value: group };
-                                    })}
-                                    floatingLabelText="Gruppe"
-                                    onNewRequest={this.joinGroup}
-                                    filter={AutoComplete.fuzzyFilter}
-                                    fullWidth
-                                />
-                            </Dialog>
-                            : null
+                        ? <Dialog
+                            title="Legg til i gruppe"
+                            open={this.state.joinGroup}
+                            onRequestClose={this.closeJoinGroup}
+                            autoScrollBodyContent
+                            actions={<FlatButton label="Avbryt" onTouchTap={this.closeJoinGroup} />}
+                        >
+                            <AutoComplete
+                                dataSource={org.groups.map((group) => {
+                                    return { text: `${group.name}`, value: group };
+                                })}
+                                floatingLabelText="Gruppe"
+                                onNewRequest={this.joinGroup}
+                                filter={AutoComplete.fuzzyFilter}
+                                fullWidth
+                            />
+                        </Dialog>
+                        : null
                     }
                     {isAdmin
-                            ? <Dialog
-                                title="Legg til verv"
-                                open={this.state.addingRole}
-                                onRequestClose={this.closeAddingRole}
-                                autoScrollBodyContent
-                                actions={<RaisedButton label="Avbryt" onTouchTap={this.closeAddingRole} />}
-                            >
-                                <List>
-                                    {org.roles.edges.map((edge) => {
-                                        return (
-                                            <ListItem
-                                                key={edge.node.id}
-                                                primaryText={edge.node.name}
-                                                onTouchTap={() => {
-                                                    this.addRole(edge.node.id);
-                                                }}
-                                            />
-                                        );
-                                    })}
-                                </List>
-                            </Dialog>
-                            : null
+                        ? <Dialog
+                            title="Legg til verv"
+                            open={this.state.addingRole}
+                            onRequestClose={this.closeAddingRole}
+                            autoScrollBodyContent
+                            actions={<RaisedButton label="Avbryt" onTouchTap={this.closeAddingRole} />}
+                        >
+                            <List>
+                                {org.roles.edges.map((edge) => {
+                                    return (
+                                        <ListItem
+                                            key={edge.node.id}
+                                            primaryText={edge.node.name}
+                                            onTouchTap={() => {
+                                                this.addRole(edge.node.id);
+                                            }}
+                                        />
+                                    );
+                                })}
+                            </List>
+                        </Dialog>
+                        : null
                     }
                     <Toolbar style={{ backgroundColor: theme.palette.fullWhite }}>
                         <ToolbarGroup lastChild>
