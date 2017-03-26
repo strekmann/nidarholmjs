@@ -11,7 +11,7 @@ export default class GroupScores extends React.Component {
         id: React.PropTypes.string,
         name: React.PropTypes.string,
         uploadScores: React.PropTypes.func,
-        files: React.PropTypes.array,
+        files: React.PropTypes.object,
     }
 
     onDrop = (files) => {
