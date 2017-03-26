@@ -13,7 +13,7 @@ import EditEventMutation from '../mutations/editEvent';
 import DeleteEventMutation from '../mutations/deleteEvent';
 import Daterange from './Daterange';
 import Text from './Text';
-import EditEvent from './EditEvent';
+import EventForm from './EventForm';
 
 
 class Event extends React.Component {
@@ -28,6 +28,7 @@ class Event extends React.Component {
 
     static propTypes = {
         organization: React.PropTypes.object,
+        viewer: React.PropTypes.object,
     }
 
     constructor(props) {
@@ -36,7 +37,7 @@ class Event extends React.Component {
     }
 
     state = {
-        edit: false,
+        editing: false,
         deleting: false,
         extra: true,
     }
@@ -47,7 +48,7 @@ class Event extends React.Component {
 
     toggleEdit = () => {
         this.setState({
-            edit: !this.state.edit,
+            editing: !this.state.editing,
         });
     }
 
@@ -57,7 +58,7 @@ class Event extends React.Component {
 
     closeEdit = () => {
         this.setState({
-            edit: false,
+            editing: false,
         });
     }
 
@@ -65,7 +66,8 @@ class Event extends React.Component {
         this.setState({ deleting: false });
     }
 
-    saveEvent = (event, closeEdit) => {
+    saveEvent = (event) => {
+        this.setState({ editing: false });
         this.context.relay.commitUpdate(new EditEventMutation({
             viewer: null,
             eventid: event.id,
@@ -74,11 +76,8 @@ class Event extends React.Component {
             start: event.start,
             end: event.end,
             mdtext: event.mdtext,
-        }), {
-            onSuccess: () => {
-                closeEdit();
-            },
-        });
+            permissions: event.permissions,
+        }));
     }
 
     deleteEvent = () => {
@@ -94,8 +93,8 @@ class Event extends React.Component {
     }
 
     render() {
-        const event = this.props.organization.event;
-        const isMember = this.props.organization.isMember;
+        const { event, isMember } = this.props.organization;
+        const viewer = this.props.viewer;
         return (
             <Paper className="row">
                 <div style={{ display: 'flex', justifyContent: 'space-between' }}>
@@ -118,18 +117,14 @@ class Event extends React.Component {
                 <Text text={event.mdtext} />
                 {isMember
                     ? <div>
-                        <Dialog
+                        <EventForm
+                            event={event}
+                            viewer={viewer}
+                            isOpen={this.state.editing}
                             title="Rediger aktivitet"
-                            open={this.state.edit}
-                            onRequestClose={this.closeEdit}
-                            autoScrollBodyContent
-                        >
-                            <EditEvent
-                                saveEvent={this.saveEvent}
-                                closeEdit={this.closeEdit}
-                                {...event}
-                            />
-                        </Dialog>
+                            save={this.saveEvent}
+                            cancel={this.closeEdit}
+                        />
                         <Dialog
                             title="Slett aktivitet"
                             open={this.state.deleting}
@@ -159,6 +154,7 @@ export default Relay.createContainer(Event, {
             return Relay.QL`
             fragment on User {
                 id
+                ${EventForm.getFragment('viewer')}
                 ${EditEventMutation.getFragment('viewer')},
             }`;
         },
@@ -174,6 +170,17 @@ export default Relay.createContainer(Event, {
                     end
                     tags
                     mdtext
+                    permissions {
+                        public
+                        groups {
+                            id
+                            name
+                        }
+                        users {
+                            id
+                            name
+                        }
+                    }
                     ${DeleteEventMutation.getFragment('event')}
                 }
             }`;

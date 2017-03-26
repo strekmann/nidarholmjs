@@ -25,7 +25,7 @@ import theme from '../theme';
 import Date from './Date';
 import Text from './Text';
 import EventItem from './EventItem';
-import EditEvent from './EditEvent';
+import EventForm from './EventForm';
 import ProjectForm from './ProjectForm';
 import FileList from './FileList';
 import FileUpload from './FileUpload';
@@ -36,13 +36,6 @@ class Project extends React.Component {
     static contextTypes = {
         relay: Relay.PropTypes.Environment,
     };
-
-    static defaultProps = {
-        viewer: {
-            groups: [],
-            friends: [],
-        },
-    }
 
     static propTypes = {
         organization: React.PropTypes.object.isRequired,
@@ -67,16 +60,6 @@ class Project extends React.Component {
         editProject: false,
         searchTerm: '',
         showEnded: false,
-        event: {
-            title: '',
-            location: '',
-            start: null,
-            end: null,
-            tags: [],
-            year: '',
-            permissions: [],
-            mdtext: '',
-        },
     }
 
     getChildContext() {
@@ -173,6 +156,7 @@ class Project extends React.Component {
     }
 
     saveEvent = (event) => {
+        this.setState({ addEvent: false });
         this.context.relay.commitUpdate(new AddEventMutation({
             organization: this.props.organization,
             title: event.title,
@@ -181,14 +165,8 @@ class Project extends React.Component {
             end: event.end,
             tags: [this.props.organization.project.tag],
             mdtext: event.mdtext,
-            permissions: event.permissions.map((permission) => {
-                return permission.value;
-            }),
-        }), {
-            onSuccess: () => {
-                this.closeAddEvent();
-            },
-        });
+            permissions: event.permissions,
+        }));
     }
 
     saveProject = (project, callbacks) => {
@@ -365,18 +343,14 @@ class Project extends React.Component {
                             viewer={this.props.viewer}
                             {...project}
                         />
-                        <Dialog
+                        <EventForm
                             title="Legg til aktivitet"
-                            open={this.state.addEvent}
-                            onRequestClose={this.closeAddEvent}
-                            autoScrollBodyContent
-                        >
-                            <EditEvent
-                                viewer={this.props.viewer}
-                                saveEvent={this.saveEvent}
-                                {...this.state.event}
-                            />
-                        </Dialog>
+                            isOpen={this.state.addEvent}
+                            save={this.saveEvent}
+                            cancel={this.closeAddEvent}
+                            projectPermissions={{ public: true, groups: [], users: [] }}
+                            viewer={this.props.viewer}
+                        />
                         <Dialog
                             title="Last opp filer"
                             open={this.state.addFile}
@@ -432,10 +406,7 @@ export default Relay.createContainer(Project, {
         viewer: () => {
             return Relay.QL`
             fragment on User {
-                groups {
-                    id
-                    name
-                }
+                ${EventForm.getFragment('viewer')}
                 ${ProjectForm.getFragment('viewer')}
             }`;
         },

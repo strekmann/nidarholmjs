@@ -1308,18 +1308,19 @@ const mutationAddEvent = mutationWithClientMutationId({
         if (!viewer) {
             throw new Error('Nobody!');
         }
-        const permissionObj = buildPermissionObject(permissions);
         const event = new Event();
         event.creator = viewer.id;
         event.title = title;
         event.location = location;
         event.start = moment.utc(start);
-        if (event.end) {
+        if (end) {
             event.end = moment.utc(end);
         }
         event.tags = tags;
         event.mdtext = mdtext;
-        event.permissions = permissionObj;
+        if (permissions) {
+            event.permissions = buildPermissionObject(permissions);
+        }
         // TODO: Check permissions
         return event.save();
     },
@@ -1403,6 +1404,7 @@ const mutationEditEvent = mutationWithClientMutationId({
         start: { type: new GraphQLNonNull(GraphQLString) }, // Would prefer date object
         end: { type: GraphQLString },
         mdtext: { type: GraphQLString },
+        permissions: { type: new GraphQLList(GraphQLString) },
     },
     outputFields: {
         event: {
@@ -1412,14 +1414,14 @@ const mutationEditEvent = mutationWithClientMutationId({
             },
         },
     },
-    mutateAndGetPayload: ({ eventid, title, location, start, end, mdtext }, { viewer }) => {
+    mutateAndGetPayload: ({ eventid, title, location, start, end, mdtext, permissions }, { viewer }) => {
         const id = fromGlobalId(eventid).id;
         if (!viewer) {
             throw new Error('Nobody!');
         }
         const query = Event.findByIdAndUpdate(
             id,
-            { title, location, start, end, mdtext },
+            { title, location, start, end, mdtext, permissions: buildPermissionObject(permissions) },
             { new: true },
         );
         return authenticate(query, viewer).exec().then((event) => {

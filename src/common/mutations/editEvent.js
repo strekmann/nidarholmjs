@@ -22,6 +22,7 @@ export default class EditEventMutation extends Relay.Mutation {
             start: this.props.start,
             end: this.props.end,
             mdtext: this.props.mdtext,
+            permissions: this.props.permissions,
         };
     }
 

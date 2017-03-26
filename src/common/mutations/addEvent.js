@@ -1,12 +1,15 @@
+/* eslint "class-methods-use-this": 0 */
+
 import Relay from 'react-relay';
 
 export default class AddEventMutation extends Relay.Mutation {
     static fragments = {
-        organization: () => Relay.QL`
-        fragment on Organization {
-            id
-        }
-        `,
+        organization: () => {
+            return Relay.QL`
+            fragment on Organization {
+                id
+            }`;
+        },
     }
 
     getMutation() {
