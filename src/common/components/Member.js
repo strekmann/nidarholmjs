@@ -19,20 +19,22 @@ import Paper from 'material-ui/Paper';
 import RaisedButton from 'material-ui/RaisedButton';
 import TextField from 'material-ui/TextField';
 import MoreVertIcon from 'material-ui/svg-icons/navigation/more-vert';
-import Person from 'material-ui/svg-icons/social/person';
 import { lightBlue100 } from 'material-ui/styles/colors';
 import Close from 'material-ui/svg-icons/navigation/close';
 import moment from 'moment';
+
 import theme from '../theme';
 import EditUserMutation from '../mutations/editUser';
 import JoinGroupMutation from '../mutations/joinGroup';
 import LeaveGroupMutation from '../mutations/leaveGroup';
 import AddRoleMutation from '../mutations/addRole';
 import RemoveRoleMutation from '../mutations/removeRole';
+
 import Text from './Text';
 import Phone from './Phone';
 import Date from './Date';
 import DateFromNow from './DateFromNow';
+import ProfilePicture from './ProfilePicture';
 import Yesno from './Yesno';
 
 let DateTimeFormat;
@@ -213,30 +215,9 @@ class Member extends React.Component {
         this.setState({ addingRole: false });
     }
 
-    renderImage = () => {
-        const org = this.props.organization;
-        const member = org.member;
-        const user = member.user;
-        if (user.profilePicture) {
-            return (
-                <Paper>
-                    <img
-                        src={user.profilePicture.normalPath}
-                        alt={`Bilde av ${user.name}`}
-                        className="responsive"
-                    />
-                </Paper>
-            );
-        }
-        return (
-            <Paper>
-                <Person alt={`Bilde av ${user.name}`} style={{ height: 100, width: '100%', color: theme.palette.pickerHeaderColor }} />
-            </Paper>
-        );
-    }
-
     render() {
         const org = this.props.organization;
+        const viewer = this.props.viewer;
         const member = org.member;
         const user = member.user;
         const isAdmin = org.isAdmin;
@@ -567,6 +548,7 @@ class Member extends React.Component {
                         </div>
                         {isAdmin
                             ? <div style={{ backgroundColor: lightBlue100 }}>
+                                <h2>Admininfo</h2>
                                 <div>
                                     Reskontro: {user.reskontro}
                                 </div>
@@ -583,7 +565,7 @@ class Member extends React.Component {
                         }
                     </div>
                     <div style={{ padding: '0 20px', width: '25%', minWidth: 230 }}>
-                        {this.renderImage()}
+                        <ProfilePicture user={user} isViewer={user.id === viewer.id} />
                         {user.born
                             ? <div>Bursdag <Date date={user.born} format="Do MMMM" /></div>
                             : null
