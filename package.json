@@ -56,7 +56,6 @@
     "graphql-custom-datetype": "^0.3.0",
     "graphql-relay": "^0.5.1",
     "http-proxy": "^1.14.0",
-    "i18n-abide": "",
     "icalendar": "^0.7.1",
     "immutable": "^3.8.1",
     "intl-locales-supported": "^1.0.0",
