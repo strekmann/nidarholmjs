@@ -8,9 +8,11 @@ import getMuiTheme from 'material-ui/styles/getMuiTheme';
 import RaisedButton from 'material-ui/RaisedButton';
 import Dialog from 'material-ui/Dialog';
 import Paper from 'material-ui/Paper';
+
 import theme from '../theme';
 import AddFileMutation from '../mutations/addFile';
 import SaveFilePermissionsMutation from '../mutations/saveFilePermissions';
+
 import FileList from './FileList';
 import FileUpload from './FileUpload';
 import TagField from './TagField';

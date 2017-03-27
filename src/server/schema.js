@@ -24,6 +24,7 @@ import config from 'config';
 import moment from 'moment';
 import nodemailer from 'nodemailer';
 import uuid from 'node-uuid';
+
 import { connectionFromMongooseQuery, offsetToCursor } from './connections';
 import Activity from './models/Activity';
 import Event from './models/Event';
@@ -2436,6 +2437,43 @@ const mutationDeleteEvent = mutationWithClientMutationId({
         });
     },
 });
+
+const mutationSetProfilePicture = mutationWithClientMutationId({
+    name: 'SetProfilePicture',
+    inputFields: {
+        userId: { type: new GraphQLNonNull(GraphQLID) },
+        hash: { type: new GraphQLNonNull(GraphQLString) },
+        mimetype: { type: new GraphQLNonNull(GraphQLString) },
+        size: { type: new GraphQLNonNull(GraphQLInt) },
+    },
+    outputFields: {
+        user: {
+            type: userType,
+            resolve: (payload) => {
+                return payload;
+            },
+        },
+    },
+    mutateAndGetPayload: ({ userId, hash, mimetype, size }, { organization, viewer }) => {
+        if (!viewer && !isAdmin(organization, viewer)) {
+            return null;
+        }
+        const uId = fromGlobalId(userId).id;
+        return File.create({
+            hash,
+            mimetype,
+            size,
+            filename: 'Profilbilde',
+            creator: viewer,
+            permissions: { public: false, users: [uId], groups: [] },
+        }).then((file) => {
+            return User.findByIdAndUpdate(uId, {
+                profile_picture: file.id,
+            }, { new: true });
+        });
+    },
+});
+
 const mutationType = new GraphQLObjectType({
     name: 'Mutation',
     fields: () => {
@@ -2469,6 +2507,7 @@ const mutationType = new GraphQLObjectType({
             addPiece: mutationAddPiece,
             removePiece: mutationRemovePiece,
             deleteEvent: mutationDeleteEvent,
+            setProfilePicture: mutationSetProfilePicture,
         };
     },
 });

@@ -565,7 +565,11 @@ class Member extends React.Component {
                         }
                     </div>
                     <div style={{ padding: '0 20px', width: '25%', minWidth: 230 }}>
-                        <ProfilePicture user={user} isViewer={user.id === viewer.id} />
+                        <ProfilePicture
+                            user={user}
+                            isViewer={user.id === viewer.id}
+                            isAdmin={isAdmin}
+                        />
                         {user.born
                             ? <div>Bursdag <Date date={user.born} format="Do MMMM" /></div>
                             : null
@@ -634,13 +638,11 @@ export default Relay.createContainer(Member, {
                         instrumentInsurance
                         reskontro
                         membershipHistory
-                        profilePicture {
-                            normalPath
-                        }
                         membershipStatus
                         inList
                         onLeave
                         noEmail
+                        ${ProfilePicture.getFragment('user')}
                         ${JoinGroupMutation.getFragment('user')}
                         ${LeaveGroupMutation.getFragment('user')}
                     }

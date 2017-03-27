@@ -4,9 +4,11 @@ import crypto from 'crypto';
 import { exec } from 'child_process';
 import fs from 'fs';
 import path from 'path';
+
 import async from 'async';
 import mkdirp from 'mkdirp';
 import mmmagic, { Magic } from 'mmmagic';
+
 import findFilePath from './findFilePath';
 
 function resize(hex, filepath) {

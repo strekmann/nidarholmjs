@@ -1,7 +1,9 @@
 import path from 'path';
+
 import mongoose from 'mongoose';
 import moment from 'moment';
 import uuid from 'node-uuid';
+
 import schemaOptions from './schemaOptions';
 
 const FileSchema = new mongoose.Schema({
