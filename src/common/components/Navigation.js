@@ -13,6 +13,7 @@ import RaisedButton from 'material-ui/RaisedButton';
 import getMuiTheme from 'material-ui/styles/getMuiTheme';
 import { fullWhite, lightBlue900 } from 'material-ui/styles/colors';
 import { Link } from 'react-router';
+
 import theme from '../theme';
 
 class Navigation extends React.Component {
@@ -84,10 +85,10 @@ class Navigation extends React.Component {
                     src="/img/logo.wh.svg"
                     alt="Nidarholm-logo"
                     style={{
-                        height: 70,
+                        height: 75,
                         width: 196,
                         paddingTop: 4,
-                        marginBottom: -16,
+                        marginBottom: -18,
                     }}
                 />
             </Link>
