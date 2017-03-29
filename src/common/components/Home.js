@@ -114,9 +114,9 @@ class Home extends React.Component {
                 {nextProject ?
                     <div>
                         <div
+                            className="small-narrow"
                             style={{
                                 display: 'flex',
-                                flexWrap: 'wrap',
                                 maxWidth: 1000,
                                 marginLeft: -desktopGutterLess,
                                 marginRight: -desktopGutterLess,
@@ -124,10 +124,9 @@ class Home extends React.Component {
                         >
                             <div
                                 style={{
-                                    width: '70%',
-                                    minWidth: 260,
                                     paddingLeft: desktopGutterLess,
                                     paddingRight: desktopGutterLess,
+                                    flex: '3 1 75%',
                                     display: 'flex',
                                     flexDirection: 'column',
                                     justifyContent: 'space-between',
@@ -170,10 +169,9 @@ class Home extends React.Component {
                             </div>
                             <div
                                 style={{
-                                    width: '30%',
-                                    minWidth: 230,
                                     paddingLeft: desktopGutterLess,
                                     paddingRight: desktopGutterLess,
+                                    flex: '1 1 25%',
                                 }}
                             >
                                 <h2>Neste aktiviteter</h2>
@@ -211,20 +209,19 @@ class Home extends React.Component {
                     : null }
                 </div>
                 <div
+                    className="small-narrow"
                     style={{
                         display: 'flex',
-                        flexWrap: 'wrap',
-                        marginLeft: desktopGutterLess,
-                        marginRight: desktopGutterLess,
+                        marginLeft: -desktopGutterLess,
+                        marginRight: -desktopGutterLess,
                     }}
                 >
                     {org.summaries.length > 1 ?
                         <div
                             style={{
+                                flex: '1 1 50%',
                                 paddingLeft: desktopGutterLess,
                                 paddingRight: desktopGutterLess,
-                                width: '50%',
-                                minWidth: 260,
                             }}
                         >
                             <h2>
@@ -239,10 +236,10 @@ class Home extends React.Component {
                     {org.summaries.length > 2 ?
                         <div
                             style={{
+                                flex: '1 1 50%',
                                 paddingLeft: desktopGutterLess,
                                 paddingRight: desktopGutterLess,
-                                width: '50%',
-                                minWidth: 260,
+                                minWidth: 0,
                             }}
                         >
                             <h2>
@@ -264,9 +261,9 @@ class Home extends React.Component {
                     />
                     <h2>Kontakt</h2>
                     <div
+                        className="small-narrow"
                         style={{
                             display: 'flex',
-                            flexWrap: 'wrap',
                             maxWidth: 1000,
                             marginLeft: -desktopGutterLess,
                             marginRight: -desktopGutterLess,
@@ -274,10 +271,9 @@ class Home extends React.Component {
                     >
                         <div
                             style={{
+                                flex: '1 1 66%',
                                 paddingLeft: desktopGutterLess,
                                 paddingRight: desktopGutterLess,
-                                width: '50%',
-                                minWidth: 260,
                             }}
                         >
                             <Paper>
@@ -291,10 +287,9 @@ class Home extends React.Component {
                         </div>
                         <div
                             style={{
+                                flex: '1 1 33%',
                                 paddingLeft: desktopGutterLess,
                                 paddingRight: desktopGutterLess,
-                                width: '50%',
-                                minWidth: 260,
                             }}
                         >
                             <h3>E-post</h3>

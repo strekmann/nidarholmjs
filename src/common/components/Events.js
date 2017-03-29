@@ -5,7 +5,9 @@ import { Toolbar, ToolbarGroup } from 'material-ui/Toolbar';
 import getMuiTheme from 'material-ui/styles/getMuiTheme';
 import React from 'react';
 import Relay from 'react-relay';
+
 import theme from '../theme';
+
 import EventItem from './EventItem';
 
 const itemsPerPage = 10;

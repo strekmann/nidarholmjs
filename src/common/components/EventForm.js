@@ -172,46 +172,34 @@ class EventForm extends React.Component {
                         onChange={this.onChangeLocation}
                     />
                 </div>
-                <div style={{ display: 'flex', flexWrap: 'wrap' }}>
+                <div className="small-narrow" style={{ display: 'flex' }}>
                     <DatePicker
                         value={this.state.start}
                         floatingLabelText="Start"
                         onChange={this.onChangeStartDate}
-                        style={{
-                            flexGrow: '1',
-                            minWidth: 260,
-                        }}
+                        style={{ flex: '1 1 auto' }}
                     />
                     <TimePicker
                         value={this.state.start}
                         floatingLabelText="Klokkeslett"
                         format="24hr"
                         onChange={this.onChangeStart}
-                        style={{
-                            flexGrow: '1',
-                            minWidth: 260,
-                        }}
+                        style={{ flex: '1 1 auto' }}
                     />
                 </div>
-                <div style={{ display: 'flex', flexWrap: 'wrap' }}>
+                <div className="small-narrow" style={{ display: 'flex' }}>
                     <DatePicker
                         value={this.state.end}
                         floatingLabelText="Slutt"
                         onChange={this.onChangeEndDate}
-                        style={{
-                            flexGrow: '1',
-                            minWidth: 260,
-                        }}
+                        style={{ flex: '1 1 auto' }}
                     />
                     <TimePicker
                         value={this.state.end}
                         floatingLabelText="Klokkeslett"
                         format="24hr"
                         onChange={this.onChangeEnd}
-                        style={{
-                            flexGrow: '1',
-                            minWidth: 260,
-                        }}
+                        style={{ flex: '1 1 auto' }}
                     />
                 </div>
                 <div>
