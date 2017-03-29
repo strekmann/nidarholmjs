@@ -17,6 +17,6 @@ export default class List extends React.Component {
         if (items.length === 2) {
             return <span>{items[0]} {and} {items[1]}</span>;
         }
-        return <span>{items.slice(0, -1).join(', ')} {and} {items[-1]}</span>;
+        return <span>{items.slice(0, -1).join(', ')} {and} {items[items.length - 1]}</span>;
     }
 }
