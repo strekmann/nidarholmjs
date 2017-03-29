@@ -3,22 +3,22 @@
 import React from 'react';
 import Relay from 'react-relay';
 import axios from 'axios';
-import Dialog from 'material-ui/Dialog';
 import FlatButton from 'material-ui/FlatButton';
 import IconButton from 'material-ui/IconButton';
 import IconMenu from 'material-ui/IconMenu';
 import { MenuItem } from 'material-ui/Menu';
 import Paper from 'material-ui/Paper';
-import RaisedButton from 'material-ui/RaisedButton';
 import { Toolbar, ToolbarGroup } from 'material-ui/Toolbar';
-import TextField from 'material-ui/TextField';
 import getMuiTheme from 'material-ui/styles/getMuiTheme';
 import MoreVertIcon from 'material-ui/svg-icons/navigation/more-vert';
+
 import theme from '../theme';
 import AddScoreMutation from '../mutations/addScore';
 import UpdatePieceMutation from '../mutations/updatePiece';
+
 import List from './List';
 import GroupScores from './GroupScores';
+import PieceForm from './PieceForm';
 
 class Piece extends React.Component {
     static contextTypes = {
@@ -39,10 +39,6 @@ class Piece extends React.Component {
     }
 
     state = {
-        title: this.props.organization.piece.title || '',
-        subtitle: this.props.organization.piece.subtitle || '',
-        composers: this.props.organization.piece.composers.length ? this.props.organization.piece.composers.join(', ') : '',
-        arrangers: this.props.organization.piece.arrangers.length ? this.props.organization.piece.arrangers.join(', ') : '',
         editPiece: false,
     }
 
@@ -54,32 +50,21 @@ class Piece extends React.Component {
         this.setState({ editPiece: false });
     }
 
-    handleSubmitUpdatePiece = (event) => {
-        event.preventDefault();
+    savePiece = (piece) => {
         this.setState({ editPiece: false });
+        const {
+            composers,
+            arrangers,
+            title,
+            subtitle,
+        } = piece;
         this.context.relay.commitUpdate(new UpdatePieceMutation({
-            composers: this.state.composers.split(','),
-            arrangers: this.state.arrangers.split(','),
-            title: this.state.title,
-            subtitle: this.state.subtitle,
+            composers: composers.split(','),
+            arrangers: arrangers.split(','),
+            title,
+            subtitle,
             piece: this.props.organization.piece,
         }));
-    }
-
-    handleChangeTitle = (event, title) => {
-        this.setState({ title });
-    }
-
-    handleChangeSubtitle = (event, subtitle) => {
-        this.setState({ subtitle });
-    }
-
-    handleChangeComposers = (event, composers) => {
-        this.setState({ composers });
-    }
-
-    handleChangeArrangers = (event, arrangers) => {
-        this.setState({ arrangers });
     }
 
     uploadScores = (files, group) => {
@@ -110,58 +95,14 @@ class Piece extends React.Component {
                 <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                     <h1>{piece.title} <small>{piece.subtitle}</small></h1>
                     {isMusicAdmin
-                            ? <Dialog
-                                title={`Rediger ${this.state.title}`}
-                                open={this.state.editPiece}
-                                onRequestClose={this.handleCloseEditPiece}
-                                autoScrollBodyContent
-                                actions={
-                                    <FlatButton
-                                        label="Avbryt"
-                                        onTouchTap={this.handleCloseEditPiece}
-                                    />
-                                }
-                            >
-                                <form onSubmit={this.handleSubmitUpdatePiece}>
-                                    <div>
-                                        <TextField
-                                            floatingLabelText="Komponist(er)"
-                                            onChange={this.handleChangeComposers}
-                                            value={this.state.composers}
-                                            hintText="Bruk komma som skilletegn"
-                                        />
-                                    </div>
-                                    <div>
-                                        <TextField
-                                            floatingLabelText="Arrangør(er)"
-                                            onChange={this.handleChangeArrangers}
-                                            value={this.state.arrangers}
-                                        />
-                                    </div>
-                                    <div>
-                                        <TextField
-                                            floatingLabelText="Tittel"
-                                            onChange={this.handleChangeTitle}
-                                            value={this.state.title}
-                                        />
-                                    </div>
-                                    <div>
-                                        <TextField
-                                            floatingLabelText="Undertittel"
-                                            onChange={this.handleChangeSubtitle}
-                                            value={this.state.subtitle}
-                                        />
-                                    </div>
-                                    <div>
-                                        <RaisedButton
-                                            label="Lagre"
-                                            primary
-                                            type="submit"
-                                        />
-                                    </div>
-                                </form>
-                            </Dialog>
-                            : null
+                        ? <PieceForm
+                            title="Rediger stykke"
+                            isOpen={this.state.editPiece}
+                            save={this.savePiece}
+                            cancel={this.handleCloseEditPiece}
+                            piece={piece}
+                        />
+                        : null
                     }
                     <Toolbar style={{ backgroundColor: theme.palette.fullWhite }}>
                         <ToolbarGroup lastChild>

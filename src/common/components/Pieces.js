@@ -1,6 +1,3 @@
-import AutoComplete from 'material-ui/AutoComplete';
-import Dialog from 'material-ui/Dialog';
-import FlatButton from 'material-ui/FlatButton';
 import IconButton from 'material-ui/IconButton';
 import IconMenu from 'material-ui/IconMenu';
 import { MenuItem } from 'material-ui/Menu';
@@ -13,8 +10,11 @@ import getMuiTheme from 'material-ui/styles/getMuiTheme';
 import MoreVertIcon from 'material-ui/svg-icons/navigation/more-vert';
 import React from 'react';
 import Relay from 'react-relay';
+
 import theme from '../theme';
 import CreatePieceMutation from '../mutations/createPiece';
+
+import PieceForm from './PieceForm';
 import PieceItem from './PieceItem';
 
 const itemsPerPage = 50;
@@ -39,12 +39,9 @@ class Pieces extends React.Component {
     }
 
     state = {
-        term: '',
-        subtitle: '',
-        composers: '',
-        arrangers: '',
         addPiece: false,
         newPiece: false,
+        term: '',
     }
 
     getChildContext() {
@@ -77,38 +74,21 @@ class Pieces extends React.Component {
         this.setState({ newPiece: true });
     }
 
-    handleSubmitNewPiece = (event) => {
-        event.preventDefault();
+    savePiece = (piece) => {
         this.setState({ addPiece: false });
+        const {
+            composers,
+            arrangers,
+            title,
+            subtitle,
+        } = piece;
         this.context.relay.commitUpdate(new CreatePieceMutation({
-            composers: this.state.composers.split(','),
-            arrangers: this.state.arrangers.split(','),
-            title: this.state.term,
-            subtitle: this.state.subtitle,
+            composers: composers.split(','),
+            arrangers: arrangers.split(','),
+            title,
+            subtitle,
             organization: this.props.organization,
         }));
-    }
-
-    handleChangeTitle = (event, title) => {
-        this.setState({ term: title });
-    }
-
-    handleChangeSubtitle = (event, subtitle) => {
-        this.setState({ subtitle });
-    }
-
-    handleChangeComposers = (event, composers) => {
-        this.setState({ composers });
-    }
-
-    handleChangeArrangers = (event, arrangers) => {
-        this.setState({ arrangers });
-    }
-
-    search = (term) => {
-        // both chaning state.term and running search
-        this.setState({ term });
-        this.props.relay.setVariables({ term });
     }
 
     closeAddPiece = () => {
@@ -122,6 +102,12 @@ class Pieces extends React.Component {
         });
     }
 
+    search = (term) => {
+        // both chaning state.term and running search
+        // this.setState({ term });
+        this.props.relay.setVariables({ term });
+    }
+
     render() {
         const org = this.props.organization;
         const pieces = org.pieces;
@@ -132,85 +118,16 @@ class Pieces extends React.Component {
                 <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                     <h1>Notearkivet</h1>
                     {isMusicAdmin
-                            ? <Dialog
-                                title="Nytt stykke"
-                                open={this.state.addPiece}
-                                onRequestClose={this.closeAddPiece}
-                                autoScrollBodyContent
-                                actions={
-                                    <FlatButton
-                                        label="Avbryt"
-                                        onTouchTap={this.closeAddPiece}
-                                    />
-                                }
-                            >
-                                {this.state.newPiece
-                                        ? <form onSubmit={this.handleSubmitNewPiece}>
-                                            <div>
-                                                <TextField
-                                                    floatingLabelText="Komponist(er)"
-                                                    onChange={this.handleChangeComposers}
-                                                    value={this.state.composers}
-                                                    hintText="Bruk komma som skilletegn"
-                                                />
-                                            </div>
-                                            <div>
-                                                <TextField
-                                                    floatingLabelText="Arrangør(er)"
-                                                    onChange={this.handleChangeArrangers}
-                                                    value={this.state.arrangers}
-                                                />
-                                            </div>
-                                            <div>
-                                                <TextField
-                                                    floatingLabelText="Tittel"
-                                                    onChange={this.handleChangeTitle}
-                                                    value={this.state.term}
-                                                />
-                                            </div>
-                                            <div>
-                                                <TextField
-                                                    floatingLabelText="Undertittel"
-                                                    onChange={this.handleChangeSubtitle}
-                                                    value={this.state.subtitle}
-                                                />
-                                            </div>
-                                            <div>
-                                                <RaisedButton
-                                                    label="Lagre"
-                                                    primary
-                                                    type="submit"
-                                                />
-                                            </div>
-                                        </form>
-                                        : <div style={{ display: 'flex' }}>
-                                            <AutoComplete
-                                                dataSource={pieces.edges.map((edge) => {
-                                                    return {
-                                                        text: `${edge.node.scoreCount}: ${edge.node.title} - ${edge.node.composers} (${edge.node.arrangers})`,
-                                                        value: edge.node,
-                                                    };
-                                                })}
-                                                floatingLabelText="Tittel"
-                                                onNewRequest={this.addPiece}
-                                                onUpdateInput={(text) => {
-                                                    this.search(text);
-                                                }}
-                                                filter={() => {
-                                                    return true;
-                                                }}
-                                                fullWidth
-                                                style={{ flexGrow: '1' }}
-                                            />
-                                            <RaisedButton
-                                                label="Nytt stykke"
-                                                onClick={this.handleClickNewPiece}
-                                                style={{ whiteSpace: 'nowrap' }}
-                                            />
-                                        </div>
-                                }
-                            </Dialog>
-                            : null
+                        ? <PieceForm
+                            title="Nytt stykke"
+                            isOpen={this.state.addPiece}
+                            save={this.savePiece}
+                            cancel={this.closeAddPiece}
+                            pieces={this.props.organization.pieces}
+                            search={this.search}
+                            searching
+                        />
+                        : null
                     }
                     <Toolbar style={{ backgroundColor: theme.palette.fullWhite }}>
                         <ToolbarGroup lastChild>

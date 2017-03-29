@@ -8,9 +8,11 @@ import MenuItem from 'material-ui/MenuItem';
 import IconButton from 'material-ui/IconButton';
 import Paper from 'material-ui/Paper';
 import MoreVertIcon from 'material-ui/svg-icons/navigation/more-vert';
+
 import theme from '../theme';
 import EditEventMutation from '../mutations/editEvent';
 import DeleteEventMutation from '../mutations/deleteEvent';
+
 import Daterange from './Daterange';
 import Text from './Text';
 import EventForm from './EventForm';
