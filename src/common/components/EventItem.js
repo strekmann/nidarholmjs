@@ -5,6 +5,9 @@ import IconButton from 'material-ui/IconButton';
 import ExpandLess from 'material-ui/svg-icons/navigation/expand-less';
 import ExpandMore from 'material-ui/svg-icons/navigation/expand-more';
 import moment from 'moment';
+
+import theme from '../theme';
+
 import Daterange from './Daterange';
 import Text from './Text';
 
@@ -36,9 +39,10 @@ class EventItem extends React.Component {
 
     render() {
         const { id, title, location, start, end, mdtext, isEnded } = this.props.event;
+        const { desktopGutterMini } = theme.spacing;
         return (
             <div
-                style={{ marginBottom: 10 }}
+                style={{ marginBottom: desktopGutterMini }}
                 className={isEnded ? 'shade' : ''}
             >
                 <div style={{ float: 'right' }}>

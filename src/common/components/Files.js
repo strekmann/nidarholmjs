@@ -130,6 +130,7 @@ class Files extends React.Component {
     render() {
         const org = this.props.organization;
         const isMember = org.isMember;
+        const { desktopGutterLess } = theme.spacing;
         return (
             <div className="row">
                 {isMember ?
@@ -159,7 +160,12 @@ class Files extends React.Component {
                 : null}
                 <h1>Filer</h1>
                 {this.state.search
-                        ? <Paper style={{ padding: 20, marginBottom: 20 }}>
+                        ? <Paper
+                            style={{
+                                padding: desktopGutterLess,
+                                marginBottom: desktopGutterLess,
+                            }}
+                        >
                             <h2>Søk i merkelapper</h2>
                             <TagField
                                 tags={this.state.tags}
@@ -176,7 +182,10 @@ class Files extends React.Component {
                     memberGroupId={org.memberGroup.id}
                     onSavePermissions={this.onSaveFilePermissions}
                     searchTag={this.searchTag}
-                    style={{ margin: '0 -20px' }}
+                    style={{
+                        marginLeft: desktopGutterLess,
+                        marginRight: desktopGutterLess,
+                    }}
                     viewer={this.props.viewer}
                 />
                 {org.files.pageInfo.hasNextPage

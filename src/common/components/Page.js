@@ -6,9 +6,11 @@ import MenuItem from 'material-ui/MenuItem';
 import IconButton from 'material-ui/IconButton';
 import Paper from 'material-ui/Paper';
 import MoreVertIcon from 'material-ui/svg-icons/navigation/more-vert';
+
 import EditPageMutation from '../mutations/editPage';
 import theme from '../theme';
 import { flattenPermissions } from '../utils';
+
 import EditPage from './EditPage';
 import Text from './Text';
 
@@ -91,7 +93,7 @@ class Page extends React.Component {
         const isMember = org.isMember;
         if (!org.page || !org.page.slug) {
             return (
-                <Paper className="row" style={{ padding: 20 }}>
+                <Paper className="row">
                     <h1>Ikke funnet: {this.props.location.pathname}</h1>
                     <p>Denne sida fins ikke</p>
                 </Paper>
@@ -109,7 +111,7 @@ class Page extends React.Component {
             );
         }
         return (
-            <Paper className="row" style={{ padding: 20 }}>
+            <Paper className="row">
                 {isMember
                         ? <div style={{ float: 'right' }}>
                             <IconMenu

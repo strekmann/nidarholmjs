@@ -13,6 +13,7 @@ import MenuItem from 'material-ui/MenuItem';
 import Paper from 'material-ui/Paper';
 import RaisedButton from 'material-ui/RaisedButton';
 import getMuiTheme from 'material-ui/styles/getMuiTheme';
+
 import AddEventMutation from '../mutations/addEvent';
 import AddFileMutation from '../mutations/addFile';
 import AddPieceMutation from '../mutations/addPiece';
@@ -22,6 +23,7 @@ import SaveProjectMutation from '../mutations/saveProject';
 import SetProjectPosterMutation from '../mutations/setProjectPoster';
 import { flattenPermissions } from '../utils';
 import theme from '../theme';
+
 import Date from './Date';
 import Text from './Text';
 import EventItem from './EventItem';
@@ -198,6 +200,7 @@ class Project extends React.Component {
         const hasEndedActivities = project.events.edges.filter((edge) => {
             return edge.node.isEnded;
         }).length;
+        const { desktopGutterLess } = theme.spacing;
         return (
             <Paper className="row">
                 <Helmet
@@ -261,10 +264,17 @@ class Project extends React.Component {
                         display: 'flex',
                         flexWrap: 'wrap',
                         justifyContent: 'space-between',
-                        margin: '0 -15px',
+                        marginLeft: -desktopGutterLess,
+                        marginRight: -desktopGutterLess,
                     }}
                 >
-                    <div style={{ padding: '0 15px', maxWidth: 664 }}>
+                    <div
+                        style={{
+                            paddingLeft: desktopGutterLess,
+                            paddingRight: desktopGutterLess,
+                            maxWidth: 664,
+                        }}
+                    >
                         <PermissionChips
                             permissions={flattenPermissions(project.permissions)}
                             memberGroupId={org.memberGroup.id}
@@ -301,14 +311,23 @@ class Project extends React.Component {
                                 memberGroupId={org.memberGroup.id}
                                 onSavePermissions={this.onSaveFilePermissions}
                                 onSetProjectPoster={this.onSetProjectPoster}
-                                style={{ margin: '0 -15px' }}
+                                style={{
+                                    marginLeft: desktopGutterLess,
+                                    marginRight: desktopGutterLess,
+                                }}
                                 title="Prosjektfiler"
                                 viewer={this.props.viewer}
                             />
                             : null
                         }
                     </div>
-                    <div style={{ width: 300, padding: '0 15px' }}>
+                    <div
+                        style={{
+                            width: 300,
+                            paddingLeft: desktopGutterLess,
+                            paddingRight: desktopGutterLess,
+                        }}
+                    >
                         {project.poster ?
                             <img alt="Konsertplakat" src={project.poster.largePath} className="responsive" />
                             :

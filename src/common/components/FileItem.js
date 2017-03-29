@@ -12,7 +12,10 @@ import IconButton from 'material-ui/IconButton';
 import MenuItem from 'material-ui/MenuItem';
 import RaisedButton from 'material-ui/RaisedButton';
 import { grey400 } from 'material-ui/styles/colors';
+
 import { flattenPermissions } from '../utils';
+import theme from '../theme';
+
 import PermissionChips from './PermissionChips';
 import PermissionField from './PermissionField';
 
@@ -74,8 +77,17 @@ export default class FileItem extends React.Component {
     }
 
     render() {
+        const { desktopGutterLess } = theme.spacing;
         return (
-            <Card key={this.props.id} style={{ width: 292, margin: '0 20px 20px 20px' }} >
+            <Card
+                key={this.props.id}
+                style={{
+                    width: 292,
+                    marginLeft: desktopGutterLess,
+                    marginRight: desktopGutterLess,
+                    marginBottom: desktopGutterLess,
+                }}
+            >
                 <CardTitle style={{ paddingBottom: 0 }}>
                     <div style={{ float: 'right' }}>
                         <IconMenu

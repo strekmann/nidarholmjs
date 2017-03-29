@@ -3,6 +3,7 @@ import getMuiTheme from 'material-ui/styles/getMuiTheme';
 import React from 'react';
 import Relay from 'react-relay';
 import { Link } from 'react-router';
+
 import theme from '../theme';
 
 class Groups extends React.Component {
@@ -31,7 +32,7 @@ class Groups extends React.Component {
         const { groups } = this.props.organization;
         return (
             <section>
-                <Paper style={{ padding: 20 }}>
+                <Paper className="row">
                     <h1>Alle grupper</h1>
                     {groups.map((group) => {
                         return (

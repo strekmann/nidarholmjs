@@ -91,12 +91,12 @@ img {
 }
 
 h1 {
-    font-family: $sans-font;
+    font-family: $serif-font;
     font-size: 28px;
 }
 
 h2 {
-    font-family: $sans-font;
+    font-family: $serif-font;
     font-size: 22px;
 }
 h3 {
@@ -142,16 +142,15 @@ a:focus {
     min-height: 100px;
 }
 
-
 section {
     max-width: 1000px;
     margin: 0 auto;
-    padding: 0 15px;
+    padding: 1px 16px;
 }
 .row {
     max-width: 1000px;
     margin: 0 auto;
-    padding: 0 20px;
+    padding: 1px 16px;
 }
 
 .home h2 {
@@ -228,5 +227,10 @@ nav a {
     font-size: 12px;
     ul {
         padding-left: 20px;
+    }
+}
+@media screen and (max-width: 700px) {
+    .small-narrow {
+        flex-direction: column;
     }
 }

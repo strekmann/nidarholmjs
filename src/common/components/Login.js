@@ -7,6 +7,7 @@ import TextField from 'material-ui/TextField';
 import React from 'react';
 import { Link } from 'react-router';
 import getMuiTheme from 'material-ui/styles/getMuiTheme';
+
 import theme from '../theme';
 
 class Login extends React.Component {
@@ -23,6 +24,7 @@ class Login extends React.Component {
     }
 
     render() {
+        const { desktopGutterLess } = theme.spacing;
         return (
             <section style={{ display: 'flex', flexWrap: 'wrap' }}>
                 <form
@@ -32,7 +34,7 @@ class Login extends React.Component {
                         width: '50%',
                         minWidth: 300,
                         flexGrow: '1',
-                        padding: theme.spacing.desktopGutterLess,
+                        padding: desktopGutterLess,
                     }}
                 >
                     <Card>
@@ -78,7 +80,7 @@ class Login extends React.Component {
                         width: '50%',
                         minWidth: 300,
                         flexGrow: '1',
-                        padding: theme.spacing.desktopGutterLess,
+                        padding: desktopGutterLess,
                     }}
                 >
                     <Card>

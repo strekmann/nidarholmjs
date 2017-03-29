@@ -6,6 +6,7 @@ import TextField from 'material-ui/TextField';
 import getMuiTheme from 'material-ui/styles/getMuiTheme';
 import React from 'react';
 import Relay from 'react-relay';
+
 import theme from '../theme';
 import SetPasswordMutation from '../mutations/setPassword';
 
@@ -57,39 +58,37 @@ class MemberReset extends React.Component {
 
     render() {
         return (
-            <section>
-                <Paper style={{ padding: theme.spacing.desktopGutterLess }}>
-                    <form onSubmit={this.setPassword}>
-                        <h1>Sett nytt passord</h1>
-                        <p>For å sette nytt passord, trenger du å kunne det gamle og et nytt passord.</p>
-                        <p>Det er dumt å gjenbruke samme passord flere steder, da en som har snappet opp passordet da kan komme seg inn flere steder.</p>
-                        <p>Trafikken mellom nettleseren din og dette nettstedet er kryptert og kan ikke snappes opp av andre.</p>
-                        <div>
-                            <TextField
-                                floatingLabelText="Gammelt passord"
-                                onChange={this.onChangeOldPassword}
-                                type="password"
-                                value={this.state.oldPassword}
-                            />
-                        </div>
-                        <div>
-                            <TextField
-                                floatingLabelText="Nytt passord"
-                                onChange={this.onChangeNewPassword}
-                                type="password"
-                                value={this.state.newPassword}
-                            />
-                        </div>
-                        <div>
-                            <RaisedButton
-                                label="Lagre"
-                                type="submit"
-                                primary
-                            />
-                        </div>
-                    </form>
-                </Paper>
-            </section>
+            <Paper className="row">
+                <form onSubmit={this.setPassword}>
+                    <h1>Sett nytt passord</h1>
+                    <p>For å sette nytt passord, trenger du å kunne det gamle og et nytt passord.</p>
+                    <p>Det er dumt å gjenbruke samme passord flere steder, da en som har snappet opp passordet da kan komme seg inn flere steder.</p>
+                    <p>Trafikken mellom nettleseren din og dette nettstedet er kryptert og kan ikke snappes opp av andre.</p>
+                    <div>
+                        <TextField
+                            floatingLabelText="Gammelt passord"
+                            onChange={this.onChangeOldPassword}
+                            type="password"
+                            value={this.state.oldPassword}
+                        />
+                    </div>
+                    <div>
+                        <TextField
+                            floatingLabelText="Nytt passord"
+                            onChange={this.onChangeNewPassword}
+                            type="password"
+                            value={this.state.newPassword}
+                        />
+                    </div>
+                    <div>
+                        <RaisedButton
+                            label="Lagre"
+                            type="submit"
+                            primary
+                        />
+                    </div>
+                </form>
+            </Paper>
         );
     }
 }

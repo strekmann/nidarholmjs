@@ -5,8 +5,10 @@ import Relay from 'react-relay';
 import getMuiTheme from 'material-ui/styles/getMuiTheme';
 import Paper from 'material-ui/Paper';
 import { Link } from 'react-router';
+
 import theme from '../theme';
 import SendContactEmailMutation from '../mutations/sendContactEmail';
+
 import ContactForm from './ContactForm';
 import Date from './Date';
 import EventItem from './EventItem';
@@ -59,10 +61,18 @@ class Home extends React.Component {
     render() {
         const org = this.props.organization;
         const nextProject = org.nextProject;
+        const { desktopGutterLess } = theme.spacing;
         return (
             <Paper
                 className="home"
-                style={{ maxWidth: 1000, margin: '0 auto', padding: '0 20px 2em' }}
+                style={{
+                    maxWidth: 1000,
+                    margin: '0 auto',
+                    paddingTop: 0,
+                    paddingBottom: desktopGutterLess,
+                    paddingLeft: desktopGutterLess,
+                    paddingRight: desktopGutterLess,
+                }}
             >
                 <div
                     style={{
@@ -71,7 +81,8 @@ class Home extends React.Component {
                         backgroundPosition: 'top center',
                         backgroundSize: 'cover',
                         height: '30vw',
-                        margin: '0 -20px',
+                        marginLeft: -desktopGutterLess,
+                        marginRight: -desktopGutterLess,
                         position: 'relative',
                     }}
                 >
@@ -92,8 +103,8 @@ class Home extends React.Component {
                             position: 'absolute',
                             bottom: 0,
                             right: 0,
-                            paddingRight: 15,
-                            paddingLeft: 15,
+                            paddingRight: desktopGutterLess,
+                            paddingLeft: desktopGutterLess,
                             color: theme.palette.accent3Color,
                         }}
                     >
@@ -107,14 +118,16 @@ class Home extends React.Component {
                                 display: 'flex',
                                 flexWrap: 'wrap',
                                 maxWidth: 1000,
-                                margin: '0 -20px',
+                                marginLeft: -desktopGutterLess,
+                                marginRight: -desktopGutterLess,
                             }}
                         >
                             <div
                                 style={{
                                     width: '70%',
                                     minWidth: 260,
-                                    padding: '0 20px',
+                                    paddingLeft: desktopGutterLess,
+                                    paddingRight: desktopGutterLess,
                                     display: 'flex',
                                     flexDirection: 'column',
                                     justifyContent: 'space-between',
@@ -155,7 +168,14 @@ class Home extends React.Component {
                                     </Link>
                                 </div>
                             </div>
-                            <div style={{ width: '30%', minWidth: 230, padding: '0 20px' }}>
+                            <div
+                                style={{
+                                    width: '30%',
+                                    minWidth: 230,
+                                    paddingLeft: desktopGutterLess,
+                                    paddingRight: desktopGutterLess,
+                                }}
+                            >
                                 <h2>Neste aktiviteter</h2>
                                 <div id="eventList">
                                     {org.nextEvents.edges.map((edge) => {
@@ -190,9 +210,23 @@ class Home extends React.Component {
                         </div>
                     : null }
                 </div>
-                <div style={{ display: 'flex', flexWrap: 'wrap', margin: '0 -20px' }}>
+                <div
+                    style={{
+                        display: 'flex',
+                        flexWrap: 'wrap',
+                        marginLeft: desktopGutterLess,
+                        marginRight: desktopGutterLess,
+                    }}
+                >
                     {org.summaries.length > 1 ?
-                        <div style={{ padding: '0 20px', width: '50%', minWidth: 260 }}>
+                        <div
+                            style={{
+                                paddingLeft: desktopGutterLess,
+                                paddingRight: desktopGutterLess,
+                                width: '50%',
+                                minWidth: 260,
+                            }}
+                        >
                             <h2>
                                 <Link to={`/${org.summaries[1].slug}`}>
                                     {org.summaries[1].title}
@@ -203,7 +237,14 @@ class Home extends React.Component {
                         </div>
                     : null }
                     {org.summaries.length > 2 ?
-                        <div style={{ padding: '0 20px', width: '50%', minWidth: 260 }}>
+                        <div
+                            style={{
+                                paddingLeft: desktopGutterLess,
+                                paddingRight: desktopGutterLess,
+                                width: '50%',
+                                minWidth: 260,
+                            }}
+                        >
                             <h2>
                                 <Link to={`/${org.summaries[2].slug}`}>
                                     {org.summaries[2].title}
@@ -227,10 +268,18 @@ class Home extends React.Component {
                             display: 'flex',
                             flexWrap: 'wrap',
                             maxWidth: 1000,
-                            margin: '0 -15px',
+                            marginLeft: -desktopGutterLess,
+                            marginRight: -desktopGutterLess,
                         }}
                     >
-                        <div style={{ width: '50%', minWidth: 270, padding: '0 15px' }}>
+                        <div
+                            style={{
+                                paddingLeft: desktopGutterLess,
+                                paddingRight: desktopGutterLess,
+                                width: '50%',
+                                minWidth: 260,
+                            }}
+                        >
                             <Paper>
                                 <iframe
                                     width="100%"
@@ -240,7 +289,14 @@ class Home extends React.Component {
                                 />
                             </Paper>
                         </div>
-                        <div style={{ width: '50%', minWidth: 270, padding: '0 15px' }}>
+                        <div
+                            style={{
+                                paddingLeft: desktopGutterLess,
+                                paddingRight: desktopGutterLess,
+                                width: '50%',
+                                minWidth: 260,
+                            }}
+                        >
                             <h3>E-post</h3>
                             <a onTouchTap={this.openEmailDialog}>
                                 <span dangerouslySetInnerHTML={{ __html: org.encodedEmail }} />

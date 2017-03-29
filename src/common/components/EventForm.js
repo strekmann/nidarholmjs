@@ -9,7 +9,9 @@ import Chip from 'material-ui/Chip';
 import moment from 'moment';
 import React from 'react';
 import Relay from 'react-relay';
+
 import { flattenPermissions } from '../utils';
+
 import PermissionField from './PermissionField';
 
 class EventForm extends React.Component {
@@ -177,7 +179,7 @@ class EventForm extends React.Component {
                         onChange={this.onChangeStartDate}
                         style={{
                             flexGrow: '1',
-                            minWidth: 270,
+                            minWidth: 260,
                         }}
                     />
                     <TimePicker
@@ -187,7 +189,7 @@ class EventForm extends React.Component {
                         onChange={this.onChangeStart}
                         style={{
                             flexGrow: '1',
-                            minWidth: 270,
+                            minWidth: 260,
                         }}
                     />
                 </div>
@@ -198,7 +200,7 @@ class EventForm extends React.Component {
                         onChange={this.onChangeEndDate}
                         style={{
                             flexGrow: '1',
-                            minWidth: 270,
+                            minWidth: 260,
                         }}
                     />
                     <TimePicker
@@ -208,7 +210,7 @@ class EventForm extends React.Component {
                         onChange={this.onChangeEnd}
                         style={{
                             flexGrow: '1',
-                            minWidth: 270,
+                            minWidth: 260,
                         }}
                     />
                 </div>

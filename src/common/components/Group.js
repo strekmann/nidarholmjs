@@ -14,6 +14,7 @@ import getMuiTheme from 'material-ui/styles/getMuiTheme';
 import React from 'react';
 import { Link } from 'react-router';
 import Relay from 'react-relay';
+
 import theme from '../theme';
 import AddRoleMutation from '../mutations/addRole';
 import JoinGroupMutation from '../mutations/joinGroup';
@@ -129,7 +130,7 @@ class Group extends React.Component {
         return (
             <section>
                 {isAdmin
-                    ? <Paper style={{ padding: 20 }}>
+                    ? <Paper className="row">
                         <Dialog
                             title="Legg til gruppemedlem"
                             open={this.state.joinGroup}

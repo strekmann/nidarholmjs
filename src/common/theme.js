@@ -20,6 +20,7 @@ export default {
         desktopDrawerMenuItemHeight: 48,
         desktopSubheaderHeight: 48,
         desktopToolbarHeight: 56,
+        minBoxWidth: 250,
     },
     fontFamily: 'Roboto, sans-serif',
     palette: {

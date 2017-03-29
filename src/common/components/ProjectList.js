@@ -1,5 +1,6 @@
 import React from 'react';
-import Project from './ProjectItem';
+
+import ProjectItem from './ProjectItem';
 
 export default class ProjectList extends React.Component {
     static propTypes = {
@@ -10,7 +11,7 @@ export default class ProjectList extends React.Component {
             <div>
                 {this.props.projects.edges.map((edge) => {
                     return (
-                        <Project key={edge.node.id} {...edge.node} />
+                        <ProjectItem key={edge.node.id} {...edge.node} />
                     );
                 })}
             </div>

@@ -6,6 +6,7 @@ import TextField from 'material-ui/TextField';
 import getMuiTheme from 'material-ui/styles/getMuiTheme';
 import React from 'react';
 import Relay from 'react-relay';
+
 import theme from '../theme';
 import SendResetMutation from '../mutations/sendReset';
 
@@ -50,9 +51,10 @@ class Reset extends React.Component {
     }
 
     render() {
+        const { desktopGutterLess } = theme.spacing;
         return (
             <section>
-                <Paper style={{ padding: theme.spacing.desktopGutterLess }}>
+                <Paper style={{ padding: desktopGutterLess }}>
                     <h1>Nytt passord</h1>
                     {this.state.sent
                         ? <div>

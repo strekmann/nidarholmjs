@@ -221,6 +221,7 @@ class Member extends React.Component {
         const member = org.member;
         const user = member.user;
         const isAdmin = org.isAdmin;
+        const { desktopGutterLess } = theme.spacing;
         if (this.state.editMember) {
             return (
                 <Paper className="row">
@@ -468,9 +469,19 @@ class Member extends React.Component {
                     </Toolbar>
                 </div>
                 <div
-                    style={{ display: 'flex', justifyContent: 'space-between', margin: '0 -20px' }}
+                    style={{
+                        display: 'flex',
+                        justifyContent: 'space-between',
+                        marginLeft: -desktopGutterLess,
+                        marginRight: -desktopGutterLess,
+                    }}
                 >
-                    <div style={{ padding: '0 20px' }}>
+                    <div
+                        style={{
+                            paddingLeft: desktopGutterLess,
+                            paddingRight: desktopGutterLess,
+                        }}
+                    >
                         <div>
                             <a href={`mailto:${user.email}`}>{user.email}</a>
                         </div>
@@ -564,7 +575,14 @@ class Member extends React.Component {
                             : null
                         }
                     </div>
-                    <div style={{ padding: '0 20px', width: '25%', minWidth: 230 }}>
+                    <div
+                        style={{
+                            paddingLeft: desktopGutterLess,
+                            paddingRight: desktopGutterLess,
+                            width: '25%',
+                            minWidth: 230,
+                        }}
+                    >
                         <ProfilePicture
                             user={user}
                             isViewer={user.id === viewer.id}

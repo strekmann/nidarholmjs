@@ -6,8 +6,10 @@ import getMuiTheme from 'material-ui/styles/getMuiTheme';
 import MoreVertIcon from 'material-ui/svg-icons/navigation/more-vert';
 import React from 'react';
 import Relay from 'react-relay';
+
 import theme from '../theme';
 import AddProjectMutation from '../mutations/addProject';
+
 import ProjectList from './ProjectList';
 import ProjectForm from './ProjectForm';
 
@@ -83,6 +85,7 @@ class Projects extends React.Component {
     render() {
         const org = this.props.organization;
         const isMember = this.props.organization.isMember;
+        const { desktopGutterLess } = theme.spacing;
         return (
             <section>
                 {isMember
@@ -109,8 +112,21 @@ class Projects extends React.Component {
                         : null
                     }
                 </div>
-                <div className="row" style={{ display: 'flex', flexWrap: 'wrap' }}>
-                    <div style={{ minWidth: 230, width: '50%', padding: '0 20px', margin: '0 -20px' }}>
+                <div
+                    className="row small-narrow"
+                    style={{
+                        display: 'flex',
+                        marginLeft: -desktopGutterLess,
+                        marginRight: -desktopGutterLess,
+                    }}
+                >
+                    <div
+                        style={{
+                            paddingLeft: desktopGutterLess,
+                            paddingRight: desktopGutterLess,
+                            flex: '1 1 auto',
+                        }}
+                    >
                         <h1>Kommende prosjekter</h1>
                         <ProjectList
                             projects={org.nextProjects}
@@ -122,7 +138,13 @@ class Projects extends React.Component {
                             : null
                         }
                     </div>
-                    <div style={{ minWidth: 230, width: '50%', padding: '0 20px' }}>
+                    <div
+                        style={{
+                            paddingLeft: desktopGutterLess,
+                            paddingRight: desktopGutterLess,
+                            flex: '1 1 auto',
+                        }}
+                    >
                         <h1>Tidligere prosjekter</h1>
                         <ProjectList
                             projects={org.previousProjects}

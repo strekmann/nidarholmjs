@@ -4,6 +4,9 @@ import React from 'react';
 import Paper from 'material-ui/Paper';
 import RaisedButton from 'material-ui/RaisedButton';
 import TextField from 'material-ui/TextField';
+
+import theme from '../theme';
+
 import PermissionField from './PermissionField';
 
 export default class EditPage extends React.Component {
@@ -53,6 +56,7 @@ export default class EditPage extends React.Component {
     }
 
     render() {
+        const { desktopGutterLess } = theme.spacing;
         return (
             <section>
                 <form onSubmit={this.savePage}>
@@ -68,7 +72,7 @@ export default class EditPage extends React.Component {
                             style={{ width: '100%' }}
                         />
                     </div>
-                    <Paper style={{ padding: 15 }}>
+                    <Paper style={{ padding: desktopGutterLess }}>
                         <h2>Forsidesnutt</h2>
                         <p>Tittel og introduksjon til bruk på forsida. Det er ennå ikke automatikk i legge snutten til på forsida.</p>
                         <TextField

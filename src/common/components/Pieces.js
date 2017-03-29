@@ -126,6 +126,7 @@ class Pieces extends React.Component {
         const org = this.props.organization;
         const pieces = org.pieces;
         const isMusicAdmin = org.isMusicAdmin;
+        const { desktopGutterLess } = theme.spacing;
         return (
             <Paper className="row">
                 <div style={{ display: 'flex', justifyContent: 'space-between' }}>
@@ -231,7 +232,7 @@ class Pieces extends React.Component {
                         </ToolbarGroup>
                     </Toolbar>
                 </div>
-                <form onSubmit={this.onSearch} style={{ marginBottom: '2em' }}>
+                <form onSubmit={this.onSearch} style={{ marginBottom: desktopGutterLess }}>
                     <TextField
                         id="term"
                         floatingLabelText="Tittel"

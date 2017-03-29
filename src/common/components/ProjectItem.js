@@ -2,6 +2,9 @@ import React from 'react';
 import { Link } from 'react-router';
 import Paper from 'material-ui/Paper';
 import moment from 'moment';
+
+import theme from '../theme';
+
 import Daterange from './Daterange';
 import Text from './Text';
 
@@ -17,10 +20,14 @@ export default class ProjectItem extends React.Component {
     }
 
     render() {
+        const {
+            desktopGutterLess,
+            desktopGutterMini,
+        } = theme.spacing;
         const widePoster = moment(this.props.end).isAfter(moment([2016, 7, 1]));
         if (widePoster) {
             return (
-                <Paper style={{ marginBottom: 20 }}>
+                <Paper style={{ marginBottom: desktopGutterLess }}>
                     {this.props.poster
                             ? <Link
                                 to={`/${this.props.year}/${this.props.tag}`}
@@ -35,13 +42,13 @@ export default class ProjectItem extends React.Component {
                     }
                     <div
                         style={{
-                            paddingLeft: 20,
-                            paddingRight: 20,
-                            paddingTop: this.props.poster ? null : '1rem',
-                            paddingBottom: '1rem',
+                            paddingLeft: desktopGutterLess,
+                            paddingRight: desktopGutterLess,
+                            paddingTop: this.props.poster ? null : desktopGutterLess,
+                            paddingBottom: desktopGutterLess,
                         }}
                     >
-                        <h2>
+                        <h2 style={{ marginTop: desktopGutterMini }}>
                             <Link to={`/${this.props.year}/${this.props.tag}`}>
                                 {this.props.title}
                             </Link>
@@ -55,9 +62,9 @@ export default class ProjectItem extends React.Component {
             );
         }
         return (
-            <Paper style={{ display: 'flex', marginBottom: 20 }}>
-                <div style={{ width: this.props.poster ? '50%' : '100%', padding: '1rem 20px' }}>
-                    <h2>
+            <Paper style={{ display: 'flex', marginBottom: desktopGutterLess }}>
+                <div style={{ width: this.props.poster ? '50%' : '100%', padding: desktopGutterLess }}>
+                    <h2 style={{ marginTop: desktopGutterMini }}>
                         <Link to={`/${this.props.year}/${this.props.tag}`}>
                             {this.props.title}
                         </Link>
@@ -76,7 +83,7 @@ export default class ProjectItem extends React.Component {
                             width: '50%',
                             height: '100%',
                             maxWidth: 230,
-                            padding: '0 0 0 20px',
+                            paddingLeft: desktopGutterLess,
                         }}
                     />
                     : null
