@@ -13,10 +13,11 @@ import MoreVertIcon from 'material-ui/svg-icons/navigation/more-vert';
 import React from 'react';
 import Relay from 'react-relay';
 import { Link } from 'react-router';
+
 import AddUserMutation from '../mutations/addUser';
 import theme from '../theme';
-import GroupItem from './GroupItem';
 
+import GroupItem from './GroupItem';
 
 class Members extends React.Component {
     static contextTypes = {

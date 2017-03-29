@@ -1,7 +1,9 @@
+import Avatar from 'material-ui/Avatar';
 import { ListItem } from 'material-ui/List';
 import React from 'react';
 import Relay from 'react-relay';
 import { Link } from 'react-router';
+
 import Phone from './Phone';
 
 class MemberItem extends React.Component {
@@ -22,6 +24,11 @@ class MemberItem extends React.Component {
                     {this.props.isMember
                         ? <ListItem
                             disabled
+                            insetChildren
+                            leftAvatar={user.profilePicture
+                                ? <Avatar src={user.profilePicture.thumbnailPath} />
+                                : null
+                            }
                             primaryText={
                                 <div>
                                     <Link to={`/users/${user.id}`}>{user.name}</Link>
@@ -99,6 +106,9 @@ export default Relay.createContainer(MemberItem, {
                     phone
                     membershipStatus
                     instrument
+                    profilePicture {
+                        thumbnailPath
+                    }
                 }
                 roles {
                     id
