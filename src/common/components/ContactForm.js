@@ -1,4 +1,5 @@
 /* eslint "max-len": 0 */
+/* eslint "react/no-danger": 0 */
 
 import Dialog from 'material-ui/Dialog';
 import RaisedButton from 'material-ui/RaisedButton';
@@ -12,6 +13,7 @@ class ContactForm extends React.Component {
         save: React.PropTypes.func,
         close: React.PropTypes.func,
         encodedEmail: React.PropTypes.string,
+        organization: React.PropTypes.object,
     }
 
     state = {
@@ -48,6 +50,7 @@ class ContactForm extends React.Component {
     }
 
     render() {
+        const { encodedEmail } = this.props.organization;
         return (
             <Dialog
                 title={this.state.sent
@@ -55,7 +58,7 @@ class ContactForm extends React.Component {
                     : 'Send melding til Nidarholm'
                 }
                 open={this.props.open}
-                onRequestClose={this.toggle}
+                onRequestClose={this.close}
                 autoScrollBodyContent
             >
                 {this.state.sent
@@ -69,7 +72,7 @@ class ContactForm extends React.Component {
                             </div>
                         </div>
                         : <form onSubmit={this.sendEmail}>
-                            <p>Herfra kan du sende epost til styret i Nidarholm. Du kan også sende vanlig epost til {this.props.encodedEmail} om du heller foretrekker det.</p>
+                            <p>Herfra kan du sende epost til styret i Nidarholm. Du kan også sende vanlig epost til <span dangerouslySetInnerHTML={{ __html: encodedEmail }} /> om du heller foretrekker det.</p>
                             <div>
                                 <TextField
                                     floatingLabelText="Ditt navn"

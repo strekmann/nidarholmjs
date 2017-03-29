@@ -1,8 +1,10 @@
 import React from 'react';
 import Relay from 'react-relay';
 import getMuiTheme from 'material-ui/styles/getMuiTheme';
+
 import theme from '../theme';
 import SendContactEmailMutation from '../mutations/sendContactEmail';
+
 import ContactForm from './ContactForm';
 
 class Footer extends React.Component {
@@ -55,7 +57,7 @@ class Footer extends React.Component {
                         save={this.sendEmail}
                         organization={this.props.organization}
                     />
-                    <a onTouchTap={this.openEmailDialog}>
+                    <a onTouchTap={this.openEmailDialog} style={{ cursor: 'pointer' }}>
                         <i className="fa fa-fw fa-envelope fa-3x" />
                     </a>
                     <a href={`https://facebook.com/${org.facebook}`}>
@@ -88,7 +90,6 @@ export default Relay.createContainer(Footer, {
         organization: () => {
             return Relay.QL`
             fragment on Organization {
-                email
                 facebook
                 instagram
                 twitter
