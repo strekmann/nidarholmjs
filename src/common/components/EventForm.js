@@ -13,12 +13,14 @@ import Relay from 'react-relay';
 import { flattenPermissions } from '../utils';
 
 import PermissionField from './PermissionField';
+import ProjectField from './ProjectField';
 
 class EventForm extends React.Component {
     static propTypes = {
         title: React.PropTypes.string.isRequired,
         event: React.PropTypes.object,
         viewer: React.PropTypes.object,
+        organization: React.PropTypes.object,
         isOpen: React.PropTypes.bool.isRequired,
         save: React.PropTypes.func.isRequired,
         cancel: React.PropTypes.func.isRequired,
@@ -37,7 +39,6 @@ class EventForm extends React.Component {
             ? moment(this.props.event.end).toDate()
             : null
         ),
-        tags: this.props.event ? this.props.event.tags : [],
         mdtext: this.props.event ? this.props.event.mdtext : '',
         permissions: (this.props.event
             ? (this.props.event.permissions
@@ -49,6 +50,7 @@ class EventForm extends React.Component {
                 : []
             )
         ),
+        projects: this.props.event ? this.props.event.projects : [],
     }
 
     onChangeTitle = (event, title) => {
@@ -104,6 +106,10 @@ class EventForm extends React.Component {
         this.setState({ permissions });
     }
 
+    onChangeProjects = (projects) => {
+        this.setState({ projects });
+    }
+
     save = () => {
         const {
             id,
@@ -111,9 +117,9 @@ class EventForm extends React.Component {
             location,
             start,
             end,
-            tags,
             mdtext,
             permissions,
+            projects,
         } = this.state;
         return this.props.save({
             id,
@@ -121,10 +127,12 @@ class EventForm extends React.Component {
             location,
             start,
             end,
-            tags,
             mdtext,
             permissions: permissions.map((p) => {
                 return p.id;
+            }),
+            tags: projects.map((p) => {
+                return p.tag;
             }),
         });
     }
@@ -212,6 +220,13 @@ class EventForm extends React.Component {
                     />
                 </div>
                 <div>
+                    <ProjectField
+                        projects={this.state.projects}
+                        organization={this.props.organization}
+                        onChange={this.onChangeProjects}
+                    />
+                </div>
+                <div>
                     {this.state.tags
                         ? this.state.tags.map((tag, i) => {
                             return this.renderChip(tag, i);
@@ -242,6 +257,13 @@ export default Relay.createContainer(EventForm, {
                     id
                     name
                 }
+            }`;
+        },
+        organization: () => {
+            return Relay.QL`
+            fragment on Organization {
+                id
+                ${ProjectField.getFragment('organization')}
             }`;
         },
     },

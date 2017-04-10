@@ -80,6 +80,7 @@ class Event extends React.Component {
             end: event.end,
             mdtext: event.mdtext,
             permissions: event.permissions,
+            tags: event.tags,
         }));
     }
 
@@ -126,7 +127,7 @@ class Event extends React.Component {
                 {event.projects.map((project) => {
                     return (
                         <Chip
-                            key={project.tag}
+                            key={project.id}
                             onTouchTap={() => {
                                 this.goTo(project);
                             }}
@@ -139,6 +140,7 @@ class Event extends React.Component {
                     ? <div>
                         <EventForm
                             event={event}
+                            organization={this.props.organization}
                             viewer={viewer}
                             isOpen={this.state.editing}
                             title="Rediger aktivitet"
@@ -189,6 +191,7 @@ export default Relay.createContainer(Event, {
                     start
                     end
                     projects {
+                        id
                         year
                         tag
                         title
@@ -207,6 +210,7 @@ export default Relay.createContainer(Event, {
                     }
                     ${DeleteEventMutation.getFragment('event')}
                 }
+                ${EventForm.getFragment('organization')}
             }`;
         },
     },

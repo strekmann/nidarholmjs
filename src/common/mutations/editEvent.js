@@ -1,3 +1,5 @@
+/* eslint "class-methods-use-this": 0 */
+
 import Relay from 'react-relay';
 
 export default class EditEventMutation extends Relay.Mutation {
@@ -23,6 +25,7 @@ export default class EditEventMutation extends Relay.Mutation {
             end: this.props.end,
             mdtext: this.props.mdtext,
             permissions: this.props.permissions,
+            tags: this.props.tags,
         };
     }
 
@@ -36,6 +39,8 @@ export default class EditEventMutation extends Relay.Mutation {
                 start
                 end
                 mdtext
+                projects
+                permissions
             }
         }`;
     }

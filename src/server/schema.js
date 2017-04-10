@@ -996,6 +996,15 @@ organizationType = new GraphQLObjectType({
                 );
             },
         },
+        projectTags: {
+            type: new GraphQLList(projectType),
+            resolve: (_, args, { viewer, organization }) => {
+                if (!member(organization, viewer)) {
+                    return null;
+                }
+                return Project.find().sort({ title: 1 });
+            },
+        },
         event: {
             type: eventType,
             args: {
@@ -1403,6 +1412,7 @@ const mutationEditEvent = mutationWithClientMutationId({
         end: { type: GraphQLString },
         mdtext: { type: GraphQLString },
         permissions: { type: new GraphQLList(GraphQLString) },
+        tags: { type: new GraphQLList(GraphQLString) },
     },
     outputFields: {
         event: {
@@ -1412,14 +1422,31 @@ const mutationEditEvent = mutationWithClientMutationId({
             },
         },
     },
-    mutateAndGetPayload: ({ eventid, title, location, start, end, mdtext, permissions }, { viewer }) => {
+    mutateAndGetPayload: ({
+        eventid,
+        title,
+        location,
+        start,
+        end,
+        mdtext,
+        permissions,
+        tags,
+    }, { viewer }) => {
         const id = fromGlobalId(eventid).id;
         if (!viewer) {
             throw new Error('Nobody!');
         }
         const query = Event.findByIdAndUpdate(
             id,
-            { title, location, start, end, mdtext, permissions: buildPermissionObject(permissions) },
+            {
+                title,
+                location,
+                start,
+                end,
+                mdtext,
+                permissions: buildPermissionObject(permissions),
+                tags,
+            },
             { new: true },
         );
         return authenticate(query, viewer).exec().then((event) => {

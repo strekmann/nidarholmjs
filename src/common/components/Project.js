@@ -369,6 +369,7 @@ class Project extends React.Component {
                             cancel={this.closeAddEvent}
                             projectPermissions={{ public: true, groups: [], users: [] }}
                             viewer={this.props.viewer}
+                            organization={null}
                         />
                         <Dialog
                             title="Last opp filer"
