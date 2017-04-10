@@ -231,6 +231,17 @@ class Project extends React.Component {
                             </p>
                             : null
                         }
+                        {project.managers.length
+                            ? <p>Prosjektleder:
+                                {' '}
+                                <List
+                                    items={project.managers.map((manager) => {
+                                        return manager.name;
+                                    })}
+                                />
+                            </p>
+                            : null
+                        }
                     </div>
                     {isMember
                         ? <IconMenu
@@ -460,6 +471,9 @@ export default Relay.createContainer(Project, {
                     publicMdtext
                     privateMdtext
                     conductors {
+                        name
+                    }
+                    managers {
                         name
                     }
                     poster {

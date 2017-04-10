@@ -6,8 +6,10 @@ import TextField from 'material-ui/TextField';
 import moment from 'moment';
 import React from 'react';
 import Relay from 'react-relay';
+
 import { flattenPermissions } from '../utils';
-import ConductorField from './ConductorField';
+
+import UserField from './UserField';
 import PermissionField from './PermissionField';
 
 let DateTimeFormat;
@@ -30,6 +32,7 @@ class ProjectForm extends React.Component {
         end: React.PropTypes.string,
         permissions: React.PropTypes.object,
         conductors: React.PropTypes.array,
+        managers: React.PropTypes.array,
         organization: React.PropTypes.object,
     }
 
@@ -42,6 +45,7 @@ class ProjectForm extends React.Component {
         end: this.props.end ? moment(this.props.end).toDate() : null,
         permissions: this.props.permissions ? flattenPermissions(this.props.permissions) : [],
         conductors: this.props.conductors || [],
+        managers: this.props.managers || [],
     };
 
     onChangeTitle = (event, title) => {
@@ -74,6 +78,10 @@ class ProjectForm extends React.Component {
 
     onChangeConductors = (conductors) => {
         this.setState({ conductors });
+    }
+
+    onChangeManagers = (managers) => {
+        this.setState({ managers });
     }
 
     addPermission = (chosen) => {
@@ -115,6 +123,9 @@ class ProjectForm extends React.Component {
             conductors: this.state.conductors.map((c) => {
                 return c.id;
             }),
+            managers: this.state.managers.map((m) => {
+                return m.id;
+            }),
         }, {
             onSuccess: () => {
                 if (!this.props.id) {
@@ -127,6 +138,7 @@ class ProjectForm extends React.Component {
                         end: null,
                         permissions: [],
                         conductors: [],
+                        managers: [],
                     });
                 }
             },
@@ -212,10 +224,19 @@ class ProjectForm extends React.Component {
                         />
                     </div>
                     <div>
-                        <ConductorField
-                            conductors={this.state.conductors}
+                        <UserField
+                            users={this.state.conductors}
                             organization={this.props.organization}
                             onChange={this.onChangeConductors}
+                            title="Dirigent(er)"
+                        />
+                    </div>
+                    <div>
+                        <UserField
+                            users={this.state.managers}
+                            organization={this.props.organization}
+                            onChange={this.onChangeManagers}
+                            title="Prosjektleder(e)"
                         />
                     </div>
                     <div>
@@ -260,7 +281,7 @@ export default Relay.createContainer(ProjectForm, {
             return Relay.QL`
             fragment on Organization {
                 id
-                ${ConductorField.getFragment('organization')}
+                ${UserField.getFragment('organization')}
             }`;
         },
     },

@@ -735,6 +735,12 @@ projectType = new GraphQLObjectType({
                 return User.find().where('_id').in(project.conductors).exec();
             },
         },
+        managers: {
+            type: new GraphQLList(userType),
+            resolve: (project) => {
+                return User.find().where('_id').in(project.managers).exec();
+            },
+        },
         poster: {
             type: fileType,
             resolve: (a) => {
@@ -1922,6 +1928,7 @@ const mutationSaveProject = mutationWithClientMutationId({
         publicMdtext: { type: GraphQLString },
         permissions: { type: new GraphQLList(GraphQLString) },
         conductors: { type: new GraphQLList(GraphQLID) },
+        managers: { type: new GraphQLList(GraphQLID) },
     },
     outputFields: {
         organization: {
@@ -1932,7 +1939,18 @@ const mutationSaveProject = mutationWithClientMutationId({
         },
     },
     mutateAndGetPayload: (
-        { id, title, tag, privateMdtext, publicMdtext, start, end, permissions, conductors },
+        {
+            id,
+            title,
+            tag,
+            privateMdtext,
+            publicMdtext,
+            start,
+            end,
+            permissions,
+            conductors,
+            managers,
+        },
         { viewer },
     ) => {
         if (!viewer) {
@@ -1955,6 +1973,9 @@ const mutationSaveProject = mutationWithClientMutationId({
             permissions: permissionObj,
             conductors: conductors.map((conductor) => {
                 return fromGlobalId(conductor).id;
+            }),
+            managers: managers.map((manager) => {
+                return fromGlobalId(manager).id;
             }),
         }).exec();
     },

@@ -1,3 +1,5 @@
+/* eslint "class-methods-use-this": 0 */
+
 import Relay from 'react-relay';
 
 export default class SaveProjectMutation extends Relay.Mutation {
@@ -25,6 +27,7 @@ export default class SaveProjectMutation extends Relay.Mutation {
             end: this.props.end,
             permissions: this.props.permissions,
             conductors: this.props.conductors,
+            managers: this.props.managers,
         };
     }
 
