@@ -94,6 +94,7 @@ class Projects extends React.Component {
                             save={this.saveProject}
                             toggle={this.toggleAddProject}
                             viewer={this.props.viewer}
+                            organization={null}
                         />
                         : null
                 }
@@ -183,6 +184,9 @@ export default Relay.createContainer(Projects, {
                                 filename
                                 normalPath
                             }
+                            conductors {
+                                name
+                            }
                         }
                     }
                     pageInfo {
@@ -201,6 +205,9 @@ export default Relay.createContainer(Projects, {
                             poster {
                                 filename
                                 normalPath
+                            }
+                            conductors {
+                                name
                             }
                         }
                     }

@@ -25,6 +25,7 @@ import { flattenPermissions } from '../utils';
 import theme from '../theme';
 
 import Date from './Date';
+import List from './List';
 import Text from './Text';
 import EventItem from './EventItem';
 import EventForm from './EventForm';
@@ -218,10 +219,18 @@ class Project extends React.Component {
                         <div className="meta">
                             {project.start ? <span><Date date={project.start} /> – </span> : null}
                             <Date date={project.end} />
-                            {project.conductors.map((conductor) => {
-                                return conductor.name;
-                            })}
                         </div>
+                        {project.conductors.length
+                            ? <p>Dirigent:
+                                {' '}
+                                <List
+                                    items={project.conductors.map((conductor) => {
+                                        return conductor.name;
+                                    })}
+                                />
+                            </p>
+                            : null
+                        }
                     </div>
                     {isMember
                         ? <IconMenu
@@ -360,6 +369,7 @@ class Project extends React.Component {
                             save={this.saveProject}
                             toggle={this.toggleEditProject}
                             viewer={this.props.viewer}
+                            organization={this.props.organization}
                             {...project}
                         />
                         <EventForm
@@ -499,6 +509,10 @@ export default Relay.createContainer(Project, {
                             composers
                         }
                     }
+                    conductors {
+                        id
+                        name
+                    }
                     permissions {
                         public
                         groups {
@@ -524,6 +538,7 @@ export default Relay.createContainer(Project, {
                         }
                     }
                 }
+                ${ProjectForm.getFragment('organization')}
                 ${AddEventMutation.getFragment('organization')}
                 ${AddFileMutation.getFragment('organization')}
                 ${SaveFilePermissionsMutation.getFragment('organization')}

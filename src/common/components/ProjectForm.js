@@ -7,6 +7,7 @@ import moment from 'moment';
 import React from 'react';
 import Relay from 'react-relay';
 import { flattenPermissions } from '../utils';
+import ConductorField from './ConductorField';
 import PermissionField from './PermissionField';
 
 let DateTimeFormat;
@@ -28,6 +29,8 @@ class ProjectForm extends React.Component {
         start: React.PropTypes.string,
         end: React.PropTypes.string,
         permissions: React.PropTypes.object,
+        conductors: React.PropTypes.array,
+        organization: React.PropTypes.object,
     }
 
     state = {
@@ -38,6 +41,7 @@ class ProjectForm extends React.Component {
         start: this.props.start ? moment(this.props.start).toDate() : null,
         end: this.props.end ? moment(this.props.end).toDate() : null,
         permissions: this.props.permissions ? flattenPermissions(this.props.permissions) : [],
+        conductors: this.props.conductors || [],
     };
 
     onChangeTitle = (event, title) => {
@@ -66,6 +70,10 @@ class ProjectForm extends React.Component {
 
     onPermissionChange = (permissions) => {
         this.setState({ permissions });
+    }
+
+    onChangeConductors = (conductors) => {
+        this.setState({ conductors });
     }
 
     addPermission = (chosen) => {
@@ -104,6 +112,9 @@ class ProjectForm extends React.Component {
             permissions: this.state.permissions.map((p) => {
                 return p.id;
             }),
+            conductors: this.state.conductors.map((c) => {
+                return c.id;
+            }),
         }, {
             onSuccess: () => {
                 if (!this.props.id) {
@@ -115,6 +126,7 @@ class ProjectForm extends React.Component {
                         start: null,
                         end: null,
                         permissions: [],
+                        conductors: [],
                     });
                 }
             },
@@ -164,15 +176,18 @@ class ProjectForm extends React.Component {
                             fullWidth
                         />
                     </div>
-                    <div>
-                        <TextField
-                            floatingLabelText="Ekstern beskrivelse"
-                            onChange={this.onChangePublicMdtext}
-                            value={this.state.publicMdtext}
-                            multiLine
-                            fullWidth
-                        />
-                    </div>
+                    {this.props.id
+                        ? <div>
+                            <TextField
+                                floatingLabelText="Ekstern beskrivelse"
+                                onChange={this.onChangePublicMdtext}
+                                value={this.state.publicMdtext}
+                                multiLine
+                                fullWidth
+                            />
+                        </div>
+                        : null
+                    }
                     <div>
                         <DatePicker
                             id="start"
@@ -194,6 +209,13 @@ class ProjectForm extends React.Component {
                             locale="nb"
                             DateTimeFormat={DateTimeFormat}
                             required
+                        />
+                    </div>
+                    <div>
+                        <ConductorField
+                            conductors={this.state.conductors}
+                            organization={this.props.organization}
+                            onChange={this.onChangeConductors}
                         />
                     </div>
                     <div>
@@ -232,6 +254,13 @@ export default Relay.createContainer(ProjectForm, {
                     id
                     name
                 }
+            }`;
+        },
+        organization: () => {
+            return Relay.QL`
+            fragment on Organization {
+                id
+                ${ConductorField.getFragment('organization')}
             }`;
         },
     },

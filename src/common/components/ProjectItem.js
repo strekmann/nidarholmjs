@@ -6,6 +6,7 @@ import moment from 'moment';
 import theme from '../theme';
 
 import Daterange from './Daterange';
+import List from './List';
 import Text from './Text';
 
 export default class ProjectItem extends React.Component {
@@ -17,6 +18,7 @@ export default class ProjectItem extends React.Component {
         year: React.PropTypes.string,
         publicMdtext: React.PropTypes.string,
         poster: React.PropTypes.object,
+        conductors: React.PropTypes.array,
     }
 
     render() {
@@ -56,6 +58,17 @@ export default class ProjectItem extends React.Component {
                         <div className="meta">
                             <Daterange start={this.props.start} end={this.props.end} />
                         </div>
+                        {this.props.conductors.length
+                            ? <p>Dirigent:
+                                {' '}
+                                <List
+                                    items={this.props.conductors.map((conductor) => {
+                                        return conductor.name;
+                                    })}
+                                />
+                            </p>
+                            : null
+                        }
                         <Text text={this.props.publicMdtext} />
                     </div>
                 </Paper>
@@ -72,6 +85,17 @@ export default class ProjectItem extends React.Component {
                     <div className="meta">
                         <Daterange start={this.props.start} end={this.props.end} />
                     </div>
+                    {this.props.conductors.length
+                        ? <p>Dirigent:
+                            {' '}
+                            <List
+                                items={this.props.conductors.map((conductor) => {
+                                    return conductor.name;
+                                })}
+                            />
+                        </p>
+                        : null
+                    }
                     <Text text={this.props.publicMdtext} />
                 </div>
                 {this.props.poster

@@ -2,11 +2,12 @@ import Relay from 'react-relay';
 
 export default class SaveProjectMutation extends Relay.Mutation {
     static fragments = {
-        organization: () => Relay.QL`
-        fragment on Organization {
-            id
-        }
-        `,
+        organization: () => {
+            return Relay.QL`
+            fragment on Organization {
+                id
+            }`;
+        },
     }
 
     getMutation() {
@@ -23,6 +24,7 @@ export default class SaveProjectMutation extends Relay.Mutation {
             start: this.props.start,
             end: this.props.end,
             permissions: this.props.permissions,
+            conductors: this.props.conductors,
         };
     }
 

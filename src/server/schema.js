@@ -729,7 +729,12 @@ projectType = new GraphQLObjectType({
                 return null;
             },
         },
-        conductors: { type: new GraphQLList(userType) },
+        conductors: {
+            type: new GraphQLList(userType),
+            resolve: (project) => {
+                return User.find().where('_id').in(project.conductors).exec();
+            },
+        },
         poster: {
             type: fileType,
             resolve: (a) => {
@@ -930,7 +935,7 @@ organizationType = new GraphQLObjectType({
             type: new GraphQLList(userType),
             resolve: (_, args, { organization, viewer }) => {
                 let query;
-                if (admin(organization, viewer)) {
+                if (member(organization, viewer)) {
                     query = User.find().select('name username');
                 }
                 else {
@@ -1916,6 +1921,7 @@ const mutationSaveProject = mutationWithClientMutationId({
         privateMdtext: { type: GraphQLString },
         publicMdtext: { type: GraphQLString },
         permissions: { type: new GraphQLList(GraphQLString) },
+        conductors: { type: new GraphQLList(GraphQLID) },
     },
     outputFields: {
         organization: {
@@ -1926,7 +1932,7 @@ const mutationSaveProject = mutationWithClientMutationId({
         },
     },
     mutateAndGetPayload: (
-        { id, title, tag, privateMdtext, publicMdtext, start, end, permissions },
+        { id, title, tag, privateMdtext, publicMdtext, start, end, permissions, conductors },
         { viewer },
     ) => {
         if (!viewer) {
@@ -1947,6 +1953,9 @@ const mutationSaveProject = mutationWithClientMutationId({
             start: startMoment,
             end: endMoment,
             permissions: permissionObj,
+            conductors: conductors.map((conductor) => {
+                return fromGlobalId(conductor).id;
+            }),
         }).exec();
     },
 });
