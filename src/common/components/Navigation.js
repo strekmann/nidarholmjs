@@ -122,7 +122,7 @@ class Navigation extends React.Component {
                                 Om oss
                             </Link>
                             <Link to="/projects" style={{ color: 'white' }}>
-                                Konserter
+                                Prosjekter
                             </Link>
                             <Link to="/members" style={{ color: 'white' }}>
                                 Medlemmer
@@ -240,7 +240,7 @@ class Navigation extends React.Component {
                                             to="/projects"
                                             onClick={this.handleClose}
                                         >
-                                            Konserter
+                                            Prosjekter
                                         </Link>
                                     </MenuItem>
                                     <MenuItem>

@@ -132,13 +132,13 @@ class Home extends React.Component {
                                     justifyContent: 'space-between',
                                 }}
                             >
-                                <h2>Neste konsert</h2>
+                                <h2>Neste prosjekt</h2>
                                 {nextProject.poster ?
                                     <Link
                                         to={`/${nextProject.year}/${nextProject.tag}`}
                                     >
                                         <img
-                                            alt="Konsertplakat"
+                                            alt="Prosjektplakat"
                                             src={nextProject.poster.normalPath}
                                             className="responsive"
                                         />
@@ -163,7 +163,7 @@ class Home extends React.Component {
                                 </div>
                                 <div>
                                     <Link to="projects">
-                                        Konsertoversikt
+                                        Prosjektoversikt
                                     </Link>
                                 </div>
                             </div>
