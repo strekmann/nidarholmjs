@@ -232,5 +232,8 @@ nav a {
 @media screen and (max-width: 700px) {
     .small-narrow {
         flex-direction: column;
+        > div {
+            flex-basis: auto !important;
+        }
     }
 }
