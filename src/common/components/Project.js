@@ -471,9 +471,11 @@ export default Relay.createContainer(Project, {
                     publicMdtext
                     privateMdtext
                     conductors {
+                        id
                         name
                     }
                     managers {
+                        id
                         name
                     }
                     poster {
@@ -522,10 +524,6 @@ export default Relay.createContainer(Project, {
                             title
                             composers
                         }
-                    }
-                    conductors {
-                        id
-                        name
                     }
                     permissions {
                         public

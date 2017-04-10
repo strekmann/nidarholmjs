@@ -1,7 +1,7 @@
 import areIntlLocalesSupported from 'intl-locales-supported';
 import DatePicker from 'material-ui/DatePicker';
 import Dialog from 'material-ui/Dialog';
-import RaisedButton from 'material-ui/RaisedButton';
+import FlatButton from 'material-ui/FlatButton';
 import TextField from 'material-ui/TextField';
 import moment from 'moment';
 import React from 'react';
@@ -161,105 +161,102 @@ class ProjectForm extends React.Component {
                 open={this.props.open}
                 onRequestClose={this.toggle}
                 autoScrollBodyContent
+                actions={[
+                    <FlatButton
+                        onTouchTap={this.props.cancel}
+                        label="Avbryt"
+                    />,
+                    <FlatButton
+                        onTouchTap={this.saveProject}
+                        label="Lagre"
+                        primary
+                    />,
+                ]}
             >
-                <form onSubmit={this.saveProject}>
-                    <div>
+                <div>
+                    <TextField
+                        floatingLabelText="Tittel"
+                        onChange={this.onChangeTitle}
+                        value={this.state.title}
+                        required
+                    />
+                </div>
+                <div>
+                    <TextField
+                        floatingLabelText="Identifikator"
+                        onChange={this.onChangeTag}
+                        value={this.state.tag}
+                        required
+                    />
+                </div>
+                <div>
+                    <TextField
+                        floatingLabelText="Intern beskrivelse"
+                        onChange={this.onChangePrivateMdtext}
+                        value={this.state.privateMdtext}
+                        multiLine
+                        fullWidth
+                    />
+                </div>
+                {this.props.id
+                    ? <div>
                         <TextField
-                            floatingLabelText="Tittel"
-                            onChange={this.onChangeTitle}
-                            value={this.state.title}
-                            required
-                        />
-                    </div>
-                    <div>
-                        <TextField
-                            floatingLabelText="Identifikator"
-                            onChange={this.onChangeTag}
-                            value={this.state.tag}
-                            required
-                        />
-                    </div>
-                    <div>
-                        <TextField
-                            floatingLabelText="Intern beskrivelse"
-                            onChange={this.onChangePrivateMdtext}
-                            value={this.state.privateMdtext}
+                            floatingLabelText="Ekstern beskrivelse"
+                            onChange={this.onChangePublicMdtext}
+                            value={this.state.publicMdtext}
                             multiLine
                             fullWidth
                         />
                     </div>
-                    {this.props.id
-                        ? <div>
-                            <TextField
-                                floatingLabelText="Ekstern beskrivelse"
-                                onChange={this.onChangePublicMdtext}
-                                value={this.state.publicMdtext}
-                                multiLine
-                                fullWidth
-                            />
-                        </div>
-                        : null
-                    }
-                    <div>
-                        <DatePicker
-                            id="start"
-                            floatingLabelText="Prosjektstart"
-                            onChange={this.onChangeStart}
-                            value={this.state.start}
-                            mode="landscape"
-                            locale="nb"
-                            DateTimeFormat={DateTimeFormat}
-                        />
-                    </div>
-                    <div>
-                        <DatePicker
-                            id="end"
-                            floatingLabelText="Prosjektslutt"
-                            onChange={this.onChangeEnd}
-                            value={this.state.end}
-                            mode="landscape"
-                            locale="nb"
-                            DateTimeFormat={DateTimeFormat}
-                            required
-                        />
-                    </div>
-                    <div>
-                        <UserField
-                            users={this.state.conductors}
-                            organization={this.props.organization}
-                            onChange={this.onChangeConductors}
-                            title="Dirigent(er)"
-                        />
-                    </div>
-                    <div>
-                        <UserField
-                            users={this.state.managers}
-                            organization={this.props.organization}
-                            onChange={this.onChangeManagers}
-                            title="Prosjektleder(e)"
-                        />
-                    </div>
-                    <div>
-                        <PermissionField
-                            permissions={this.state.permissions}
-                            onChange={this.onPermissionChange}
-                            groups={this.props.viewer.groups}
-                            users={this.props.viewer.friends}
-                        />
-                    </div>
-                    <div>
-                        <RaisedButton
-                            type="submit"
-                            label="Lagre"
-                            primary
-                        />
-                        <RaisedButton
-                            type="reset"
-                            label="Avbryt"
-                            onClick={this.toggle}
-                        />
-                    </div>
-                </form>
+                    : null
+                }
+                <div>
+                    <DatePicker
+                        id="start"
+                        floatingLabelText="Prosjektstart"
+                        onChange={this.onChangeStart}
+                        value={this.state.start}
+                        mode="landscape"
+                        locale="nb"
+                        DateTimeFormat={DateTimeFormat}
+                    />
+                </div>
+                <div>
+                    <DatePicker
+                        id="end"
+                        floatingLabelText="Prosjektslutt"
+                        onChange={this.onChangeEnd}
+                        value={this.state.end}
+                        mode="landscape"
+                        locale="nb"
+                        DateTimeFormat={DateTimeFormat}
+                        required
+                    />
+                </div>
+                <div>
+                    <UserField
+                        users={this.state.conductors}
+                        organization={this.props.organization}
+                        onChange={this.onChangeConductors}
+                        title="Dirigent(er)"
+                    />
+                </div>
+                <div>
+                    <UserField
+                        users={this.state.managers}
+                        organization={this.props.organization}
+                        onChange={this.onChangeManagers}
+                        title="Prosjektleder(e)"
+                    />
+                </div>
+                <div>
+                    <PermissionField
+                        permissions={this.state.permissions}
+                        onChange={this.onPermissionChange}
+                        groups={this.props.viewer.groups}
+                        users={this.props.viewer.friends}
+                    />
+                </div>
             </Dialog>
         );
     }
