@@ -132,10 +132,8 @@ class Projects extends React.Component {
                             projects={org.nextProjects}
                         />
                         {org.nextProjects.pageInfo.hasNextPage
-                            ? <RaisedButton primary onClick={this.loadMoreUpcomongProjects}>
-                                Mer
-                            </RaisedButton>
-                            : null
+                                ? <RaisedButton primary onClick={this.loadMoreUpcomongProjects} label="Mer" />
+                                : null
                         }
                     </div>
                     <div

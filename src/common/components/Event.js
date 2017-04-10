@@ -1,6 +1,7 @@
 import React from 'react';
 import Relay from 'react-relay';
 import getMuiTheme from 'material-ui/styles/getMuiTheme';
+import Chip from 'material-ui/Chip';
 import Dialog from 'material-ui/Dialog';
 import FlatButton from 'material-ui/FlatButton';
 import IconMenu from 'material-ui/IconMenu';
@@ -94,6 +95,11 @@ class Event extends React.Component {
         });
     }
 
+    goTo = (project) => {
+        const { year, tag } = project;
+        this.context.router.push({ pathname: `/${year}/${tag}` });
+    }
+
     render() {
         const { event, isMember } = this.props.organization;
         const viewer = this.props.viewer;
@@ -117,6 +123,18 @@ class Event extends React.Component {
                     {event.location} <Daterange start={event.start} end={event.end} />
                 </div>
                 <Text text={event.mdtext} />
+                {event.projects.map((project) => {
+                    return (
+                        <Chip
+                            key={project.tag}
+                            onTouchTap={() => {
+                                this.goTo(project);
+                            }}
+                        >
+                            {project.title}
+                        </Chip>
+                    );
+                })}
                 {isMember
                     ? <div>
                         <EventForm
@@ -170,7 +188,11 @@ export default Relay.createContainer(Event, {
                     location
                     start
                     end
-                    tags
+                    projects {
+                        year
+                        tag
+                        title
+                    }
                     mdtext
                     permissions {
                         public
