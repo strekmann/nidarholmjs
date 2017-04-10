@@ -69,19 +69,20 @@ class Project extends React.Component {
         return { muiTheme: this.muiTheme };
     }
 
-    onDrop = (files, permissions) => {
+    onDrop = (files, permissions, tags) => {
         files.forEach((file) => {
             const data = new FormData();
             data.append('file', file);
 
             axios.post('/upload', data)
             .then((response) => {
+                tags.push(this.props.organization.project.tag);
                 this.context.relay.commitUpdate(new AddFileMutation({
                     viewer: null,
                     organization: this.props.organization,
                     hex: response.data.hex,
                     permissions,
-                    tags: [this.props.organization.project.tag],
+                    tags,
                     filename: file.name,
                     projectTag: this.props.organization.project.tag,
                 }));
@@ -97,13 +98,14 @@ class Project extends React.Component {
         }));
     }
 
-    onSaveFilePermissions = (file, permissions, onSuccess) => {
+    onSaveFilePermissions = (file, permissions, tags, onSuccess) => {
         this.context.relay.commitUpdate(new SaveFilePermissionsMutation({
             organization: this.props.organization,
             fileId: file,
             permissions: permissions.map((permission) => {
                 return permission.id;
             }),
+            tags,
         }), {
             onSuccess,
         });
@@ -337,6 +339,7 @@ class Project extends React.Component {
                                 }}
                                 title="Prosjektfiler"
                                 viewer={this.props.viewer}
+                                organization={this.props.organization}
                             />
                             : null
                         }
@@ -398,8 +401,16 @@ class Project extends React.Component {
                             onRequestClose={this.closeAddFile}
                             autoScrollBodyContent
                         >
-                            <FileUpload viewer={viewer} organization={org} onDrop={this.onDrop} />
-                            <RaisedButton label="Ferdig" primary onTouchTap={this.closeAddFile} />
+                            <FileUpload
+                                viewer={viewer}
+                                organization={org}
+                                onDrop={this.onDrop}
+                            />
+                            <RaisedButton
+                                label="Ferdig"
+                                primary
+                                onTouchTap={this.closeAddFile}
+                            />
                         </Dialog>
                         <Dialog
                             title="Legg til reperotar"
@@ -550,6 +561,8 @@ export default Relay.createContainer(Project, {
                         }
                     }
                 }
+                ${FileList.getFragment('organization')}
+                ${FileUpload.getFragment('organization')}
                 ${ProjectForm.getFragment('organization')}
                 ${AddEventMutation.getFragment('organization')}
                 ${AddFileMutation.getFragment('organization')}

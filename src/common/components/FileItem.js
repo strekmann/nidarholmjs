@@ -1,6 +1,7 @@
 /* eslint "react/require-default-props": 0 */
 
 import React from 'react';
+import Relay from 'react-relay';
 import { Link } from 'react-router';
 import { Card, CardTitle, CardMedia, CardActions } from 'material-ui/Card';
 import Chip from 'material-ui/Chip';
@@ -18,8 +19,9 @@ import theme from '../theme';
 
 import PermissionChips from './PermissionChips';
 import PermissionField from './PermissionField';
+import TagField from './TagField';
 
-export default class FileItem extends React.Component {
+class FileItem extends React.Component {
     static propTypes = {
         id: React.PropTypes.string.isRequired,
         filename: React.PropTypes.string.isRequired,
@@ -36,15 +38,21 @@ export default class FileItem extends React.Component {
         onSetProjectPoster: React.PropTypes.func,
         viewer: React.PropTypes.object,
         searchTag: React.PropTypes.func,
+        organization: React.PropTypes.object,
     }
 
     state = {
         editPermissions: false,
         permissions: flattenPermissions(this.props.permissions),
+        tags: this.props.tags || [],
     }
 
     onPermissionChange = (permissions) => {
         this.setState({ permissions });
+    }
+
+    onTagChange = (tags) => {
+        this.setState({ tags });
     }
 
     setProjectPoster = () => {
@@ -53,7 +61,7 @@ export default class FileItem extends React.Component {
 
     savePermissions = (event) => {
         event.preventDefault();
-        this.props.onSavePermissions(this.props.id, this.state.permissions, () => {
+        this.props.onSavePermissions(this.props.id, this.state.permissions, this.state.tags, () => {
             this.setState({
                 editPermissions: false,
             });
@@ -102,7 +110,7 @@ export default class FileItem extends React.Component {
                             targetOrigin={{ vertical: 'top', horizontal: 'right' }}
                         >
                             <MenuItem
-                                primaryText="Rediger rettigheter"
+                                primaryText="Rediger filegenskaper"
                                 onTouchTap={this.toggleEditPermissions}
                             />
                             {this.props.onSetProjectPoster
@@ -164,6 +172,11 @@ export default class FileItem extends React.Component {
                             groups={this.props.viewer.groups}
                             users={this.props.viewer.friends}
                         />
+                        <TagField
+                            organization={this.props.organization}
+                            onChange={this.onTagChange}
+                            fileTags={this.props.tags}
+                        />
                         <RaisedButton label="Lagre" onClick={this.savePermissions} primary />
                     </Dialog>
                     : null
@@ -172,3 +185,15 @@ export default class FileItem extends React.Component {
         );
     }
 }
+
+export default Relay.createContainer(FileItem, {
+    fragments: {
+        organization: () => {
+            return Relay.QL`
+            fragment on Organization {
+                id
+                ${TagField.getFragment('organization')}
+            }`;
+        },
+    },
+});

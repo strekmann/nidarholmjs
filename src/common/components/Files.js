@@ -49,7 +49,7 @@ class Files extends React.Component {
         return { muiTheme: this.muiTheme };
     }
 
-    onDrop = (files, permissions) => {
+    onDrop = (files, permissions, tags) => {
         files.forEach((file) => {
             const data = new FormData();
             data.append('file', file);
@@ -63,6 +63,7 @@ class Files extends React.Component {
                     permissions,
                     filename: file.name,
                     projectTag: null,
+                    tags,
                 }), {
                     onSuccess: () => {
                         // console.log("successfile");
@@ -78,13 +79,14 @@ class Files extends React.Component {
         });
     }
 
-    onSaveFilePermissions = (file, permissions, onSuccess) => {
+    onSaveFilePermissions = (file, permissions, tags, onSuccess) => {
         this.context.relay.commitUpdate(new SaveFilePermissionsMutation({
             organization: this.props.organization,
             fileId: file,
             permissions: permissions.map((permission) => {
                 return permission.id;
             }),
+            tags,
         }), {
             onSuccess,
         });
@@ -151,8 +153,10 @@ class Files extends React.Component {
                         >
                             <FileUpload
                                 viewer={this.props.viewer}
+                                organization={this.props.organization}
                                 onDrop={this.onDrop}
                                 memberGroupId={org.memberGroup.id}
+                                onTagsChange={this.searchTag}
                             />
                             <RaisedButton label="Ferdig" primary onTouchTap={this.closeAddFile} />
                         </Dialog>
@@ -168,11 +172,9 @@ class Files extends React.Component {
                         >
                             <h2>Søk i merkelapper</h2>
                             <TagField
-                                tags={this.state.tags}
                                 onChange={this.onTagChange}
-                                allTags={this.props.organization.tags}
-                                onChangeTerm={this.onChangeTerm}
-                                term={this.props.relay.variables.term}
+                                organization={this.props.organization}
+                                autoFocus
                             />
                         </Paper>
                         : null
@@ -187,6 +189,7 @@ class Files extends React.Component {
                         marginRight: desktopGutterLess,
                     }}
                     viewer={this.props.viewer}
+                    organization={this.props.organization}
                 />
                 {org.files.pageInfo.hasNextPage
                         ? <RaisedButton
@@ -258,6 +261,9 @@ export default Relay.createContainer(Files, {
                         hasNextPage
                     }
                 }
+                ${FileList.getFragment('organization')}
+                ${FileUpload.getFragment('organization')}
+                ${TagField.getFragment('organization')}
                 ${AddFileMutation.getFragment('organization')},
                 ${SaveFilePermissionsMutation.getFragment('organization')}
             }`;

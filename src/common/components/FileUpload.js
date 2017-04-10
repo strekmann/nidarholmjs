@@ -1,25 +1,34 @@
-import React from 'react';
 import Dropzone from 'react-dropzone';
-import PermissionField from './PermissionField';
+import React from 'react';
+import Relay from 'react-relay';
 
-export default class FileUpload extends React.Component {
+import PermissionField from './PermissionField';
+import TagField from './TagField';
+
+class FileUpload extends React.Component {
     static propTypes = {
         viewer: React.PropTypes.object,
         onDrop: React.PropTypes.func,
         memberGroupId: React.PropTypes.string,
+        organization: React.PropTypes.object,
     }
 
     state = {
         permissions: [],
+        tags: [],
     }
 
     onDrop = (files) => {
-        const permissions = this.state.permissions;
-        this.props.onDrop(files, permissions);
+        const { permissions, tags } = this.state;
+        this.props.onDrop(files, permissions, tags);
     }
 
     onPermissionChange = (permissions) => {
         this.setState({ permissions });
+    }
+
+    onTagChange = (tags) => {
+        this.setState({ tags });
     }
 
     render() {
@@ -29,7 +38,7 @@ export default class FileUpload extends React.Component {
                 <div
                     style={{ width: '50%', minWidth: 300, flexGrow: '1' }}
                 >
-                    <h3>1. Rettigheter til de nye filene</h3>
+                    <h3>1. Rettigheter og merkelapper</h3>
                     <div>Hvis du ikke endrer, er det bare du som kan se filene</div>
                     <PermissionField
                         permissions={this.state.permissions}
@@ -37,6 +46,10 @@ export default class FileUpload extends React.Component {
                         groups={viewer.groups}
                         users={viewer.friends}
                         memberGroupId={this.props.memberGroupId}
+                    />
+                    <TagField
+                        onChange={this.onTagChange}
+                        organization={this.props.organization}
                     />
                 </div>
                 <div
@@ -52,3 +65,15 @@ export default class FileUpload extends React.Component {
         );
     }
 }
+
+export default Relay.createContainer(FileUpload, {
+    fragments: {
+        organization: () => {
+            return Relay.QL`
+            fragment on Organization {
+                id
+                ${TagField.getFragment('organization')}
+            }`;
+        },
+    },
+});

@@ -1,5 +1,6 @@
 import React from 'react';
 import AutoComplete from 'material-ui/AutoComplete';
+
 import PermissionChips from './PermissionChips';
 
 export default class PermissionField extends React.Component {

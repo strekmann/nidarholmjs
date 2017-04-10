@@ -1,62 +1,68 @@
 import AutoComplete from 'material-ui/AutoComplete';
 import Chip from 'material-ui/Chip';
 import React from 'react';
+import Relay from 'react-relay';
 
-export default class TagField extends React.Component {
+class TagField extends React.Component {
+    static contextTypes = {
+        relay: Relay.PropTypes.Environment,
+    }
+
     static propTypes = {
-        allTags: React.PropTypes.array,
-        tags: React.PropTypes.string,
+        fileTags: React.PropTypes.array,
         onChange: React.PropTypes.func,
-        onChangeTerm: React.PropTypes.func,
-        term: React.PropTypes.string,
+        organization: React.PropTypes.object,
+        relay: React.PropTypes.object,
+        autoFocus: React.PropTypes.bool,
     }
 
     state = {
-        tags: this.props.tags || [],
-        tag: this.props.term || '',
+        fileTags: this.props.fileTags || [],
+        tag: '',
     }
 
-    onTagChange = (value) => {
-        this.setState({
-            tag: value,
-        });
-        this.props.onChangeTerm(value);
+    onTagChange = (tag) => {
+        this.setState({ tag });
+        this.props.relay.setVariables({ term: tag });
     }
 
     addTag = (chosen) => {
-        const tags = new Set(this.state.tags);
-        tags.add(chosen.value);
+        const fileTags = new Set(this.state.fileTags);
+        fileTags.add(chosen.value);
         this.setState({
-            tags: Array.from(tags),
+            fileTags: Array.from(fileTags),
             tag: '',
         });
-        this.props.onChange(Array.from(tags));
+        this.props.onChange(Array.from(fileTags));
     }
 
     removeTag = (tag) => {
-        const tags = this.state.tags.filter((t) => {
+        const fileTags = this.state.fileTags.filter((t) => {
             return t !== tag;
         });
-        this.setState({ tags });
-        this.props.onChange(tags);
+        this.setState({ fileTags });
+        this.props.onChange(fileTags);
     }
 
     render() {
+        const tags = this.props.organization.tags || [];
         return (
             <div>
                 <AutoComplete
-                    id="tags"
                     floatingLabelText="Søk i merkelapper"
-                    filter={AutoComplete.fuzzyFilter}
-                    dataSource={this.props.allTags.map((tag) => {
+                    dataSource={tags.map((tag) => {
                         return { text: tag.tag, value: tag.tag };
                     })}
                     maxSearchResults={8}
                     searchText={this.state.tag}
                     onNewRequest={this.addTag}
                     onUpdateInput={this.onTagChange}
+                    filter={() => {
+                        return true;
+                    }}
+                    autoFocus={this.props.autoFocus}
                 />
-                {this.state.tags.map((tag) => {
+                {this.state.fileTags.map((tag) => {
                     return (
                         <Chip
                             key={tag}
@@ -72,3 +78,22 @@ export default class TagField extends React.Component {
         );
     }
 }
+
+export default Relay.createContainer(TagField, {
+    initialVariables: {
+        term: '',
+        tags: '',
+    },
+    fragments: {
+        organization: () => {
+            return Relay.QL`
+            fragment on Organization {
+                id
+                tags(tags:$tags, term:$term) {
+                    tag
+                    count
+                }
+            }`;
+        },
+    },
+});

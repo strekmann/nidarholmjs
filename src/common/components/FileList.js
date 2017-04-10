@@ -1,9 +1,11 @@
 /* eslint "react/require-default-props": 0 */
 
 import React from 'react';
+import Relay from 'react-relay';
+
 import FileItem from './FileItem';
 
-export default class FileList extends React.Component {
+class FileList extends React.Component {
     static propTypes = {
         files: React.PropTypes.object,
         memberGroupId: React.PropTypes.string,
@@ -12,6 +14,7 @@ export default class FileList extends React.Component {
         onSavePermissions: React.PropTypes.func,
         onSetProjectPoster: React.PropTypes.func,
         viewer: React.PropTypes.object,
+        organization: React.PropTypes.object,
         searchTag: React.PropTypes.func,
     }
     render() {
@@ -34,6 +37,7 @@ export default class FileList extends React.Component {
                                 onSetProjectPoster={this.props.onSetProjectPoster}
                                 viewer={this.props.viewer}
                                 searchTag={this.props.searchTag}
+                                organization={this.props.organization}
                                 {...edge.node}
                             />
                         );
@@ -43,3 +47,15 @@ export default class FileList extends React.Component {
         );
     }
 }
+
+export default Relay.createContainer(FileList, {
+    fragments: {
+        organization: () => {
+            return Relay.QL`
+            fragment on Organization {
+                id
+                ${FileItem.getFragment('organization')}
+            }`;
+        },
+    },
+});

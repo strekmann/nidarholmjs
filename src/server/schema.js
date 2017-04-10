@@ -1186,8 +1186,11 @@ organizationType = new GraphQLObjectType({
                     return null;
                 }
                 const tags = args.tags.split('|');
-                return File.aggregate(
-                    { $match: { tags: { $all: tags } } },
+                const query = [];
+                if (tags.length && tags[0]) {
+                    query.push({ $match: { tags: { $all: tags } } });
+                }
+                query.push(
                     { $project: { tags: 1 } },
                     { $unwind: '$tags' },
                     { $match: { tags: { $nin: tags, $regex: `^${args.term}` } } },
@@ -1195,7 +1198,8 @@ organizationType = new GraphQLObjectType({
                     { $sort: { count: -1 } },
                     { $limit: 20 },
                     { $project: { _id: 1, count: 1 } },
-                )
+                );
+                return File.aggregate(query)
                     .then((aggregatedTags) => {
                         return aggregatedTags.map((tag) => {
                             return {
@@ -1349,6 +1353,7 @@ const mutationSaveFilePermissions = mutationWithClientMutationId({
     inputFields: {
         fileId: { type: new GraphQLNonNull(GraphQLID) },
         permissions: { type: new GraphQLList(GraphQLString) },
+        tags: { type: new GraphQLList(GraphQLString) },
     },
     outputFields: {
         file: {
@@ -1358,7 +1363,7 @@ const mutationSaveFilePermissions = mutationWithClientMutationId({
             },
         },
     },
-    mutateAndGetPayload: ({ fileId, permissions }, { viewer }) => {
+    mutateAndGetPayload: ({ fileId, permissions, tags }, { viewer }) => {
         if (!viewer) {
             throw new Error('Nobody!');
         }
@@ -1366,7 +1371,10 @@ const mutationSaveFilePermissions = mutationWithClientMutationId({
         const permissionObj = buildPermissionObject(permissions);
         const query = File.findByIdAndUpdate(
             id,
-            { permissions: permissionObj },
+            {
+                permissions: permissionObj,
+                tags,
+            },
             { new: true },
         );
         return authenticate(query, viewer).exec().then((file) => {

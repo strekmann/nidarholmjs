@@ -1,12 +1,15 @@
+/* eslint "class-methods-use-this": 0 */
+
 import Relay from 'react-relay';
 
 export default class SaveFilePermissionsMutation extends Relay.Mutation {
     static fragments = {
-        organization: () => Relay.QL`
-        fragment on Organization {
-            id
-        }
-        `,
+        organization: () => {
+            return Relay.QL`
+            fragment on Organization {
+                id
+            }`;
+        },
     }
 
     getMutation() {
@@ -17,6 +20,7 @@ export default class SaveFilePermissionsMutation extends Relay.Mutation {
         return {
             fileId: this.props.fileId,
             permissions: this.props.permissions,
+            tags: this.props.tags,
         };
     }
 
