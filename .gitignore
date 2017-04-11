@@ -19,3 +19,4 @@ tmp
 *retry
 *log
 /.vagrant
+/setup/keys
