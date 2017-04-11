@@ -19,9 +19,9 @@ class ProjectField extends React.Component {
         this.setState({ project });
     }
 
-    addProject = (project) => {
+    addProject = (value) => {
         const { projects } = this.state;
-        projects.push(project);
+        projects.push(value.project);
         this.setState({
             projects,
             project: '',
@@ -41,7 +41,12 @@ class ProjectField extends React.Component {
         if (!this.props.organization) {
             return null;
         }
-        const projects = this.props.organization.projectTags;
+        const projects = this.props.organization.projectTags.map((project) => {
+            return {
+                title: `${project.title} (${project.year})`,
+                project,
+            };
+        });
         return (
             <div>
                 <AutoComplete
@@ -49,7 +54,7 @@ class ProjectField extends React.Component {
                     floatingLabelText="Tilhører prosjekt"
                     filter={AutoComplete.fuzzyFilter}
                     dataSource={projects}
-                    dataSourceConfig={{ text: 'title', value: 'id' }}
+                    dataSourceConfig={{ text: 'title', value: 'project' }}
                     maxSearchResults={20}
                     searchText={this.state.project}
                     onNewRequest={this.addProject}
@@ -80,8 +85,9 @@ export default Relay.createContainer(ProjectField, {
                 id
                 projectTags {
                     id
-                    title
                     tag
+                    title
+                    year
                 }
             }`;
         },
