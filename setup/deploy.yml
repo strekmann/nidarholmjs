@@ -152,6 +152,22 @@
     hosts: web
     remote_user: root
     tasks:
+      - name: Initialize deploy root
+        deploy_helper:
+          path: "{{ project_home }}"
+        remote_user: "{{ project_user }}"
+        tags:
+          - backup
+          - cron
+
+      - name: Link shared folder to /mnt/uploaded/files
+        remote_user: root
+        file:
+          src: /mnt/uploaded/files
+          dest: "{{ deploy_helper.shared_path }}/uploaded_files"
+          owner: "{{ project_user }}"
+          group: "{{ project_user }}"
+          state: link
 
       - name: Remove default nginx vhost config
         file:
@@ -186,23 +202,6 @@
     remote_user: root
 
     tasks:
-      - name: Initialize deploy root
-        deploy_helper:
-          path: "{{ project_home }}"
-        remote_user: "{{ project_user }}"
-        tags:
-          - backup
-          - cron
-
-      - name: Link shared folder to /mnt/uploaded/files
-        remote_user: root
-        file:
-          src: /mnt/uploaded/files
-          dest: "{{ deploy_helper.shared_path }}/uploaded_files"
-          owner: "{{ project_user }}"
-          group: "{{ project_user }}"
-          state: link
-
       - name: Run dhparams
         command: openssl dhparam -out {{ dhparam_path }} 2048
         args:

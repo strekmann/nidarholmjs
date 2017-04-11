@@ -3,17 +3,17 @@ module.exports = {
         facebook: {
             clientId: '{{ facebook.client_id }}',
             clientSecret: '{{ facebook.client_secret }}',
-            callbackURL: '{{ server_url }}/auth/facebook/callback'
+            callbackURL: '/auth/facebook/callback'
         },
         google: {
             clientId: '{{ google.client_id }}',
             clientSecret: '{{ google.client_secret }}',
-            callbackURL: '{{ server_url }}/auth/google/callback'
+            callbackURL: '/auth/google/callback'
         },
         twitter: {
             clientId: '{{ twitter.client_id }}',
             clientSecret: '{{ twitter.client_secret }}',
-            callbackURL: '{{ server_url }}/auth/twitter/callback'
+            callbackURL: '/auth/twitter/callback'
         },
         smtp: {
             host: '{{ smtp.host }}',

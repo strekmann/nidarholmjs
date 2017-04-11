@@ -18,3 +18,4 @@ tmp
 /src/server/schema.graphql
 *retry
 *log
+/.vagrant
