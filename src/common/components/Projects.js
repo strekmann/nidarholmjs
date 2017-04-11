@@ -10,7 +10,8 @@ import Relay from 'react-relay';
 import theme from '../theme';
 import AddProjectMutation from '../mutations/addProject';
 
-import ProjectList from './ProjectList';
+import ProjectListPrevious from './ProjectListPrevious';
+import ProjectListUpcoming from './ProjectListUpcoming';
 import ProjectForm from './ProjectForm';
 
 const showUpcomingProjects = 4;
@@ -23,7 +24,6 @@ class Projects extends React.Component {
 
     static propTypes = {
         organization: React.PropTypes.object,
-        relay: React.PropTypes.object,
         viewer: React.PropTypes.object,
     }
 
@@ -44,27 +44,6 @@ class Projects extends React.Component {
         return { muiTheme: this.muiTheme };
     }
 
-    loadMorePreviousProjects = () => {
-        const projects = this.props.organization.previousProjects;
-        this.props.relay.setVariables({
-            showProjects: projects.edges.length + projectsPerPage,
-        });
-    }
-
-    loadMoreUpcomongProjects = () => {
-        const projects = this.props.organization.nextProjects;
-        let next = projects.edges.length + projectsPerPage;
-
-        // upcoming list has just a couple of projects, so at first refill,
-        // use default page size
-        if (projects.edges.length < projectsPerPage) {
-            next = projectsPerPage;
-        }
-        this.props.relay.setVariables({
-            showUpcomingProjects: next,
-        });
-    }
-
     toggleAddProject = () => {
         this.setState({ addProject: !this.state.addProject });
     }
@@ -83,7 +62,6 @@ class Projects extends React.Component {
     }
 
     render() {
-        const org = this.props.organization;
         const isMember = this.props.organization.isMember;
         const { desktopGutterLess } = theme.spacing;
         return (
@@ -128,14 +106,10 @@ class Projects extends React.Component {
                             flex: '1 1 50%',
                         }}
                     >
-                        <h1>Kommende prosjekter</h1>
-                        <ProjectList
-                            projects={org.nextProjects}
+                        <ProjectListUpcoming
+                            title="Kommende prosjekter"
+                            organization={this.props.organization}
                         />
-                        {org.nextProjects.pageInfo.hasNextPage
-                                ? <RaisedButton primary onClick={this.loadMoreUpcomongProjects} label="Mer" />
-                                : null
-                        }
                     </div>
                     <div
                         style={{
@@ -144,14 +118,10 @@ class Projects extends React.Component {
                             flex: '1 1 50%',
                         }}
                     >
-                        <h1>Tidligere prosjekter</h1>
-                        <ProjectList
-                            projects={org.previousProjects}
+                        <ProjectListPrevious
+                            organization={this.props.organization}
+                            title="Tidligere prosjekter"
                         />
-                        {org.previousProjects.pageInfo.hasNextPage
-                                ? <RaisedButton primary onClick={this.loadMorePreviousProjects} label="Mer" />
-                                : null
-                        }
                     </div>
                 </div>
             </section>
@@ -160,62 +130,14 @@ class Projects extends React.Component {
 }
 
 export default Relay.createContainer(Projects, {
-    initialVariables: {
-        showUpcomingProjects,
-        showProjects: projectsPerPage,
-        projectsPerPage,
-    },
     fragments: {
         organization: () => {
             return Relay.QL`
             fragment on Organization {
                 isMember
-                nextProjects(first:$showUpcomingProjects) {
-                    edges {
-                        node {
-                            id
-                            title
-                            start
-                            end
-                            year
-                            tag
-                            publicMdtext
-                            poster {
-                                filename
-                                normalPath
-                            }
-                            conductors {
-                                name
-                            }
-                        }
-                    }
-                    pageInfo {
-                        hasNextPage
-                    }
-                }
-                previousProjects(first:$showProjects) {
-                    edges {
-                        node {
-                            id
-                            title
-                            start
-                            end
-                            year
-                            tag
-                            poster {
-                                filename
-                                normalPath
-                            }
-                            conductors {
-                                name
-                            }
-                        }
-                    }
-                    pageInfo {
-                        hasNextPage
-                    }
-                }
                 ${AddProjectMutation.getFragment('organization')}
+                ${ProjectListPrevious.getFragment('organization')}
+                ${ProjectListUpcoming.getFragment('organization')}
             }`;
         },
         viewer: () => {

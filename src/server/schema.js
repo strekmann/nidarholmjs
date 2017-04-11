@@ -1007,6 +1007,32 @@ organizationType = new GraphQLObjectType({
                 );
             },
         },
+        projects: {
+            type: projectConnection.connectionType,
+            args: {
+                upcoming: { type: GraphQLBoolean },
+                ...connectionArgs,
+            },
+            resolve: (_, args) => {
+                const upcoming = args.upcoming;
+                let query = Project.find();
+                if (upcoming) {
+                    query = query.where({
+                        end: { $gte: moment().startOf('day').toDate() },
+                    }).sort({ end: 1 });
+                }
+                else {
+                    query = query.where({
+                        end: { $lt: moment().startOf('day').toDate() },
+                    }).sort({ end: -1 });
+                }
+
+                return connectionFromMongooseQuery(
+                    query,
+                    args,
+                );
+            },
+        },
         projectTags: {
             type: new GraphQLList(projectType),
             resolve: (_, args, { viewer, organization }) => {
