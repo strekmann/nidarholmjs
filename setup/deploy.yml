@@ -1,271 +1,271 @@
 ---
-  - name: Setup software and user
-    hosts: web
-    remote_user: root
+- name: Setup software and user
+  hosts: web
+  remote_user: root
 
-    tasks:
+  tasks:
       - name: Disable password login
         lineinfile:
-          dest: /etc/ssh/sshd_config
-          regexp: '^PasswordAuthentication yes'
-          line: 'PasswordAuthentication no'
-          state: present
-          backrefs: yes
+            dest: /etc/ssh/sshd_config
+            regexp: '^PasswordAuthentication yes'
+            line: 'PasswordAuthentication no'
+            state: present
+            backrefs: yes
         notify:
-          - reload sshd
+            - reload sshd
 
       - name: Setup nodesource repository
         apt_repository:
-          repo: "deb http://deb.nodesource.com/node_6.x jessie main"
-          state: present
+            repo: "deb http://deb.nodesource.com/node_6.x jessie main"
+            state: present
 
       - name: Add nodesource key
         apt_key:
-          url: https://deb.nodesource.com/gpgkey/nodesource.gpg.key
-          state: present
+            url: https://deb.nodesource.com/gpgkey/nodesource.gpg.key
+            state: present
 
       - name: Setup backports repository
         apt_repository:
-          repo: "deb http://ftp.debian.org/debian jessie-backports main"
-          state: present
+            repo: "deb http://ftp.debian.org/debian jessie-backports main"
+            state: present
 
       - name: Upgrade packages
         apt:
-          upgrade: full
-          update_cache: yes
-          autoremove: yes
+            upgrade: full
+            update_cache: yes
+            autoremove: yes
 
       - name: Install apt dependencies
         apt:
-          name: "{{ item }}"
-          state: present
+            name: "{{ item }}"
+            state: present
         with_items:
-          - build-essential
-          - mongodb
-          - nginx
-          - nodejs
-          - imagemagick
-          - postfix
-          - rsync
-          - ufw
+            - build-essential
+            - mongodb
+            - nginx
+            - nodejs
+            - imagemagick
+            - postfix
+            - rsync
+            - ufw
 
       - name: Install packages from from backports
         apt:
-          name: "{{ item }}"
-          default_release: jessie-backports
-          state: present
+            name: "{{ item }}"
+            default_release: jessie-backports
+            state: present
         with_items:
-          - borgbackup
-          - certbot
+            - borgbackup
+            - certbot
 
       - name: Open up http ports in firewall
         ufw:
-          rule: allow
-          port: "{{ item }}"
-          proto: tcp
-          state: enabled
+            rule: allow
+            port: "{{ item }}"
+            proto: tcp
+            state: enabled
         with_items:
-          - 80
-          - 443
-          - 2022
+            - 80
+            - 443
+            - 2022
 
       - name: Create filesystem on extra volume
         filesystem:
-          fstype: ext4
-          dev: /dev/disk/by-id/scsi-0DO_Volume_uploaded
+            fstype: ext4
+            dev: /dev/disk/by-id/scsi-0DO_Volume_uploaded
 
       - name: Mount volume
         mount:
-          name: /mnt/uploaded
-          src: /dev/disk/by-id/scsi-0DO_Volume_uploaded
-          fstype: ext4
-          opts: defaults,nofail,discard
-          state: mounted
+            name: /mnt/uploaded
+            src: /dev/disk/by-id/scsi-0DO_Volume_uploaded
+            fstype: ext4
+            opts: defaults,nofail,discard
+            state: mounted
 
       - name: Create subdirectory with project permissions
         file:
-          path: /mnt/uploaded/files
-          owner: "{{ project_user }}"
-          group: "{{ project_user }}"
-          state: directory
-          recurse: yes
+            path: /mnt/uploaded/files
+            owner: "{{ project_user }}"
+            group: "{{ project_user }}"
+            state: directory
+            recurse: yes
 
       - name: Set mailname
         template:
-          src: mailname.j2
-          dest: /etc/mailname
+            src: mailname.j2
+            dest: /etc/mailname
         tags:
-          - postfix
+            - postfix
         notify:
-          - restart postfix
+            - restart postfix
 
       - name: set up system user mail aliases
         lineinfile:
-          state: present
-          dest: /etc/aliases
-          line: "root: {{ admin_email }}"
-          regexp: "^root:"
+            state: present
+            dest: /etc/aliases
+            line: "root: {{ admin_email }}"
+            regexp: "^root:"
         tags:
-          - postfix
+            - postfix
         notify:
-          - rebuild mail aliases
+            - rebuild mail aliases
 
       - name: Create project user
         user:
-          name: "{{ project_user }}"
-          system: yes
-          generate_ssh_key: yes
-          ssh_key_bits: 4096
-          home: "{{ project_home }}"
+            name: "{{ project_user }}"
+            system: yes
+            generate_ssh_key: yes
+            ssh_key_bits: 4096
+            home: "{{ project_home }}"
 
       - name: Add keys
         authorized_key:
-          user: "{{ project_user }}"
-          key: "{{ item }}"
+            user: "{{ project_user }}"
+            key: "{{ item }}"
         with_items:
-          - "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQC6FA2v+ehx8glCCIo+2P/qzHA5Ym4MmjNZ5Yjmbxxe53ke78HYrDa2hA1t0q0GycXCoxlql6pmcVKdWLxTLRvrD73l7YNOE1D7G6RZuSSs7zdRrn64sQGFdMV4jEjAyrxnrTgR+SMUc79r3gNsrl/29BmbAaYKifGuRL4RCGLTdYi3iXpOdNLy0e0OQpQkuuSrdIx18pKZ6F83ocSTH1hfSNt6H08PaSDVk6ueFWDASUmUUCLnF17J3oJlLlxtBuW6tLE7qDVoBWp8K+mwNqnCnJE27Fgl8+fOGanQnD7cAfXx4BmYcgWcB++2NfHNWEBmWN36XcJUjhjnQ1CAu3gnGRfeVCamjW3YEgDHnfX7Koj8LPFgtlfL0d3Lsu+5FIufXtrp8r2IoBQd+z0JgryTwt1Nxu57KChvTnKvzj1Wm+0HPr/p5svlGhWgd+IPSRXF0HaRZedmzmVOvROMaTi5vm1UWaL/ojzGqJM4T/KAfbua7n8+PALctkCtX0uj4r9si6hUrt3hBDGZLykuUKE0O9dCC+hEicIVHPCgAspMChf7HZk4NivrYr2Lxj0UY4eCBTdignw55hzmLvYIPuoZwdK7vzaMM5ag6Mu7BTCBdYDW/ra+YjULxl+mlbGZ62ahVRozaCnoLWfkUUURlwFq78z1ZxkI6EyhN+dZipL3Hw== sigurdga@svart"
-          - "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQC7T3GkxDdPPSqGVL+VR62VnEOUWLHgSJgvOVBbAtWHDn70qGHebkeX1cNdpl7C9YLz3uKg0allRk5dNK0HBH4fdl/wSaLbL+kBgEh6T1LqIFFZWS+J67fnON1RqRGsJ2XRW/6gSh9p8ZO7g9H76+kFe6MuZsjT6T+o3LL17Laxcccv9pBJb1y5qE88nU4XOeMPXdRLsD8ISF87UqcndDQhbNFbCABqJf9Q5hnoGoGRY1eFotfFfbiK4a6rt5zZ4pY93GwWrTy1u2S2cGjq3RsSQ00FZ4+h2zInQSL9wEMgmCJJqDVyEGUyW7x3TAfmM0kiYxllkmSMzVcHh86L4nwkJQCG9vwzhyX1qGyP3WsUb6mgZ+45yCkYQzoR+U+bePA5oJfubIQhsXElh7xd/+vUEIhTMOzaPIH+UfyqQDzF1ONDJ4Uqc9XptQJBFcBegMJzAv//nGMS7h8BhOItrmflJ2wvvGVWwiEF0fJcvB4adUqnr99eRtKjqiT9/l0Be7XXzzFNd49qaa4+zgx6gxf2vCC7dhFsRr6saeaDd22KajOlAAOluuq4LP+dMES5//c28TPpHs7IGaCmyemCHF3BsnWmtq2nDJX7XPG5XNAAQf3f8W7fQFJ/SgKp35cLRhz+0GYcM3TgO+K58mMmxb6DPk/v0eRUtg2sWh36WtU98Q== sigurdga@nemi"
-          - "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCvrDyC9z927qvrnk/8X1+MYIjhgMlWW+HneWZEzqeXhhJJEBOL006DIuZNLVlCbkpHz7wXIQO7lw1xbA+Db/YwW/NDcG8nkS25/2xMRyQnDS5Pk2xDzG1Gt6kMvub+SrcklutlBJvQaCXivZLKA6fEaK5bI/g5RVxstcCvwmJIq6YkMWQ/VMtHCVhV4w7zkerCnCaHsTlMbd0cWQONtDsK8I8XuSPJNjGoMXxR3JYS+i/zjwlgLw8wbSwgEKdWUqIp8woIiKdt06kLmi99rAG6nM40i5zqNnh7bx/Ph0RTSl3YTuBQkDg7wZfJzhnsgWwWK1Kv3aiEwSQRAaO3SQxP bergquis"
+            - "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQC6FA2v+ehx8glCCIo+2P/qzHA5Ym4MmjNZ5Yjmbxxe53ke78HYrDa2hA1t0q0GycXCoxlql6pmcVKdWLxTLRvrD73l7YNOE1D7G6RZuSSs7zdRrn64sQGFdMV4jEjAyrxnrTgR+SMUc79r3gNsrl/29BmbAaYKifGuRL4RCGLTdYi3iXpOdNLy0e0OQpQkuuSrdIx18pKZ6F83ocSTH1hfSNt6H08PaSDVk6ueFWDASUmUUCLnF17J3oJlLlxtBuW6tLE7qDVoBWp8K+mwNqnCnJE27Fgl8+fOGanQnD7cAfXx4BmYcgWcB++2NfHNWEBmWN36XcJUjhjnQ1CAu3gnGRfeVCamjW3YEgDHnfX7Koj8LPFgtlfL0d3Lsu+5FIufXtrp8r2IoBQd+z0JgryTwt1Nxu57KChvTnKvzj1Wm+0HPr/p5svlGhWgd+IPSRXF0HaRZedmzmVOvROMaTi5vm1UWaL/ojzGqJM4T/KAfbua7n8+PALctkCtX0uj4r9si6hUrt3hBDGZLykuUKE0O9dCC+hEicIVHPCgAspMChf7HZk4NivrYr2Lxj0UY4eCBTdignw55hzmLvYIPuoZwdK7vzaMM5ag6Mu7BTCBdYDW/ra+YjULxl+mlbGZ62ahVRozaCnoLWfkUUURlwFq78z1ZxkI6EyhN+dZipL3Hw== sigurdga@svart"
+            - "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQC7T3GkxDdPPSqGVL+VR62VnEOUWLHgSJgvOVBbAtWHDn70qGHebkeX1cNdpl7C9YLz3uKg0allRk5dNK0HBH4fdl/wSaLbL+kBgEh6T1LqIFFZWS+J67fnON1RqRGsJ2XRW/6gSh9p8ZO7g9H76+kFe6MuZsjT6T+o3LL17Laxcccv9pBJb1y5qE88nU4XOeMPXdRLsD8ISF87UqcndDQhbNFbCABqJf9Q5hnoGoGRY1eFotfFfbiK4a6rt5zZ4pY93GwWrTy1u2S2cGjq3RsSQ00FZ4+h2zInQSL9wEMgmCJJqDVyEGUyW7x3TAfmM0kiYxllkmSMzVcHh86L4nwkJQCG9vwzhyX1qGyP3WsUb6mgZ+45yCkYQzoR+U+bePA5oJfubIQhsXElh7xd/+vUEIhTMOzaPIH+UfyqQDzF1ONDJ4Uqc9XptQJBFcBegMJzAv//nGMS7h8BhOItrmflJ2wvvGVWwiEF0fJcvB4adUqnr99eRtKjqiT9/l0Be7XXzzFNd49qaa4+zgx6gxf2vCC7dhFsRr6saeaDd22KajOlAAOluuq4LP+dMES5//c28TPpHs7IGaCmyemCHF3BsnWmtq2nDJX7XPG5XNAAQf3f8W7fQFJ/SgKp35cLRhz+0GYcM3TgO+K58mMmxb6DPk/v0eRUtg2sWh36WtU98Q== sigurdga@nemi"
+            - "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCvrDyC9z927qvrnk/8X1+MYIjhgMlWW+HneWZEzqeXhhJJEBOL006DIuZNLVlCbkpHz7wXIQO7lw1xbA+Db/YwW/NDcG8nkS25/2xMRyQnDS5Pk2xDzG1Gt6kMvub+SrcklutlBJvQaCXivZLKA6fEaK5bI/g5RVxstcCvwmJIq6YkMWQ/VMtHCVhV4w7zkerCnCaHsTlMbd0cWQONtDsK8I8XuSPJNjGoMXxR3JYS+i/zjwlgLw8wbSwgEKdWUqIp8woIiKdt06kLmi99rAG6nM40i5zqNnh7bx/Ph0RTSl3YTuBQkDg7wZfJzhnsgWwWK1Kv3aiEwSQRAaO3SQxP bergquis"
 
       - name: Add web_server_user to new group to have easy read access to web files
         user:
-          name: "{{ web_server_user }}"
-          groups: "{{ project_user }}"
+            name: "{{ web_server_user }}"
+            groups: "{{ project_user }}"
 
-    handlers:
+  handlers:
       - name: reload sshd
         service:
-          name: sshd
-          state: reloaded
+            name: sshd
+            state: reloaded
 
       - name: rebuild mail aliases
         command: /usr/bin/newaliases
 
       - name: restart postfix
         service:
-          name: postfix
-          state: restarted
-      - name: Create project user
-        user:
+            name: postfix
+            state: restarted
 
-  - name: Setup http server
-    hosts: web
-    remote_user: root
-    tasks:
+- name: Setup http server
+  hosts: web
+  remote_user: root
+  tasks:
       - name: Initialize deploy root
         deploy_helper:
-          path: "{{ project_home }}"
+            path: "{{ project_home }}"
         remote_user: "{{ project_user }}"
         tags:
-          - backup
-          - cron
+            - backup
+            - cron
 
       - name: Link shared folder to /mnt/uploaded/files
-        remote_user: root
         file:
-          src: /mnt/uploaded/files
-          dest: "{{ deploy_helper.shared_path }}/uploaded_files"
-          owner: "{{ project_user }}"
-          group: "{{ project_user }}"
-          state: link
+            src: /mnt/uploaded/files
+            dest: "{{ deploy_helper.shared_path }}/uploaded_files"
+            owner: "{{ project_user }}"
+            group: "{{ project_user }}"
+            state: link
 
       - name: Remove default nginx vhost config
         file:
-          path: /etc/nginx/sites-enabled/default
-          state: absent
-        notify: reload nginx
+            path: /etc/nginx/sites-enabled/default
+            state: absent
+        notify:
+            - reload nginx
 
       - name: Copy nginx config
         template:
-          src: nginx.http.j2
-          dest: /etc/nginx/sites-available/{{ project_name }}.http
-          owner: root
-          mode: 644
-        notify: reload nginx
+            src: nginx.http.j2
+            dest: /etc/nginx/sites-available/{{ project_name }}.http
+            owner: root
+            mode: 644
+        notify:
+            - reload nginx
 
       - name: Symlink nginx config
         file:
-          path: /etc/nginx/sites-enabled/{{ project_name }}.http
-          src: /etc/nginx/sites-available/{{ project_name }}.http
-          state: link
-        notify: reload nginx
+            path: /etc/nginx/sites-enabled/{{ project_name }}.http
+            src: /etc/nginx/sites-available/{{ project_name }}.http
+            state: link
+        notify:
+            - reload nginx
 
-    handlers:
+  handlers:
       - name: reload nginx
         service:
-          name: nginx
-          state: reloaded
+            name: nginx
+            state: reloaded
 
+- name: Setup https server
+  hosts: web
+  remote_user: root
 
-  - name: Setup https server
-    hosts: web
-    remote_user: root
-
-    tasks:
+  tasks:
       - name: Run dhparams
         command: openssl dhparam -out {{ dhparam_path }} 2048
         args:
-          creates: "{{ dhparam_path }}"
+            creates: "{{ dhparam_path }}"
 
       - name: Run certbot
         command: certbot certonly --webroot --text --non-interactive --expand --agree-tos --email {{ admin_email }} --webroot-path {{ deploy_helper.shared_path }} --domain {{ server_name }} --domain www.{{ server_name }}
         args:
-          creates: /etc/letsencrypt/live/{{ server_name }}/fullchain.pem
+            creates: /etc/letsencrypt/live/{{ server_name }}/fullchain.pem
 
       - name: Copy nginx config
         template:
-          src: nginx.https.j2
-          dest: /etc/nginx/sites-available/{{ project_name }}.https
-          owner: root
-          mode: 644
-        notify: reload nginx
+            src: nginx.https.j2
+            dest: /etc/nginx/sites-available/{{ project_name }}.https
+            owner: root
+            mode: 644
+        notify:
+            - reload nginx
 
       - name: Symlink nginx config
         file:
-          path: /etc/nginx/sites-enabled/{{ project_name }}.https
-          src: /etc/nginx/sites-available/{{ project_name }}.https
-          state: link
-        notify: reload nginx
+            path: /etc/nginx/sites-enabled/{{ project_name }}.https
+            src: /etc/nginx/sites-available/{{ project_name }}.https
+            state: link
+        notify:
+            - reload nginx
 
       - name: Add cron job for certificate renewal
         cron:
-          job: certbot renew --force-renewal --post-hook "systemctl reload nginx"
-          name: Certificate renewal
-          minute: 41
-          hour: 0
+            job: certbot renew --force-renewal --post-hook "systemctl reload nginx"
+            name: Certificate renewal
+            minute: 41
+            hour: 0
         tags:
-          - cron
+            - cron
 
-    handlers:
+  handlers:
       - name: reload nginx
         service:
-          name: nginx
-          state: reloaded
+            name: nginx
+            state: reloaded
 
+- name: Build and sync
+  hosts: web
+  remote_user: "{{ project_user }}"
 
-  - name: Build and sync
-    hosts: web
-    remote_user: "{{ project_user }}"
-
-    tasks:
+  tasks:
       - name: Create release directory  # Not necessary if we checkout with git
         file:
-          path: "{{ deploy_helper.new_release_path }}"
-          state: directory
-          mode: 0755
+            path: "{{ deploy_helper.new_release_path }}"
+            state: directory
+            mode: 0755
 
       - name: Add "unfinished file" for deploy_helper
         file:
-          path: "{{ deploy_helper.new_release_path }}/{{ deploy_helper.unfinished_filename }}"
-          state: touch
+            path: "{{ deploy_helper.new_release_path }}/{{ deploy_helper.unfinished_filename }}"
+            state: touch
 
       - name: Build package to dist
         local_action: command npm run dist
 
       - name: Synchronize dist
         synchronize:
-          src: ../dist/
-          dest: "{{ deploy_helper.new_release_path }}"
+            src: ../dist/
+            dest: "{{ deploy_helper.new_release_path }}"
 
       - name: Add production config
         template:
@@ -275,103 +275,103 @@
       - name: Copy systemd config
         remote_user: root
         template:
-          src: service.j2
-          dest: /etc/systemd/system/{{ project_name }}.service
-          owner: root
-          mode: 644
+            src: service.j2
+            dest: /etc/systemd/system/{{ project_name }}.service
+            owner: root
+            mode: 644
         notify:
-          - reload systemd daemon
-          - reload systemd service
+            - reload systemd daemon
+            - reload systemd service
 
       - name: Finalize the deploy, removing the unfinished file and switching the symlink
         deploy_helper:
-          path: "{{ project_home }}"
-          release: "{{ deploy_helper.new_release }}"
-          state: finalize
+            path: "{{ project_home }}"
+            release: "{{ deploy_helper.new_release }}"
+            state: finalize
         notify:
-          - reload systemd service
+            - reload systemd service
 
-    handlers:
+  handlers:
       - name: reload systemd daemon
         command: systemctl daemon-reload
         remote_user: root
 
       - name: reload systemd service
         service:
-          name: "{{ project_name }}"
-          state: restarted
-          enabled: true
+            name: "{{ project_name }}"
+            state: restarted
+            enabled: true
         remote_user: root
 
-  - name: Prepare backup user on backup server
-    hosts: backup
-    tasks:
+- name: Prepare backup user on backup server
+  hosts: backup
+  tasks:
       - name: Create group for backup user
         group:
-          name: backup-{{ project_user }}
-          state: present
+            name: backup-{{ project_user }}
+            state: present
         tags:
-          - backup
+            - backup
 
       - name: Create backup user
         user:
-          name: backup-{{ project_user }}
-          system: yes
-          generate_ssh_key: yes
-          ssh_key_bits: 4096
-          shell: /bin/bash
-          home: "{{ backup_home }}"
-          group: backup-{{ project_user }}
-          groups:
-          state: present
+            name: backup-{{ project_user }}
+            system: yes
+            generate_ssh_key: yes
+            ssh_key_bits: 4096
+            shell: /bin/bash
+            home: "{{ backup_home }}"
+            group: backup-{{ project_user }}
+            groups:
+            state: present
         tags:
-          - backup
+            - backup
 
-  - name: Fetching ssh key from web server
-    hosts: web
-    remote_user: "{{ project_user }}"
-    tasks:
+- name: Fetching ssh key from web server
+  hosts: web
+  remote_user: "{{ project_user }}"
+  tasks:
       - name: Should have a folder for remote public keys
         file:
-          dest: keys
-          state: directory
+            dest: keys
+            state: directory
         delegate_to: localhost
         tags:
-          - backup
+            - backup
 
       - name: Copy ssh key to localhost
         synchronize:
-          src: "{{ project_home }}/.ssh/id_rsa.pub"
-          dest: keys/{{ project_user }}.key
-          mode: pull
+            src: "{{ project_home }}/.ssh/id_rsa.pub"
+            dest: keys/{{ project_user }}.key
+            mode: pull
         tags:
-          - backup
+            - backup
 
-  - name: Add key to backup server
-    hosts: backup
-    tasks:
+- name: Add key to backup server
+  hosts: backup
+  tasks:
       - name: Add key to backup server
         authorized_key:
-          user: backup-{{ project_user }}
-          state: present
-          key: "{{ lookup('file', 'keys/' + project_user + '.key') }}"
-          key_options: 'command="borg serve --restrict-to-path {{ backup_home }}",no-port-forwarding,no-X11-forwarding,no-pty,no-agent-forwarding,no-user-rc'
+            user: backup-{{ project_user }}
+            state: present
+            key: "{{ lookup('file', 'keys/' + project_user + '.key') }}"
+            key_options: 'command="borg serve --restrict-to-path {{ backup_home }}",no-port-forwarding,no-X11-forwarding,no-pty,no-agent-forwarding,no-user-rc'
         tags:
-          - backup
+            - backup
 
-  - name: Backup initialization between hosts
-    hosts: web
-    remote_user: "{{ project_user }}"
-    tasks:
+- name: Backup initialization between hosts
+  hosts: web
+  remote_user: "{{ project_user }}"
+  tasks:
       - name: Initialize backup for shared files
         environment:
             BORG_PASSPHRASE:
             BORG_RSH: ssh -o StrictHostKeyChecking=no
         command: borg init --encryption=keyfile {{ backup_uri }}/./{{ project_name }}-{{ ansible_hostname }}-shared
         args:
-          creates: "{{ project_home }}/.config/borg/keys/*_{{ project_name }}_{{ ansible_hostname }}_shared"
+            creates: "{{ project_home }}/.config/borg/keys/*_{{ project_name }}_{{ ansible_hostname }}_shared"
         tags:
-          - backup
+            - backup
 
       - name: Initialize backup for mongo database
         environment:
@@ -379,50 +379,50 @@
             BORG_RSH: ssh -o StrictHostKeyChecking=no
         command: borg init --encryption=keyfile {{ backup_uri }}/./{{ project_name }}-{{ ansible_hostname }}-mongo
         args:
-          creates: "{{ project_home }}/.config/borg/keys/*_{{ project_name }}_{{ ansible_hostname }}_mongo"
+            creates: "{{ project_home }}/.config/borg/keys/*_{{ project_name }}_{{ ansible_hostname }}_mongo"
         tags:
-          - backup
+            - backup
 
-  - name: Set up cron jobs for backup and backup pruning
-    hosts: web
-    remote_user: "{{ project_user }}"
-    tasks:
+- name: Set up cron jobs for backup and backup pruning
+  hosts: web
+  remote_user: "{{ project_user }}"
+  tasks:
       - name: Add cron job for backup of mongo database
         cron:
-          job: mongodump -d {{ project_name }} -o {{ project_home }}/{{ project_name }}-dump 1>/dev/null && borg create -C lzma {{ backup_uri }}/./{{ project_name }}-{{ ansible_hostname }}-mongo::{{ project_name }}-mongo-{hostname}-{now:\%Y-\%m-\%d} {{ project_home }}/{{ project_name }}-dump && rm -r {{ project_home }}/{{ project_name }}-dump
-          name: Backing up database
-          minute: "{{ 10 + project_number }}"
-          hour: 1
+            job: mongodump -d {{ project_name }} -o {{ project_home }}/{{ project_name }}-dump 1>/dev/null && borg create -C lzma {{ backup_uri }}/./{{ project_name }}-{{ ansible_hostname }}-mongo::{{ project_name }}-mongo-{hostname}-{now:\%Y-\%m-\%d} {{ project_home }}/{{ project_name }}-dump && rm -r {{ project_home }}/{{ project_name }}-dump
+            name: Backing up database
+            minute: "{{ 10 + project_number }}"
+            hour: 1
         tags:
-          - cron
-          - backup
+            - cron
+            - backup
 
       - name: Add cron job for backup of shared files
         cron:
-          job: borg create -s {{ backup_uri }}/./{{ project_name }}-{{ ansible_hostname }}-shared::{{ project_name }}-shared-{hostname}-{now:\%Y-\%m-\%d} {{ deploy_helper.shared_path }}
-          name: Backing up shared files
-          minute: "{{ 10 + project_number }}"
-          hour: 2
+            job: borg create -s {{ backup_uri }}/./{{ project_name }}-{{ ansible_hostname }}-shared::{{ project_name }}-shared-{hostname}-{now:\%Y-\%m-\%d} {{ deploy_helper.shared_path }}
+            name: Backing up shared files
+            minute: "{{ 10 + project_number }}"
+            hour: 2
         tags:
-          - cron
-          - backup
+            - cron
+            - backup
 
       - name: Add cron job for pruning old database backups
         cron:
-          job: borg prune --keep-daily=7 --keep-weekly=4 --keep-monthly=24 {{ backup_uri }}/./{{ project_name }}-{{ ansible_hostname }}-mongo
-          name: Pruning database backups
-          minute: "{{ 10 + project_number }}"
-          hour: 3
+            job: borg prune --keep-daily=7 --keep-weekly=4 --keep-monthly=24 {{ backup_uri }}/./{{ project_name }}-{{ ansible_hostname }}-mongo
+            name: Pruning database backups
+            minute: "{{ 10 + project_number }}"
+            hour: 3
         tags:
-          - cron
-          - backup
+            - cron
+            - backup
 
       - name: Add cron job for pruning old shared backups
         cron:
-          job: borg prune --keep-daily=7 --keep-weekly=4 --keep-monthly=24 {{ backup_uri }}/./{{ project_name }}-{{ ansible_hostname }}-shared
-          name: Pruning shared file backups
-          minute: "{{ 10 + project_number }}"
-          hour: 4
+            job: borg prune --keep-daily=7 --keep-weekly=4 --keep-monthly=24 {{ backup_uri }}/./{{ project_name }}-{{ ansible_hostname }}-shared
+            name: Pruning shared file backups
+            minute: "{{ 10 + project_number }}"
+            hour: 4
         tags:
-          - cron
-          - backup
+            - cron
+            - backup
