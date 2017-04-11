@@ -6,6 +6,7 @@ export default class Daterange extends React.Component {
     static propTypes = {
         start: React.PropTypes.node,
         end: React.PropTypes.node,
+        noTime: React.PropTypes.bool,
     }
 
     render() {
@@ -22,10 +23,10 @@ export default class Daterange extends React.Component {
             endd = moment(end).startOf('day');
             if (startm.isSame(endm, 'day')) {
                 // same day, no time: only show one date
-                if (startm.isSame(startd) && endm.isSame(endd)) {
+                if (this.props.noTime || (startm.isSame(startd) && endm.isSame(endd))) {
                     return <Date date={startm} format="ll" />;
                 }
-                // same day, different times: show one date an one time
+                // same day, different times: show one full date AND end time only
                 return (
                     <span>
                         <Date date={startm} format="lll" /> – <Date date={endm} format="LT" />
@@ -34,7 +35,7 @@ export default class Daterange extends React.Component {
             }
             // saving dates should always set startOf('day') AND later wholeday
             // different dates, no time: show both dates no time
-            if (startm.isSame(startd) && endm.isSame(endd)) {
+            if (this.props.noTime || (startm.isSame(startd) && endm.isSame(endd))) {
                 return (
                     <span>
                         <Date date={startm} format="ll" /> – <Date date={endm} format="ll" />

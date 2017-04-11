@@ -24,7 +24,7 @@ import SetProjectPosterMutation from '../mutations/setProjectPoster';
 import { flattenPermissions } from '../utils';
 import theme from '../theme';
 
-import Date from './Date';
+import Daterange from './Daterange';
 import List from './List';
 import Text from './Text';
 import EventItem from './EventItem';
@@ -219,8 +219,11 @@ class Project extends React.Component {
                     <div>
                         <h1>{project.title}</h1>
                         <div className="meta">
-                            {project.start ? <span><Date date={project.start} /> – </span> : null}
-                            <Date date={project.end} />
+                            <Daterange
+                                start={project.start}
+                                end={project.end}
+                                noTime
+                            />
                         </div>
                         {project.conductors.length
                             ? <p>Dirigent:

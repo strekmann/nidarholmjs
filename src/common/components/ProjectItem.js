@@ -56,7 +56,11 @@ export default class ProjectItem extends React.Component {
                             </Link>
                         </h2>
                         <div className="meta">
-                            <Daterange start={this.props.start} end={this.props.end} />
+                            <Daterange
+                                start={this.props.start}
+                                end={this.props.end}
+                                noTime
+                            />
                         </div>
                         {this.props.conductors.length
                             ? <p>Dirigent:
@@ -83,7 +87,11 @@ export default class ProjectItem extends React.Component {
                         </Link>
                     </h2>
                     <div className="meta">
-                        <Daterange start={this.props.start} end={this.props.end} />
+                        <Daterange
+                            start={this.props.start}
+                            end={this.props.end}
+                            noTime
+                        />
                     </div>
                     {this.props.conductors.length
                         ? <p>Dirigent:
