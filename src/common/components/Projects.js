@@ -125,7 +125,7 @@ class Projects extends React.Component {
                         style={{
                             paddingLeft: desktopGutterLess,
                             paddingRight: desktopGutterLess,
-                            flex: '1 1 auto',
+                            flex: '1 1 50%',
                         }}
                     >
                         <h1>Kommende prosjekter</h1>
@@ -141,7 +141,7 @@ class Projects extends React.Component {
                         style={{
                             paddingLeft: desktopGutterLess,
                             paddingRight: desktopGutterLess,
-                            flex: '1 1 auto',
+                            flex: '1 1 50%',
                         }}
                     >
                         <h1>Tidligere prosjekter</h1>
