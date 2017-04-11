@@ -446,6 +446,20 @@ class Member extends React.Component {
                                     />
                                     : null
                                 }
+                                {this.props.viewer.id === user.id
+                                    ? <MenuItem
+                                        primaryText="Logg på med Facebook"
+                                        href="/login/facebook"
+                                    />
+                                    : null
+                                }
+                                {this.props.viewer.id === user.id
+                                    ? <MenuItem
+                                        primaryText="Logg på med Google"
+                                        href="/login/google"
+                                    />
+                                    : null
+                                }
                                 {isAdmin
                                     ? <MenuItem
                                         primaryText="Legg til i gruppe"

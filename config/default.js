@@ -15,7 +15,7 @@ module.exports = {
         facebook: {
             clientId: '291636897704096',
             clientSecret: '39b8e7aa941fa3c74caba6e3d1ecc3d4',
-            callbackURL: 'http://localhost:3000/auth/facebook/callback',
+            callbackURL: 'http://localhost:3001/login/facebook/callback',
         },
         google: {
             clientId: '504721013884-86lf0uioi6o4diok2e6l6mjap3evjf52.apps.googleusercontent.com',
@@ -25,7 +25,7 @@ module.exports = {
         twitter: {
             clientId: 'Zo1Rbx6sp1j9YTSoqmAapc5yV',
             clientSecret: 'EzcmNycN1E50JFZKcRF8SyYW1s1bSgs6eztTqv8VQukO2ZxxUc',
-            callbackURL: 'http://localhost:3000/auth/twitter/callback',
+            callbackURL: 'http://localhost:3001/auth/twitter/callback',
         },
         remember_me: true,
     },

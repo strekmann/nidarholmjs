@@ -342,26 +342,13 @@ app.post('/login/register', (req, res, next) => {
 });
 
 app.get(
-    '/auth/google',
+    '/login/google',
     passport.authenticate('google', { scope: ['https://www.googleapis.com/auth/userinfo.profile'] }),
 );
 
 app.get(
     '/auth/google/callback',
     passport.authenticate('google', { failureRedirect: '/login' }),
-    persistentLogin, (req, res) => {
-        const url = req.session.returnTo || '/';
-        delete req.session.returnTo;
-        res.redirect(url);
-    },
-);
-
-app.get('/auth/facebook', passport.authenticate('facebook'));
-
-app.get(
-    '/auth/facebook/callback',
-    passport.authenticate('facebook', { failureRedirect: '/login' }),
-    persistentLogin,
     (req, res) => {
         const url = req.session.returnTo || '/';
         delete req.session.returnTo;
@@ -369,7 +356,19 @@ app.get(
     },
 );
 
-app.get('/auth/twitter', passport.authenticate('twitter'));
+app.get('/login/facebook', passport.authenticate('facebook'));
+
+app.get(
+    '/login/facebook/callback',
+    passport.authenticate('facebook', { failureRedirect: '/login' }),
+    (req, res) => {
+        const url = req.session.returnTo || '/';
+        delete req.session.returnTo;
+        res.redirect(url);
+    },
+);
+
+app.get('/login/twitter', passport.authenticate('twitter'));
 
 app.get(
     '/auth/twitter/callback',
@@ -458,14 +457,25 @@ app.get('/projects', universal);
 app.get('/*', universal);
 
 app.use((err, req, res, next) => {
-    log.error(err);
+    let status = 500;
+    let message = err.message || err;
+
+    switch (err.name) {
+        case 'UnauthorizedError':
+            status = 401;
+            message = 'Invalid token';
+            break;
+        default:
+            log.error(err, 'unhandeled error');
+    }
+
     res.format({
         html: () => {
-            res.sendStatus(500);
+            res.status(status).send(message);
         },
         json: () => {
-            res.status(500).json({
-                error: err.message,
+            res.status(status).json({
+                error: message,
             });
         },
     });

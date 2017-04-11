@@ -7,6 +7,7 @@ import { Strategy as RememberMeStrategy } from 'passport-remember-me';
 import { OAuth2Strategy as GoogleStrategy } from 'passport-google-oauth';
 import { Strategy as FacebookStrategy } from 'passport-facebook';
 import { Strategy as TwitterStrategy } from 'passport-twitter';
+
 import RememberMeToken from '../models/RememberMeToken';
 import User from '../models/User';
 
@@ -87,16 +88,12 @@ if (config.auth.facebook) {
         if (req.user) {
             req.user.facebook_id = profile.id;
             req.user.save((err, user) => {
-                if (user) {
-                    req.flash('success', 'Du kan nå logge inn med Facebook-kontoen');
-                }
                 return done(err, user);
             });
         }
         User.findOne({ facebook_id: profile.id }, (err, user) => {
             if (!user) {
-                req.flash('error', `Facebook-konto er ikke koblet mot Nidarholm-konto.
-                          Dette kan gjøres fra brukersiden etter at du har logget inn.`);
+                return done(new Error('Facebook-konto er ikke koblet mot Nidarholm-konto. Dette kan gjøres fra brukersiden etter at du har logget inn.'));
             }
             return done(err, user);
         });
@@ -113,16 +110,12 @@ if (config.auth.google) {
         if (req.user) {
             req.user.google_id = profile.id;
             req.user.save((err, user) => {
-                if (user) {
-                    req.flash('success', 'Du kan nå logge inn med Google-kontoen');
-                }
                 return done(err, user);
             });
         }
         User.findOne({ google_id: profile.id }, (err, user) => {
             if (!user) {
-                req.flash('error', `Google-konto er ikke koblet mot Nidarholm-konto.
-                          Dette kan gjøres fra brukersiden etter at du har logget inn.`);
+                return done(new Error('Google-konto er ikke koblet mot Nidarholm-konto. Dette kan gjøres fra brukersiden etter at du har logget inn.'));
             }
             return done(err, user);
         });

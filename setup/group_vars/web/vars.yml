@@ -1,10 +1,13 @@
 server_secret: "{{ vault_server_secret }}"
-facebook_client_id: "{{ vault_facebook_client_id }}"
-facebook_client_secret: "{{ vault_facebook_client_secret }}"
-google_client_id: "{{ vault_google_client_id }}"
-google_client_secret: "{{ vault_google_client_secret }}"
-twitter_client_id: "{{ vault_twitter_client_id }}"
-twitter_client_secret: "{{ vault_twitter_client_secret }}"
+facebook:
+    client_id: "{{ vault_facebook_client_id }}"
+    client_secret: "{{ vault_facebook_client_secret }}"
+google:
+    client_id: "{{ vault_google_client_id }}"
+    client_secret: "{{ vault_google_client_secret }}"
+twitter:
+    client_id: "{{ vault_twitter_client_id }}"
+    client_secret: "{{ vault_twitter_client_secret }}"
 admin_email: "{{ vault_admin_email }}"
 smtp:
     host: "{{ vault.smtp.host }}"

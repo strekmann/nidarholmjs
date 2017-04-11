@@ -42,6 +42,16 @@ class Login extends React.Component {
                             <h1>Logg inn <small>om du har konto fra før</small></h1>
                         </CardTitle>
                         <CardText>
+                            <div style={{ display: 'flex', flexWrap: 'wrap' }}>
+                                <RaisedButton
+                                    label="Logg inn med Facebook"
+                                    href="/login/facebook"
+                                />
+                                <RaisedButton
+                                    label="Logg inn med Google"
+                                    href="/login/google"
+                                />
+                            </div>
                             <p>Velkommen tilbake. Pålogging blir husket av nettleseren i en måned, så om du ikke vil være logget inn så lenge, må du logge ut fra din side.</p>
                             <div>
                                 <TextField
