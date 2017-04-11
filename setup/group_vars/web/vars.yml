@@ -1,3 +1,12 @@
+---
+server_name: nidarholm.no
+server_script: server/index.js
+web_server_user: www-data
+backup_host: darni.strekmann.no
+backup_user: backup-{{ project_user }}
+backup_uri: ssh://{{ backup_user }}@{{ backup_host }}:2022
+dhparam_path: /etc/ssl/certs/dhparam.pem
+admin_email: "{{ vault_admin_email }}"
 server_secret: "{{ vault_server_secret }}"
 facebook:
     client_id: "{{ vault_facebook_client_id }}"
@@ -8,7 +17,6 @@ google:
 twitter:
     client_id: "{{ vault_twitter_client_id }}"
     client_secret: "{{ vault_twitter_client_secret }}"
-admin_email: "{{ vault_admin_email }}"
 smtp:
     host: "{{ vault.smtp.host }}"
     port: "{{ vault.smtp.port }}"

@@ -1,0 +1,5 @@
+---
+project_number: 9
+project_name: nidarholm
+project_home: /srv/{{ project_name }}
+project_user: "{{ project_name }}"
