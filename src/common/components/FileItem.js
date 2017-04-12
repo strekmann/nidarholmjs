@@ -146,7 +146,7 @@ class FileItem extends React.Component {
                         memberGroupId={this.props.memberGroupId}
                         permissions={flattenPermissions(this.props.permissions)}
                     />
-                    {this.props.tags.map((tag) => {
+                    {this.props.tags && this.props.tags.map((tag) => {
                         return (
                             <Chip
                                 key={tag}
