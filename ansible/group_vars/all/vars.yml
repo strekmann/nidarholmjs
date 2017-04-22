@@ -3,3 +3,6 @@ project_number: 9
 project_name: nidarholm
 project_home: /srv/{{ project_name }}
 project_user: "{{ project_name }}"
+server_name: nidarholm.no
+server_port: "{{ 13000 + project_number }}"
+admin_email: "{{ vault_admin_email }}"

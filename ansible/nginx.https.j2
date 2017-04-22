@@ -1,5 +1,5 @@
 upstream {{ project_name }} {
-    server 127.0.0.1:{{ 13000 + project_number }} fail_timeout=0;
+    server 127.0.0.1:{{ server_port }} fail_timeout=0;
 }
 
 server {

@@ -15,19 +15,19 @@
   "scripts": {
     "env": "env",
     "test": "NODE_ENV=test mocha require test/setup",
-    "build": "npm run build:schema && npm run build:server && npm run build:client && npm run build:copy",
+    "build-project": "npm run build:schema && npm run build:server && npm run build:client && npm run build:copy",
     "build:client": "webpack --progress --colors --config webpack.prod.config.js",
     "build:copy": "cp -r config dist/ && cp package.json dist/",
     "build:server": "babel src -d dist",
-    "build:schema": "babel-node ./setup/build-schema.js",
-    "deploy": "ansible-playbook -i setup/inventory --ask-vault-pass setup/deploy.yml || :",
+    "build:schema": "babel-node ./scripts/build-schema.js",
+    "deploy": "ansible-playbook -i ansible/inventory --ask-vault-pass ansible/deploy.yml || :",
+    "setup": "ansible-playbook -i ansible/inventory --ask-vault-pass ansible/setup.yml || :",
     "dev": "babel-node ./node_modules/.bin/webpack-dev-server --progress --port 3001 --inline --hot",
-    "dist": "rm -rf node_modules && rm -rf dist && mkdir dist && yarn install --production && cp -r node_modules dist/ && yarn install && npm run build",
     "lint": "eslint --ignore-pattern \"src/server/lib/middleware.js\" --ignore-pattern \"src/server/lib/util.js\" --ignore-pattern \"src/server/routes/*\" --ignore-pattern \"src/client/**/*.js\" src/client \"src/**/*.js\" || :",
     "nodemon": "nodemon src/dev.js | bunyan -o short",
     "retire": "retire || :",
     "start": "npm run nodemon",
-    "build-modules-vagrant": "vagrant up && vagrant reload --provision"
+    "vm": "vagrant up"
   },
   "metadata": {
     "graphql": {

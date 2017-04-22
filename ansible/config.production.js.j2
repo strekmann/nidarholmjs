@@ -26,7 +26,7 @@ module.exports = {
         },
     },
     express: {
-        port: {{ 13000 + project_number }},
+        port: '{{ server_port }}',
         session: {
             secret: '{{ server_secret }}',
             domain: '{{ server_name }}',

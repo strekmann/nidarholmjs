@@ -38,6 +38,8 @@ Vagrant.configure("2") do |config|
   # the path on the guest to mount the folder. And the optional third
   # argument is a set of non-required options.
   # config.vm.synced_folder "../data", "/vagrant_data"
+  config.vm.synced_folder "~/.cache/yarn", "/cache", type: "rsync"
+  config.vm.synced_folder '.', '/vagrant', disabled: true
 
   # Provider-specific configuration so you can fine-tune various
   # backing providers for Vagrant. These expose provider-specific options.
@@ -68,12 +70,9 @@ Vagrant.configure("2") do |config|
   #   apt-get update
   #   apt-get install -y apache2
   # SHELL
-  config.vm.provision "ansible" do |ansible|
-    ansible.sudo = true
-    ansible.verbose = "v"
-    ansible.playbook = "setup/build.yml"
-    config.vm.synced_folder '.', '/vagrant', disabled: true
-    config.vm.synced_folder "~/.cache/yarn", "/cache", type: "rsync"
-    config.vm.synced_folder ".git", "/repo", type: "rsync"
-  end
+  #config.vm.provision "ansible" do |ansible|
+    #ansible.sudo = true
+    #ansible.verbose = "v"
+    #ansible.playbook = "setup/build.yml"
+  #end
 end

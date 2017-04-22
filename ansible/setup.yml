@@ -1,8 +1,7 @@
 ---
-- name: Setup software and user
-  hosts: web
+- name: Install apt dependencies and harden security
+  hosts: remote
   remote_user: root
-
   tasks:
       - name: Disable password login
         lineinfile:
@@ -14,6 +13,102 @@
         notify:
             - reload sshd
 
+      - name: Upgrade packages
+        apt:
+            upgrade: full
+            update_cache: yes
+            autoremove: yes
+
+      - name: Install apt dependencies
+        apt:
+            name: "{{ item }}"
+            state: present
+        with_items:
+            - fail2ban
+            - mailutils
+            - postfix
+            - rsync
+            - unattended-upgrades
+            - ufw
+
+      - name: Open up http ports in firewall
+        ufw:
+            rule: allow
+            port: "{{ item }}"
+            proto: tcp
+            state: enabled
+        with_items:
+            - 80
+            - 443
+            - 2022
+
+      - name: Set mailname
+        template:
+            src: mailname.j2
+            dest: /etc/mailname
+        tags:
+            - postfix
+        notify:
+            - restart postfix
+
+      - name: set up system user mail aliases
+        lineinfile:
+            state: present
+            dest: /etc/aliases
+            line: "root: {{ admin_email }}"
+            regexp: "^root:"
+        tags:
+            - postfix
+        notify:
+            - rebuild mail aliases
+
+      - name: set up unattended upgrades to use minimal steps
+        lineinfile:
+            state: present
+            dest: /etc/apt/apt.conf.d/50unattended-upgrades
+            line: Unattended-Upgrade::MinimalSteps "true";
+            regexp: "^/{0,2}Unattended-Upgrade::MinimalSteps "
+
+      - name: set up Unattended upgrades email address
+        lineinfile:
+            state: present
+            dest: /etc/apt/apt.conf.d/50unattended-upgrades
+            line: Unattended-Upgrade::Mail "root";
+            regexp: "^/{0,2}Unattended-Upgrade::Mail "
+
+      - name: set up Unattended upgrades to reboot if required
+        lineinfile:
+            state: present
+            dest: /etc/apt/apt.conf.d/50unattended-upgrades
+            line: Unattended-Upgrade::Automatic-Reboot "true";
+            regexp: "^/{0,2}Unattended-Upgrade::Automatic-Reboot "
+
+      - name: set up Unattended upgrades to reboot at night, not immediately
+        lineinfile:
+            state: present
+            dest: /etc/apt/apt.conf.d/50unattended-upgrades
+            line: Unattended-Upgrade::Automatic-Reboot-Time "05:00";
+            regexp: "^/{0,2}Unattended-Upgrade::Automatic-Reboot-Time "
+
+
+  handlers:
+      - name: reload sshd
+        service:
+            name: sshd
+            state: reloaded
+
+      - name: rebuild mail aliases
+        command: /usr/bin/newaliases
+
+      - name: restart postfix
+        service:
+            name: postfix
+            state: restarted
+
+- name: Install and set up project dependencies
+  hosts: web
+  remote_user: root
+  tasks:
       - name: Setup nodesource repository
         apt_repository:
             repo: "deb http://deb.nodesource.com/node_6.x jessie main"
@@ -40,14 +135,12 @@
             name: "{{ item }}"
             state: present
         with_items:
-            - build-essential
+            - imagemagick
             - mongodb
             - nginx
             - nodejs
-            - imagemagick
-            - postfix
-            - rsync
-            - ufw
+        tags:
+            - mongo
 
       - name: Install packages from from backports
         apt:
@@ -57,17 +150,6 @@
         with_items:
             - borgbackup
             - certbot
-
-      - name: Open up http ports in firewall
-        ufw:
-            rule: allow
-            port: "{{ item }}"
-            proto: tcp
-            state: enabled
-        with_items:
-            - 80
-            - 443
-            - 2022
 
       - name: Create filesystem on extra volume
         filesystem:
@@ -90,26 +172,11 @@
             state: directory
             recurse: yes
 
-      - name: Set mailname
-        template:
-            src: mailname.j2
-            dest: /etc/mailname
-        tags:
-            - postfix
-        notify:
-            - restart postfix
 
-      - name: set up system user mail aliases
-        lineinfile:
-            state: present
-            dest: /etc/aliases
-            line: "root: {{ admin_email }}"
-            regexp: "^root:"
-        tags:
-            - postfix
-        notify:
-            - rebuild mail aliases
-
+- name: Setup project user
+  hosts: web
+  remote_user: root
+  tasks:
       - name: Create project user
         user:
             name: "{{ project_user }}"
@@ -132,19 +199,6 @@
             name: "{{ web_server_user }}"
             groups: "{{ project_user }}"
 
-  handlers:
-      - name: reload sshd
-        service:
-            name: sshd
-            state: reloaded
-
-      - name: rebuild mail aliases
-        command: /usr/bin/newaliases
-
-      - name: restart postfix
-        service:
-            name: postfix
-            state: restarted
 
 - name: Setup http server
   hosts: web
@@ -199,7 +253,6 @@
 - name: Setup https server
   hosts: web
   remote_user: root
-
   tasks:
       - name: Run dhparams
         command: openssl dhparam -out {{ dhparam_path }} 2048
@@ -228,9 +281,18 @@
         notify:
             - reload nginx
 
+      - name: Set cron mailto
+        cronvar:
+            name: MAILTO
+            value: "{{ admin_email }}"
+            state: present
+            user: root
+        tags:
+            - cron
+
       - name: Add cron job for certificate renewal
         cron:
-            job: certbot renew --force-renewal --post-hook "systemctl reload nginx"
+            job: certbot renew --post-hook "systemctl reload nginx"
             name: Certificate renewal
             minute: 41
             hour: 0
@@ -243,68 +305,9 @@
             name: nginx
             state: reloaded
 
-- name: Build and sync
-  hosts: web
-  remote_user: "{{ project_user }}"
-
-  tasks:
-      - name: Create release directory  # Not necessary if we checkout with git
-        file:
-            path: "{{ deploy_helper.new_release_path }}"
-            state: directory
-            mode: 0755
-
-      - name: Add "unfinished file" for deploy_helper
-        file:
-            path: "{{ deploy_helper.new_release_path }}/{{ deploy_helper.unfinished_filename }}"
-            state: touch
-
-      - name: Build package to dist
-        local_action: command npm run dist
-
-      - name: Synchronize dist
-        synchronize:
-            src: ../dist/
-            dest: "{{ deploy_helper.new_release_path }}"
-
-      - name: Add production config
-        template:
-            src: config.production.js.j2
-            dest: "{{ deploy_helper.new_release_path }}/config/production.js"
-
-      - name: Copy systemd config
-        remote_user: root
-        template:
-            src: service.j2
-            dest: /etc/systemd/system/{{ project_name }}.service
-            owner: root
-            mode: 644
-        notify:
-            - reload systemd daemon
-            - reload systemd service
-
-      - name: Finalize the deploy, removing the unfinished file and switching the symlink
-        deploy_helper:
-            path: "{{ project_home }}"
-            release: "{{ deploy_helper.new_release }}"
-            state: finalize
-        notify:
-            - reload systemd service
-
-  handlers:
-      - name: reload systemd daemon
-        command: systemctl daemon-reload
-        remote_user: root
-
-      - name: reload systemd service
-        service:
-            name: "{{ project_name }}"
-            state: restarted
-            enabled: true
-        remote_user: root
-
 - name: Prepare backup user on backup server
   hosts: backup
+  remote_user: root
   tasks:
       - name: Create group for backup user
         group:
@@ -333,7 +336,7 @@
   tasks:
       - name: Should have a folder for remote public keys
         file:
-            dest: keys
+            dest: .keycache
             state: directory
         delegate_to: localhost
         tags:
@@ -342,19 +345,20 @@
       - name: Copy ssh key to localhost
         synchronize:
             src: "{{ project_home }}/.ssh/id_rsa.pub"
-            dest: keys/{{ project_user }}.key
+            dest: .keycache/{{ project_user }}.key
             mode: pull
         tags:
             - backup
 
 - name: Add key to backup server
   hosts: backup
+  remote_user: root
   tasks:
       - name: Add key to backup server
         authorized_key:
             user: backup-{{ project_user }}
             state: present
-            key: "{{ lookup('file', 'keys/' + project_user + '.key') }}"
+            key: "{{ lookup('file', '.keycache/' + project_user + '.key') }}"
             key_options: 'command="borg serve --restrict-to-path {{ backup_home }}",no-port-forwarding,no-X11-forwarding,no-pty,no-agent-forwarding,no-user-rc'
         tags:
             - backup
@@ -365,7 +369,7 @@
   tasks:
       - name: Initialize backup for shared files
         environment:
-            BORG_PASSPHRASE:
+            BORG_PASSPHRASE: ""
             BORG_RSH: ssh -o StrictHostKeyChecking=no
         command: borg init --encryption=keyfile {{ backup_uri }}/./{{ project_name }}-{{ ansible_hostname }}-shared
         args:
@@ -375,54 +379,71 @@
 
       - name: Initialize backup for mongo database
         environment:
-            BORG_PASSPHRASE:
+            BORG_PASSPHRASE: ""
             BORG_RSH: ssh -o StrictHostKeyChecking=no
         command: borg init --encryption=keyfile {{ backup_uri }}/./{{ project_name }}-{{ ansible_hostname }}-mongo
         args:
             creates: "{{ project_home }}/.config/borg/keys/*_{{ project_name }}_{{ ansible_hostname }}_mongo"
         tags:
             - backup
+            - mongo
 
 - name: Set up cron jobs for backup and backup pruning
   hosts: web
   remote_user: "{{ project_user }}"
   tasks:
-      - name: Add cron job for backup of mongo database
-        cron:
-            job: mongodump -d {{ project_name }} -o {{ project_home }}/{{ project_name }}-dump 1>/dev/null && borg create -C lzma {{ backup_uri }}/./{{ project_name }}-{{ ansible_hostname }}-mongo::{{ project_name }}-mongo-{hostname}-{now:\%Y-\%m-\%d} {{ project_home }}/{{ project_name }}-dump && rm -r {{ project_home }}/{{ project_name }}-dump
-            name: Backing up database
-            minute: "{{ 10 + project_number }}"
-            hour: 1
+      - name: Set cron mailto
+        cronvar:
+            name: MAILTO
+            value: "{{ admin_email }}"
+            state: present
+            user: "{{ project_user }}"
         tags:
             - cron
             - backup
 
+      - name: Add cron job for backup of mongo database
+        cron:
+            job: mongodump -d {{ project_name }} -o {{ project_home }}/{{ project_name }}-dump 1>/dev/null && BORG_PASSPHRASE= borg create -C lzma {{ backup_uri }}/./{{ project_name }}-{{ ansible_hostname }}-mongo::{{ project_name }}-mongo-{hostname}-{now:\%Y-\%m-\%d} {{ project_home }}/{{ project_name }}-dump && rm -r {{ project_home }}/{{ project_name }}-dump
+            name: Backing up database
+            minute: "{{ 10 + project_number }}"
+            hour: 1
+            state: present
+        tags:
+            - cron
+            - backup
+            - mongo
+
       - name: Add cron job for backup of shared files
         cron:
-            job: borg create -s {{ backup_uri }}/./{{ project_name }}-{{ ansible_hostname }}-shared::{{ project_name }}-shared-{hostname}-{now:\%Y-\%m-\%d} {{ deploy_helper.shared_path }}
+            job: BORG_PASSPHRASE= borg create {{ backup_uri }}/./{{ project_name }}-{{ ansible_hostname }}-shared::{{ project_name }}-shared-{hostname}-{now:\%Y-\%m-\%d} {{ deploy_helper.shared_path }}
             name: Backing up shared files
             minute: "{{ 10 + project_number }}"
             hour: 2
+            state: present
         tags:
             - cron
             - backup
 
       - name: Add cron job for pruning old database backups
         cron:
-            job: borg prune --keep-daily=7 --keep-weekly=4 --keep-monthly=24 {{ backup_uri }}/./{{ project_name }}-{{ ansible_hostname }}-mongo
+            job: BORG_PASSPHRASE= borg prune --keep-daily=7 --keep-weekly=4 --keep-monthly=24 {{ backup_uri }}/./{{ project_name }}-{{ ansible_hostname }}-mongo
             name: Pruning database backups
             minute: "{{ 10 + project_number }}"
             hour: 3
+            state: present
         tags:
             - cron
             - backup
+            - mongo
 
       - name: Add cron job for pruning old shared backups
         cron:
-            job: borg prune --keep-daily=7 --keep-weekly=4 --keep-monthly=24 {{ backup_uri }}/./{{ project_name }}-{{ ansible_hostname }}-shared
+            job: BORG_PASSPHRASE= borg prune --keep-daily=7 --keep-weekly=4 --keep-monthly=24 {{ backup_uri }}/./{{ project_name }}-{{ ansible_hostname }}-shared
             name: Pruning shared file backups
             minute: "{{ 10 + project_number }}"
             hour: 4
+            state: present
         tags:
             - cron
             - backup
