@@ -1,4 +1,5 @@
 import React from 'react';
+import Relay from 'react-relay';
 import { Link } from 'react-router';
 import Paper from 'material-ui/Paper';
 import moment from 'moment';
@@ -9,16 +10,10 @@ import Daterange from './Daterange';
 import List from './List';
 import Text from './Text';
 
-export default class ProjectItem extends React.Component {
+class ProjectItem extends React.Component {
     static propTypes = {
-        title: React.PropTypes.string,
-        start: React.PropTypes.string,
-        end: React.PropTypes.string,
-        tag: React.PropTypes.string,
-        year: React.PropTypes.string,
-        publicMdtext: React.PropTypes.string,
-        poster: React.PropTypes.object,
-        conductors: React.PropTypes.array,
+        project: React.PropTypes.object.isRequired,
+        showText: React.PropTypes.bool,
     }
 
     render() {
@@ -26,17 +21,28 @@ export default class ProjectItem extends React.Component {
             desktopGutterLess,
             desktopGutterMini,
         } = theme.spacing;
-        const widePoster = moment(this.props.end).isAfter(moment([2016, 7, 1]));
+        const {
+            title,
+            start,
+            end,
+            tag,
+            year,
+            publicMdtext,
+            poster,
+            conductors,
+        } = this.props.project;
+        const showText = this.props.showText;
+        const widePoster = moment(end).isAfter(moment([2016, 7, 1]));
         if (widePoster) {
             return (
                 <Paper style={{ marginBottom: desktopGutterLess }}>
-                    {this.props.poster
+                    {poster
                             ? <Link
-                                to={`/${this.props.year}/${this.props.tag}`}
+                                to={`/${year}/${tag}`}
                             >
                                 <img
                                     alt=""
-                                    src={this.props.poster.normalPath}
+                                    src={poster.normalPath}
                                     className="responsive"
                                 />
                             </Link>
@@ -46,62 +52,76 @@ export default class ProjectItem extends React.Component {
                         style={{
                             paddingLeft: desktopGutterLess,
                             paddingRight: desktopGutterLess,
-                            paddingTop: this.props.poster ? null : desktopGutterLess,
+                            paddingTop: poster ? null : desktopGutterLess,
                             paddingBottom: desktopGutterLess,
                         }}
                     >
                         <h2 style={{ marginTop: desktopGutterMini }}>
-                            <Link to={`/${this.props.year}/${this.props.tag}`}>
-                                {this.props.title}
+                            <Link to={`/${year}/${tag}`}>
+                                {title}
                             </Link>
                         </h2>
                         <div className="meta">
-                            <Daterange start={this.props.start} end={this.props.end} />
+                            <Daterange
+                                start={start}
+                                end={end}
+                                noTime
+                            />
                         </div>
-                        {this.props.conductors.length
+                        {conductors.length
                             ? <p>Dirigent:
                                 {' '}
                                 <List
-                                    items={this.props.conductors.map((conductor) => {
+                                    items={conductors.map((conductor) => {
                                         return conductor.name;
                                     })}
                                 />
                             </p>
                             : null
                         }
-                        <Text text={this.props.publicMdtext} />
+                        {showText
+                            ? <Text text={publicMdtext} />
+                            : null
+                        }
                     </div>
                 </Paper>
             );
         }
         return (
             <Paper style={{ display: 'flex', marginBottom: desktopGutterLess }}>
-                <div style={{ width: this.props.poster ? '50%' : '100%', padding: desktopGutterLess }}>
+                <div style={{ width: poster ? '50%' : '100%', padding: desktopGutterLess }}>
                     <h2 style={{ marginTop: desktopGutterMini }}>
-                        <Link to={`/${this.props.year}/${this.props.tag}`}>
-                            {this.props.title}
+                        <Link to={`/${year}/${tag}`}>
+                            {title}
                         </Link>
                     </h2>
                     <div className="meta">
-                        <Daterange start={this.props.start} end={this.props.end} />
+                        <Daterange
+                            start={start}
+                            end={end}
+                            noTime
+                        />
                     </div>
-                    {this.props.conductors.length
+                    {conductors.length
                         ? <p>Dirigent:
                             {' '}
                             <List
-                                items={this.props.conductors.map((conductor) => {
+                                items={conductors.map((conductor) => {
                                     return conductor.name;
                                 })}
                             />
                         </p>
                         : null
                     }
-                    <Text text={this.props.publicMdtext} />
+                    {showText
+                        ? <Text text={publicMdtext} />
+                        : null
+                    }
                 </div>
-                {this.props.poster
+                {poster
                     ? <img
                         alt="Konsertplakat"
-                        src={this.props.poster.normalPath}
+                        src={poster.normalPath}
                         style={{
                             display: 'inline-block',
                             width: '50%',
@@ -116,3 +136,27 @@ export default class ProjectItem extends React.Component {
         );
     }
 }
+
+export default Relay.createContainer(ProjectItem, {
+    fragments: {
+        project: () => {
+            return Relay.QL`
+            fragment on Project {
+                id
+                title
+                start
+                end
+                year
+                tag
+                publicMdtext
+                poster {
+                    filename
+                    normalPath
+                }
+                conductors {
+                    name
+                }
+            }`;
+        },
+    },
+});

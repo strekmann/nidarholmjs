@@ -5,6 +5,7 @@ import getMuiTheme from 'material-ui/styles/getMuiTheme';
 import theme from '../theme';
 import Footer from './Footer';
 import Navigation from './Navigation';
+import BottomNavigation from './BottomNavigation';
 
 class App extends React.Component {
     static propTypes = {
@@ -13,9 +14,17 @@ class App extends React.Component {
         organization: React.PropTypes.object,
     }
 
+    static childContextTypes = {
+        muiTheme: React.PropTypes.object.isRequired,
+    }
+
     constructor(props) {
         super(props);
         this.muiTheme = getMuiTheme(theme);
+    }
+
+    getChildContext() {
+        return { muiTheme: this.muiTheme };
     }
 
     render() {
@@ -48,6 +57,9 @@ class App extends React.Component {
                     viewer={this.props.viewer}
                     organization={organization}
                 />
+                <BottomNavigation
+                    organization={organization}
+                />
             </div>
         );
     }
@@ -67,6 +79,7 @@ export default Relay.createContainer(App, {
                 baseurl
                 facebookAppid
                 ${Navigation.getFragment('organization')}
+                ${BottomNavigation.getFragment('organization')}
                 ${Footer.getFragment('organization')}
             }`;
         },

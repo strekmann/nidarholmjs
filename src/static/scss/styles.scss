@@ -237,3 +237,8 @@ nav a {
         }
     }
 }
+@media screen and (min-width: 1200px) {
+    .hide-desktop {
+        display: none;
+    }
+}
