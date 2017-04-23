@@ -27,7 +27,7 @@ class ProjectListUpcoming extends React.Component {
             next = PROJECTS_PER_PAGE;
         }
         this.props.relay.setVariables({
-            showUpcomingProjects: next,
+            showProjects: next,
         });
     }
 

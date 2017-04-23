@@ -14,9 +14,6 @@ import ProjectListPrevious from './ProjectListPrevious';
 import ProjectListUpcoming from './ProjectListUpcoming';
 import ProjectForm from './ProjectForm';
 
-const showUpcomingProjects = 4;
-const projectsPerPage = 10;
-
 class Projects extends React.Component {
     static contextTypes = {
         relay: Relay.PropTypes.Environment,
