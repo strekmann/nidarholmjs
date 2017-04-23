@@ -101,6 +101,12 @@
             dest: ../dist
             rsync_opts: "--delete-excluded"
 
+      - name: Clean up local build(s)
+        deploy_helper:
+          path: "{{ project_home }}"
+          release: "{{ deploy_helper.new_release }}"
+          state: clean
+
 
 - name: Build project on localhost
   hosts: localhost
