@@ -628,6 +628,12 @@ const groupScoreType = new GraphQLObjectType({
                     );
                 },
             },
+            organization: {
+                type: organizationType,
+                resolve: (group, args, { organization }) => {
+                    return organization;
+                },
+            },
         };
     },
     interfaces: [nodeInterface],

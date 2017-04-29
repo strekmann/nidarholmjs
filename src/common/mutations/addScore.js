@@ -2,10 +2,13 @@ import Relay from 'react-relay';
 
 export default class AddScoreMutation extends Relay.Mutation {
     static fragments = {
-        organization: () => {
+        groupscore: () => {
             return Relay.QL`
-            fragment on Organization {
+            fragment on Groupscore {
                 id
+                organization {
+                    id
+                }
             }`;
         },
     }
@@ -19,8 +22,7 @@ export default class AddScoreMutation extends Relay.Mutation {
             filename: this.props.filename,
             hex: this.props.hex,
             pieceId: this.props.piece.id,
-            groupId: this.props.group.id,
-            //organizationId: this.props.organization.id,
+            groupId: this.props.groupscore.id,
         };
     }
 
@@ -40,7 +42,7 @@ export default class AddScoreMutation extends Relay.Mutation {
         return [{
             type: 'RANGE_ADD',
             parentName: 'organization',
-            parentID: this.props.organization.id,
+            parentID: this.props.groupscore.organization.id,
             connectionName: 'files',
             edgeName: 'newScoreEdge',
             rangeBehaviors: {

@@ -1,8 +1,5 @@
-/* global FormData */
-
 import React from 'react';
 import Relay from 'react-relay';
-import axios from 'axios';
 import FlatButton from 'material-ui/FlatButton';
 import IconButton from 'material-ui/IconButton';
 import IconMenu from 'material-ui/IconMenu';
@@ -13,11 +10,10 @@ import getMuiTheme from 'material-ui/styles/getMuiTheme';
 import MoreVertIcon from 'material-ui/svg-icons/navigation/more-vert';
 
 import theme from '../theme';
-import AddScoreMutation from '../mutations/addScore';
 import UpdatePieceMutation from '../mutations/updatePiece';
 
 import List from './List';
-import GroupScores from './GroupScores';
+import Groupscore from './Groupscore';
 import PieceForm from './PieceForm';
 
 class Piece extends React.Component {
@@ -65,25 +61,6 @@ class Piece extends React.Component {
             subtitle,
             piece: this.props.organization.piece,
         }));
-    }
-
-    uploadScores = (files, group) => {
-        files.forEach((file) => {
-            const data = new FormData();
-            data.append('file', file);
-
-            axios.post('/upload', data)
-            .then((response) => {
-                this.context.relay.commitUpdate(new AddScoreMutation({
-                    viewer: null,
-                    organization: this.props.organization,
-                    hex: response.data.hex,
-                    filename: file.name,
-                    group,
-                    piece: this.props.organization.piece,
-                }));
-            });
-        });
     }
 
     render() {
@@ -137,12 +114,12 @@ class Piece extends React.Component {
                 {org.isMusicAdmin ?
                     <div>
                         <h2>Admin</h2>
-                        {piece.groupscores.map((group) => {
+                        {piece.groupscores.map((groupscore) => {
                             return (
-                                <GroupScores
-                                    key={group.id}
-                                    uploadScores={this.uploadScores}
-                                    {...group}
+                                <Groupscore
+                                    key={groupscore.id}
+                                    groupscore={groupscore}
+                                    piece={piece}
                                 />
                             );
                         })}
@@ -182,20 +159,10 @@ export default Relay.createContainer(Piece, {
                     }
                     groupscores {
                         id
-                        name
-                        files {
-                            edges {
-                                node {
-                                    id
-                                    filename
-                                    path
-                                }
-                            }
-                        }
+                        ${Groupscore.getFragment('groupscore')}
                     }
                     ${UpdatePieceMutation.getFragment('piece')}
                 }
-                ${AddScoreMutation.getFragment('organization')}
             }`;
         },
     },
