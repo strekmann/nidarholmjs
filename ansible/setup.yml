@@ -404,7 +404,7 @@
 
       - name: Add cron job for backup of mongo database
         cron:
-            job: mongodump -d {{ project_name }} -o {{ project_home }}/{{ project_name }}-dump 1>/dev/null && BORG_PASSPHRASE= borg create -C lzma {{ backup_uri }}/./{{ project_name }}-{{ ansible_hostname }}-mongo::{{ project_name }}-mongo-{hostname}-{now:\%Y-\%m-\%d} {{ project_home }}/{{ project_name }}-dump && rm -r {{ project_home }}/{{ project_name }}-dump
+            job: mongodump -d {{ project_name }} -o {{ project_home }}/{{ project_name }}-dump 1>/dev/null && BORG_PASSPHRASE= borg create {{ backup_uri }}/./{{ project_name }}-{{ ansible_hostname }}-mongo::{{ project_name }}-mongo-{hostname}-{now:\%Y-\%m-\%d} {{ project_home }}/{{ project_name }}-dump && rm -r {{ project_home }}/{{ project_name }}-dump
             name: Backing up database
             minute: "{{ 10 + project_number }}"
             hour: 1
