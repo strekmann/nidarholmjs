@@ -7,6 +7,7 @@ import Dropzone from 'react-dropzone';
 import Relay from 'react-relay';
 
 import AddScoreMutation from '../mutations/addScore';
+import RemoveScoreMutation from '../mutations/removeScore';
 
 import ScoreItem from './ScoreItem';
 
@@ -42,6 +43,14 @@ class Groupscore extends React.Component {
         });
     }
 
+    removeScore = (file) => {
+        this.context.relay.commitUpdate(new RemoveScoreMutation({
+            file,
+            groupscore: this.props.groupscore,
+            piece: this.props.piece,
+        }));
+    }
+
     render() {
         return (
             <div>
@@ -65,6 +74,7 @@ class Groupscore extends React.Component {
                                 file={file}
                                 groupscore={this.props.groupscore}
                                 key={file.id}
+                                removeScore={this.removeScore}
                             />
                         );
                     })}
@@ -90,6 +100,7 @@ export default Relay.createContainer(Groupscore, {
                     }
                 }
                 ${AddScoreMutation.getFragment('groupscore')}
+                ${RemoveScoreMutation.getFragment('groupscore')}
             }`;
         },
     },

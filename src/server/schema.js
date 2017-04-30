@@ -1903,6 +1903,32 @@ const mutationAddScore = mutationWithClientMutationId({
     },
 });
 
+const mutationRemoveScore = mutationWithClientMutationId({
+    name: 'RemoveScore',
+    inputFields: {
+        pieceId: { type: GraphQLID },
+        fileId: { type: GraphQLID },
+    },
+    outputFields: {
+        organization: {
+            type: organizationType,
+            resolve: (payload, args, { organization }) => {
+                return organization;
+            },
+        },
+    },
+    mutateAndGetPayload: ({ fileId, pieceId }) => {
+        // TODO: Add permission check
+        const fId = fromGlobalId(fileId).id;
+        const pId = fromGlobalId(pieceId).id;
+        return Piece.findByIdAndUpdate(
+            pId,
+            { $pull: { scores: fId } },
+            { new: true },
+        ).exec();
+    },
+});
+
 const mutationAddProject = mutationWithClientMutationId({
     name: 'AddProject',
     inputFields: {
@@ -2584,6 +2610,7 @@ const mutationType = new GraphQLObjectType({
             editPage: mutationEditPage,
             addFile: mutationAddFile,
             addScore: mutationAddScore,
+            removeScore: mutationRemoveScore,
             saveFilePermissions: mutationSaveFilePermissions,
             saveOrganization: mutationSaveOrganization,
             setProjectPoster: mutationSetProjectPoster,

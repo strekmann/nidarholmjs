@@ -8,18 +8,15 @@ import { Link } from 'react-router';
 
 class ScoreItem extends React.Component {
     static propTypes = {
-        groupscore: React.PropTypes.object,
         file: React.PropTypes.object,
+        groupscore: React.PropTypes.object,
+        removeScore: React.PropTypes.func,
     }
 
-    /*
-    onDelete = () => {
-        this.context.relay.commitUpdate(new RemoveFileMutation({
-            groupId: this.props.groupId,
-            fileId: this.props.scoreItem.id,
-        }));
+    onDelete = (event) => {
+        event.preventDefault();
+        this.props.removeScore(this.props.file);
     }
-    */
 
     render() {
         const { file } = this.props;
@@ -52,7 +49,6 @@ export default Relay.createContainer(ScoreItem, {
                 filename
                 path
             }`;
-            // ${RemoveFileMutation.getFragment('file')}
         },
     },
 });
