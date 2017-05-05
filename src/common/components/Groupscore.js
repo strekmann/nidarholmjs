@@ -54,7 +54,7 @@ class Groupscore extends React.Component {
     render() {
         return (
             <div>
-                <h3>{this.props.name}</h3>
+                <h3>{this.props.groupscore.name}</h3>
                 <Dropzone
                     style={{
                         minWidth: 300,
