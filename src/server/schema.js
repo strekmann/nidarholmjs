@@ -299,7 +299,15 @@ userType = new GraphQLObjectType({
             },
             membershipHistory: {
                 type: GraphQLString,
-                resolve: (user) => {
+                resolve: (user, args, { organization, viewer }) => {
+                    if (isAdmin(organization, viewer)) {
+                        return User.findById(user._id)
+                        .select('+membership_history')
+                        .exec()
+                        .then((e) => {
+                            return e.membership_history;
+                        });
+                    }
                     return user.membership_history;
                 },
             },
