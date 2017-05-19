@@ -503,3 +503,5 @@ process.on('uncaughtException', (err) => {
 httpServer.listen(port, () => {
     log.info('port %s, env=%s', port, config.util.getEnv('NODE_ENV'));
 });
+
+export default app;

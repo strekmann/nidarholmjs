@@ -5,7 +5,7 @@ import mongoose from 'mongoose';
 mongoose.Promise = Promise;
 
 if (process.env.NODE_ENV === 'test') {
-    mongoose.connect('mongodb://localhost/mocha_test');
+    mongoose.connect('mongodb://localhost/test');
 }
 else {
     const servers = config.get('mongodb.servers') || ['localhost'];

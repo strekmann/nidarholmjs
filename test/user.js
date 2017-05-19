@@ -1,16 +1,16 @@
-/*jshint expr: true*/
-
 describe("User", function () {
 
-    var cheerio = require('cheerio'),
-        mongoose = require('mongoose'),
-        _ = require('underscore'),
-        util = require('../server/lib/util'),
-        User = require('../server/models/index').User,
-        Group = require('../server/models/index').Group,
-        Organization = require('../server/models/index').Organization,
-        File = require('../server/models/files').File,
-        organization_routes = require('../server/routes/organization');
+    var cheerio = require('cheerio');
+    var mongoose = require('mongoose');
+    var config = require('config');
+    var _ = require('underscore');
+            //util = require('../src/server/lib/util'),
+    var User = require('../src/server/models/User').default;
+    var Group = require('../src/server/models/Group').default;
+    var Organization = require('../src/server/models/Organization').default;
+    var File = require('../src/server/models/File').default;
+    var request = require('supertest');
+    var app = require('../src/server/index').default;
 
     var agent = request.agent(app),
         user1,
@@ -19,8 +19,8 @@ describe("User", function () {
         org;
 
     before(function (done) {
-        app.db.connection.db.dropDatabase(function () {
-
+        mongoose.connection.db.dropDatabase(function() {
+                done();
             //mock
             group = new Group({
                 _id: 'testgroup',
@@ -52,6 +52,28 @@ describe("User", function () {
                 administration_group: 'testgroup',
                 member_group: 'testgroup'
             });
+            group.save().then(() => {
+                user1.save().then(() => {
+                    user2.save().then(() => {
+                        org.save().then(() => {
+                            console.log("ost");
+                            agent
+                            .post('/login')
+                            .send({username: user1.username, password: 'Passw0rd'})
+                            .expect(302)
+                            .end(function(err, res) {
+                                res.header.location.should.equal('/');
+                                console.log("Logged in", err);
+                                done(err);
+                            });
+                        })
+                    })
+                })
+            })
+            .catch((err) => {
+                done(err);
+            });
+            /*
             group.save(function (err) {
                 if (err) {
                     done(err);
@@ -79,12 +101,7 @@ describe("User", function () {
                     });
                 }
             });
-        });
-    });
-
-    after(function (done) {
-        app.db.connection.db.dropDatabase(function () {
-            done();
+            */
         });
     });
 
@@ -95,7 +112,7 @@ describe("User", function () {
                 .set('Accept', 'text/html')
                 .expect(200)
                 .end(function (err, res) {
-                    $ = cheerio.load(res.text);
+                    var $ = cheerio.load(res.text);
                     var members = $('#members .member');
                     members.length.should.equal(1); // testuser is member to be able to see page
                     done(err);
