@@ -24,6 +24,7 @@ import config from 'config';
 import moment from 'moment';
 import nodemailer from 'nodemailer';
 import uuid from 'node-uuid';
+import ObjectId from 'mongoose/lib/types/objectid';
 
 import { connectionFromMongooseQuery, offsetToCursor } from './connections';
 import Activity from './models/Activity';
@@ -673,7 +674,8 @@ pieceType = new GraphQLObjectType({
                 type: new GraphQLList(groupScoreType),
                 resolve: (piece, args, { organization, viewer }) => {
                     if (!isMusicAdmin(organization, viewer)) {
-                        throw new Error('Not music admin. Can not see group scores.');
+                        // throw new Error('Not music admin. Can not see group scores.');
+                        return null;
                     }
                     return organization.instrument_groups
                     .map((groupId) => {
@@ -1062,7 +1064,10 @@ organizationType = new GraphQLObjectType({
                 eventid: { name: 'eventid', type: GraphQLID },
             },
             resolve: (_, { eventid }, { viewer }) => {
-                const id = fromGlobalId(eventid).id;
+                let id = fromGlobalId(eventid).id;
+                if (!ObjectId.isValid(id)) {
+                    id = eventid;
+                }
                 const query = Event.findById(id);
                 return authenticate(query, viewer, { exclude: ['mdtext'] });
             },
