@@ -26,6 +26,7 @@ export default class EditEventMutation extends Relay.Mutation {
             mdtext: this.props.mdtext,
             permissions: this.props.permissions,
             tags: this.props.tags,
+            highlighted: this.props.highlighted,
         };
     }
 
@@ -41,6 +42,7 @@ export default class EditEventMutation extends Relay.Mutation {
                 mdtext
                 projects
                 permissions
+                highlighted
             }
         }`;
     }

@@ -81,6 +81,7 @@ class Event extends React.Component {
             mdtext: event.mdtext,
             permissions: event.permissions,
             tags: event.tags,
+            highlighted: event.highlighted,
         }));
     }
 
@@ -208,6 +209,7 @@ export default Relay.createContainer(Event, {
                             name
                         }
                     }
+                    highlighted
                     ${DeleteEventMutation.getFragment('event')}
                 }
                 ${EventForm.getFragment('organization')}

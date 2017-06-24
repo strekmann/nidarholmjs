@@ -25,6 +25,7 @@ export default class AddEventMutation extends Relay.Mutation {
             tags: this.props.tags,
             mdtext: this.props.mdtext,
             permissions: this.props.permissions,
+            highlighted: this.props.highlighted,
         };
     }
 

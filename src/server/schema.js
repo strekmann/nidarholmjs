@@ -608,6 +608,9 @@ eventType = new GraphQLObjectType({
                     return Project.find().where('tag').in(event.tags).exec();
                 },
             },
+            highlighted: {
+                type: GraphQLBoolean,
+            },
         };
     },
     interfaces: [nodeInterface],
@@ -1397,6 +1400,7 @@ const mutationAddEvent = mutationWithClientMutationId({
         tags: { type: new GraphQLList(GraphQLString) },
         mdtext: { type: GraphQLString },
         permissions: { type: new GraphQLList(GraphQLString) },
+        highlighted: { type: GraphQLBoolean },
     },
     outputFields: {
         organization: {
@@ -1416,7 +1420,7 @@ const mutationAddEvent = mutationWithClientMutationId({
         },
     },
     mutateAndGetPayload: (
-        { title, location, start, end, tags, mdtext, permissions },
+        { title, location, start, end, tags, mdtext, permissions, highlighted },
         { viewer },
     ) => {
         if (!viewer) {
@@ -1435,6 +1439,7 @@ const mutationAddEvent = mutationWithClientMutationId({
         if (permissions) {
             event.permissions = buildPermissionObject(permissions);
         }
+        event.highlighted = highlighted;
         // TODO: Check permissions
         return event.save();
     },
@@ -1524,6 +1529,7 @@ const mutationEditEvent = mutationWithClientMutationId({
         mdtext: { type: GraphQLString },
         permissions: { type: new GraphQLList(GraphQLString) },
         tags: { type: new GraphQLList(GraphQLString) },
+        highlighted: { type: GraphQLBoolean },
     },
     outputFields: {
         event: {
@@ -1542,6 +1548,7 @@ const mutationEditEvent = mutationWithClientMutationId({
         mdtext,
         permissions,
         tags,
+        highlighted,
     }, { viewer }) => {
         const id = fromGlobalId(eventid).id;
         if (!viewer) {
@@ -1557,6 +1564,7 @@ const mutationEditEvent = mutationWithClientMutationId({
                 mdtext,
                 permissions: buildPermissionObject(permissions),
                 tags,
+                highlighted,
             },
             { new: true },
         );

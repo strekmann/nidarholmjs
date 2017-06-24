@@ -171,6 +171,7 @@ class Project extends React.Component {
             tags: [this.props.organization.project.tag],
             mdtext: event.mdtext,
             permissions: event.permissions,
+            highlighted: event.highlighted,
         }));
     }
 

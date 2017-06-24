@@ -1,5 +1,6 @@
 /* eslint "no-nested-ternary": 0 */
 
+import Checkbox from 'material-ui/Checkbox';
 import Dialog from 'material-ui/Dialog';
 import FlatButton from 'material-ui/FlatButton';
 import TextField from 'material-ui/TextField';
@@ -25,6 +26,7 @@ class EventForm extends React.Component {
         save: React.PropTypes.func.isRequired,
         cancel: React.PropTypes.func.isRequired,
         projectPermissions: React.PropTypes.object,
+        highlighted: React.PropTypes.bool,
     }
 
     state = {
@@ -51,6 +53,7 @@ class EventForm extends React.Component {
             )
         ),
         projects: this.props.event ? this.props.event.projects : [],
+        highlighted: !!(this.props.event && this.props.event.highlighted),
     }
 
     onChangeTitle = (event, title) => {
@@ -110,6 +113,10 @@ class EventForm extends React.Component {
         this.setState({ projects });
     }
 
+    onChangeHighlighted = (event, highlighted) => {
+        this.setState({ highlighted });
+    }
+
     save = () => {
         const {
             id,
@@ -120,6 +127,7 @@ class EventForm extends React.Component {
             mdtext,
             permissions,
             projects,
+            highlighted,
         } = this.state;
         return this.props.save({
             id,
@@ -134,6 +142,7 @@ class EventForm extends React.Component {
             tags: projects.map((p) => {
                 return p.tag;
             }),
+            highlighted,
         });
     }
 
@@ -224,6 +233,13 @@ class EventForm extends React.Component {
                         projects={this.state.projects}
                         organization={this.props.organization}
                         onChange={this.onChangeProjects}
+                    />
+                </div>
+                <div>
+                    <Checkbox
+                        label="Konsert eller noe annet spesielt"
+                        checked={this.state.highlighted}
+                        onCheck={this.onChangeHighlighted}
                     />
                 </div>
                 <div>
