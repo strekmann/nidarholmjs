@@ -3,6 +3,7 @@ import Relay from 'react-relay';
 import { Route, IndexRoute, createRoutes } from 'react-router';
 
 import App from './components/App';
+import Contact from './components/Contact';
 import Group from './components/Group';
 import Groups from './components/Groups';
 import Login from './components/Login';
@@ -61,6 +62,7 @@ export default createRoutes(
         <Route path="groups" component={Groups} queries={queries} />
         <Route path="group/:groupId" component={Group} queries={queries} />
         <Route path="org" component={Organization} queries={organizationQueries} />
+        <Route path="contact" component={Contact} queries={organizationQueries} />
         <Route path="pages" component={Pages} queries={queries} />
         <Route path=":slug" component={Page} queries={queries} />
         <Route path=":year/:tag" component={Project} queries={queries} />

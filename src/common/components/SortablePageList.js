@@ -2,6 +2,7 @@ import React from 'react';
 import { DragDropContext } from 'react-dnd';
 import HTML5Backend from 'react-dnd-html5-backend';
 import update from 'react/lib/update';
+
 import SortablePageItem from './SortablePageItem';
 
 @DragDropContext(HTML5Backend)

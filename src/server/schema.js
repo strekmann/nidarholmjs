@@ -908,6 +908,53 @@ organizationType = new GraphQLObjectType({
                 return organization.contact_text;
             },
         },
+        activeRoles: {
+            type: new GraphQLList(roleType),
+            resolve: (organization) => {
+                return Group.aggregate(
+                        { $match: { _id: organization.member_group._id } },
+                        { $unwind: '$members' },
+                        { $match: { 'members.roles': { $exists: 1 } } },
+                        { $group: { _id: '$members' } },
+                        { $group: { _id: '$_id.roles' } },
+                        { $unwind: '$_id' },
+                        { $lookup: { from: 'roles', localField: '_id', foreignField: '_id', as: '_id' } },
+                        { $unwind: '$_id' },
+                        { $project: { _id: 0, id: '$_id._id', name: '$_id.name', email: '$_id.email' } },
+                ).exec();
+            },
+        },
+        contactRoles: {
+            type: new GraphQLList(roleType),
+            resolve: (organization) => {
+                return organization.contactRoles.map((roleId) => {
+                    return Role.findById(roleId);
+                });
+            },
+        },
+        contacts: {
+            type: new GraphQLList(memberType),
+            resolve: (organization) => {
+                return organization.contactRoles.map((roleId) => {
+                    console.log(roleId);
+                    return Group.aggregate(
+                        { $match: { _id: organization.member_group._id } },
+                        { $unwind: '$members' },
+                        { $match: { 'members.roles': roleId } },
+                        { $group: { _id: '$members' } },
+                        // From mongodb 3.4, there is no need to unwind the array
+                        // Unwinding drops the items after the first of the array
+                        { $unwind: '$_id.roles' },
+                        { $lookup: { from: 'users', localField: '_id.user', foreignField: '_id', as: 'user' } },
+                        { $lookup: { from: 'roles', localField: '_id.roles', foreignField: '_id', as: 'roles' } },
+                        { $unwind: '$user' },
+                        { $project: { _id: 0, id: '$_id._id', 'user._id': 1, 'user.name': 1, 'roles._id': 1, 'roles.name': 1 } },
+                    ).exec().then((g) => {
+                        return g[0];
+                    });
+                });
+            },
+        },
         memberGroup: {
             type: groupType,
             resolve: (organization) => {
@@ -1745,6 +1792,34 @@ const mutationEditPage = mutationWithClientMutationId({
             }
             return page;
         });
+    },
+});
+
+const mutationSaveContactRoles = mutationWithClientMutationId({
+    name: 'SaveContactRoles',
+    inputFields: {
+        contactRoles: { type: new GraphQLList(GraphQLID) },
+    },
+    outputFields: {
+        organization: {
+            type: organizationType,
+            resolve: (payload) => {
+                return payload;
+            },
+        },
+    },
+    mutateAndGetPayload: ({ contactRoles }, { viewer, organization }) => {
+        if (!admin(organization, viewer)) {
+            return null;
+        }
+        const roleIds = contactRoles.map((roleId) => {
+            return fromGlobalId(roleId).id;
+        });
+        return Organization.findByIdAndUpdate(
+            organization.id,
+            { contactRoles: roleIds },
+            { new: true },
+        );
     },
 });
 
@@ -2626,6 +2701,7 @@ const mutationType = new GraphQLObjectType({
             removeScore: mutationRemoveScore,
             saveFilePermissions: mutationSaveFilePermissions,
             saveOrganization: mutationSaveOrganization,
+            saveContactRoles: mutationSaveContactRoles,
             setProjectPoster: mutationSetProjectPoster,
             addProject: mutationAddProject,
             saveProject: mutationSaveProject,

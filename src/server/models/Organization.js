@@ -1,5 +1,6 @@
 import marked from 'marked';
 import mongoose from 'mongoose';
+
 import schemaOptions from './schemaOptions';
 
 const OrganizationSchema = new mongoose.Schema({
@@ -8,6 +9,7 @@ const OrganizationSchema = new mongoose.Schema({
     webdomain: { type: String, trim: true },
     instrument_groups: [{ type: String, ref: 'Group' }],
     contact_groups: [{ type: String, ref: 'Group' }], // contacts page
+    contactRoles: [{ type: String, ref: 'Role' }],
     administration_group: { type: String, ref: 'Group' }, // temp
     musicscoreadmin_group: { type: String, ref: 'Group' },
     member_group: { type: String, ref: 'Group' },
@@ -55,4 +57,5 @@ OrganizationSchema.virtual('_type').get(() => {
 });
 OrganizationSchema.set('toObject', schemaOptions);
 OrganizationSchema.set('toJSON', schemaOptions);
+
 export default mongoose.model('Organization', OrganizationSchema);

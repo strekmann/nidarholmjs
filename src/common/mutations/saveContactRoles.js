@@ -1,6 +1,6 @@
 import Relay from 'react-relay';
 
-export default class SaveOrganizationMutation extends Relay.Mutation {
+export default class SaveContactRolesMutation extends Relay.Mutation {
     static fragments = {
         organization: () => {
             return Relay.QL`
@@ -11,18 +11,20 @@ export default class SaveOrganizationMutation extends Relay.Mutation {
     }
 
     getMutation() {
-        return Relay.QL`mutation {saveOrganization}`;
+        return Relay.QL`mutation {saveContactRoles}`;
     }
 
     getVariables() {
         return {
-            summaryIds: this.props.summaries,
+            contactRoles: this.props.contactRoles.map((role) => {
+                return role.id;
+            }),
         };
     }
 
     getFatQuery() {
         return Relay.QL`
-        fragment on SaveOrganizationPayload {
+        fragment on SaveContactRolesPayload {
             organization
         }`;
     }
