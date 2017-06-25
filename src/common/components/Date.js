@@ -17,12 +17,12 @@ export default class Date extends React.Component {
         // If we are don't have a time, i.e. at midnight, don't show time
         // This will be buggy if we start something at midnight.
         const startd = moment(date).startOf('day');
-        if(date.isSame(startd, 'second')) {
-            if (format === "LLL" || format === "LLLL") {
-                format = "LL";
+        if (date.isSame(startd, 'second')) {
+            if (format === 'LLL' || format === 'LLLL') {
+                format = 'LL';
             }
-            else if (format === "lll" || format === "llll") {
-                format = "ll";
+            else if (format === 'lll' || format === 'llll') {
+                format = 'll';
             }
         }
         const formatted = date.format(format);
