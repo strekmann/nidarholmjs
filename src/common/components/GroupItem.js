@@ -1,16 +1,18 @@
 import Divider from 'material-ui/Divider';
 import { List } from 'material-ui/List';
 import Subheader from 'material-ui/Subheader';
+import PropTypes from 'prop-types';
 import React from 'react';
 import Relay from 'react-relay';
 import { Link } from 'react-router';
+
 import MemberItem from './MemberItem';
 
 class GroupItem extends React.Component {
     static propTypes = {
-        group: React.PropTypes.object,
-        isAdmin: React.PropTypes.bool,
-        isMember: React.PropTypes.bool,
+        group: PropTypes.object,
+        isAdmin: PropTypes.bool,
+        isMember: PropTypes.bool,
     }
 
     renderHeader() {

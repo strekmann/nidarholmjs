@@ -8,6 +8,7 @@ import TextField from 'material-ui/TextField';
 import { Toolbar, ToolbarGroup } from 'material-ui/Toolbar';
 import getMuiTheme from 'material-ui/styles/getMuiTheme';
 import MoreVertIcon from 'material-ui/svg-icons/navigation/more-vert';
+import PropTypes from 'prop-types';
 import React from 'react';
 import Relay from 'react-relay';
 
@@ -25,12 +26,12 @@ class Pieces extends React.Component {
     };
 
     static propTypes = {
-        organization: React.PropTypes.object.isRequired,
-        relay: React.PropTypes.object.isRequired,
+        organization: PropTypes.object.isRequired,
+        relay: PropTypes.object.isRequired,
     }
 
     static childContextTypes = {
-        muiTheme: React.PropTypes.object.isRequired,
+        muiTheme: PropTypes.object.isRequired,
     }
 
     constructor(props) {

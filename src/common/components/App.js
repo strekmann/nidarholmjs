@@ -2,20 +2,23 @@ import React from 'react';
 import Helmet from 'react-helmet';
 import Relay from 'react-relay';
 import getMuiTheme from 'material-ui/styles/getMuiTheme';
+import PropTypes from 'prop-types';
+
 import theme from '../theme';
+
 import Footer from './Footer';
 import Navigation from './Navigation';
 import BottomNavigation from './BottomNavigation';
 
 class App extends React.Component {
     static propTypes = {
-        children: React.PropTypes.element,
-        viewer: React.PropTypes.object,
-        organization: React.PropTypes.object,
+        children: PropTypes.element,
+        viewer: PropTypes.object,
+        organization: PropTypes.object,
     }
 
     static childContextTypes = {
-        muiTheme: React.PropTypes.object.isRequired,
+        muiTheme: PropTypes.object.isRequired,
     }
 
     constructor(props) {

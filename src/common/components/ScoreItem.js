@@ -2,15 +2,16 @@ import IconButton from 'material-ui/IconButton';
 import { ListItem } from 'material-ui/List';
 import Download from 'material-ui/svg-icons/file/file-download';
 import Close from 'material-ui/svg-icons/navigation/close';
+import PropTypes from 'prop-types';
 import React from 'react';
 import Relay from 'react-relay';
 import { Link } from 'react-router';
 
 class ScoreItem extends React.Component {
     static propTypes = {
-        file: React.PropTypes.object,
-        groupscore: React.PropTypes.object,
-        removeScore: React.PropTypes.func,
+        file: PropTypes.object,
+        groupscore: PropTypes.object,
+        removeScore: PropTypes.func,
     }
 
     onDelete = (event) => {

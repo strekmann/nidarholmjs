@@ -1,11 +1,12 @@
+import PropTypes from 'prop-types';
 import React from 'react';
 
 export default class Date extends React.Component {
     static propTypes = {
-        value: React.PropTypes.bool,
-        yes: React.PropTypes.string,
-        no: React.PropTypes.string,
-        maybe: React.PropTypes.string,
+        value: PropTypes.bool,
+        yes: PropTypes.string,
+        no: PropTypes.string,
+        maybe: PropTypes.string,
     }
 
     render() {

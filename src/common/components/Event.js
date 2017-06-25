@@ -9,6 +9,7 @@ import MenuItem from 'material-ui/MenuItem';
 import IconButton from 'material-ui/IconButton';
 import Paper from 'material-ui/Paper';
 import MoreVertIcon from 'material-ui/svg-icons/navigation/more-vert';
+import PropTypes from 'prop-types';
 
 import theme from '../theme';
 import EditEventMutation from '../mutations/editEvent';
@@ -22,16 +23,16 @@ import EventForm from './EventForm';
 class Event extends React.Component {
     static contextTypes = {
         relay: Relay.PropTypes.Environment,
-        router: React.PropTypes.object.isRequired,
+        router: PropTypes.object.isRequired,
     }
 
     static childContextTypes = {
-        muiTheme: React.PropTypes.object.isRequired,
+        muiTheme: PropTypes.object.isRequired,
     }
 
     static propTypes = {
-        organization: React.PropTypes.object,
-        viewer: React.PropTypes.object,
+        organization: PropTypes.object,
+        viewer: PropTypes.object,
     }
 
     constructor(props) {

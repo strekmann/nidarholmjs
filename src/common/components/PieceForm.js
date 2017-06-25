@@ -4,22 +4,23 @@ import AutoComplete from 'material-ui/AutoComplete';
 import Dialog from 'material-ui/Dialog';
 import FlatButton from 'material-ui/FlatButton';
 import TextField from 'material-ui/TextField';
+import PropTypes from 'prop-types';
 import React from 'react';
 
 class PieceForm extends React.Component {
     static contextTypes = {
-        router: React.PropTypes.object.isRequired,
+        router: PropTypes.object.isRequired,
     }
 
     static propTypes = {
-        pieces: React.PropTypes.object, // for auto-complete
-        piece: React.PropTypes.object, // for edit
-        searching: React.PropTypes.bool, // for auto-complete
-        isOpen: React.PropTypes.bool.isRequired,
-        title: React.PropTypes.string.isRequired, // dialog title
-        save: React.PropTypes.func.isRequired,
-        cancel: React.PropTypes.func.isRequired,
-        search: React.PropTypes.func,
+        pieces: PropTypes.object, // for auto-complete
+        piece: PropTypes.object, // for edit
+        searching: PropTypes.bool, // for auto-complete
+        isOpen: PropTypes.bool.isRequired,
+        title: PropTypes.string.isRequired, // dialog title
+        save: PropTypes.func.isRequired,
+        cancel: PropTypes.func.isRequired,
+        search: PropTypes.func,
     }
 
     state = {

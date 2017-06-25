@@ -12,6 +12,7 @@ import NavigationMenu from 'material-ui/svg-icons/navigation/menu';
 import RaisedButton from 'material-ui/RaisedButton';
 import getMuiTheme from 'material-ui/styles/getMuiTheme';
 import { fullWhite, indigo900 } from 'material-ui/styles/colors';
+import PropTypes from 'prop-types';
 import { Link } from 'react-router';
 
 import theme from '../theme';
@@ -19,13 +20,13 @@ import theme from '../theme';
 
 class Navigation extends React.Component {
     static propTypes = {
-        viewer: React.PropTypes.object,
-        organization: React.PropTypes.object,
-        //socket: React.PropTypes.object,
+        viewer: PropTypes.object,
+        organization: PropTypes.object,
+        //socket: PropTypes.object,
     }
 
     static childContextTypes = {
-        muiTheme: React.PropTypes.object.isRequired,
+        muiTheme: PropTypes.object.isRequired,
     };
 
     state = {

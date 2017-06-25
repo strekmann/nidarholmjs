@@ -1,10 +1,12 @@
+import PropTypes from 'prop-types';
 import React from 'react';
 import Relay from 'react-relay';
+
 import Text from './Text';
 
 class About extends React.Component {
     static propTypes = {
-        organization: React.PropTypes.object,
+        organization: PropTypes.object,
     }
 
     render() {

@@ -4,6 +4,7 @@ import MenuItem from 'material-ui/MenuItem';
 import RaisedButton from 'material-ui/RaisedButton';
 import getMuiTheme from 'material-ui/styles/getMuiTheme';
 import MoreVertIcon from 'material-ui/svg-icons/navigation/more-vert';
+import PropTypes from 'prop-types';
 import React from 'react';
 import Relay from 'react-relay';
 
@@ -20,12 +21,12 @@ class Projects extends React.Component {
     };
 
     static propTypes = {
-        organization: React.PropTypes.object,
-        viewer: React.PropTypes.object,
+        organization: PropTypes.object,
+        viewer: PropTypes.object,
     }
 
     static childContextTypes = {
-        muiTheme: React.PropTypes.object.isRequired,
+        muiTheme: PropTypes.object.isRequired,
     }
 
     constructor(props) {

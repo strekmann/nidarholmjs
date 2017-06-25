@@ -1,15 +1,16 @@
 import IconButton from 'material-ui/IconButton';
 import { ListItem } from 'material-ui/List';
 import CloseIcon from 'material-ui/svg-icons/navigation/close';
+import PropTypes from 'prop-types';
 import React from 'react';
 import { Link } from 'react-router';
 
 export default class MusicItem extends React.Component {
     static propTypes = {
-        music: React.PropTypes.object,
-        isMember: React.PropTypes.bool,
-        isMusicAdmin: React.PropTypes.bool,
-        remove: React.PropTypes.func,
+        music: PropTypes.object,
+        isMember: PropTypes.bool,
+        isMusicAdmin: PropTypes.bool,
+        remove: PropTypes.func,
     }
 
     render() {

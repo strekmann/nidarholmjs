@@ -8,6 +8,7 @@ import DatePicker from 'material-ui/DatePicker';
 import TimePicker from 'material-ui/TimePicker';
 import Chip from 'material-ui/Chip';
 import moment from 'moment';
+import PropTypes from 'prop-types';
 import React from 'react';
 import Relay from 'react-relay';
 
@@ -18,15 +19,15 @@ import ProjectField from './ProjectField';
 
 class EventForm extends React.Component {
     static propTypes = {
-        title: React.PropTypes.string.isRequired,
-        event: React.PropTypes.object,
-        viewer: React.PropTypes.object,
-        organization: React.PropTypes.object,
-        isOpen: React.PropTypes.bool.isRequired,
-        save: React.PropTypes.func.isRequired,
-        cancel: React.PropTypes.func.isRequired,
-        projectPermissions: React.PropTypes.object,
-        highlighted: React.PropTypes.bool,
+        title: PropTypes.string.isRequired,
+        event: PropTypes.object,
+        viewer: PropTypes.object,
+        organization: PropTypes.object,
+        isOpen: PropTypes.bool.isRequired,
+        save: PropTypes.func.isRequired,
+        cancel: PropTypes.func.isRequired,
+        projectPermissions: PropTypes.object,
+        highlighted: PropTypes.bool,
     }
 
     state = {

@@ -1,5 +1,6 @@
 import AutoComplete from 'material-ui/AutoComplete';
 import Chip from 'material-ui/Chip';
+import PropTypes from 'prop-types';
 import React from 'react';
 import Relay from 'react-relay';
 
@@ -9,11 +10,11 @@ class TagField extends React.Component {
     }
 
     static propTypes = {
-        fileTags: React.PropTypes.array,
-        onChange: React.PropTypes.func,
-        organization: React.PropTypes.object,
-        relay: React.PropTypes.object,
-        autoFocus: React.PropTypes.bool,
+        fileTags: PropTypes.array,
+        onChange: PropTypes.func,
+        organization: PropTypes.object,
+        relay: PropTypes.object,
+        autoFocus: PropTypes.bool,
     }
 
     state = {

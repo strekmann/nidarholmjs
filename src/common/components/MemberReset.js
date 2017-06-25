@@ -4,6 +4,7 @@ import Paper from 'material-ui/Paper';
 import RaisedButton from 'material-ui/RaisedButton';
 import TextField from 'material-ui/TextField';
 import getMuiTheme from 'material-ui/styles/getMuiTheme';
+import PropTypes from 'prop-types';
 import React from 'react';
 import Relay from 'react-relay';
 
@@ -13,15 +14,15 @@ import SetPasswordMutation from '../mutations/setPassword';
 class MemberReset extends React.Component {
     static contextTypes = {
         relay: Relay.PropTypes.Environment,
-        router: React.PropTypes.object.isRequired,
+        router: PropTypes.object.isRequired,
     }
 
     static childContextTypes = {
-        muiTheme: React.PropTypes.object.isRequired,
+        muiTheme: PropTypes.object.isRequired,
     }
 
     static propTypes = {
-        viewer: React.PropTypes.object,
+        viewer: PropTypes.object,
     }
 
     constructor(props) {

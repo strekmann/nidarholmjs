@@ -2,12 +2,13 @@ import React from 'react';
 import IconButton from 'material-ui/IconButton';
 import { ListItem } from 'material-ui/List';
 import Close from 'material-ui/svg-icons/navigation/close';
+import PropTypes from 'prop-types';
 
 export default class PermissionItem extends React.Component {
     static propTypes = {
-        name: React.PropTypes.string,
-        id: React.PropTypes.string,
-        removePermission: React.PropTypes.func,
+        name: PropTypes.string,
+        id: PropTypes.string,
+        removePermission: PropTypes.func,
     }
     removePermission = () => {
         this.props.removePermission(this.props.id);

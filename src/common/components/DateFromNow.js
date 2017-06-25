@@ -1,9 +1,10 @@
 import moment from 'moment';
+import PropTypes from 'prop-types';
 import React from 'react';
 
 export default class Date extends React.Component {
     static propTypes = {
-        date: React.PropTypes.oneOfType([React.PropTypes.node, React.PropTypes.object]),
+        date: PropTypes.oneOfType([PropTypes.node, PropTypes.object]),
     }
 
     render() {

@@ -5,7 +5,8 @@ import IconButton from 'material-ui/IconButton';
 import RaisedButton from 'material-ui/RaisedButton';
 import AddCircle from 'material-ui/svg-icons/content/add-circle';
 import getMuiTheme from 'material-ui/styles/getMuiTheme';
-import React, { PropTypes } from 'react';
+import PropTypes from 'prop-types';
+import React from 'react';
 import Relay from 'react-relay';
 
 import SaveContactRolesMutation from '../mutations/saveContactRoles';
@@ -15,7 +16,7 @@ import SortableRoleList from './SortableRoleList';
 
 class RoleItem extends React.Component {
     static propTypes = {
-        name: React.PropTypes.string.isRequired,
+        name: PropTypes.string.isRequired,
         onAddRole: PropTypes.func.isRequired,
     }
 
@@ -40,12 +41,12 @@ class ContactRoles extends React.Component {
     };
 
     static propTypes = {
-        organization: React.PropTypes.object,
-        saveHook: React.PropTypes.func,
+        organization: PropTypes.object,
+        saveHook: PropTypes.func,
     }
 
     static childContextTypes = {
-        muiTheme: React.PropTypes.object.isRequired,
+        muiTheme: PropTypes.object.isRequired,
     }
 
     constructor(props) {

@@ -4,6 +4,7 @@ import axios from 'axios';
 import IconButton from 'material-ui/IconButton';
 import Person from 'material-ui/svg-icons/social/person';
 import Camera from 'material-ui/svg-icons/image/photo-camera';
+import PropTypes from 'prop-types';
 import React from 'react';
 import Dropzone from 'react-dropzone';
 import Relay from 'react-relay';
@@ -17,9 +18,9 @@ class ProfilePicture extends React.Component {
     };
 
     static propTypes = {
-        user: React.PropTypes.object,
-        isViewer: React.PropTypes.bool,
-        isAdmin: React.PropTypes.bool,
+        user: PropTypes.object,
+        isViewer: PropTypes.bool,
+        isAdmin: PropTypes.bool,
     }
 
     onDrop = (files) => {

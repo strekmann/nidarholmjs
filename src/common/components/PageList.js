@@ -1,10 +1,12 @@
+import PropTypes from 'prop-types';
 import React from 'react';
+
 import PageItem from './PageItem';
 
 export default class PageList extends React.Component {
     static propTypes = {
-        memberGroupId: React.PropTypes.string,
-        pages: React.PropTypes.object,
+        memberGroupId: PropTypes.string,
+        pages: PropTypes.object,
     }
     render() {
         return (

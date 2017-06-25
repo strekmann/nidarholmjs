@@ -1,3 +1,4 @@
+import PropTypes from 'prop-types';
 import React from 'react';
 import Relay from 'react-relay';
 import MoreVertIcon from 'material-ui/svg-icons/navigation/more-vert';
@@ -7,8 +8,10 @@ import MenuItem from 'material-ui/MenuItem';
 import Paper from 'material-ui/Paper';
 import RaisedButton from 'material-ui/RaisedButton';
 import getMuiTheme from 'material-ui/styles/getMuiTheme';
+
 import AddPageMutation from '../mutations/addPage';
 import theme from '../theme';
+
 import EditPage from './EditPage';
 import PageList from './PageList';
 
@@ -20,12 +23,12 @@ class Pages extends React.Component {
     };
 
     static propTypes = {
-        viewer: React.PropTypes.object,
-        organization: React.PropTypes.object,
+        viewer: PropTypes.object,
+        organization: PropTypes.object,
     }
 
     static childContextTypes = {
-        muiTheme: React.PropTypes.object.isRequired,
+        muiTheme: PropTypes.object.isRequired,
     }
 
     constructor(props) {

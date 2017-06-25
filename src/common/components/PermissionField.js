@@ -1,3 +1,4 @@
+import PropTypes from 'prop-types';
 import React from 'react';
 import AutoComplete from 'material-ui/AutoComplete';
 
@@ -5,11 +6,11 @@ import PermissionChips from './PermissionChips';
 
 export default class PermissionField extends React.Component {
     static propTypes = {
-        permissions: React.PropTypes.array,
-        groups: React.PropTypes.array,
-        users: React.PropTypes.array,
-        onChange: React.PropTypes.func,
-        memberGroupId: React.PropTypes.string,
+        permissions: PropTypes.array,
+        groups: PropTypes.array,
+        users: PropTypes.array,
+        onChange: PropTypes.func,
+        memberGroupId: PropTypes.string,
     }
 
     state = {

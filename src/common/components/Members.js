@@ -10,6 +10,7 @@ import SelectField from 'material-ui/SelectField';
 import TextField from 'material-ui/TextField';
 import getMuiTheme from 'material-ui/styles/getMuiTheme';
 import MoreVertIcon from 'material-ui/svg-icons/navigation/more-vert';
+import PropTypes from 'prop-types';
 import React from 'react';
 import Relay from 'react-relay';
 import { Link } from 'react-router';
@@ -22,15 +23,15 @@ import GroupItem from './GroupItem';
 class Members extends React.Component {
     static contextTypes = {
         relay: Relay.PropTypes.Environment,
-        router: React.PropTypes.object.isRequired,
+        router: PropTypes.object.isRequired,
     };
 
     static propTypes = {
-        organization: React.PropTypes.object,
+        organization: PropTypes.object,
     }
 
     static childContextTypes = {
-        muiTheme: React.PropTypes.object.isRequired,
+        muiTheme: PropTypes.object.isRequired,
     }
 
     constructor(props) {

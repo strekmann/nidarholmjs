@@ -1,4 +1,5 @@
 import RaisedButton from 'material-ui/RaisedButton';
+import PropTypes from 'prop-types';
 import React from 'react';
 import Relay from 'react-relay';
 
@@ -12,9 +13,9 @@ class ProjectListUpcoming extends React.Component {
     }
 
     static propTypes = {
-        title: React.PropTypes.string,
-        organization: React.PropTypes.object,
-        relay: React.PropTypes.object,
+        title: PropTypes.string,
+        organization: PropTypes.object,
+        relay: PropTypes.object,
     }
 
     loadMore = () => {

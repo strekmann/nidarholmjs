@@ -8,6 +8,7 @@ import getMuiTheme from 'material-ui/styles/getMuiTheme';
 import RaisedButton from 'material-ui/RaisedButton';
 import Dialog from 'material-ui/Dialog';
 import Paper from 'material-ui/Paper';
+import PropTypes from 'prop-types';
 
 import theme from '../theme';
 import AddFileMutation from '../mutations/addFile';
@@ -25,13 +26,13 @@ class Files extends React.Component {
     };
 
     static propTypes = {
-        viewer: React.PropTypes.object,
-        organization: React.PropTypes.object,
-        relay: React.PropTypes.object,
+        viewer: PropTypes.object,
+        organization: PropTypes.object,
+        relay: PropTypes.object,
     }
 
     static childContextTypes = {
-        muiTheme: React.PropTypes.object.isRequired,
+        muiTheme: PropTypes.object.isRequired,
     }
 
     constructor(props) {

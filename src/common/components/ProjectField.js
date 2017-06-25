@@ -1,13 +1,14 @@
 import AutoComplete from 'material-ui/AutoComplete';
 import Chip from 'material-ui/Chip';
+import PropTypes from 'prop-types';
 import React from 'react';
 import Relay from 'react-relay';
 
 class ProjectField extends React.Component {
     static propTypes = {
-        organization: React.PropTypes.object,
-        projects: React.PropTypes.array,
-        onChange: React.PropTypes.func.isRequired,
+        organization: PropTypes.object,
+        projects: PropTypes.array,
+        onChange: PropTypes.func.isRequired,
     }
 
     state = {

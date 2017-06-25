@@ -4,6 +4,7 @@ import { Card, CardTitle, CardText, CardActions } from 'material-ui/Card';
 import FlatButton from 'material-ui/FlatButton';
 import RaisedButton from 'material-ui/RaisedButton';
 import TextField from 'material-ui/TextField';
+import PropTypes from 'prop-types';
 import React from 'react';
 import { Link } from 'react-router';
 import getMuiTheme from 'material-ui/styles/getMuiTheme';
@@ -12,7 +13,7 @@ import theme from '../theme';
 
 class Login extends React.Component {
     static childContextTypes = {
-        muiTheme: React.PropTypes.object.isRequired,
+        muiTheme: PropTypes.object.isRequired,
     }
     constructor(props) {
         super(props);

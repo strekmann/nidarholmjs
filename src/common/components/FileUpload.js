@@ -1,3 +1,4 @@
+import PropTypes from 'prop-types';
 import Dropzone from 'react-dropzone';
 import React from 'react';
 import Relay from 'react-relay';
@@ -7,10 +8,10 @@ import TagField from './TagField';
 
 class FileUpload extends React.Component {
     static propTypes = {
-        viewer: React.PropTypes.object,
-        onDrop: React.PropTypes.func,
-        memberGroupId: React.PropTypes.string,
-        organization: React.PropTypes.object,
+        viewer: PropTypes.object,
+        onDrop: PropTypes.func,
+        memberGroupId: PropTypes.string,
+        organization: PropTypes.object,
     }
 
     state = {

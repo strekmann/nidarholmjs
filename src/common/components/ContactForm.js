@@ -4,16 +4,17 @@
 import Dialog from 'material-ui/Dialog';
 import RaisedButton from 'material-ui/RaisedButton';
 import TextField from 'material-ui/TextField';
+import PropTypes from 'prop-types';
 import React from 'react';
 import Relay from 'react-relay';
 
 class ContactForm extends React.Component {
     static propTypes = {
-        open: React.PropTypes.bool,
-        save: React.PropTypes.func,
-        close: React.PropTypes.func,
-        encodedEmail: React.PropTypes.string,
-        organization: React.PropTypes.object,
+        open: PropTypes.bool,
+        save: PropTypes.func,
+        close: PropTypes.func,
+        encodedEmail: PropTypes.string,
+        organization: PropTypes.object,
     }
 
     state = {

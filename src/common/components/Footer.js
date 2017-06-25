@@ -1,6 +1,7 @@
 import React from 'react';
 import Relay from 'react-relay';
 import getMuiTheme from 'material-ui/styles/getMuiTheme';
+import PropTypes from 'prop-types';
 
 import theme from '../theme';
 import SendContactEmailMutation from '../mutations/sendContactEmail';
@@ -9,7 +10,7 @@ import ContactForm from './ContactForm';
 
 class Footer extends React.Component {
     static propTypes = {
-        organization: React.PropTypes.object,
+        organization: PropTypes.object,
     }
 
     static contextTypes = {
@@ -17,7 +18,7 @@ class Footer extends React.Component {
     }
 
     static childContextTypes = {
-        muiTheme: React.PropTypes.object.isRequired,
+        muiTheme: PropTypes.object.isRequired,
     }
 
     state = {

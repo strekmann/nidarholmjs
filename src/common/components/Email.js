@@ -1,13 +1,14 @@
 /* eslint "react/no-danger": 0 */
 
 import marked from 'marked';
+import PropTypes from 'prop-types';
 import React from 'react';
 import { renderToString } from 'react-dom/server';
 
 export default class Email extends React.Component {
     static propTypes = {
-        email: React.PropTypes.string,
-        children: React.PropTypes.element,
+        email: PropTypes.string,
+        children: PropTypes.element,
     }
 
     render() {

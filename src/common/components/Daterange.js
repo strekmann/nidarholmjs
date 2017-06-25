@@ -1,12 +1,14 @@
 import moment from 'moment';
+import PropTypes from 'prop-types';
 import React from 'react';
+
 import Date from './Date';
 
 export default class Daterange extends React.Component {
     static propTypes = {
-        start: React.PropTypes.node,
-        end: React.PropTypes.node,
-        noTime: React.PropTypes.bool,
+        start: PropTypes.node,
+        end: PropTypes.node,
+        noTime: PropTypes.bool,
     }
 
     render() {

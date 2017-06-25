@@ -1,8 +1,9 @@
+import PropTypes from 'prop-types';
 import React from 'react';
 
 export default class Phone extends React.Component {
     static propTypes = {
-        phone: React.PropTypes.string,
+        phone: PropTypes.string,
     }
 
     render() {

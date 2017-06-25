@@ -1,5 +1,6 @@
 import Paper from 'material-ui/Paper';
 import getMuiTheme from 'material-ui/styles/getMuiTheme';
+import PropTypes from 'prop-types';
 import React from 'react';
 import Relay from 'react-relay';
 import { Link } from 'react-router';
@@ -12,11 +13,11 @@ class Groups extends React.Component {
     }
 
     static childContextTypes = {
-        muiTheme: React.PropTypes.object.isRequired,
+        muiTheme: PropTypes.object.isRequired,
     }
 
     static propTypes = {
-        organization: React.PropTypes.object,
+        organization: PropTypes.object,
     }
 
     constructor(props) {

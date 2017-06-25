@@ -5,6 +5,7 @@ import NotificationEventNote from 'material-ui/svg-icons/notification/event-note
 import SocialGroupIcon from 'material-ui/svg-icons/social/group';
 import { indigo50 } from 'material-ui/styles/colors';
 import getMuiTheme from 'material-ui/styles/getMuiTheme';
+import PropTypes from 'prop-types';
 import React from 'react';
 import Relay from 'react-relay';
 import { Link } from 'react-router';
@@ -13,11 +14,11 @@ import theme from '../theme';
 
 class Navigation extends React.Component {
     static propTypes = {
-        organization: React.PropTypes.object,
+        organization: PropTypes.object,
     }
 
     static childContextTypes = {
-        muiTheme: React.PropTypes.object.isRequired,
+        muiTheme: PropTypes.object.isRequired,
     }
 
     getChildContext() {

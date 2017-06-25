@@ -3,6 +3,7 @@ import Relay from 'react-relay';
 import { Link } from 'react-router';
 import Paper from 'material-ui/Paper';
 import moment from 'moment';
+import PropTypes from 'prop-types';
 
 import theme from '../theme';
 
@@ -12,8 +13,8 @@ import Text from './Text';
 
 class ProjectItem extends React.Component {
     static propTypes = {
-        project: React.PropTypes.object.isRequired,
-        showText: React.PropTypes.bool,
+        project: PropTypes.object.isRequired,
+        showText: PropTypes.bool,
     }
 
     render() {

@@ -13,6 +13,7 @@ import MenuItem from 'material-ui/MenuItem';
 import Paper from 'material-ui/Paper';
 import RaisedButton from 'material-ui/RaisedButton';
 import getMuiTheme from 'material-ui/styles/getMuiTheme';
+import PropTypes from 'prop-types';
 
 import AddEventMutation from '../mutations/addEvent';
 import AddFileMutation from '../mutations/addFile';
@@ -41,13 +42,13 @@ class Project extends React.Component {
     };
 
     static propTypes = {
-        organization: React.PropTypes.object.isRequired,
-        viewer: React.PropTypes.object,
-        relay: React.PropTypes.object.isRequired,
+        organization: PropTypes.object.isRequired,
+        viewer: PropTypes.object,
+        relay: PropTypes.object.isRequired,
     }
 
     static childContextTypes = {
-        muiTheme: React.PropTypes.object.isRequired,
+        muiTheme: PropTypes.object.isRequired,
     }
 
     constructor(props) {

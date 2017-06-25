@@ -8,6 +8,7 @@ import Paper from 'material-ui/Paper';
 import { Toolbar, ToolbarGroup } from 'material-ui/Toolbar';
 import getMuiTheme from 'material-ui/styles/getMuiTheme';
 import MoreVertIcon from 'material-ui/svg-icons/navigation/more-vert';
+import PropTypes from 'prop-types';
 
 import theme from '../theme';
 import UpdatePieceMutation from '../mutations/updatePiece';
@@ -22,11 +23,11 @@ class Piece extends React.Component {
     };
 
     static propTypes = {
-        organization: React.PropTypes.object.isRequired,
+        organization: PropTypes.object.isRequired,
     }
 
     static childContextTypes = {
-        muiTheme: React.PropTypes.object.isRequired,
+        muiTheme: PropTypes.object.isRequired,
     }
 
     constructor(props) {

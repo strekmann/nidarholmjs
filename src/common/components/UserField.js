@@ -1,14 +1,15 @@
 import AutoComplete from 'material-ui/AutoComplete';
 import Chip from 'material-ui/Chip';
+import PropTypes from 'prop-types';
 import React from 'react';
 import Relay from 'react-relay';
 
 class UserField extends React.Component {
     static propTypes = {
-        organization: React.PropTypes.object,
-        users: React.PropTypes.array,
-        onChange: React.PropTypes.func.isRequired,
-        title: React.PropTypes.string.isRequired,
+        organization: PropTypes.object,
+        users: PropTypes.array,
+        onChange: PropTypes.func.isRequired,
+        title: PropTypes.string.isRequired,
     }
 
     state = {

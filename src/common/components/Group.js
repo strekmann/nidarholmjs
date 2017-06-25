@@ -11,6 +11,7 @@ import TextField from 'material-ui/TextField';
 import { Toolbar, ToolbarGroup } from 'material-ui/Toolbar';
 import MoreVertIcon from 'material-ui/svg-icons/navigation/more-vert';
 import getMuiTheme from 'material-ui/styles/getMuiTheme';
+import PropTypes from 'prop-types';
 import React from 'react';
 import { Link } from 'react-router';
 import Relay from 'react-relay';
@@ -28,11 +29,11 @@ class Group extends React.Component {
     }
 
     static childContextTypes = {
-        muiTheme: React.PropTypes.object.isRequired,
+        muiTheme: PropTypes.object.isRequired,
     }
 
     static propTypes = {
-        organization: React.PropTypes.object,
+        organization: PropTypes.object,
     }
 
     constructor(props) {

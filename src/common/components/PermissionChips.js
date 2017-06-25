@@ -1,11 +1,13 @@
+import PropTypes from 'prop-types';
 import React from 'react';
+
 import PermissionChipItem from './PermissionChipItem';
 
 export default class PermissionChips extends React.Component {
     static propTypes = {
-        permissions: React.PropTypes.array,
-        memberGroupId: React.PropTypes.string,
-        removePermission: React.PropTypes.func,
+        permissions: PropTypes.array,
+        memberGroupId: PropTypes.string,
+        removePermission: PropTypes.func,
     }
     removePermission = (id) => {
         this.props.removePermission(id);

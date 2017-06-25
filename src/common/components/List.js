@@ -1,8 +1,9 @@
+import PropTypes from 'prop-types';
 import React from 'react';
 
 export default class List extends React.Component {
     static propTypes = {
-        items: React.PropTypes.array.isRequired,
+        items: PropTypes.array.isRequired,
     }
 
     render() {

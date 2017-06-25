@@ -1,6 +1,7 @@
 import IconButton from 'material-ui/IconButton';
 import RemoveCircle from 'material-ui/svg-icons/content/remove-circle';
 import DragHandle from 'material-ui/svg-icons/editor/drag-handle';
+import PropTypes from 'prop-types';
 import React from 'react';
 import { DragSource, DropTarget } from 'react-dnd';
 
@@ -46,12 +47,12 @@ const pageTarget = {
 })
 export default class SortablePageItem extends React.Component {
     static propTypes = {
-        connectDragSource: React.PropTypes.func.isRequired,
-        connectDropTarget: React.PropTypes.func.isRequired,
-        isDragging: React.PropTypes.bool.isRequired,
-        slug: React.PropTypes.string.isRequired,
-        title: React.PropTypes.string.isRequired,
-        onRemoveSummary: React.PropTypes.func,
+        connectDragSource: PropTypes.func.isRequired,
+        connectDropTarget: PropTypes.func.isRequired,
+        isDragging: PropTypes.bool.isRequired,
+        slug: PropTypes.string.isRequired,
+        title: PropTypes.string.isRequired,
+        onRemoveSummary: PropTypes.func,
     }
 
     removeSummary = () => {

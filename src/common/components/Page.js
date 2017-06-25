@@ -6,6 +6,7 @@ import MenuItem from 'material-ui/MenuItem';
 import IconButton from 'material-ui/IconButton';
 import Paper from 'material-ui/Paper';
 import MoreVertIcon from 'material-ui/svg-icons/navigation/more-vert';
+import PropTypes from 'prop-types';
 
 import EditPageMutation from '../mutations/editPage';
 import theme from '../theme';
@@ -20,13 +21,13 @@ class Page extends React.Component {
     };
 
     static propTypes = {
-        viewer: React.PropTypes.object,
-        organization: React.PropTypes.object,
-        location: React.PropTypes.object,
+        viewer: PropTypes.object,
+        organization: PropTypes.object,
+        location: PropTypes.object,
     }
 
     static childContextTypes = {
-        muiTheme: React.PropTypes.object.isRequired,
+        muiTheme: PropTypes.object.isRequired,
     }
 
     constructor(props) {

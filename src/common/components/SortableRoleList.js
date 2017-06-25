@@ -1,3 +1,4 @@
+import PropTypes from 'prop-types';
 import React from 'react';
 import { DragDropContext } from 'react-dnd';
 import HTML5Backend from 'react-dnd-html5-backend';
@@ -8,8 +9,8 @@ import SortableRoleItem from './SortableRoleItem';
 @DragDropContext(HTML5Backend)
 export default class SortableRoleList extends React.Component {
     static propTypes = {
-        roles: React.PropTypes.array.isRequired,
-        onChange: React.PropTypes.func.isRequired,
+        roles: PropTypes.array.isRequired,
+        onChange: PropTypes.func.isRequired,
     }
     state = {
         roles: this.props.roles,

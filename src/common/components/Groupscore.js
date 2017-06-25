@@ -2,6 +2,7 @@
 
 import { List } from 'material-ui/List';
 import axios from 'axios';
+import PropTypes from 'prop-types';
 import React from 'react';
 import Dropzone from 'react-dropzone';
 import Relay from 'react-relay';
@@ -17,9 +18,9 @@ class Groupscore extends React.Component {
     }
 
     static propTypes = {
-        name: React.PropTypes.string,
-        groupscore: React.PropTypes.object,
-        piece: React.PropTypes.object,
+        name: PropTypes.string,
+        groupscore: PropTypes.object,
+        piece: PropTypes.object,
     }
 
     onDrop = (files) => {

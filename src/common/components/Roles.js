@@ -12,8 +12,10 @@ import TextField from 'material-ui/TextField';
 import getMuiTheme from 'material-ui/styles/getMuiTheme';
 import MoreVertIcon from 'material-ui/svg-icons/navigation/more-vert';
 import Delete from 'material-ui/svg-icons/action/delete';
+import PropTypes from 'prop-types';
 import React from 'react';
 import Relay from 'react-relay';
+
 import CreateRoleMutation from '../mutations/createRole';
 import DeleteRoleMutation from '../mutations/deleteRole';
 import theme from '../theme';
@@ -24,11 +26,11 @@ class Roles extends React.Component {
     }
 
     static childContextTypes = {
-        muiTheme: React.PropTypes.object.isRequired,
+        muiTheme: PropTypes.object.isRequired,
     }
 
     static propTypes = {
-        organization: React.PropTypes.object,
+        organization: PropTypes.object,
     }
 
     constructor(props) {

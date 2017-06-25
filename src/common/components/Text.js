@@ -1,11 +1,12 @@
 /* eslint "react/no-danger": 0 */
 
 import marked from 'marked';
+import PropTypes from 'prop-types';
 import React from 'react';
 
 export default class Text extends React.Component {
     static propTypes = {
-        text: React.PropTypes.string,
+        text: PropTypes.string,
     }
 
     render() {

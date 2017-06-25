@@ -13,6 +13,7 @@ import IconButton from 'material-ui/IconButton';
 import MenuItem from 'material-ui/MenuItem';
 import RaisedButton from 'material-ui/RaisedButton';
 import { grey400 } from 'material-ui/styles/colors';
+import PropTypes from 'prop-types';
 
 import { flattenPermissions } from '../utils';
 import theme from '../theme';
@@ -23,22 +24,22 @@ import TagField from './TagField';
 
 class FileItem extends React.Component {
     static propTypes = {
-        id: React.PropTypes.string.isRequired,
-        filename: React.PropTypes.string.isRequired,
-        // created: React.PropTypes.string.isRequired,
-        // mimetype: React.PropTypes.string.isRequired,
-        // size: React.PropTypes.number.isRequired,
-        tags: React.PropTypes.array,
-        permissions: React.PropTypes.object.isRequired,
-        memberGroupId: React.PropTypes.string.isRequired,
-        isImage: React.PropTypes.bool.isRequired,
-        thumbnailPath: React.PropTypes.string.isRequired,
-        path: React.PropTypes.string,
-        onSavePermissions: React.PropTypes.func.isRequired,
-        onSetProjectPoster: React.PropTypes.func,
-        viewer: React.PropTypes.object,
-        searchTag: React.PropTypes.func,
-        organization: React.PropTypes.object,
+        id: PropTypes.string.isRequired,
+        filename: PropTypes.string.isRequired,
+        // created: PropTypes.string.isRequired,
+        // mimetype: PropTypes.string.isRequired,
+        // size: PropTypes.number.isRequired,
+        tags: PropTypes.array,
+        permissions: PropTypes.object.isRequired,
+        memberGroupId: PropTypes.string.isRequired,
+        isImage: PropTypes.bool.isRequired,
+        thumbnailPath: PropTypes.string.isRequired,
+        path: PropTypes.string,
+        onSavePermissions: PropTypes.func.isRequired,
+        onSetProjectPoster: PropTypes.func,
+        viewer: PropTypes.object,
+        searchTag: PropTypes.func,
+        organization: PropTypes.object,
     }
 
     state = {

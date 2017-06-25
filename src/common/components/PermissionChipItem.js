@@ -4,14 +4,15 @@ import { red500, green500, lightBlue500 } from 'material-ui/styles/colors';
 import VisibilityOff from 'material-ui/svg-icons/action/visibility-off';
 import Group from 'material-ui/svg-icons/social/group';
 import Public from 'material-ui/svg-icons/social/public';
+import PropTypes from 'prop-types';
 import React from 'react';
 
 export default class PermissionChipItem extends React.Component {
     static propTypes = {
-        removePermission: React.PropTypes.func,
-        id: React.PropTypes.string,
-        text: React.PropTypes.string,
-        memberGroupId: React.PropTypes.string,
+        removePermission: PropTypes.func,
+        id: PropTypes.string,
+        text: PropTypes.string,
+        memberGroupId: PropTypes.string,
     }
     removePermission = () => {
         if (this.props.id && this.props.removePermission) {

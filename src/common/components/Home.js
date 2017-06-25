@@ -4,6 +4,7 @@ import React from 'react';
 import Relay from 'react-relay';
 import getMuiTheme from 'material-ui/styles/getMuiTheme';
 import Paper from 'material-ui/Paper';
+import PropTypes from 'prop-types';
 import { Link } from 'react-router';
 
 import theme from '../theme';
@@ -20,11 +21,11 @@ class Home extends React.Component {
     }
 
     static childContextTypes = {
-        muiTheme: React.PropTypes.object.isRequired,
+        muiTheme: PropTypes.object.isRequired,
     }
 
     static propTypes = {
-        organization: React.PropTypes.object.isRequired,
+        organization: PropTypes.object.isRequired,
     }
 
     constructor(props) {

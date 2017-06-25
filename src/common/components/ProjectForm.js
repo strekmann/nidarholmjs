@@ -4,6 +4,7 @@ import Dialog from 'material-ui/Dialog';
 import FlatButton from 'material-ui/FlatButton';
 import TextField from 'material-ui/TextField';
 import moment from 'moment';
+import PropTypes from 'prop-types';
 import React from 'react';
 import Relay from 'react-relay';
 
@@ -19,21 +20,21 @@ if (areIntlLocalesSupported(['nb'])) {
 
 class ProjectForm extends React.Component {
     static propTypes = {
-        open: React.PropTypes.bool,
-        save: React.PropTypes.func,
-        toggle: React.PropTypes.func,
-        viewer: React.PropTypes.object,
-        id: React.PropTypes.string,
-        title: React.PropTypes.string,
-        tag: React.PropTypes.string,
-        privateMdtext: React.PropTypes.string,
-        publicMdtext: React.PropTypes.string,
-        start: React.PropTypes.string,
-        end: React.PropTypes.string,
-        permissions: React.PropTypes.object,
-        conductors: React.PropTypes.array,
-        managers: React.PropTypes.array,
-        organization: React.PropTypes.object,
+        open: PropTypes.bool,
+        save: PropTypes.func,
+        toggle: PropTypes.func,
+        viewer: PropTypes.object,
+        id: PropTypes.string,
+        title: PropTypes.string,
+        tag: PropTypes.string,
+        privateMdtext: PropTypes.string,
+        publicMdtext: PropTypes.string,
+        start: PropTypes.string,
+        end: PropTypes.string,
+        permissions: PropTypes.object,
+        conductors: PropTypes.array,
+        managers: PropTypes.array,
+        organization: PropTypes.object,
     }
 
     state = {

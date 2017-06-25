@@ -22,6 +22,7 @@ import MoreVertIcon from 'material-ui/svg-icons/navigation/more-vert';
 import { lightBlue100 } from 'material-ui/styles/colors';
 import Close from 'material-ui/svg-icons/navigation/close';
 import moment from 'moment';
+import PropTypes from 'prop-types';
 
 import theme from '../theme';
 import EditUserMutation from '../mutations/editUser';
@@ -48,12 +49,12 @@ class Member extends React.Component {
     }
 
     static childContextTypes = {
-        muiTheme: React.PropTypes.object.isRequired,
+        muiTheme: PropTypes.object.isRequired,
     }
 
     static propTypes = {
-        organization: React.PropTypes.object,
-        viewer: React.PropTypes.object,
+        organization: PropTypes.object,
+        viewer: PropTypes.object,
     }
 
     constructor(props) {

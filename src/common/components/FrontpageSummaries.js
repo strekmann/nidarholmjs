@@ -4,7 +4,8 @@
 import IconButton from 'material-ui/IconButton';
 import AddCircle from 'material-ui/svg-icons/content/add-circle';
 import getMuiTheme from 'material-ui/styles/getMuiTheme';
-import React, { PropTypes } from 'react';
+import PropTypes from 'prop-types';
+import React from 'react';
 import Relay from 'react-relay';
 
 import theme from '../theme';
@@ -42,14 +43,14 @@ class FrontpageSummaries extends React.Component {
     };
 
     static propTypes = {
-        summaries: React.PropTypes.array,
-        pages: React.PropTypes.object,
-        onAdd: React.PropTypes.func,
-        onChange: React.PropTypes.func,
+        summaries: PropTypes.array,
+        pages: PropTypes.object,
+        onAdd: PropTypes.func,
+        onChange: PropTypes.func,
     }
 
     static childContextTypes = {
-        muiTheme: React.PropTypes.object.isRequired,
+        muiTheme: PropTypes.object.isRequired,
     }
 
     constructor(props) {

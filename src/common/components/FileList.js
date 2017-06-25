@@ -1,5 +1,6 @@
 /* eslint "react/require-default-props": 0 */
 
+import PropTypes from 'prop-types';
 import React from 'react';
 import Relay from 'react-relay';
 
@@ -7,15 +8,15 @@ import FileItem from './FileItem';
 
 class FileList extends React.Component {
     static propTypes = {
-        files: React.PropTypes.object,
-        memberGroupId: React.PropTypes.string,
-        style: React.PropTypes.object,
-        title: React.PropTypes.string,
-        onSavePermissions: React.PropTypes.func,
-        onSetProjectPoster: React.PropTypes.func,
-        viewer: React.PropTypes.object,
-        organization: React.PropTypes.object,
-        searchTag: React.PropTypes.func,
+        files: PropTypes.object,
+        memberGroupId: PropTypes.string,
+        style: PropTypes.object,
+        title: PropTypes.string,
+        onSavePermissions: PropTypes.func,
+        onSetProjectPoster: PropTypes.func,
+        viewer: PropTypes.object,
+        organization: PropTypes.object,
+        searchTag: PropTypes.func,
     }
     render() {
         const style = this.props.style || {};

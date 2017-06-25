@@ -1,8 +1,9 @@
+import PropTypes from 'prop-types';
 import React from 'react';
 
 export default class NoMatch extends React.Component {
     static propTypes = {
-        date: React.PropTypes.node,
+        date: PropTypes.node,
     }
 
     render() {

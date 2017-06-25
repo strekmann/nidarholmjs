@@ -5,6 +5,7 @@ import IconButton from 'material-ui/IconButton';
 import ExpandLess from 'material-ui/svg-icons/navigation/expand-less';
 import ExpandMore from 'material-ui/svg-icons/navigation/expand-more';
 import moment from 'moment';
+import PropTypes from 'prop-types';
 
 import theme from '../theme';
 
@@ -24,7 +25,7 @@ function isSoon(date) {
 
 class EventItem extends React.Component {
     static propTypes = {
-        event: React.PropTypes.object,
+        event: PropTypes.object,
     }
 
     state = {

@@ -4,6 +4,7 @@ import React from 'react';
 import Paper from 'material-ui/Paper';
 import RaisedButton from 'material-ui/RaisedButton';
 import TextField from 'material-ui/TextField';
+import PropTypes from 'prop-types';
 
 import theme from '../theme';
 
@@ -11,14 +12,14 @@ import PermissionField from './PermissionField';
 
 export default class EditPage extends React.Component {
     static propTypes = {
-        viewer: React.PropTypes.object,
-        id: React.PropTypes.string,
-        slug: React.PropTypes.string,
-        title: React.PropTypes.string,
-        summary: React.PropTypes.string,
-        mdtext: React.PropTypes.string,
-        permissions: React.PropTypes.array,
-        savePage: React.PropTypes.func,
+        viewer: PropTypes.object,
+        id: PropTypes.string,
+        slug: PropTypes.string,
+        title: PropTypes.string,
+        summary: PropTypes.string,
+        mdtext: PropTypes.string,
+        permissions: PropTypes.array,
+        savePage: PropTypes.func,
     }
 
     state = {

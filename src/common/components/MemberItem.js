@@ -1,5 +1,6 @@
 import Avatar from 'material-ui/Avatar';
 import { ListItem } from 'material-ui/List';
+import PropTypes from 'prop-types';
 import React from 'react';
 import Relay from 'react-relay';
 import { Link } from 'react-router';
@@ -8,8 +9,8 @@ import Phone from './Phone';
 
 class MemberItem extends React.Component {
     static propTypes = {
-        isMember: React.PropTypes.bool,
-        member: React.PropTypes.object,
+        isMember: PropTypes.bool,
+        member: PropTypes.object,
     }
 
     render() {
