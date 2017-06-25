@@ -768,10 +768,17 @@ projectType = new GraphQLObjectType({
         },
         events: {
             type: eventConnection.connectionType,
-            args: connectionArgs,
+            args: {
+                highlighted: { type: GraphQLBoolean },
+                ...connectionArgs,
+            },
             resolve: (project, args, { viewer }) => {
+                const query = { tags: project.tag };
+                if (args.highlighted) {
+                    query.highlighted = args.highlighted;
+                }
                 return connectionFromMongooseQuery(
-                    authenticate(Event.find({ tags: project.tag }).sort('start'), viewer),
+                    authenticate(Event.find(query).sort('start'), viewer),
                     args,
                 );
             },

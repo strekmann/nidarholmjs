@@ -155,9 +155,20 @@ class Home extends React.Component {
                                 >
                                     {nextProject.title}
                                 </Link>
-                                <div className="meta" style={{ fontWeight: 'bold' }}>
-                                    <Date date={nextProject.end} />
-                                </div>
+                                {nextProject.events.edges.map((edge) => {
+                                    const event = edge.node;
+                                    return (
+                                        <div className="meta" key={event.id}>
+                                            { event.location } <Date date={event.start} format="LLL" />
+                                        </div>
+                                    );
+                                })}
+                                {!nextProject.events.edges.length
+                                    ? <div className="meta" style={{ fontWeight: 'bold' }}>
+                                        <Date date={nextProject.end} />
+                                    </div>
+                                    : null
+                                }
                                 <div>
                                     <Text text={nextProject.publicMdtext} />
                                 </div>
@@ -340,6 +351,16 @@ export default Relay.createContainer(Home, {
                     poster {
                         filename
                         normalPath
+                    }
+                    events(first:100,highlighted:true) {
+                        edges {
+                            node {
+                                id
+                                highlighted
+                                location
+                                start
+                            }
+                        }
                     }
                 }
                 nextEvents(first:4) {
