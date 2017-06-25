@@ -41,10 +41,12 @@ class App extends React.Component {
                     meta={[
                         { name: 'viewport', content: 'width=device-width, initial-scale=1' },
                         { name: 'author', content: 'Musikkforeningen Nidarholm' },
+                        { name: 'description', content: organization.description_nb },
                         { property: 'og:site_name', content: 'Nidarholm' },
                         { property: 'og:url', content: organization.baseurl },
                         { property: 'og:title', content: 'Nidarholm' },
                         { property: 'og:image', content: imageUrl },
+                        { property: 'og:description', content: organization.description_nb },
                         { property: 'fb:app_id', content: organization.facebookAppid },
                     ]}
                     link={[
@@ -81,6 +83,7 @@ export default Relay.createContainer(App, {
             fragment on Organization {
                 baseurl
                 facebookAppid
+                description_nb
                 ${Navigation.getFragment('organization')}
                 ${BottomNavigation.getFragment('organization')}
                 ${Footer.getFragment('organization')}
