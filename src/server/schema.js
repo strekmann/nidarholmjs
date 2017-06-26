@@ -2700,6 +2700,37 @@ const mutationSetProfilePicture = mutationWithClientMutationId({
     },
 });
 
+const mutationShowContactInfo = mutationWithClientMutationId({
+    name: 'ShowContactInfo',
+    inputFields: {
+        userId: { type: new GraphQLNonNull(GraphQLID) },
+    },
+    outputFields: {
+        user: {
+            type: userType,
+            resolve: (payload) => {
+                return payload;
+            },
+        },
+    },
+    mutateAndGetPayload: ({ userId }, { organization }) => {
+        const uId = fromGlobalId(userId).id;
+        return Group.aggregate(
+            { $match: { _id: organization.member_group._id } },
+            { $unwind: '$members' },
+            { $match: { 'members.roles': { $exists: 1 }, 'members.user': uId } },
+            { $group: {_id: '$members.user'} },
+            { $lookup: { from: 'users', localField: '_id', foreignField: '_id', as: 'user' } },
+            { $unwind: '$user'},
+            { $project: { id: '$_id', _id: 0, phone: '$user.phone', email: '$user.email' } },
+        ).exec().then((u) => {
+            if (u.length) {
+                return u[0];
+            }
+        });
+    },
+});
+
 const mutationType = new GraphQLObjectType({
     name: 'Mutation',
     fields: () => {
@@ -2736,6 +2767,7 @@ const mutationType = new GraphQLObjectType({
             removePiece: mutationRemovePiece,
             deleteEvent: mutationDeleteEvent,
             setProfilePicture: mutationSetProfilePicture,
+            showContactInfo: mutationShowContactInfo,
         };
     },
 });

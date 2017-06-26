@@ -103,9 +103,8 @@ h3 {
     font-family: $sans-font;
     font-size: 18px;
 }
-
-.phone {
-    white-space: pre;
+.noMargins p {
+    margin: 0;
 }
 .button {
     -webkit-box-shadow: none;

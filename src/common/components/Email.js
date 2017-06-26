@@ -21,7 +21,7 @@ export default class Email extends React.Component {
             return (
                 <span
                     dangerouslySetInnerHTML={{
-                        __html: `<a href=${email}>${renderToString(this.props.children)}`,
+                        __html: `<a href=${email} className="email">${renderToString(this.props.children)}</a>`,
                     }}
                 />);
         }
