@@ -2719,10 +2719,12 @@ const mutationShowContactInfo = mutationWithClientMutationId({
             { $match: { _id: organization.member_group._id } },
             { $unwind: '$members' },
             { $match: { 'members.roles': { $exists: 1 }, 'members.user': uId } },
-            { $group: {_id: '$members.user'} },
-            { $lookup: { from: 'users', localField: '_id', foreignField: '_id', as: 'user' } },
+            { $unwind: '$members.roles' },
+            { $lookup: { from: 'users', localField: 'members.user', foreignField: '_id', as: 'user' } },
+            { $lookup: { from: 'roles', localField: 'members.roles', foreignField: '_id', as: 'roles' } },
             { $unwind: '$user'},
-            { $project: { id: '$_id', _id: 0, phone: '$user.phone', email: '$user.email' } },
+            { $unwind: '$roles'},
+            { $project: { _id: 0, id: '$user._id', phone: '$user.phone', email: '$roles.email' } },
         ).exec().then((u) => {
             if (u.length) {
                 return u[0];
