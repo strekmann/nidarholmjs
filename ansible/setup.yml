@@ -92,7 +92,6 @@
             line: Unattended-Upgrade::Automatic-Reboot-Time "05:00";
             regexp: "^/{0,2}Unattended-Upgrade::Automatic-Reboot-Time "
 
-
   handlers:
       - name: reload sshd
         service:
@@ -118,7 +117,7 @@
 
       - name: Setup nodesource repository
         apt_repository:
-            repo: "deb http://deb.nodesource.com/node_6.x jessie main"
+            repo: "deb http://deb.nodesource.com/node_6.x {{ debian_version }} main"
             state: present
 
       - name: Upgrade packages
@@ -409,7 +408,7 @@
 
       - name: Add cron job for backup of shared files
         cron:
-            job: BORG_PASSPHRASE= borg create {{ backup_uri }}/./{{ project_name }}-{{ ansible_hostname }}-shared::{{ project_name }}-shared-{hostname}-{now:\%Y-\%m-\%d} {{ deploy_helper.shared_path }}
+            job: BORG_PASSPHRASE= borg create {{ backup_uri }}/./{{ project_name }}-{{ ansible_hostname }}-shared::{{ project_name }}-shared-{hostname}-{now:\%Y-\%m-\%d} /mnt/uploaded
             name: Backing up shared files
             minute: "{{ 10 + project_number }}"
             hour: 2

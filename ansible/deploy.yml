@@ -43,7 +43,7 @@
 
       - name: Setup nodesource repository
         apt_repository:
-            repo: "deb http://deb.nodesource.com/node_6.x jessie main"
+            repo: "deb http://deb.nodesource.com/node_6.x {{ debian_version }} main"
             state: present
 
       - name: Add nodesource key
