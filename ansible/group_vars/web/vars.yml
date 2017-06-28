@@ -1,9 +1,9 @@
 ---
 server_script: server/index.js
 web_server_user: www-data
-backup_host: gavin.strekmann.no
+backup_host: vifta.strekmann.no
 backup_user: backup-{{ project_user }}
-backup_port: 2022
+backup_port: 2024
 backup_uri: ssh://{{ backup_user }}@{{ backup_host }}:{{ backup_port }}
 dhparam_path: /etc/ssl/certs/dhparam.pem
 server_secret: "{{ vault_server_secret }}"

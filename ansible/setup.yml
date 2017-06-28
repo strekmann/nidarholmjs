@@ -192,18 +192,11 @@
       - name: Initialize deploy root
         deploy_helper:
             path: "{{ project_home }}"
+            shared_path: /mnt/uploaded
         remote_user: "{{ project_user }}"
         tags:
             - backup
             - cron
-
-      - name: Link shared folder to /mnt/uploaded/files
-        file:
-            src: /mnt/uploaded/files
-            dest: "{{ deploy_helper.shared_path }}/files"
-            owner: "{{ project_user }}"
-            group: "{{ project_user }}"
-            state: link
 
       - name: Remove default nginx vhost config
         file:
@@ -408,7 +401,7 @@
 
       - name: Add cron job for backup of shared files
         cron:
-            job: BORG_PASSPHRASE= borg create {{ backup_uri }}/./{{ project_name }}-{{ ansible_hostname }}-shared::{{ project_name }}-shared-{hostname}-{now:\%Y-\%m-\%d} /mnt/uploaded
+            job: BORG_PASSPHRASE= borg create --exclude 'lost+found' {{ backup_uri }}/./{{ project_name }}-{{ ansible_hostname }}-shared::{{ project_name }}-shared-{hostname}-{now:\%Y-\%m-\%d} {{ deploy_helper.shared_path }}
             name: Backing up shared files
             minute: "{{ 10 + project_number }}"
             hour: 2
