@@ -1,1 +1,1 @@
-backup_home: /media/blue/vifta-backup-server/{{ project_name }}
+backup_home: /srv/backup/{{ project_name }}

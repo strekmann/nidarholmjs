@@ -238,7 +238,7 @@
             creates: "{{ dhparam_path }}"
 
       - name: Run certbot
-        command: certbot certonly --webroot --text --non-interactive --expand --agree-tos --email {{ admin_email }} --webroot-path {{ deploy_helper.shared_path }} --domain {{ server_name }} --domain www.{{ server_name }}
+        command: certbot certonly --webroot --text --non-interactive --expand --agree-tos --email {{ admin_email }} --webroot-path {{ deploy_helper.shared_path }} --domains {{ server_name }},{{ extra_domains|join(",") }}
         args:
             creates: /etc/letsencrypt/live/{{ server_name }}/fullchain.pem
 
@@ -401,7 +401,7 @@
 
       - name: Add cron job for backup of shared files
         cron:
-            job: BORG_PASSPHRASE= borg create --exclude 'lost+found' {{ backup_uri }}/./{{ project_name }}-{{ ansible_hostname }}-shared::{{ project_name }}-shared-{hostname}-{now:\%Y-\%m-\%d} {{ deploy_helper.shared_path }}
+            job: BORG_PASSPHRASE= borg create --exclude '/**/lost+found' {{ backup_uri }}/./{{ project_name }}-{{ ansible_hostname }}-shared::{{ project_name }}-shared-{hostname}-{now:\%Y-\%m-\%d} {{ deploy_helper.shared_path }}
             name: Backing up shared files
             minute: "{{ 10 + project_number }}"
             hour: 2

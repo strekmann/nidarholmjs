@@ -7,3 +7,7 @@ server_name: nidarholm.no
 server_port: "{{ 13000 + project_number }}"
 admin_email: "{{ vault_admin_email }}"
 debian_version: stretch
+extra_domains:
+    - www.nidarholm.no
+    - nidarholm.com
+    - www.nidarholm.com

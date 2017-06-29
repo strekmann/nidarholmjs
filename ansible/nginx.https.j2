@@ -5,7 +5,7 @@ upstream {{ project_name }} {
 server {
     # redirect www to non-www
     listen 443 ssl;
-    server_name www.{{ server_name }};
+    server_name {{ extra_domains|join(" ") }};
 
     ssl_certificate /etc/letsencrypt/live/{{ server_name }}/fullchain.pem;
     ssl_certificate_key /etc/letsencrypt/live/{{ server_name }}/privkey.pem;
