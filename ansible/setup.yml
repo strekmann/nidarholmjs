@@ -238,7 +238,7 @@
             creates: "{{ dhparam_path }}"
 
       - name: Run certbot
-        command: certbot certonly --webroot --text --non-interactive --expand --agree-tos --email {{ admin_email }} --webroot-path {{ deploy_helper.shared_path }} --domains {{ server_name }},{{ extra_domains|join(",") }}
+        command: certbot certonly --webroot --text --non-interactive --quiet --expand --agree-tos --email {{ admin_email }} --webroot-path {{ deploy_helper.shared_path }} --domains {{ server_name }},{{ extra_domains|join(",") }}
         args:
             creates: /etc/letsencrypt/live/{{ server_name }}/fullchain.pem
 
@@ -270,7 +270,7 @@
 
       - name: Add cron job for certificate renewal
         cron:
-            job: certbot renew --post-hook "systemctl reload nginx"
+            job: certbot renew --quiet --post-hook "systemctl reload nginx"
             name: Certificate renewal
             minute: 41
             hour: 0
@@ -389,7 +389,7 @@
 
       - name: Add cron job for backup of mongo database
         cron:
-            job: mongodump -d {{ project_name }} -o {{ project_home }}/{{ project_name }}-dump 1>/dev/null && BORG_PASSPHRASE= borg create {{ backup_uri }}/./{{ project_name }}-{{ ansible_hostname }}-mongo::{{ project_name }}-mongo-{hostname}-{now:\%Y-\%m-\%d} {{ project_home }}/{{ project_name }}-dump && rm -r {{ project_home }}/{{ project_name }}-dump
+            job: mongodump --quiet --dd={{ project_name }} -out={{ project_home }}/{{ project_name }}-dump && BORG_PASSPHRASE= borg create {{ backup_uri }}/./{{ project_name }}-{{ ansible_hostname }}-mongo::{{ project_name }}-mongo-{hostname}-{now:\%Y-\%m-\%d} {{ project_home }}/{{ project_name }}-dump && rm -r {{ project_home }}/{{ project_name }}-dump
             name: Backing up database
             minute: "{{ 10 + project_number }}"
             hour: 1

@@ -84,10 +84,13 @@
             path: "{{ deploy_helper.new_release_path }}/{{ deploy_helper.unfinished_filename }}"
             state: touch
 
-      - name: Copy package.json
+      - name: Copy npm requirements
         copy:
-            src: ../package.json
+            src: "../{{ item }}"
             dest: "{{ deploy_helper.new_release_path }}/"
+        with_items:
+            - package.json
+            - yarn.lock
 
       - name: Install node_modules
         command: yarn install --no-progress --silent --production --cache-folder={{ cache_dir }}
