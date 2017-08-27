@@ -11,3 +11,4 @@ extra_domains:
     - www.nidarholm.no
     - nidarholm.com
     - www.nidarholm.com
+monitor_server: 188.113.118.180

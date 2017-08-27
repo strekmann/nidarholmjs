@@ -1,142 +1,13 @@
----
-- name: Install apt dependencies and harden security
-  hosts: remote
-  remote_user: root
-  tasks:
-      - name: Disable password login
-        lineinfile:
-            dest: /etc/ssh/sshd_config
-            regexp: '^#?PasswordAuthentication yes'
-            line: 'PasswordAuthentication no'
-            state: present
-            backrefs: yes
-        notify:
-            - reload sshd
-
-      - name: Upgrade packages
-        apt:
-            upgrade: full
-            update_cache: yes
-            autoremove: yes
-
-      - name: Install apt dependencies
-        apt:
-            name: "{{ item }}"
-            state: present
-        with_items:
-            - borgbackup
-            - certbot
-            - fail2ban
-            - mailutils
-            - postfix
-            - rsync
-            - unattended-upgrades
-            - ufw
-
-      - name: Open up http ports in firewall
-        ufw:
-            rule: allow
-            port: "{{ item }}"
-            proto: tcp
-            state: enabled
-        with_items:
-            - 80
-            - 443
-            - 2022
-
-      - name: Set mailname
-        template:
-            src: mailname.j2
-            dest: /etc/mailname
-        tags:
-            - postfix
-        notify:
-            - restart postfix
-
-      - name: set up system user mail aliases
-        lineinfile:
-            state: present
-            dest: /etc/aliases
-            line: "root: {{ admin_email }}"
-            regexp: "^root:"
-        tags:
-            - postfix
-        notify:
-            - rebuild mail aliases
-
-      - name: set up unattended upgrades to use minimal steps
-        lineinfile:
-            state: present
-            dest: /etc/apt/apt.conf.d/50unattended-upgrades
-            line: Unattended-Upgrade::MinimalSteps "true";
-            regexp: "^/{0,2}Unattended-Upgrade::MinimalSteps "
-
-      - name: set up Unattended upgrades email address
-        lineinfile:
-            state: present
-            dest: /etc/apt/apt.conf.d/50unattended-upgrades
-            line: Unattended-Upgrade::Mail "root";
-            regexp: "^/{0,2}Unattended-Upgrade::Mail "
-
-      - name: set up Unattended upgrades to reboot if required
-        lineinfile:
-            state: present
-            dest: /etc/apt/apt.conf.d/50unattended-upgrades
-            line: Unattended-Upgrade::Automatic-Reboot "true";
-            regexp: "^/{0,2}Unattended-Upgrade::Automatic-Reboot "
-
-      - name: set up Unattended upgrades to reboot at night, not immediately
-        lineinfile:
-            state: present
-            dest: /etc/apt/apt.conf.d/50unattended-upgrades
-            line: Unattended-Upgrade::Automatic-Reboot-Time "05:00";
-            regexp: "^/{0,2}Unattended-Upgrade::Automatic-Reboot-Time "
-
-  handlers:
-      - name: reload sshd
-        service:
-            name: sshd
-            state: reloaded
-
-      - name: rebuild mail aliases
-        command: /usr/bin/newaliases
-
-      - name: restart postfix
-        service:
-            name: postfix
-            state: restarted
-
 - name: Install and set up project dependencies
   hosts: web
   remote_user: root
   tasks:
-      - name: Add nodesource key
-        apt_key:
-            url: https://deb.nodesource.com/gpgkey/nodesource.gpg.key
-            state: present
-
-      - name: Setup nodesource repository
-        apt_repository:
-            repo: "deb http://deb.nodesource.com/node_6.x {{ debian_version }} main"
-            state: present
-
-      - name: Upgrade packages
-        apt:
-            upgrade: full
-            update_cache: yes
-            autoremove: yes
-
       - name: Install apt dependencies
         apt:
             name: "{{ item }}"
             state: present
         with_items:
             - imagemagick
-            - mongodb
-            - nginx
-            - nodejs
-        tags:
-            - mongo
 
       - name: Create filesystem on extra volume
         filesystem:
@@ -389,7 +260,7 @@
 
       - name: Add cron job for backup of mongo database
         cron:
-            job: mongodump --quiet --dd={{ project_name }} -out={{ project_home }}/{{ project_name }}-dump && BORG_PASSPHRASE= borg create {{ backup_uri }}/./{{ project_name }}-{{ ansible_hostname }}-mongo::{{ project_name }}-mongo-{hostname}-{now:\%Y-\%m-\%d} {{ project_home }}/{{ project_name }}-dump && rm -r {{ project_home }}/{{ project_name }}-dump
+            job: mongodump --quiet --db={{ project_name }} -out={{ project_home }}/{{ project_name }}-dump && BORG_PASSPHRASE= borg create {{ backup_uri }}/./{{ project_name }}-{{ ansible_hostname }}-mongo::{{ project_name }}-mongo-{hostname}-{now:\%Y-\%m-\%d} {{ project_home }}/{{ project_name }}-dump && rm -r {{ project_home }}/{{ project_name }}-dump
             name: Backing up database
             minute: "{{ 10 + project_number }}"
             hour: 1
