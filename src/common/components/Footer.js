@@ -4,17 +4,14 @@ import getMuiTheme from 'material-ui/styles/getMuiTheme';
 import PropTypes from 'prop-types';
 
 import theme from '../theme';
-import SendContactEmailMutation from '../mutations/sendContactEmail';
+import SendContactEmailMutation from '../mutations/SendContactEmail';
 
 import ContactForm from './ContactForm';
 
 class Footer extends React.Component {
     static propTypes = {
-        organization: PropTypes.object,
-    }
-
-    static contextTypes = {
-        relay: Environment,
+        organization: PropTypes.object.isRequired,
+        relay: PropTypes.object.isRequired,
     }
 
     static childContextTypes = {
@@ -31,12 +28,8 @@ class Footer extends React.Component {
 
     sendEmail = (form) => {
         this.setState({ sent: true });
-        this.context.relay.commitUpdate(new SendContactEmailMutation({
-            email: form.email,
-            name: form.name,
-            text: form.text,
-            organization: this.props.organization,
-        }));
+        const { organization, relay } = this.props;
+        SendContactEmailMutation.commit(relay.environment, organization, form);
     }
 
     openEmailDialog = () => {

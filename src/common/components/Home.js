@@ -8,7 +8,7 @@ import PropTypes from 'prop-types';
 import Link from 'found/lib/Link';
 
 import theme from '../theme';
-import SendContactEmailMutation from '../mutations/sendContactEmail';
+import SendContactEmailMutation from '../mutations/SendContactEmail';
 
 import ContactForm from './ContactForm';
 import Date from './Date';
@@ -22,6 +22,7 @@ class Home extends React.Component {
 
     static propTypes = {
         organization: PropTypes.object.isRequired,
+        relay: PropTypes.object.isRequired,
     }
 
     constructor(props) {
@@ -37,17 +38,11 @@ class Home extends React.Component {
         return { muiTheme: this.muiTheme };
     }
 
-    /*
     sendEmail = (form) => {
         this.setState({ sent: true });
-        this.props.relay.commitUpdate(new SendContactEmailMutation({
-            email: form.email,
-            name: form.name,
-            text: form.text,
-            organization: this.props.organization,
-        }));
+        const { organization, relay } = this.props;
+        SendContactEmailMutation.commit(relay.environment, organization, form);
     }
-    */
 
     openEmailDialog = () => {
         this.setState({ contactDialogOpen: true });
