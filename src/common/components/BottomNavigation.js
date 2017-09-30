@@ -7,8 +7,8 @@ import { indigo50 } from 'material-ui/styles/colors';
 import getMuiTheme from 'material-ui/styles/getMuiTheme';
 import PropTypes from 'prop-types';
 import React from 'react';
-import Relay from 'react-relay';
-import { Link } from 'react-router';
+import { createFragmentContainer, graphql } from 'react-relay';
+import Link from 'found/lib/Link';
 
 import theme from '../theme';
 
@@ -69,14 +69,11 @@ class Navigation extends React.Component {
     }
 }
 
-export default Relay.createContainer(Navigation, {
-    fragments: {
-        organization: () => {
-            return Relay.QL`
-            fragment on Organization {
-                id
-                isMember,
-            }`;
-        },
-    },
-});
+export default createFragmentContainer(
+    Navigation,
+    graphql`
+    fragment BottomNavigation_organization on Organization {
+        id
+        isMember
+    }`,
+);

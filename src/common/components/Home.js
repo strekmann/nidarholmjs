@@ -1,11 +1,11 @@
-/* eslint "react/no-danger": 0 */
+/* eslint "react/no-danger": 1 */
 
 import React from 'react';
-import Relay from 'react-relay';
+import { createFragmentContainer, graphql } from 'react-relay';
 import getMuiTheme from 'material-ui/styles/getMuiTheme';
 import Paper from 'material-ui/Paper';
 import PropTypes from 'prop-types';
-import { Link } from 'react-router';
+import Link from 'found/lib/Link';
 
 import theme from '../theme';
 import SendContactEmailMutation from '../mutations/sendContactEmail';
@@ -16,10 +16,6 @@ import EventItem from './EventItem';
 import Text from './Text';
 
 class Home extends React.Component {
-    static contextTypes = {
-        relay: Relay.PropTypes.Environment,
-    }
-
     static childContextTypes = {
         muiTheme: PropTypes.object.isRequired,
     }
@@ -41,15 +37,17 @@ class Home extends React.Component {
         return { muiTheme: this.muiTheme };
     }
 
+    /*
     sendEmail = (form) => {
         this.setState({ sent: true });
-        this.context.relay.commitUpdate(new SendContactEmailMutation({
+        this.props.relay.commitUpdate(new SendContactEmailMutation({
             email: form.email,
             name: form.name,
             text: form.text,
             organization: this.props.organization,
         }));
     }
+    */
 
     openEmailDialog = () => {
         this.setState({ contactDialogOpen: true });
@@ -318,63 +316,59 @@ class Home extends React.Component {
     }
 }
 
-export default Relay.createContainer(Home, {
-    fragments: {
-        viewer: () => {
-            return Relay.QL`
-            fragment on User {
-                id
-                name
-                email
-                username
-            }`;
-        },
-        organization: () => {
-            return Relay.QL`
-            fragment on Organization {
-                id
-                name
-                encodedEmail
-                mapUrl
-                contactText
-                summaries {
-                    title
-                    summary
-                    slug
+export default createFragmentContainer(
+    Home,
+    {
+        viewer: graphql`
+        fragment Home_viewer on User {
+            id
+            name
+            email
+            username
+        }`,
+        organization: graphql`
+        fragment Home_organization on Organization {
+            id
+            name
+            encodedEmail
+            mapUrl
+            contactText
+            summaries {
+                title
+                summary
+                slug
+            }
+            nextProject {
+                title
+                start
+                end
+                year
+                tag
+                publicMdtext
+                poster {
+                    filename
+                    normalPath
                 }
-                nextProject {
-                    title
-                    start
-                    end
-                    year
-                    tag
-                    publicMdtext
-                    poster {
-                        filename
-                        normalPath
-                    }
-                    events(first:100,highlighted:true) {
-                        edges {
-                            node {
-                                id
-                                highlighted
-                                location
-                                start
-                            }
-                        }
-                    }
-                }
-                nextEvents(first:4) {
+                events(first:100,highlighted:true) {
                     edges {
                         node {
                             id
-                            ${EventItem.getFragment('event')}
+                            highlighted
+                            location
+                            start
                         }
                     }
                 }
-                ${ContactForm.getFragment('organization')}
-                ${SendContactEmailMutation.getFragment('organization')}
-            }`;
-        },
+            }
+            nextEvents(first:4) {
+                edges {
+                    node {
+                        id
+                        ...EventItem_event
+                    }
+                }
+            }
+            ...ContactForm_organization
+        }`,
     },
-});
+);

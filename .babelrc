@@ -1,7 +1,7 @@
 {
     "passPerPreset": true,
     "plugins": [
-        "babel-relay-plugin-loader",
+        ["relay", {"compat": true, "schema": "./src/server/schema.graphql"}],
         "transform-decorators-legacy"
     ],
     "presets": [

@@ -1,6 +1,6 @@
 import React from 'react';
-import Relay from 'react-relay';
-import { Link } from 'react-router';
+import { createFragmentContainer, graphql } from 'react-relay';
+import Link from 'found/lib/Link';
 import IconButton from 'material-ui/IconButton';
 import ExpandLess from 'material-ui/svg-icons/navigation/expand-less';
 import ExpandMore from 'material-ui/svg-icons/navigation/expand-more';
@@ -72,30 +72,29 @@ class EventItem extends React.Component {
     }
 }
 
-export default Relay.createContainer(EventItem, {
-    fragments: {
-        event: () => {
-            return Relay.QL`
-            fragment on Event {
-                id
-                title
-                location
-                start
-                end
-                isEnded
-                permissions {
-                    public
-                    groups {
-                        id
-                        name
-                    }
-                    users {
-                        id
-                        name
-                    }
+export default createFragmentContainer(
+    EventItem,
+    {
+        event: graphql`
+        fragment EventItem_event on Event {
+            id
+            title
+            location
+            start
+            end
+            isEnded
+            permissions {
+                public
+                groups {
+                    id
+                    name
                 }
-                mdtext
-            }`;
-        },
+                users {
+                    id
+                    name
+                }
+            }
+            mdtext
+        }`,
     },
-});
+);

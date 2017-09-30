@@ -1,5 +1,5 @@
 import React from 'react';
-import Relay from 'react-relay';
+import { createFragmentContainer, graphql, Environment } from 'react-relay';
 import getMuiTheme from 'material-ui/styles/getMuiTheme';
 import PropTypes from 'prop-types';
 
@@ -14,7 +14,7 @@ class Footer extends React.Component {
     }
 
     static contextTypes = {
-        relay: Relay.PropTypes.Environment,
+        relay: Environment,
     }
 
     static childContextTypes = {
@@ -86,17 +86,13 @@ class Footer extends React.Component {
     }
 }
 
-export default Relay.createContainer(Footer, {
-    fragments: {
-        organization: () => {
-            return Relay.QL`
-            fragment on Organization {
-                facebook
-                instagram
-                twitter
-                ${ContactForm.getFragment('organization')}
-                ${SendContactEmailMutation.getFragment('organization')}
-            }`;
-        },
-    },
-});
+export default createFragmentContainer(
+    Footer,
+    graphql`
+    fragment Footer_organization on Organization {
+    facebook
+    instagram
+    twitter
+    ...ContactForm_organization
+    }`,
+);

@@ -1,7 +1,7 @@
 /* eslint "react/require-default-props": 0 */
 
 import React from 'react';
-import Relay from 'react-relay';
+import { createFragmentContainer, graphql } from 'react-relay';
 import ActionLockOpen from 'material-ui/svg-icons/action/lock-open';
 import Person from 'material-ui/svg-icons/social/person';
 import Avatar from 'material-ui/Avatar';
@@ -13,7 +13,7 @@ import RaisedButton from 'material-ui/RaisedButton';
 import getMuiTheme from 'material-ui/styles/getMuiTheme';
 import { fullWhite, indigo900 } from 'material-ui/styles/colors';
 import PropTypes from 'prop-types';
-import { Link } from 'react-router';
+import Link from 'found/lib/Link';
 
 import theme from '../theme';
 
@@ -192,15 +192,16 @@ class Navigation extends React.Component {
                         {logo}
                     </div>
                     <div>
-                        {this.props.viewer ? <Link to={`/users/${viewer.id}`}>
-                            {this.renderAvatar()}
-                        </Link>
-                        : <Link to="/login">
-                            <RaisedButton
-                                style={{ minWidth: 44, marginLeft: 10 }}
-                                icon={<ActionLockOpen />}
-                            />
-                        </Link>
+                        {this.props.viewer
+                            ? <Link to={`/users/${viewer.id}`}>
+                                {this.renderAvatar()}
+                            </Link>
+                            : <Link to="/login">
+                                <RaisedButton
+                                    style={{ minWidth: 44, marginLeft: 10 }}
+                                    icon={<ActionLockOpen />}
+                                />
+                            </Link>
                         }
                     </div>
                     <div>
@@ -308,24 +309,21 @@ class Navigation extends React.Component {
     }
 }
 
-export default Relay.createContainer(Navigation, {
-    fragments: {
-        organization: () => {
-            return Relay.QL`
-            fragment on Organization {
-                id
-                isMember,
-            }`;
-        },
-        viewer: () => {
-            return Relay.QL`
-            fragment on User {
-                id,
-                name,
-                profilePicture {
-                    thumbnailPath
-                },
-            }`;
-        },
+export default createFragmentContainer(
+    Navigation,
+    {
+        viewer: graphql`
+        fragment Navigation_viewer on User {
+        id
+        name
+        profilePicture {
+        thumbnailPath
+        }
+        }`,
+        organization: graphql`
+        fragment Navigation_organization on Organization {
+        id
+        isMember
+        }`,
     },
-});
+);

@@ -22,9 +22,12 @@ import connectMongo from 'connect-mongo';
 import moment from 'moment';
 import multer from 'multer';
 import graphqlHTTP from 'express-graphql';
+import { getFarceResult } from 'found/lib/server';
 
+import { ServerFetcher } from './fetcher';
+import renderPage from './renderPage';
+import { createResolver, historyMiddlewares, render, routeConfig } from './router';
 import passport from './lib/passport';
-import universal from './app';
 import { icalEvents } from './icalRoutes';
 import Organization from './models/Organization';
 import PasswordCode from './models/PasswordCode';
@@ -44,6 +47,7 @@ import schema from './schema';
 const app = express();
 const httpServer = http.createServer(app);
 const port = config.get('express.port') || 3000;
+
 const upload = multer({ storage: multer.diskStorage({}) }).single('file');
 
 // const io = socketIO(httpServer, { path: '/s' });
@@ -98,23 +102,6 @@ const bunyan_opts = {
 app.use(expressBunyan(bunyan_opts));
 app.use(expressBunyan.errorLogger(bunyan_opts));
 
-/*
-const socketOptions = {
-    store: sessionStore,
-    key: config.get('session.name'),
-    secret: config.get('session.secret'),
-    cookieParser,
-    success: (data, accept) => {
-        log.debug('successful auth');
-        accept();
-    },
-    fail: (data, message, error, accept) => {
-        log.debug('auth failed', message);
-        accept(new Error(message));
-    },
-};
-*/
-// io.use(passportSocketIO.authorize(socketOptions));
 
 app.use(passport.initialize());
 app.use(passport.session());
@@ -162,12 +149,16 @@ app.use((req, res, next) => {
     });
 });
 
-/** Static stuff **/
+/* Static stuff */
 app.use(serveStatic(path.join(__dirname, '..', 'static')));
 
-/** GraphQL **/
+/* GraphQL */
 app.use('/graphql', graphqlHTTP((req) => {
-    const contextValue = { viewer: req.user, organization: req.organization, file: req.file };
+    const contextValue = {
+        viewer: req.user,
+        organization: req.organization,
+        file: req.file,
+    };
     return {
         schema,
         rootValue: contextValue,
@@ -270,7 +261,7 @@ app.get('/files/o/:path/:filename', (req, res) => {
 app.get('/events/public.ics', icalEvents);
 app.get('/events/export.ics', icalEvents);
 
-/** Socket.io routes **/
+/* Socket.io routes */
 // socketRoutes(io);
 
 if (process.env.NODE_ENV !== 'production') {
@@ -382,7 +373,29 @@ app.get(
 );
 
 // Send remaining requests to React frontend route matcher
-app.get('/*', universal);
+app.use(async (req, res, next) => {
+    const fetcher = new ServerFetcher(`http://localhost:${port}/graphql`);
+    try {
+        const { redirect, status, element } = await getFarceResult({
+            url: req.url,
+            historyMiddlewares,
+            routeConfig,
+            resolver: createResolver(fetcher),
+            render,
+        });
+
+        if (redirect) {
+            res.redirect(302, redirect.url);
+            return;
+        }
+
+        res.status(status).send(renderPage(element, fetcher, req.headers['user-agent']));
+    }
+    catch (error) {
+        next(error);
+    }
+});
+
 
 app.use((err, req, res, next) => {
     let status = 500;

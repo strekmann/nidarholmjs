@@ -1,6 +1,6 @@
 import React from 'react';
 import Helmet from 'react-helmet';
-import Relay from 'react-relay';
+import { createFragmentContainer, graphql } from 'react-relay';
 import getMuiTheme from 'material-ui/styles/getMuiTheme';
 import PropTypes from 'prop-types';
 
@@ -32,7 +32,8 @@ class App extends React.Component {
 
     render() {
         const { organization } = this.props;
-        const imageUrl = `${organization.baseurl}/img/Musikkforeningen-Nidarholm-dir-Trond-Madsen-1.jpg`;
+        const imageUrl = `${organization.baseurl}/img/Musikkforeningen-Nidarholm-dir-Trond-Madsen-1.
+jpg`;
         return (
             <div>
                 <Helmet
@@ -70,24 +71,19 @@ class App extends React.Component {
     }
 }
 
-export default Relay.createContainer(App, {
-    fragments: {
-        viewer: () => {
-            return Relay.QL`
-            fragment on User {
-                ${Navigation.getFragment('viewer')}
-            }`;
-        },
-        organization: () => {
-            return Relay.QL`
-            fragment on Organization {
-                baseurl
-                facebookAppid
-                description_nb
-                ${Navigation.getFragment('organization')}
-                ${BottomNavigation.getFragment('organization')}
-                ${Footer.getFragment('organization')}
-            }`;
-        },
-    },
-});
+export default createFragmentContainer(App, {
+    viewer: graphql`
+    fragment App_viewer on User {
+        ...Navigation_viewer
+    }`,
+    organization: graphql`
+    fragment App_organization on Organization {
+        baseurl
+        facebookAppid
+        description_nb
+        ...Navigation_organization
+        ...BottomNavigation_organization
+        ...Footer_organization
+    }
+    ` },
+);

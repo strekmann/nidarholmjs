@@ -1356,9 +1356,8 @@ organizationType = new GraphQLObjectType({
 });
 
 const queryType = new GraphQLObjectType({
-    name: 'Query',
+    name: 'Root',
     fields: {
-        node: nodeField,
         viewer: {
             type: userType,
             resolve: ({ viewer }) => {
@@ -1368,6 +1367,7 @@ const queryType = new GraphQLObjectType({
         organization: {
             type: organizationType,
         },
+        node: nodeField,
     },
 });
 
@@ -2774,9 +2774,7 @@ const mutationType = new GraphQLObjectType({
     },
 });
 
-const schema = new GraphQLSchema({
+export default new GraphQLSchema({
     query: queryType,
     mutation: mutationType,
 });
-
-export default schema;

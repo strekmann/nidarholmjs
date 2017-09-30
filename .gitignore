@@ -16,3 +16,4 @@
 /.vagrant
 /scripts/settings.json
 /ansible/.keycache
+__generated__

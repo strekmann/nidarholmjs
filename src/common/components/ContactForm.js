@@ -6,7 +6,7 @@ import RaisedButton from 'material-ui/RaisedButton';
 import TextField from 'material-ui/TextField';
 import PropTypes from 'prop-types';
 import React from 'react';
-import Relay from 'react-relay';
+import { createFragmentContainer, graphql } from 'react-relay';
 
 class ContactForm extends React.Component {
     static propTypes = {
@@ -118,13 +118,10 @@ class ContactForm extends React.Component {
     }
 }
 
-export default Relay.createContainer(ContactForm, {
-    fragments: {
-        organization: () => {
-            return Relay.QL`
-            fragment on Organization {
-                encodedEmail
-            }`;
-        },
-    },
-});
+export default createFragmentContainer(
+    ContactForm,
+    graphql`
+    fragment ContactForm_organization on Organization {
+        encodedEmail
+    }`,
+);
