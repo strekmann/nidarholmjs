@@ -24,9 +24,9 @@ import multer from 'multer';
 import graphqlHTTP from 'express-graphql';
 import { getFarceResult } from 'found/lib/server';
 
-import { ServerFetcher } from './fetcher';
+import { ServerFetcher } from '../fetcher';
 import renderPage from './renderPage';
-import { createResolver, historyMiddlewares, render, routeConfig } from './router';
+import { createResolver, historyMiddlewares, render, routeConfig } from '../router';
 import passport from './lib/passport';
 import { icalEvents } from './icalRoutes';
 import Organization from './models/Organization';
