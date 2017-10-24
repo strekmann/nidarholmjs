@@ -314,16 +314,16 @@ export default createFragmentContainer(
     {
         viewer: graphql`
         fragment Navigation_viewer on User {
-        id
-        name
-        profilePicture {
-        thumbnailPath
-        }
+            id
+            name
+            profilePicture {
+                thumbnailPath
+            }
         }`,
         organization: graphql`
         fragment Navigation_organization on Organization {
-        id
-        isMember
+            id
+            isMember
         }`,
     },
 );

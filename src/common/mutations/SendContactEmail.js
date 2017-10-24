@@ -2,13 +2,12 @@ import { commitMutation, graphql } from 'react-relay';
 
 const mutation = graphql`
 mutation SendContactEmailMutation($input: SendContactEmailInput!) {
-sendContactEmail(input: $input) {
-organization {
-id
-}
-}
-}
-`;
+    sendContactEmail(input: $input) {
+        organization {
+            id
+        }
+    }
+}`;
 
 function commit(environment, organization, form) {
     return commitMutation(environment, {
@@ -17,7 +16,7 @@ function commit(environment, organization, form) {
             input: form,
         },
         onCompleted(response) {
-            console.log('completed', response);
+            // console.log('completed', response);
         },
         onError(error) {
             console.error(error);

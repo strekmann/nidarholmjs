@@ -1,5 +1,5 @@
 import React from 'react';
-import Relay from 'react-relay';
+import { createFragmentContainer, graphql } from 'react-relay';
 import getMuiTheme from 'material-ui/styles/getMuiTheme';
 import IconMenu from 'material-ui/IconMenu';
 import MenuItem from 'material-ui/MenuItem';
@@ -8,22 +8,20 @@ import Paper from 'material-ui/Paper';
 import MoreVertIcon from 'material-ui/svg-icons/navigation/more-vert';
 import PropTypes from 'prop-types';
 
-import EditPageMutation from '../mutations/editPage';
+import EditPageMutation from '../mutations/EditPage';
 import theme from '../theme';
 import { flattenPermissions } from '../utils';
 
 import EditPage from './EditPage';
 import Text from './Text';
 
-class Page extends React.Component {
-    static contextTypes = {
-        relay: Relay.PropTypes.Environment,
-    };
 
+class Page extends React.Component {
     static propTypes = {
         viewer: PropTypes.object,
         organization: PropTypes.object,
         location: PropTypes.object,
+        relay: PropTypes.object.isRequired,
     }
 
     static childContextTypes = {
@@ -74,18 +72,9 @@ class Page extends React.Component {
     }
 
     savePage = (page) => {
-        this.context.relay.commitUpdate(new EditPageMutation({
-            viewer: null,
-            pageid: page.id,
-            slug: page.slug,
-            title: page.title,
-            summary: page.summary,
-            mdtext: page.mdtext,
-            permissions: page.permissions,
-        }), {
-            onSuccess: () => {
-                this.closeEdit();
-            },
+        const { relay } = this.props;
+        EditPageMutation.commit(relay.environment, page, () => {
+            this.closeEdit();
         });
     }
 
@@ -101,7 +90,7 @@ class Page extends React.Component {
             );
         }
         if (this.state.edit) {
-            const page = org.page;
+            const page = { ...org.page };
             page.permissions = this.state.permissions;
             return (
                 <EditPage
@@ -114,16 +103,16 @@ class Page extends React.Component {
         return (
             <Paper className="row">
                 {isMember
-                        ? <div style={{ float: 'right' }}>
-                            <IconMenu
-                                iconButtonElement={<IconButton><MoreVertIcon /></IconButton>}
-                                anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
-                                targetOrigin={{ vertical: 'top', horizontal: 'right' }}
-                            >
-                                <MenuItem primaryText="Rediger" onTouchTap={this.toggleEdit} />
-                            </IconMenu>
-                        </div>
-                        : null
+                    ? <div style={{ float: 'right' }}>
+                        <IconMenu
+                            iconButtonElement={<IconButton><MoreVertIcon /></IconButton>}
+                            anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
+                            targetOrigin={{ vertical: 'top', horizontal: 'right' }}
+                        >
+                            <MenuItem primaryText="Rediger" onTouchTap={this.toggleEdit} />
+                        </IconMenu>
+                    </div>
+                    : null
                 }
                 <Text text={org.page.mdtext} />
             </Paper>
@@ -131,49 +120,42 @@ class Page extends React.Component {
     }
 }
 
-export default Relay.createContainer(Page, {
-    initialVariables: {
-        slug: null,
-    },
-    fragments: {
-        viewer: () => {
-            return Relay.QL`
-            fragment on User {
+export default createFragmentContainer(
+    Page,
+    {
+        viewer: graphql`
+        fragment Page_viewer on User {
+            id
+            groups {
                 id
-                groups {
-                    id
-                    name
-                }
-                ${EditPageMutation.getFragment('viewer')},
-            }`;
-        },
-        organization: () => {
-            return Relay.QL`
-            fragment on Organization {
-                isMember
-                memberGroup {
-                    id
-                }
-                page(slug:$slug) {
-                    id
-                    slug
-                    title
-                    summary
-                    mdtext
-                    permissions {
-                        public
-                        groups {
-                            id
-                            name
-                        }
-                    }
-                    created
-                    updated
-                    updator {
+                name
+            }
+        }`,
+        organization: graphql`
+        fragment Page_organization on Organization {
+            isMember
+            memberGroup {
+                id
+            }
+            page(slug:$slug) {
+                id
+                slug
+                title
+                summary
+                mdtext
+                permissions {
+                    public
+                    groups {
+                        id
                         name
                     }
                 }
-            }`;
-        },
+                created
+                updated
+                updator {
+                    name
+                }
+            }
+        }`,
     },
-});
+);

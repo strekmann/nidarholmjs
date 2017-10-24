@@ -13,7 +13,7 @@ import schemaOptions from './schemaOptions';
  */
 
 const RoleSchema = new mongoose.Schema({
-    _id: { type: String, unique: true, required: true, default: uuid.v4 },
+    _id: { type: String, required: true, default: uuid.v4 },
     name: { type: String, required: true },
     email: { type: String },
     organization: { type: String, ref: 'Organization' },

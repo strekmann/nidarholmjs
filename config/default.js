@@ -28,6 +28,7 @@ module.exports = {
             callbackURL: 'http://localhost:3001/auth/twitter/callback',
         },
         remember_me: true,
+        jwt: true,
     },
     bunyan: {
         level: 'info',

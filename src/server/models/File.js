@@ -7,7 +7,7 @@ import uuid from 'node-uuid';
 import schemaOptions from './schemaOptions';
 
 const FileSchema = new mongoose.Schema({
-    _id: { type: String, required: true, unique: true, default: uuid.v4 },
+    _id: { type: String, required: true, default: uuid.v4 },
     filename: { type: String, trim: true, required: true },
     hash: { type: String, required: true },
     created: { type: Date, default: Date.now },

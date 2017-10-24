@@ -7,22 +7,23 @@ import { Strategy as RememberMeStrategy } from 'passport-remember-me';
 import { OAuth2Strategy as GoogleStrategy } from 'passport-google-oauth';
 import { Strategy as FacebookStrategy } from 'passport-facebook';
 import { Strategy as TwitterStrategy } from 'passport-twitter';
+import { ExtractJwt, Strategy as JwtStrategy } from 'passport-jwt';
 
 import RememberMeToken from '../models/RememberMeToken';
 import User from '../models/User';
 
 function fetchUser(userId, callback) {
     return User
-    .findById(userId, 'name username profile_picture groups')
-    .exec((err, user) => {
-        if (err) {
-            return callback(err.message, null);
-        }
-        if (!user) {
-            return callback(`Could not find user ${userId}`);
-        }
-        return callback(null, user);
-    });
+        .findById(userId, 'name username profile_picture groups')
+        .exec((err, user) => {
+            if (err) {
+                return callback(err.message, null);
+            }
+            if (!user) {
+                return callback(`Could not find user ${userId}`);
+            }
+            return callback(null, user);
+        });
 }
 
 passport.serializeUser((user, done) => {
@@ -33,33 +34,33 @@ passport.deserializeUser((userId, done) => {
     return fetchUser(userId, done);
 });
 
-passport.passportLocal = new LocalStrategy({
+passport.use(new LocalStrategy({
     usernameField: 'email',
 },
 (email, password, done) => {
     // Log in using either email or username
     User.findOne()
-    .or([{ email }, { username: email.toLowerCase() }])
-    .select('+algorithm +password +salt')
-    .exec((err, user) => {
-        if (err) {
-            return done(err);
-        }
-        if (!user) {
-            return done(null, false, { message: 'Ukjent e-postadresse eller brukernavn' });
-        }
-        return user.authenticate(password)
-            .then((ok) => {
-                if (ok) {
-                    return done(null, user);
-                }
-                return done(null, false, { message: 'Galt passord' });
-            })
-            .catch((err) => {
-                return done(err, false, { message: err.message });
-            });
-    });
-});
+        .or([{ email }, { username: email.toLowerCase() }])
+        .select('+algorithm +password +salt')
+        .exec((err, user) => {
+            if (err) {
+                return done(err);
+            }
+            if (!user) {
+                return done(null, false, { message: 'Ukjent e-postadresse eller brukernavn' });
+            }
+            return user.authenticate(password)
+                .then((ok) => {
+                    if (ok) {
+                        return done(null, user);
+                    }
+                    return done(null, false, { message: 'Galt passord' });
+                })
+                .catch((err) => {
+                    return done(err, false, { message: err.message });
+                });
+        });
+}));
 
 if (config.auth.remember_me) {
     passport.use(new RememberMeStrategy((tokenId, done) => {
@@ -148,5 +149,4 @@ if (config.auth.twitter) {
     }));
 }
 
-passport.use(passport.passportLocal);
 export default passport;

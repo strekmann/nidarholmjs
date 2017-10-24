@@ -2,7 +2,7 @@ import mongoose from 'mongoose';
 import schemaOptions from './schemaOptions';
 
 const GroupSchema = new mongoose.Schema({
-    _id: { type: String, unique: true, required: true },
+    _id: { type: String, required: true },
     name: { type: String, trim: true, required: true },
     organization: { type: String, ref: 'Organization' },
     members: [{

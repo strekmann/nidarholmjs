@@ -6,7 +6,7 @@ import RaisedButton from 'material-ui/RaisedButton';
 import TextField from 'material-ui/TextField';
 import PropTypes from 'prop-types';
 import React from 'react';
-import { Link } from 'react-router';
+import Link from 'found/lib/Link';
 import getMuiTheme from 'material-ui/styles/getMuiTheme';
 
 import theme from '../theme';

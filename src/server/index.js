@@ -23,6 +23,8 @@ import moment from 'moment';
 import multer from 'multer';
 import graphqlHTTP from 'express-graphql';
 import { getFarceResult } from 'found/lib/server';
+import jwt from 'jsonwebtoken';
+import { ExtractJwt } from 'passport-jwt';
 
 import { ServerFetcher } from '../fetcher';
 import renderPage from './renderPage';
@@ -57,6 +59,8 @@ if (config.get('express.trust_proxy')) {
 }
 
 app.use(cookieParser(config.get('express.session.secret')));
+app.use(bodyParser.urlencoded({ extended: true }));
+app.use(bodyParser.json());
 
 if (config.util.getEnv('NODE_ENV') === 'test') {
     app.use(errorHandler({
@@ -102,18 +106,49 @@ const bunyan_opts = {
 app.use(expressBunyan(bunyan_opts));
 app.use(expressBunyan.errorLogger(bunyan_opts));
 
-
 app.use(passport.initialize());
 app.use(passport.session());
 if (config.auth.remember_me) {
     app.use(passport.authenticate('remember-me'));
 }
-
-app.use(bodyParser.urlencoded({ extended: true }));
-app.use(bodyParser.json());
+if (config.auth.jwt) {
+    // Alternative authentication through authenticate bearer header and jwt.
+    // Still allows anonymous requests, it just does not set req.user.
+    app.use((req, res, next) => {
+        if (req.user) {
+            return next();
+        }
+        const token = ExtractJwt.fromAuthHeaderAsBearerToken()(req);
+        if (!token) {
+            return next();
+        }
+        return jwt.verify(token, config.express.session.secret, {}, (error, decoded) => {
+            if (error) {
+                log.error(error);
+                return next();
+            }
+            if (!decoded.sub) {
+                // no sub in token
+                return next();
+            }
+            return passport.deserializeUser(decoded.sub.id, (err, user) => {
+                if (err) {
+                    log.error(err);
+                }
+                else if (user) {
+                    req.user = user;
+                }
+                return next();
+            });
+        });
+    });
+}
 
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'jade');
+
+/* Static stuff */
+app.use(serveStatic(path.join(__dirname, '..', 'static')));
 
 // We have a possibility to override user login during development
 app.use((req, res, next) => {
@@ -140,17 +175,17 @@ app.use((req, res, next) => {
         organizationId = 'nidarholm';
     }
     Organization.findById(organizationId)
-    .populate('member_group')
-    .populate('administration_group')
-    .exec((err, organization) => {
-        if (err) { return next(err); }
-        req.organization = organization;
-        return next();
-    });
+        .populate('member_group')
+        .populate('administration_group')
+        .exec((err, organization) => {
+            if (err) { return next(err); }
+            req.organization = organization.toObject();
+            if (req.user) {
+                req.organization.user = req.user.toObject();
+            }
+            return next();
+        });
 });
-
-/* Static stuff */
-app.use(serveStatic(path.join(__dirname, '..', 'static')));
 
 /* GraphQL */
 app.use('/graphql', graphqlHTTP((req) => {
@@ -169,14 +204,14 @@ app.use('/graphql', graphqlHTTP((req) => {
 }));
 
 app.post('/upload', upload, (req, res, next) => {
-    // FIXME: Add check on org membership
+    // TODO: Add check on org membership
     return saveFile(req.file.path, config.files.raw_prefix)
-    .then((_file) => {
-        return res.json(_file);
-    })
-    .catch((error) => {
-        log.error(error);
-    });
+        .then((_file) => {
+            return res.json(_file);
+        })
+        .catch((error) => {
+            log.error(error);
+        });
 });
 
 app.get('/organization/updated_email_lists.json/:groups', groupEmailApiRoute);
@@ -273,7 +308,7 @@ if (process.env.NODE_ENV !== 'production') {
     });
 }
 
-/** Authentication stuff **/
+/* Authentication stuff */
 app.get('/logout', (req, res, next) => {
     req.logout();
     req.session.destroy();
@@ -292,20 +327,20 @@ app.post(
 
 app.get('/login/reset/:code', (req, res, next) => {
     return PasswordCode.findById(req.params.code).exec()
-    .then((passwordCode) => {
-        if (!passwordCode || passwordCode.created < moment().subtract(1, 'hours')) {
-            return res.redirect('/login/reset');
-        }
-        return User.findById(passwordCode.user).exec()
-        .then((user) => {
-            req.logIn(user, (err) => {
-                if (err) {
-                    throw err;
-                }
-                return res.redirect('/');
-            });
+        .then((passwordCode) => {
+            if (!passwordCode || passwordCode.created < moment().subtract(1, 'hours')) {
+                return res.redirect('/login/reset');
+            }
+            return User.findById(passwordCode.user).exec()
+                .then((user) => {
+                    req.logIn(user, (err) => {
+                        if (err) {
+                            throw err;
+                        }
+                        return res.redirect('/');
+                    });
+                });
         });
-    });
 });
 
 app.post('/login/register', (req, res, next) => {
@@ -374,7 +409,13 @@ app.get(
 
 // Send remaining requests to React frontend route matcher
 app.use(async (req, res, next) => {
-    const fetcher = new ServerFetcher(`http://localhost:${port}/graphql`);
+    const token = jwt.sign({
+        sub: req.user,
+        aud: config.get('site.domain'),
+        iss: config.get('site.domain'),
+    },
+    config.get('express.session.secret'));
+    const fetcher = new ServerFetcher(`http://localhost:${port}/graphql`, token);
     try {
         const { redirect, status, element } = await getFarceResult({
             url: req.url,
