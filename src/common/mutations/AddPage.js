@@ -1,26 +1,10 @@
 import { commitMutation, graphql } from 'react-relay';
 
 const mutation = graphql`
-mutation EditPageMutation($input: EditPageInput!) {
-    editPage(input: $input) {
-        page {
-            id
-            slug
-            title
-            summary
-            mdtext
-            permissions {
-                public
-                groups {
-                    id
-                    name
-                }
-            }
-            created
-            updated
-            updator {
-                name
-            }
+mutation AddPageMutation($input: AddPageInput!) {
+    addPage(input: $input) {
+        organization {
+            ...Pages_organization
         }
     }
 }`;
@@ -28,11 +12,10 @@ mutation EditPageMutation($input: EditPageInput!) {
 function commit(environment, page, onCompleted) {
     const variables = {
         input: {
-            pageid: page.id,
             slug: page.slug,
             mdtext: page.mdtext,
-            title: page.title,
             summary: page.summary,
+            title: page.title,
             permissions: page.permissions.map((permission) => {
                 return permission.id;
             }),

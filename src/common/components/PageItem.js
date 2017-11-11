@@ -1,6 +1,6 @@
+import Link from 'found/lib/Link';
 import PropTypes from 'prop-types';
 import React from 'react';
-import { Link } from 'react-router';
 
 import { flattenPermissions } from '../utils';
 

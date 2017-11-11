@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types';
 import React from 'react';
-import Relay from 'react-relay';
+import { createRefetchContainer, graphql } from 'react-relay';
 import MoreVertIcon from 'material-ui/svg-icons/navigation/more-vert';
 import IconButton from 'material-ui/IconButton';
 import IconMenu from 'material-ui/IconMenu';
@@ -9,22 +9,17 @@ import Paper from 'material-ui/Paper';
 import RaisedButton from 'material-ui/RaisedButton';
 import getMuiTheme from 'material-ui/styles/getMuiTheme';
 
-import AddPageMutation from '../mutations/addPage';
+import AddPageMutation from '../mutations/AddPage';
 import theme from '../theme';
 
 import EditPage from './EditPage';
 import PageList from './PageList';
 
-const itemsPerPage = 20;
-
 class Pages extends React.Component {
-    static contextTypes = {
-        relay: Relay.PropTypes.Environment,
-    };
-
     static propTypes = {
         viewer: PropTypes.object,
         organization: PropTypes.object,
+        relay: PropTypes.object.isRequired,
     }
 
     static childContextTypes = {
@@ -59,18 +54,10 @@ class Pages extends React.Component {
         this.setState({ addPage: false });
     }
 
-    savePage = (page) => {
-        this.context.relay.commitUpdate(new AddPageMutation({
-            organization: this.props.organization,
-            slug: page.slug,
-            mdtext: page.mdtext,
-            title: page.title,
-            summary: page.summary,
-            permissions: page.permissions,
-        }), {
-            onSuccess: () => {
-                this.closeAddPage();
-            },
+    addPage = (page) => {
+        const { relay } = this.props;
+        AddPageMutation.commit(relay.environment, page, () => {
+            this.closeAddPage();
         });
     }
 
@@ -84,7 +71,7 @@ class Pages extends React.Component {
                 {this.state.addPage
                     ? <EditPage
                         viewer={this.props.viewer}
-                        savePage={this.savePage}
+                        savePage={this.addPage}
                         {...this.state.page}
                     />
                     : <div>
@@ -108,70 +95,65 @@ class Pages extends React.Component {
                         {org.pages.pageInfo.hasNextPage ?
                             <RaisedButton primary>Mer</RaisedButton>
                             :
-                                null
+                            null
                         }
                     </div>
                 }
             </Paper>
         );
     }
-
 }
 
-export default Relay.createContainer(Pages, {
-    initialVariables: {
-        showPages: itemsPerPage,
-    },
-    fragments: {
-        viewer: () => {
-            return Relay.QL`
-            fragment on User {
-                groups {
-                    id
-                    name
-                }
-            }`;
-        },
-        organization: () => {
-            return Relay.QL`
-            fragment on Organization {
+export default createRefetchContainer(
+    Pages,
+    {
+        viewer: graphql`
+        fragment Pages_viewer on User {
+            groups {
                 id
-                isMember
-                memberGroup {
-                    id
-                }
-                isAdmin
-                pages(first:$showPages) {
-                    edges {
-                        node {
-                            id
-                            slug
-                            mdtext
-                            title
-                            summary
-                            creator {
+                name
+            }
+        }`,
+        organization: graphql`
+        fragment Pages_organization on Organization
+        @argumentDefinitions(
+            showPages: {type: "Int", defaultValue: 20}
+        ) {
+            id
+            isMember
+            memberGroup {
+                id
+            }
+            isAdmin
+            pages(first: $showPages) {
+                edges {
+                    node {
+                        id
+                        slug
+                        mdtext
+                        title
+                        summary
+                        creator {
+                            name
+                        }
+                        created
+                        updator {
+                            name
+                        }
+                        updated
+                        permissions {
+                            public
+                            groups {
+                                id
                                 name
-                            }
-                            created
-                            updator {
-                                name
-                            }
-                            updated
-                            permissions {
-                                public
-                                groups {
-                                    id
-                                    name
-                                }
                             }
                         }
                     }
-                    pageInfo {
-                        hasNextPage
-                    }
                 }
-                ${AddPageMutation.getFragment('organization')},
-            }`;
-        },
+                pageInfo {
+                    hasNextPage
+                }
+            }
+        }`,
     },
-});
+);

@@ -11,6 +11,7 @@ import App from './common/components/App';
 import Home from './common/components/Home';
 import Login from './common/components/Login';
 import Page from './common/components/Page';
+import Pages from './common/components/Pages';
 
 export const historyMiddlewares = [queryMiddleware];
 
@@ -54,6 +55,20 @@ export const routeConfig = makeRouteConfig(
         <Route
             path="login"
             Component={Login}
+        />
+        <Route
+            path="pages"
+            Component={Pages}
+            query={graphql`
+                query router_Pages_Query {
+                    viewer {
+                        ...Pages_viewer
+                    }
+                    organization {
+                        ...Pages_organization
+                    }
+                }
+            `}
         />
         <Route
             path=":slug"
