@@ -2,18 +2,14 @@ import AutoComplete from 'material-ui/AutoComplete';
 import Chip from 'material-ui/Chip';
 import PropTypes from 'prop-types';
 import React from 'react';
-import Relay from 'react-relay';
+import { createRefetchContainer, graphql } from 'react-relay';
 
 class TagField extends React.Component {
-    static contextTypes = {
-        relay: Relay.PropTypes.Environment,
-    }
-
     static propTypes = {
         fileTags: PropTypes.array,
         onChange: PropTypes.func,
         organization: PropTypes.object,
-        relay: PropTypes.object,
+        relay: PropTypes.object.isRequired,
         autoFocus: PropTypes.bool,
     }
 
@@ -24,7 +20,12 @@ class TagField extends React.Component {
 
     onTagChange = (tag) => {
         this.setState({ tag });
-        this.props.relay.setVariables({ term: tag });
+        this.props.relay.refetch((variables) => {
+            return {
+                searchTags: variables.searchTags,
+                searchTerm: tag,
+            };
+        });
     }
 
     addTag = (chosen) => {
@@ -80,21 +81,27 @@ class TagField extends React.Component {
     }
 }
 
-export default Relay.createContainer(TagField, {
-    initialVariables: {
-        term: '',
-        tags: '',
+export default createRefetchContainer(
+    TagField,
+    {
+        organization: graphql`
+        fragment TagField_organization on Organization
+        @argumentDefinitions(
+            searchTags: {type: "String", defaultValue: ""}
+            searchTerm: {type: "String", defaultValue: ""}
+        ) {
+            id
+            tags(tags: $searchTags, term: $searchTerm) {
+                tag
+                count
+            }
+        }`,
     },
-    fragments: {
-        organization: () => {
-            return Relay.QL`
-            fragment on Organization {
-                id
-                tags(tags:$tags, term:$term) {
-                    tag
-                    count
-                }
-            }`;
-        },
-    },
-});
+    graphql`
+    query TagFieldRefetchQuery($searchTags: String, $searchTerm: String) {
+        organization {
+            ...TagField_organization @arguments(searchTags: $searchTags, searchTerm: $searchTerm)
+        }
+    }`,
+
+);

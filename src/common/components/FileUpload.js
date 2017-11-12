@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types';
 import Dropzone from 'react-dropzone';
 import React from 'react';
-import Relay from 'react-relay';
+import { createFragmentContainer, graphql } from 'react-relay';
 
 import PermissionField from './PermissionField';
 import TagField from './TagField';
@@ -67,14 +67,12 @@ class FileUpload extends React.Component {
     }
 }
 
-export default Relay.createContainer(FileUpload, {
-    fragments: {
-        organization: () => {
-            return Relay.QL`
-            fragment on Organization {
-                id
-                ${TagField.getFragment('organization')}
-            }`;
-        },
+export default createFragmentContainer(
+    FileUpload,
+    {
+        organization: graphql`
+        fragment FileUpload_organization on Organization {
+            ...TagField_organization
+        }`,
     },
-});
+);

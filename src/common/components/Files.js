@@ -2,7 +2,7 @@
 /* eslint "no-console": 0 */
 
 import React from 'react';
-import Relay from 'react-relay';
+import { createRefetchContainer, graphql } from 'react-relay';
 import axios from 'axios';
 import getMuiTheme from 'material-ui/styles/getMuiTheme';
 import RaisedButton from 'material-ui/RaisedButton';
@@ -11,24 +11,18 @@ import Paper from 'material-ui/Paper';
 import PropTypes from 'prop-types';
 
 import theme from '../theme';
-import AddFileMutation from '../mutations/addFile';
-import SaveFilePermissionsMutation from '../mutations/saveFilePermissions';
+import AddFileMutation from '../mutations/AddFile';
+import SaveFilePermissionsMutation from '../mutations/SaveFilePermissions';
 
 import FileList from './FileList';
 import FileUpload from './FileUpload';
 import TagField from './TagField';
 
-const itemsPerPage = 12;
-
 class Files extends React.Component {
-    static contextTypes = {
-        relay: Relay.PropTypes.Environment,
-    };
-
     static propTypes = {
         viewer: PropTypes.object,
         organization: PropTypes.object,
-        relay: PropTypes.object,
+        relay: PropTypes.object.isRequired,
     }
 
     static childContextTypes = {
@@ -51,55 +45,58 @@ class Files extends React.Component {
     }
 
     onDrop = (files, permissions, tags) => {
+        const { relay } = this.props;
         files.forEach((file) => {
             const data = new FormData();
             data.append('file', file);
 
             axios.post('/upload', data)
-            .then((response) => {
-                this.context.relay.commitUpdate(new AddFileMutation({
-                    viewer: null,
-                    organization: this.props.organization,
-                    hex: response.data.hex,
-                    permissions,
-                    filename: file.name,
-                    projectTag: null,
-                    tags,
-                }), {
-                    onSuccess: () => {
-                        // console.log("successfile");
-                    },
-                    onFailure: (transaction) => {
-                        console.error(transaction.getError().source.errors);
-                    },
+                .then((response) => {
+                    AddFileMutation.commit(relay.environment, {
+                        filename: file.name,
+                        hex: response.data.hex,
+                        permissions: permissions.map((permission) => {
+                            return permission.id;
+                        }),
+                        projectTag: null,
+                        tags,
+                    });
+                })
+                .catch((error) => {
+                    console.error('err', error);
                 });
-            })
-            .catch((error) => {
-                console.error('err', error);
-            });
         });
     }
 
     onSaveFilePermissions = (file, permissions, tags, onSuccess) => {
-        this.context.relay.commitUpdate(new SaveFilePermissionsMutation({
-            organization: this.props.organization,
+        const { relay } = this.props;
+        SaveFilePermissionsMutation.commit(relay.environment, {
             fileId: file,
             permissions: permissions.map((permission) => {
                 return permission.id;
             }),
             tags,
-        }), {
-            onSuccess,
-        });
+        }, onSuccess);
     }
 
     onTagChange = (tags) => {
-        const fixedTags = tags.sort().join('|').toLowerCase();
-        this.props.relay.setVariables({ tags: fixedTags });
+        this.props.relay.refetch((variables) => {
+            return {
+                showFiles: variables.showFiles,
+                searchTerm: variables.searchTerm,
+                searchTags: tags.sort().join('|').toLowerCase(),
+            };
+        });
     }
 
-    onChangeTerm = (term) => {
-        this.props.relay.setVariables({ term });
+    onChangeTerm = (searchTerm) => {
+        this.props.relay.refetch((variables) => {
+            return {
+                showFiles: variables.showFiles,
+                searchTags: variables.searchTags,
+                searchTerm,
+            };
+        });
     }
 
     toggleAddFile = () => {
@@ -115,29 +112,39 @@ class Files extends React.Component {
     }
 
     searchTag = (tag) => {
-        const tags = this.props.relay.variables.tags.split('|').filter((t) => {
-            return !!t;
+        //const fixedTags = tags.sort().join('|').toLowerCase();
+        this.props.relay.refetch((variables) => {
+            const tags = variables.searchTags.split('|').filter((t) => {
+                return !!t;
+            });
+            tags.push(tag);
+            this.setState({ search: true, tags });
+            return {
+                showFiles: variables.showFiles,
+                searchTerm: variables.searchTerm,
+                searchTags: tags.sort().join('|').toLowerCase(),
+            };
         });
-        tags.push(tag);
-        const fixedTags = tags.sort().join('|').toLowerCase();
-        this.props.relay.setVariables({ tags: fixedTags });
-        this.setState({ search: true, tags });
     }
 
     fetchMore = () => {
-        this.props.relay.setVariables({
-            showFiles: this.props.relay.variables.showFiles + itemsPerPage,
+        this.props.relay.refetch((variables) => {
+            return {
+                showFiles: variables.showFiles + 20,
+                searchTags: variables.searchTags,
+                searchTerm: variables.searchTerm,
+            };
         });
     }
 
     render() {
-        const org = this.props.organization;
-        const isMember = org.isMember;
+        const { organization } = this.props;
+        const isMember = organization.isMember;
         const { desktopGutterLess } = theme.spacing;
         return (
             <div className="row">
-                {isMember ?
-                    <div style={{ float: 'right' }}>
+                {isMember
+                    ? <div style={{ float: 'right' }}>
                         <RaisedButton
                             label="Last opp filer"
                             onTouchTap={this.toggleAddFile}
@@ -156,33 +163,34 @@ class Files extends React.Component {
                                 viewer={this.props.viewer}
                                 organization={this.props.organization}
                                 onDrop={this.onDrop}
-                                memberGroupId={org.memberGroup.id}
+                                memberGroupId={organization.memberGroup.id}
                                 onTagsChange={this.searchTag}
                             />
                             <RaisedButton label="Ferdig" primary onTouchTap={this.closeAddFile} />
                         </Dialog>
                     </div>
-                : null}
+                    : null
+                }
                 <h1>Filer</h1>
                 {this.state.search
-                        ? <Paper
-                            style={{
-                                padding: desktopGutterLess,
-                                marginBottom: desktopGutterLess,
-                            }}
-                        >
-                            <h2>Søk i merkelapper</h2>
-                            <TagField
-                                onChange={this.onTagChange}
-                                organization={this.props.organization}
-                                autoFocus
-                            />
-                        </Paper>
-                        : null
+                    ? <Paper
+                        style={{
+                            padding: desktopGutterLess,
+                            marginBottom: desktopGutterLess,
+                        }}
+                    >
+                        <h2>Søk i merkelapper</h2>
+                        <TagField
+                            onChange={this.onTagChange}
+                            organization={this.props.organization}
+                            autoFocus
+                        />
+                    </Paper>
+                    : null
                 }
                 <FileList
-                    files={org.files}
-                    memberGroupId={org.memberGroup.id}
+                    files={organization.files}
+                    memberGroupId={organization.memberGroup.id}
                     onSavePermissions={this.onSaveFilePermissions}
                     searchTag={this.searchTag}
                     style={{
@@ -192,82 +200,79 @@ class Files extends React.Component {
                     viewer={this.props.viewer}
                     organization={this.props.organization}
                 />
-                {org.files.pageInfo.hasNextPage
-                        ? <RaisedButton
-                            onTouchTap={this.fetchMore}
-                            label="Mer"
-                            primary
-                        />
-                        : null
+                {organization.files.pageInfo.hasNextPage
+                    ? <RaisedButton
+                        onTouchTap={this.fetchMore}
+                        label="Mer"
+                        primary
+                    />
+                    : null
                 }
             </div>
         );
     }
 }
 
-export default Relay.createContainer(Files, {
-    initialVariables: {
-        showFiles: itemsPerPage,
-        tags: '',
-        term: '',
-    },
-    fragments: {
-        viewer: () => {
-            return Relay.QL`
-            fragment on User {
-                groups {
-                    id
-                    name
-                }
-            }`;
-        },
-        organization: () => {
-            return Relay.QL`
-            fragment on Organization {
+export default createRefetchContainer(
+    Files,
+    {
+        viewer: graphql`
+        fragment Files_viewer on User {
+            groups {
                 id
-                isMember
-                memberGroup {
-                    id
-                }
-                tags(tags:$tags, term:$term) {
-                    tag
-                    count
-                }
-                files(first:$showFiles, tags:$tags) {
-                    edges {
-                        node {
-                            id
-                            filename
-                            created
-                            mimetype
-                            size
-                            permissions {
-                                public
-                                groups {
-                                    id
-                                    name
-                                }
-                                users {
-                                    id
-                                    name
-                                }
+                name
+            }
+        }`,
+        organization: graphql`
+        fragment Files_organization on Organization
+        @argumentDefinitions(
+            showFiles: {type: "Int", defaultValue: 20}
+            searchTags: {type: "String", defaultValue: ""}
+            searchTerm: {type: "String", defaultValue: ""}
+        ) {
+            id
+            isMember
+            memberGroup {
+                id
+            }
+            files(first: $showFiles, tags: $searchTags) {
+                edges {
+                    node {
+                        id
+                        filename
+                        created
+                        mimetype
+                        size
+                        permissions {
+                            public
+                            groups {
+                                id
+                                name
                             }
-                            tags
-                            isImage
-                            path
-                            thumbnailPath
+                            users {
+                                id
+                                name
+                            }
                         }
-                    }
-                    pageInfo {
-                        hasNextPage
+                        tags
+                        isImage
+                        path
+                        thumbnailPath
                     }
                 }
-                ${FileList.getFragment('organization')}
-                ${FileUpload.getFragment('organization')}
-                ${TagField.getFragment('organization')}
-                ${AddFileMutation.getFragment('organization')},
-                ${SaveFilePermissionsMutation.getFragment('organization')}
-            }`;
-        },
+                pageInfo {
+                    hasNextPage
+                }
+            }
+            ...FileList_organization
+            ...FileUpload_organization
+            ...TagField_organization
+        }`,
     },
-});
+    graphql`
+    query FilesRefetchQuery($showFiles: Int, $searchTags: String) {
+        organization {
+            ...Files_organization @arguments(showFiles: $showFiles, searchTags: $searchTags)
+        }
+    }`,
+);

@@ -2,7 +2,7 @@
 
 import React from 'react';
 import Relay from 'react-relay';
-import { Link } from 'react-router';
+import Link from 'found/lib/Link';
 import { Card, CardTitle, CardMedia, CardActions } from 'material-ui/Card';
 import Chip from 'material-ui/Chip';
 import MoreVertIcon from 'material-ui/svg-icons/navigation/more-vert';
@@ -14,6 +14,7 @@ import MenuItem from 'material-ui/MenuItem';
 import RaisedButton from 'material-ui/RaisedButton';
 import { grey400 } from 'material-ui/styles/colors';
 import PropTypes from 'prop-types';
+import { createFragmentContainer, graphql } from 'react-relay';
 
 import { flattenPermissions } from '../utils';
 import theme from '../theme';
@@ -123,25 +124,25 @@ class FileItem extends React.Component {
                             }
                         </IconMenu>
                     </div>
-                    <Link
+                    <span
                         style={{
                             textOverflow: 'ellipsis',
                             overflow: 'hidden',
                         }}
                     >
                         {this.props.filename}
-                    </Link>
+                    </span>
                 </CardTitle>
                 {this.props.isImage
                     ? <CardMedia><img alt="" src={this.props.thumbnailPath} /></CardMedia>
                     : <Link
                         style={{ display: 'block', textAlign: 'center' }}
-                        href={this.props.path}
+                        to={this.props.path}
                         download
                     >
                         <Download style={{ height: 100, width: '100%' }} color={grey400} />
                     </Link>
-                    }
+                }
                 <CardActions style={{ display: 'flex', flexWrap: 'wrap' }}>
                     <PermissionChips
                         memberGroupId={this.props.memberGroupId}
@@ -187,14 +188,12 @@ class FileItem extends React.Component {
     }
 }
 
-export default Relay.createContainer(FileItem, {
-    fragments: {
-        organization: () => {
-            return Relay.QL`
-            fragment on Organization {
-                id
-                ${TagField.getFragment('organization')}
-            }`;
-        },
+export default createFragmentContainer(
+    FileItem,
+    {
+        organization: graphql`
+        fragment FileItem_organization on Organization {
+            ...TagField_organization
+        }`,
     },
-});
+);

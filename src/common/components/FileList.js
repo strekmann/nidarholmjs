@@ -2,7 +2,7 @@
 
 import PropTypes from 'prop-types';
 import React from 'react';
-import Relay from 'react-relay';
+import { createFragmentContainer, graphql } from 'react-relay';
 
 import FileItem from './FileItem';
 
@@ -49,14 +49,12 @@ class FileList extends React.Component {
     }
 }
 
-export default Relay.createContainer(FileList, {
-    fragments: {
-        organization: () => {
-            return Relay.QL`
-            fragment on Organization {
-                id
-                ${FileItem.getFragment('organization')}
-            }`;
-        },
+export default createFragmentContainer(
+    FileList,
+    {
+        organization: graphql`
+        fragment FileList_organization on Organization {
+            ...FileItem_organization
+        }`,
     },
-});
+);
