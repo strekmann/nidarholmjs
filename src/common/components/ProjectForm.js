@@ -6,7 +6,7 @@ import TextField from 'material-ui/TextField';
 import moment from 'moment';
 import PropTypes from 'prop-types';
 import React from 'react';
-import Relay from 'react-relay';
+import { createFragmentContainer, graphql } from 'react-relay';
 
 import { flattenPermissions } from '../utils';
 
@@ -20,6 +20,7 @@ if (areIntlLocalesSupported(['nb'])) {
 
 class ProjectForm extends React.Component {
     static propTypes = {
+        cancel: PropTypes.func,
         open: PropTypes.bool,
         save: PropTypes.func,
         toggle: PropTypes.func,
@@ -263,24 +264,21 @@ class ProjectForm extends React.Component {
     }
 }
 
-export default Relay.createContainer(ProjectForm, {
-    fragments: {
-        viewer: () => {
-            return Relay.QL`
-            fragment on User {
+export default createFragmentContainer(
+    ProjectForm,
+    {
+        viewer: graphql`
+        fragment ProjectForm_viewer on User {
+            id
+            groups {
                 id
-                groups {
-                    id
-                    name
-                }
-            }`;
-        },
-        organization: () => {
-            return Relay.QL`
-            fragment on Organization {
-                id
-                ${UserField.getFragment('organization')}
-            }`;
-        },
+                name
+            }
+        }`,
+        organization: graphql`
+        fragment ProjectForm_organization on Organization {
+            id
+            ...UserField_organization
+        }`,
     },
-});
+);

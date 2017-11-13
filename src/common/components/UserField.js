@@ -2,7 +2,7 @@ import AutoComplete from 'material-ui/AutoComplete';
 import Chip from 'material-ui/Chip';
 import PropTypes from 'prop-types';
 import React from 'react';
-import Relay from 'react-relay';
+import { createFragmentContainer, graphql } from 'react-relay';
 
 class UserField extends React.Component {
     static propTypes = {
@@ -73,18 +73,16 @@ class UserField extends React.Component {
     }
 }
 
-export default Relay.createContainer(UserField, {
-    fragments: {
-        organization: () => {
-            return Relay.QL`
-            fragment on Organization {
+export default createFragmentContainer(
+    UserField, {
+        organization: graphql`
+        fragment UserField_organization on Organization {
+            id
+            users {
                 id
-                users {
-                    id
-                    name
-                }
-            }`;
-        },
+                name
+            }
+        }`,
     },
-});
+);
 

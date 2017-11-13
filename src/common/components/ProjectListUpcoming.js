@@ -1,43 +1,34 @@
 import RaisedButton from 'material-ui/RaisedButton';
 import PropTypes from 'prop-types';
 import React from 'react';
-import Relay from 'react-relay';
+import { createRefetchContainer, graphql } from 'react-relay';
 
 import ProjectItem from './ProjectItem';
 
 const PROJECTS_PER_PAGE = 10;
 
 class ProjectListUpcoming extends React.Component {
-    static contextTypes = {
-        relay: Relay.PropTypes.Environment,
-    }
-
     static propTypes = {
         title: PropTypes.string,
-        organization: PropTypes.object,
-        relay: PropTypes.object,
+        organization: PropTypes.object.isRequired,
+        relay: PropTypes.object.isRequired,
     }
 
     loadMore = () => {
-        const projects = this.props.organization.nextProjects;
-        let next = projects.edges.length + PROJECTS_PER_PAGE;
-
-        // upcoming list has just a couple of projects, so at first refill,
-        // use default page size
-        if (projects.edges.length < PROJECTS_PER_PAGE) {
-            next = PROJECTS_PER_PAGE;
-        }
-        this.props.relay.setVariables({
-            showProjects: next,
+        const { nextProjects } = this.props.organization;
+        this.props.relay.refetch((variables) => {
+            return {
+                showProjects: nextProjects.edges.length + PROJECTS_PER_PAGE,
+            };
         });
     }
 
     render() {
-        const projects = this.props.organization.nextProjects;
+        const { nextProjects } = this.props.organization;
         return (
             <div>
                 <h1>{this.props.title}</h1>
-                {projects.edges.map((edge) => {
+                {nextProjects.edges.map((edge) => {
                     return (
                         <ProjectItem
                             key={edge.node.id}
@@ -46,7 +37,7 @@ class ProjectListUpcoming extends React.Component {
                         />
                     );
                 })}
-                {projects.pageInfo.hasNextPage
+                {nextProjects.pageInfo.hasNextPage
                     ? <RaisedButton primary onClick={this.loadMore} label="Mer" />
                     : null
                 }
@@ -55,28 +46,34 @@ class ProjectListUpcoming extends React.Component {
     }
 }
 
-export default Relay.createContainer(ProjectListUpcoming, {
-    initialVariables: {
-        showProjects: 4,
-        projectsPerPage: PROJECTS_PER_PAGE,
-    },
-    fragments: {
-        organization: () => {
-            return Relay.QL`
-            fragment on Organization {
-                isMember
-                nextProjects(first:$showProjects) {
-                    edges {
-                        node {
-                            id
-                            ${ProjectItem.getFragment('project')}
-                        }
-                    }
-                    pageInfo {
-                        hasNextPage
+export default createRefetchContainer(
+    ProjectListUpcoming,
+    {
+        organization: graphql`
+        fragment ProjectListUpcoming_organization on Organization
+        @argumentDefinitions(
+            showProjects: {type: "Int", defaultValue: 5}
+        )
+        {
+            isMember
+            nextProjects(first:$showProjects) {
+                edges {
+                    node {
+                        id
+                        ...ProjectItem_project
                     }
                 }
-            }`;
-        },
+                pageInfo {
+                    hasNextPage
+                }
+            }
+        }`,
     },
-});
+    graphql`
+    query ProjectListUpcomingRefetchQuery($showProjects: Int) {
+        organization {
+            ...ProjectListUpcoming_organization @arguments(showProjects: $showProjects)
+        }
+    }
+    `,
+);

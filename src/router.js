@@ -10,9 +10,10 @@ import { Environment, Network, RecordSource, Store } from 'relay-runtime';
 import App from './common/components/App';
 import Home from './common/components/Home';
 import Login from './common/components/Login';
+import Files from './common/components/Files';
 import Page from './common/components/Page';
 import Pages from './common/components/Pages';
-import Files from './common/components/Files';
+import Projects from './common/components/Projects';
 
 export const historyMiddlewares = [queryMiddleware];
 
@@ -67,6 +68,20 @@ export const routeConfig = makeRouteConfig(
                     }
                     organization {
                         ...Files_organization
+                    }
+                }
+            `}
+        />
+        <Route
+            path="projects"
+            Component={Projects}
+            query={graphql`
+                query router_Projects_Query {
+                    viewer {
+                        ...Projects_viewer
+                    }
+                    organization {
+                        ...Projects_organization
                     }
                 }
             `}

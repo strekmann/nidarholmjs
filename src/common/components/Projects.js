@@ -6,23 +6,20 @@ import getMuiTheme from 'material-ui/styles/getMuiTheme';
 import MoreVertIcon from 'material-ui/svg-icons/navigation/more-vert';
 import PropTypes from 'prop-types';
 import React from 'react';
-import Relay from 'react-relay';
+import { createFragmentContainer, graphql } from 'react-relay';
 
 import theme from '../theme';
-import AddProjectMutation from '../mutations/addProject';
+import AddProjectMutation from '../mutations/AddProject';
 
 import ProjectListPrevious from './ProjectListPrevious';
 import ProjectListUpcoming from './ProjectListUpcoming';
 import ProjectForm from './ProjectForm';
 
 class Projects extends React.Component {
-    static contextTypes = {
-        relay: Relay.PropTypes.Environment,
-    };
-
     static propTypes = {
         organization: PropTypes.object,
         viewer: PropTypes.object,
+        relay: PropTypes.object.isRequired,
     }
 
     static childContextTypes = {
@@ -47,15 +44,11 @@ class Projects extends React.Component {
     }
 
     saveProject = (project, callbacks) => {
-        this.context.relay.commitUpdate(new AddProjectMutation({
-            organization: this.props.organization,
-            ...project,
-        }), {
-            onSuccess: () => {
-                if (callbacks && callbacks.onSuccess) {
-                    callbacks.onSuccess();
-                }
-            },
+        const { relay } = this.props;
+        AddProjectMutation.commit(relay.environment, project, () => {
+            if (callbacks && callbacks.onSuccess) {
+                callbacks.onSuccess();
+            }
         });
     }
 
@@ -65,14 +58,14 @@ class Projects extends React.Component {
         return (
             <section>
                 {isMember
-                        ? <ProjectForm
-                            open={this.state.addProject}
-                            save={this.saveProject}
-                            toggle={this.toggleAddProject}
-                            viewer={this.props.viewer}
-                            organization={null}
-                        />
-                        : null
+                    ? <ProjectForm
+                        open={this.state.addProject}
+                        save={this.saveProject}
+                        toggle={this.toggleAddProject}
+                        viewer={this.props.viewer}
+                        organization={null}
+                    />
+                    : null
                 }
                 <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
                     {isMember
@@ -127,23 +120,19 @@ class Projects extends React.Component {
     }
 }
 
-export default Relay.createContainer(Projects, {
-    fragments: {
-        organization: () => {
-            return Relay.QL`
-            fragment on Organization {
-                isMember
-                ${AddProjectMutation.getFragment('organization')}
-                ${ProjectListPrevious.getFragment('organization')}
-                ${ProjectListUpcoming.getFragment('organization')}
-            }`;
-        },
-        viewer: () => {
-            return Relay.QL`
-            fragment on User {
-                id
-                ${ProjectForm.getFragment('viewer')}
-            }`;
-        },
+export default createFragmentContainer(
+    Projects,
+    {
+        organization: graphql`
+        fragment Projects_organization on Organization {
+            isMember
+            ...ProjectListPrevious_organization
+            ...ProjectListUpcoming_organization
+        }`,
+        viewer: graphql`
+        fragment Projects_viewer on User {
+            id
+            ...ProjectForm_viewer
+        }`,
     },
-});
+);

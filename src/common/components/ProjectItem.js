@@ -1,9 +1,9 @@
-import React from 'react';
-import Relay from 'react-relay';
-import { Link } from 'react-router';
 import Paper from 'material-ui/Paper';
 import moment from 'moment';
 import PropTypes from 'prop-types';
+import React from 'react';
+import { createFragmentContainer, graphql } from 'react-relay';
+import Link from 'found/lib/Link';
 
 import theme from '../theme';
 
@@ -38,16 +38,14 @@ class ProjectItem extends React.Component {
             return (
                 <Paper style={{ marginBottom: desktopGutterLess }}>
                     {poster
-                            ? <Link
-                                to={`/${year}/${tag}`}
-                            >
-                                <img
-                                    alt=""
-                                    src={poster.normalPath}
-                                    className="responsive"
-                                />
-                            </Link>
-                            : null
+                        ? <Link to={`/${year}/${tag}`}>
+                            <img
+                                alt=""
+                                src={poster.normalPath}
+                                className="responsive"
+                            />
+                        </Link>
+                        : null
                     }
                     <div
                         style={{
@@ -138,26 +136,25 @@ class ProjectItem extends React.Component {
     }
 }
 
-export default Relay.createContainer(ProjectItem, {
-    fragments: {
-        project: () => {
-            return Relay.QL`
-            fragment on Project {
-                id
-                title
-                start
-                end
-                year
-                tag
-                publicMdtext
-                poster {
-                    filename
-                    normalPath
-                }
-                conductors {
-                    name
-                }
-            }`;
-        },
+export default createFragmentContainer(
+    ProjectItem,
+    {
+        project: graphql`
+        fragment ProjectItem_project on Project {
+            id
+            title
+            start
+            end
+            year
+            tag
+            publicMdtext
+            poster {
+                filename
+                normalPath
+            }
+            conductors {
+                name
+            }
+        }`,
     },
-});
+);

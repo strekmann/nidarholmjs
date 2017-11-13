@@ -1,36 +1,34 @@
 import RaisedButton from 'material-ui/RaisedButton';
 import PropTypes from 'prop-types';
 import React from 'react';
-import Relay from 'react-relay';
+import { createRefetchContainer, graphql } from 'react-relay';
 
 import ProjectItem from './ProjectItem';
 
 const PROJECTS_PER_PAGE = 10;
 
 class ProjectListPrevious extends React.Component {
-    static contextTypes = {
-        relay: Relay.PropTypes.Environment,
-    }
-
     static propTypes = {
         title: PropTypes.string,
-        organization: PropTypes.object,
-        relay: PropTypes.object,
+        organization: PropTypes.object.isRequired,
+        relay: PropTypes.object.isRequired,
     }
 
     loadMore = () => {
-        const projects = this.props.organization.previousProjects;
-        this.props.relay.setVariables({
-            showProjects: projects.edges.length + PROJECTS_PER_PAGE,
+        const { previousProjects } = this.props.organization;
+        this.props.relay.refetch((variables) => {
+            return {
+                showProjects: previousProjects.edges.length + PROJECTS_PER_PAGE,
+            };
         });
     }
 
     render() {
-        const projects = this.props.organization.previousProjects;
+        const { previousProjects } = this.props.organization;
         return (
             <div>
                 <h1>{this.props.title}</h1>
-                {projects.edges.map((edge) => {
+                {previousProjects.edges.map((edge) => {
                     return (
                         <ProjectItem
                             key={edge.node.id}
@@ -38,7 +36,7 @@ class ProjectListPrevious extends React.Component {
                         />
                     );
                 })}
-                {projects.pageInfo.hasNextPage
+                {previousProjects.pageInfo.hasNextPage
                     ? <RaisedButton primary onClick={this.loadMore} label="Mer" />
                     : null
                 }
@@ -47,28 +45,34 @@ class ProjectListPrevious extends React.Component {
     }
 }
 
-export default Relay.createContainer(ProjectListPrevious, {
-    initialVariables: {
-        showProjects: PROJECTS_PER_PAGE,
-        projectsPerPage: PROJECTS_PER_PAGE,
-    },
-    fragments: {
-        organization: () => {
-            return Relay.QL`
-            fragment on Organization {
-                isMember
-                previousProjects(first:$showProjects) {
-                    edges {
-                        node {
-                            id
-                            ${ProjectItem.getFragment('project')}
-                        }
-                    }
-                    pageInfo {
-                        hasNextPage
+export default createRefetchContainer(
+    ProjectListPrevious,
+    {
+        organization: graphql`
+        fragment ProjectListPrevious_organization on Organization
+        @argumentDefinitions(
+            showProjects: {type: "Int", defaultValue: 10}
+        )
+        {
+            isMember
+            previousProjects(first:$showProjects) {
+                edges {
+                    node {
+                        id
+                        ...ProjectItem_project
                     }
                 }
-            }`;
-        },
+                pageInfo {
+                    hasNextPage
+                }
+            }
+        }`,
     },
-});
+    graphql`
+    query ProjectListPreviousRefetchQuery($showProjects: Int) {
+        organization {
+            ...ProjectListPrevious_organization @arguments(showProjects: $showProjects)
+        }
+    }
+    `,
+);
