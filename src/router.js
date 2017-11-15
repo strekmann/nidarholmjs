@@ -10,6 +10,7 @@ import { Environment, Network, RecordSource, Store } from 'relay-runtime';
 import App from './common/components/App';
 import Home from './common/components/Home';
 import Login from './common/components/Login';
+import Contact from './common/components/Contact';
 import Files from './common/components/Files';
 import Page from './common/components/Page';
 import Pages from './common/components/Pages';
@@ -60,6 +61,17 @@ export const routeConfig = makeRouteConfig(
         <Route
             path="login"
             Component={Login}
+        />
+        <Route
+            path="contact"
+            Component={Contact}
+            query={graphql`
+                query router_Contact_Query {
+                    organization {
+                        ...Contact_organization
+                    }
+                }
+            `}
         />
         <Route
             path="files"

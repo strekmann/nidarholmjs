@@ -266,7 +266,19 @@ userType = new GraphQLObjectType({
                     return user.nmf_id;
                 },
             },
-            phone: { type: GraphQLString },
+            phone: {
+                type: GraphQLString,
+                resolve: (user, args) => {
+                    // TODO: Fix this
+                    /*
+                    if (args.showDetails) {
+                        return user.email;
+                    }
+                    return '';
+                    */
+                    return user.phone;
+                },
+            },
             address: { type: GraphQLString },
             postcode: { type: GraphQLString },
             city: { type: GraphQLString },
@@ -336,6 +348,22 @@ userType = new GraphQLObjectType({
                     return Group.find({ 'members.user': user._id }).exec();
                 },
             },
+            /*
+            contactEmail: {
+                type: GraphQLString,
+                resolve: (user, args) => {
+                    console.log(args);
+                    return user.email;
+                },
+            },
+            contactPhone: {
+                type: GraphQLString,
+                resolve: (user, args) => {
+                    console.log(args);
+                    return user.phone;
+                },
+            },
+            */
         };
     },
     interfaces: [nodeInterface],
@@ -2714,13 +2742,14 @@ const mutationShowContactInfo = mutationWithClientMutationId({
             { $unwind: '$members.roles' },
             { $lookup: { from: 'users', localField: 'members.user', foreignField: '_id', as: 'user' } },
             { $lookup: { from: 'roles', localField: 'members.roles', foreignField: '_id', as: 'roles' } },
-            { $unwind: '$user'},
-            { $unwind: '$roles'},
+            { $unwind: '$user' },
+            { $unwind: '$roles' },
             { $project: { _id: 0, id: '$user._id', phone: '$user.phone', email: '$roles.email' } },
         ).exec().then((u) => {
             if (u.length) {
                 return u[0];
             }
+            return null;
         });
     },
 });

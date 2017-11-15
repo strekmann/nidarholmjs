@@ -16,7 +16,7 @@ class ProjectListUpcoming extends React.Component {
 
     loadMore = () => {
         const { nextProjects } = this.props.organization;
-        this.props.relay.refetch((variables) => {
+        this.props.relay.refetch(() => {
             return {
                 showProjects: nextProjects.edges.length + PROJECTS_PER_PAGE,
             };

@@ -7,9 +7,9 @@ import AddCircle from 'material-ui/svg-icons/content/add-circle';
 import getMuiTheme from 'material-ui/styles/getMuiTheme';
 import PropTypes from 'prop-types';
 import React from 'react';
-import Relay from 'react-relay';
+import { createFragmentContainer, graphql } from 'react-relay';
 
-import SaveContactRolesMutation from '../mutations/saveContactRoles';
+import SaveContactRolesMutation from '../mutations/SaveContactRoles';
 import theme from '../theme';
 
 import SortableRoleList from './SortableRoleList';
@@ -36,12 +36,9 @@ class RoleItem extends React.Component {
 }
 
 class ContactRoles extends React.Component {
-    static contextTypes = {
-        relay: Relay.PropTypes.Environment,
-    };
-
     static propTypes = {
         organization: PropTypes.object,
+        relay: PropTypes.object.isRequired,
         saveHook: PropTypes.func,
     }
 
@@ -79,14 +76,17 @@ class ContactRoles extends React.Component {
 
     saveContactRoles = (event) => {
         event.preventDefault();
-        this.context.relay.commitUpdate(new SaveContactRolesMutation({
-            organization: this.props.organization,
-            contactRoles: this.state.contactRoles,
-        }), {
-            onSuccess: () => {
+        const { relay } = this.props;
+        SaveContactRolesMutation.commit(
+            relay.environment,
+            {
+                contactRoles: this.state.contactRoles.map((role) => {
+                    return role.id;
+                }),
+            }, () => {
                 this.props.saveHook();
             },
-        });
+        );
     }
 
     render() {
@@ -128,22 +128,20 @@ class ContactRoles extends React.Component {
     }
 }
 
-export default Relay.createContainer(ContactRoles, {
-    fragments: {
-        organization: () => {
-            return Relay.QL`
-            fragment on Organization {
+export default createFragmentContainer(
+    ContactRoles,
+    {
+        organization: graphql`
+        fragment ContactRoles_organization on Organization {
+            id
+            activeRoles {
                 id
-                activeRoles {
-                    id
-                    name
-                }
-                contactRoles {
-                    id
-                    name
-                }
-                ${SaveContactRolesMutation.getFragment('organization')}
-            }`;
-        },
+                name
+            }
+            contactRoles {
+                id
+                name
+            }
+        }`,
     },
-});
+);
