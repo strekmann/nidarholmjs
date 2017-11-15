@@ -2,7 +2,7 @@ import AutoComplete from 'material-ui/AutoComplete';
 import Chip from 'material-ui/Chip';
 import PropTypes from 'prop-types';
 import React from 'react';
-import Relay from 'react-relay';
+import { createFragmentContainer, graphql } from 'react-relay';
 
 class ProjectField extends React.Component {
     static propTypes = {
@@ -39,10 +39,11 @@ class ProjectField extends React.Component {
     }
 
     render() {
-        if (!this.props.organization) {
+        const { organization } = this.props;
+        if (!organization) {
             return null;
         }
-        const projects = this.props.organization.projectTags.map((project) => {
+        const projects = organization.projectTags.map((project) => {
             return {
                 title: `${project.title} (${project.year})`,
                 project,
@@ -78,19 +79,18 @@ class ProjectField extends React.Component {
     }
 }
 
-export default Relay.createContainer(ProjectField, {
-    fragments: {
-        organization: () => {
-            return Relay.QL`
-            fragment on Organization {
+export default createFragmentContainer(
+    ProjectField,
+    {
+        organization: graphql`
+        fragment ProjectField_organization on Organization {
+            id
+            projectTags {
                 id
-                projectTags {
-                    id
-                    tag
-                    title
-                    year
-                }
-            }`;
-        },
+                tag
+                title
+                year
+            }
+        }`,
     },
-});
+);

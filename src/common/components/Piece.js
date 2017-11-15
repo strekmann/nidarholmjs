@@ -1,5 +1,3 @@
-import React from 'react';
-import Relay from 'react-relay';
 import FlatButton from 'material-ui/FlatButton';
 import IconButton from 'material-ui/IconButton';
 import IconMenu from 'material-ui/IconMenu';
@@ -9,21 +7,20 @@ import { Toolbar, ToolbarGroup } from 'material-ui/Toolbar';
 import getMuiTheme from 'material-ui/styles/getMuiTheme';
 import MoreVertIcon from 'material-ui/svg-icons/navigation/more-vert';
 import PropTypes from 'prop-types';
+import React from 'react';
+import { createFragmentContainer, graphql } from 'react-relay';
 
 import theme from '../theme';
-import UpdatePieceMutation from '../mutations/updatePiece';
+import UpdatePieceMutation from '../mutations/UpdatePiece';
 
 import List from './List';
 import Groupscore from './Groupscore';
 import PieceForm from './PieceForm';
 
 class Piece extends React.Component {
-    static contextTypes = {
-        relay: Relay.PropTypes.Environment,
-    };
-
     static propTypes = {
         organization: PropTypes.object.isRequired,
+        relay: PropTypes.object.isRequired,
     }
 
     static childContextTypes = {
@@ -48,20 +45,23 @@ class Piece extends React.Component {
     }
 
     savePiece = (piece) => {
-        this.setState({ editPiece: false });
+        const { organization, relay } = this.props;
         const {
             composers,
             arrangers,
             title,
             subtitle,
         } = piece;
-        this.context.relay.commitUpdate(new UpdatePieceMutation({
-            composers: composers.split(','),
-            arrangers: arrangers.split(','),
-            title,
-            subtitle,
-            piece: this.props.organization.piece,
-        }));
+        this.setState({ editPiece: false });
+        UpdatePieceMutation.commit(
+            relay.environment,
+            {
+                id: organization.piece.id,
+                composers: composers.split(','),
+                arrangers: arrangers.split(','),
+                title,
+                subtitle,
+            });
     }
 
     render() {
@@ -90,13 +90,13 @@ class Piece extends React.Component {
                                 targetOrigin={{ vertical: 'top', horizontal: 'right' }}
                             >
                                 {isMusicAdmin
-                                        ? <MenuItem
-                                            primaryText="Rediger info om stykke"
-                                            onTouchTap={() => {
-                                                this.setState({ editPiece: !this.state.editPiece });
-                                            }}
-                                        />
-                                        : null
+                                    ? <MenuItem
+                                        primaryText="Rediger info om stykke"
+                                        onTouchTap={() => {
+                                            this.setState({ editPiece: !this.state.editPiece });
+                                        }}
+                                    />
+                                    : null
                                 }
                             </IconMenu>
                         </ToolbarGroup>
@@ -131,40 +131,35 @@ class Piece extends React.Component {
     }
 }
 
-export default Relay.createContainer(Piece, {
-    initialVariables: {
-        pieceId: '',
-    },
-    fragments: {
-        organization: () => {
-            return Relay.QL`
-            fragment on Organization {
+export default createFragmentContainer(
+    Piece,
+    {
+        organization: graphql`
+        fragment Piece_organization on Organization {
+            id
+            name
+            isMember
+            isMusicAdmin
+            piece(pieceId:$pieceId) {
                 id
-                name
-                isMember
-                isMusicAdmin
-                piece(pieceId:$pieceId) {
-                    id
-                    title
-                    subtitle
-                    composers
-                    arrangers
-                    files {
-                        edges {
-                            node {
-                                id
-                                filename
-                                path
-                            }
+                title
+                subtitle
+                composers
+                arrangers
+                files {
+                    edges {
+                        node {
+                            id
+                            filename
+                            path
                         }
                     }
-                    groupscores {
-                        id
-                        ${Groupscore.getFragment('groupscore')}
-                    }
-                    ${UpdatePieceMutation.getFragment('piece')}
                 }
-            }`;
-        },
+                groupscores {
+                    id
+                    ...Groupscore_groupscore
+                }
+            }
+        }`,
     },
-});
+);

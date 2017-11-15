@@ -13,6 +13,9 @@ import Login from './common/components/Login';
 import Files from './common/components/Files';
 import Page from './common/components/Page';
 import Pages from './common/components/Pages';
+import Piece from './common/components/Piece';
+import Pieces from './common/components/Pieces';
+import Project from './common/components/Project';
 import Projects from './common/components/Projects';
 
 export const historyMiddlewares = [queryMiddleware];
@@ -73,6 +76,28 @@ export const routeConfig = makeRouteConfig(
             `}
         />
         <Route
+            path="music"
+            Component={Pieces}
+            query={graphql`
+                query router_Pieces_Query {
+                    organization {
+                        ...Pieces_organization
+                    }
+                }
+            `}
+        />
+        <Route
+            path="music/:pieceId"
+            Component={Piece}
+            query={graphql`
+                query router_Piece_Query($pieceId: String) {
+                    organization {
+                        ...Piece_organization
+                    }
+                }
+            `}
+        />
+        <Route
             path="projects"
             Component={Projects}
             query={graphql`
@@ -96,6 +121,24 @@ export const routeConfig = makeRouteConfig(
                     }
                     organization {
                         ...Pages_organization
+                    }
+                }
+            `}
+        />
+        <Route
+            path=":year/:tag"
+            Component={Project}
+            variables={{
+                year: null,
+                tag: '',
+            }}
+            query={graphql`
+                query router_Project_Query($year: String, $tag: String) {
+                    viewer {
+                        ...Project_viewer
+                    }
+                    organization {
+                        ...Project_organization
                     }
                 }
             `}

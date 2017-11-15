@@ -10,10 +10,10 @@ import getMuiTheme from 'material-ui/styles/getMuiTheme';
 import MoreVertIcon from 'material-ui/svg-icons/navigation/more-vert';
 import PropTypes from 'prop-types';
 import React from 'react';
-import Relay from 'react-relay';
+import { createRefetchContainer, graphql } from 'react-relay';
 
 import theme from '../theme';
-import CreatePieceMutation from '../mutations/createPiece';
+import CreatePieceMutation from '../mutations/CreatePiece';
 
 import PieceForm from './PieceForm';
 import PieceItem from './PieceItem';
@@ -21,10 +21,6 @@ import PieceItem from './PieceItem';
 const itemsPerPage = 50;
 
 class Pieces extends React.Component {
-    static contextTypes = {
-        relay: Relay.PropTypes.Environment,
-    };
-
     static propTypes = {
         organization: PropTypes.object.isRequired,
         relay: PropTypes.object.isRequired,
@@ -57,17 +53,16 @@ class Pieces extends React.Component {
 
     onSearch = (event) => {
         event.preventDefault();
-        this.props.relay.setVariables({
-            term: this.state.term,
-        });
+        this.search(this.state.term);
     }
 
     onClear = () => {
         this.setState({
             term: '',
         });
-        this.props.relay.setVariables({
-            term: '',
+        this.props.relay.refetch((variables) => {
+            variables.term = '';
+            return variables;
         });
     }
 
@@ -75,21 +70,34 @@ class Pieces extends React.Component {
         this.setState({ newPiece: true });
     }
 
+    search = (term) => {
+        this.props.relay.refetch((variables) => {
+            variables.term = term;
+            return variables;
+        });
+    }
+
     savePiece = (piece) => {
         this.setState({ addPiece: false });
+        const { relay } = this.props;
         const {
             composers,
             arrangers,
             title,
             subtitle,
         } = piece;
-        this.context.relay.commitUpdate(new CreatePieceMutation({
+        CreatePieceMutation.commit(relay.environment, {
             composers: composers.split(','),
             arrangers: arrangers.split(','),
             title,
             subtitle,
-            organization: this.props.organization,
-        }));
+        }, () => {
+            this.state.term = title;
+            this.props.relay.refetch((variables) => {
+                variables.term = title;
+                return variables;
+            });
+        });
     }
 
     closeAddPiece = () => {
@@ -98,21 +106,15 @@ class Pieces extends React.Component {
 
     loadMore = () => {
         const pieces = this.props.organization.pieces;
-        this.props.relay.setVariables({
-            showItems: pieces.edges.length + itemsPerPage,
+        this.props.relay.refetch((variables) => {
+            variables.showItems = pieces.edges.length + itemsPerPage;
+            return variables;
         });
     }
 
-    search = (term) => {
-        // both chaning state.term and running search
-        // this.setState({ term });
-        this.props.relay.setVariables({ term });
-    }
-
     render() {
-        const org = this.props.organization;
-        const pieces = org.pieces;
-        const isMusicAdmin = org.isMusicAdmin;
+        const { organization } = this.props;
+        const { pieces, isMusicAdmin } = organization;
         const { desktopGutterLess } = theme.spacing;
         return (
             <Paper className="row">
@@ -138,13 +140,13 @@ class Pieces extends React.Component {
                                 targetOrigin={{ vertical: 'top', horizontal: 'right' }}
                             >
                                 {isMusicAdmin
-                                        ? <MenuItem
-                                            primaryText="Nytt stykke"
-                                            onTouchTap={() => {
-                                                this.setState({ addPiece: !this.state.addPiece });
-                                            }}
-                                        />
-                                        : null
+                                    ? <MenuItem
+                                        primaryText="Nytt stykke"
+                                        onTouchTap={() => {
+                                            this.setState({ addPiece: !this.state.addPiece });
+                                        }}
+                                    />
+                                    : null
                                 }
                             </IconMenu>
                         </ToolbarGroup>
@@ -303,37 +305,42 @@ class Pieces extends React.Component {
                                             </div>
                                             */
 
-export default Relay.createContainer(Pieces, {
-    initialVariables: {
-        showItems: itemsPerPage,
-        term: '',
-    },
-    fragments: {
-        organization: () => {
-            return Relay.QL`
-            fragment on Organization {
+export default createRefetchContainer(
+    Pieces,
+    {
+        organization: graphql`
+        fragment Pieces_organization on Organization
+        @argumentDefinitions(
+            showItems: {type: "Int", defaultValue: 20}
+            term: {type: "String", defaultValue: ""}
+        )
+        {
+            id
+            isMusicAdmin
+            memberGroup {
                 id
-                isMusicAdmin
-                memberGroup {
-                    id
-                }
-                pieces(first:$showItems,term:$term) {
-                    edges {
-                        node {
-                            id
-                            title
-                            subtitle
-                            composers
-                            arrangers
-                            scoreCount
-                        }
-                    }
-                    pageInfo {
-                        hasNextPage
+            }
+            pieces(first:$showItems, term:$term) {
+                edges {
+                    node {
+                        id
+                        title
+                        subtitle
+                        composers
+                        arrangers
+                        scoreCount
                     }
                 }
-                ${CreatePieceMutation.getFragment('organization')}
-            }`;
-        },
+                pageInfo {
+                    hasNextPage
+                }
+            }
+        }`,
     },
-});
+    graphql`
+    query PiecesRefetchQuery($showItems: Int, $term: String) {
+        organization {
+            ...Pieces_organization @arguments(showItems: $showItems, term: $term)
+        }
+    }`,
+);

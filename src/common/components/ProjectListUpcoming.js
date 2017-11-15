@@ -74,6 +74,5 @@ export default createRefetchContainer(
         organization {
             ...ProjectListUpcoming_organization @arguments(showProjects: $showProjects)
         }
-    }
-    `,
+    }`,
 );

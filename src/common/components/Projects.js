@@ -43,7 +43,7 @@ class Projects extends React.Component {
         this.setState({ addProject: !this.state.addProject });
     }
 
-    saveProject = (project, callbacks) => {
+    addProject = (project, callbacks) => {
         const { relay } = this.props;
         AddProjectMutation.commit(relay.environment, project, () => {
             if (callbacks && callbacks.onSuccess) {
@@ -60,7 +60,7 @@ class Projects extends React.Component {
                 {isMember
                     ? <ProjectForm
                         open={this.state.addProject}
-                        save={this.saveProject}
+                        save={this.addProject}
                         toggle={this.toggleAddProject}
                         viewer={this.props.viewer}
                         organization={null}

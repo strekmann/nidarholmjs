@@ -5,22 +5,19 @@ import axios from 'axios';
 import PropTypes from 'prop-types';
 import React from 'react';
 import Dropzone from 'react-dropzone';
-import Relay from 'react-relay';
+import { createFragmentContainer, graphql } from 'react-relay';
 
-import AddScoreMutation from '../mutations/addScore';
-import RemoveScoreMutation from '../mutations/removeScore';
+import AddScoreMutation from '../mutations/AddScore';
+import RemoveScoreMutation from '../mutations/RemoveScore';
 
 import ScoreItem from './ScoreItem';
 
 class Groupscore extends React.Component {
-    static contextTypes = {
-        relay: Relay.PropTypes.Environment,
-    }
-
     static propTypes = {
         name: PropTypes.string,
         groupscore: PropTypes.object,
         piece: PropTypes.object,
+        relay: PropTypes.object.isRequired,
     }
 
     onDrop = (files) => {
@@ -28,28 +25,32 @@ class Groupscore extends React.Component {
     }
 
     uploadScores = (files, groupscore) => {
+        const { relay } = this.props;
         files.forEach((file) => {
             const data = new FormData();
             data.append('file', file);
 
-            axios.post('/upload', data)
-            .then((response) => {
-                this.context.relay.commitUpdate(new AddScoreMutation({
-                    hex: response.data.hex,
-                    filename: file.name,
-                    groupscore,
-                    piece: this.props.piece,
-                }));
+            axios.post('/upload', data).then((response) => {
+                AddScoreMutation.commit(
+                    relay.environment,
+                    {
+                        hex: response.data.hex,
+                        filename: file.name,
+                        groupscore,
+                        piece: this.props.piece,
+                    },
+                );
             });
         });
     }
 
     removeScore = (file) => {
-        this.context.relay.commitUpdate(new RemoveScoreMutation({
-            file,
-            groupscore: this.props.groupscore,
-            piece: this.props.piece,
-        }));
+        const { relay } = this.props;
+        RemoveScoreMutation.commit(
+            relay.environment,
+            file.id,
+            this.props.piece.id,
+        );
     }
 
     render() {
@@ -85,24 +86,21 @@ class Groupscore extends React.Component {
     }
 }
 
-export default Relay.createContainer(Groupscore, {
-    fragments: {
-        groupscore: () => {
-            return Relay.QL`
-            fragment on Groupscore {
-                id
-                name
-                files {
-                    edges {
-                        node {
-                            id
-                            ${ScoreItem.getFragment('file')}
-                        }
+export default createFragmentContainer(
+    Groupscore,
+    {
+        groupscore: graphql`
+        fragment Groupscore_groupscore on Groupscore {
+            id
+            name
+            files {
+                edges {
+                    node {
+                        id
+                        ...ScoreItem_file
                     }
                 }
-                ${AddScoreMutation.getFragment('groupscore')}
-                ${RemoveScoreMutation.getFragment('groupscore')}
-            }`;
-        },
+            }
+        }`,
     },
-});
+);

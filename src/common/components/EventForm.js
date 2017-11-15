@@ -10,7 +10,7 @@ import Chip from 'material-ui/Chip';
 import moment from 'moment';
 import PropTypes from 'prop-types';
 import React from 'react';
-import Relay from 'react-relay';
+import { createFragmentContainer, graphql } from 'react-relay';
 
 import { flattenPermissions } from '../utils';
 
@@ -264,24 +264,21 @@ class EventForm extends React.Component {
     }
 }
 
-export default Relay.createContainer(EventForm, {
-    fragments: {
-        viewer: () => {
-            return Relay.QL`
-            fragment on User {
+export default createFragmentContainer(
+    EventForm,
+    {
+        organization: graphql`
+        fragment EventForm_organization on Organization {
+            id
+            ...ProjectField_organization
+        }`,
+        viewer: graphql`
+        fragment EventForm_viewer on User {
+            id
+            groups {
                 id
-                groups {
-                    id
-                    name
-                }
-            }`;
-        },
-        organization: () => {
-            return Relay.QL`
-            fragment on Organization {
-                id
-                ${ProjectField.getFragment('organization')}
-            }`;
-        },
+                name
+            }
+        }`,
     },
-});
+);

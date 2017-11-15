@@ -1,11 +1,11 @@
+import Link from 'found/lib/Link';
 import IconButton from 'material-ui/IconButton';
 import { ListItem } from 'material-ui/List';
 import Download from 'material-ui/svg-icons/file/file-download';
 import Close from 'material-ui/svg-icons/navigation/close';
 import PropTypes from 'prop-types';
 import React from 'react';
-import Relay from 'react-relay';
-import { Link } from 'react-router';
+import { createFragmentContainer, graphql } from 'react-relay';
 
 class ScoreItem extends React.Component {
     static propTypes = {
@@ -29,7 +29,7 @@ class ScoreItem extends React.Component {
         return (
             <Link
                 key={`${this.props.groupscore.id}-${file.id}`}
-                href={file.path}
+                to={file.path}
                 download
             >
                 <ListItem
@@ -41,15 +41,14 @@ class ScoreItem extends React.Component {
         );
     }
 }
-export default Relay.createContainer(ScoreItem, {
-    fragments: {
-        file: () => {
-            return Relay.QL`
-            fragment on File {
-                id
-                filename
-                path
-            }`;
-        },
+export default createFragmentContainer(
+    ScoreItem,
+    {
+        file: graphql`
+        fragment ScoreItem_file on File {
+            id
+            filename
+            path
+        }`,
     },
-});
+);

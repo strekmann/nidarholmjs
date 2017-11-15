@@ -24,10 +24,10 @@ class PieceForm extends React.Component {
     }
 
     state = {
-        title: this.props.piece ? this.props.piece.title : '',
-        subtitle: this.props.piece ? this.props.piece.subtitle : '',
-        composers: this.props.piece && this.props.piece.composers.length ? this.props.piece.composers.join(', ') : '',
-        arrangers: this.props.piece && this.props.piece.arrangers.length ? this.props.piece.arrangers.join(', ') : '',
+        title: this.props.piece && this.props.piece.title ? this.props.piece.title : '',
+        subtitle: this.props.piece && this.props.piece.subtitle ? this.props.piece.subtitle : '',
+        composers: this.props.piece && this.props.piece.composers && this.props.piece.composers.length ? this.props.piece.composers.join(', ') : '',
+        arrangers: this.props.piece && this.props.piece.arrangers && this.props.piece.arrangers.length ? this.props.piece.arrangers.join(', ') : '',
         searching: this.props.searching,
     }
 

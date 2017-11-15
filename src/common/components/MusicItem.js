@@ -1,9 +1,9 @@
+import Link from 'found/lib/Link';
 import IconButton from 'material-ui/IconButton';
 import { ListItem } from 'material-ui/List';
 import CloseIcon from 'material-ui/svg-icons/navigation/close';
 import PropTypes from 'prop-types';
 import React from 'react';
-import { Link } from 'react-router';
 
 export default class MusicItem extends React.Component {
     static propTypes = {

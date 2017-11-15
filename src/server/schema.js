@@ -635,7 +635,7 @@ const groupScoreType = new GraphQLObjectType({
                 type: fileConnection.connectionType,
                 resolve: (group, args) => {
                     return connectionFromMongooseQuery(
-                        File.find({ 'permissions.groups': group.id }).where('_id').in(group.scores),
+                        File.find({ 'permissions.groups': group.id }).where('_id').in(group.scores).sort('created'),
                         args,
                     );
                 },
@@ -668,7 +668,7 @@ pieceType = new GraphQLObjectType({
                 type: fileConnection.connectionType,
                 resolve: (piece, args, { viewer }) => {
                     return connectionFromMongooseQuery(
-                        authenticate(File.find().where('_id').in(piece.scores), viewer),
+                        authenticate(File.find().where('_id').in(piece.scores), viewer).sort('created'),
                         args,
                     );
                 },
@@ -1410,10 +1410,10 @@ const mutationAddEvent = mutationWithClientMutationId({
         highlighted: { type: GraphQLBoolean },
     },
     outputFields: {
-        organization: {
-            type: organizationType,
-            resolve: (payload, args, { organization }) => {
-                return organization;
+        project: {
+            type: projectType,
+            resolve: (payload) => {
+                return Project.findOne({ tag: payload.tags[0] }).exec();
             },
         },
         newEventEdge: {
@@ -1892,12 +1892,18 @@ const mutationAddFile = mutationWithClientMutationId({
                 return organization;
             },
         },
+        project: {
+            type: projectType,
+            resolve: (payload) => {
+                return Project.findOne({ tag: payload.projectTag }).exec();
+            },
+        },
         newFileEdge: {
             type: fileConnection.edgeType,
             resolve: (payload) => {
                 return {
                     cursor: offsetToCursor(0),
-                    node: payload,
+                    node: payload.file,
                 };
             },
         },
@@ -1907,16 +1913,13 @@ const mutationAddFile = mutationWithClientMutationId({
         { viewer, organization },
     ) => {
         const permissionObj = buildPermissionObject(permissions);
-        return insertFile(filename, hex, permissionObj, tags, viewer, organization)
-        .then((file) => {
+        return insertFile(filename, hex, permissionObj, tags, viewer, organization).then((file) => {
             return Activity.findOne({
                 content_type: 'upload',
                 'changes.user': file.creator,
                 modified: { $gt: moment(file.created).subtract(10, 'minutes').toDate() },
                 project: projectTag,
-            })
-            .exec()
-            .then((activity) => {
+            }).exec().then((activity) => {
                 let newActivity = activity;
                 if (!newActivity) {
                     newActivity = new Activity();
@@ -1946,9 +1949,11 @@ const mutationAddFile = mutationWithClientMutationId({
                 newActivity.content.non_images = Array.from(nonImages);
                 newActivity.markModified('content');
                 return newActivity.save();
-            })
-            .then(() => {
-                return file;
+            }).then(() => {
+                return {
+                    file,
+                    projectTag,
+                };
             });
         });
     },
@@ -1971,19 +1976,10 @@ const mutationAddScore = mutationWithClientMutationId({
         },
     },
     outputFields: {
-        organization: {
-            type: organizationType,
-            resolve: (payload, args, { organization }) => {
-                return organization;
-            },
-        },
-        newScoreEdge: {
-            type: fileConnection.edgeType,
+        piece: {
+            type: pieceType,
             resolve: (payload) => {
-                return {
-                    cursor: offsetToCursor(0),
-                    node: payload.file,
-                };
+                return payload;
             },
         },
     },
@@ -1993,15 +1989,11 @@ const mutationAddScore = mutationWithClientMutationId({
         const permissionObj = { public: false, groups: [groupDbId], users: [] };
         return insertFile(
             filename, hex, permissionObj, [], config.files.raw_prefix, viewer, pieceDbId,
-        ).then((file) => {
+        ).then(() => {
             if (!viewer) {
                 throw new Error('Nobody!');
             }
-            return {
-                file,
-                groupId,
-                pieceId,
-            };
+            return Piece.findById(pieceDbId).exec();
         });
     },
 });
@@ -2013,10 +2005,10 @@ const mutationRemoveScore = mutationWithClientMutationId({
         fileId: { type: GraphQLID },
     },
     outputFields: {
-        organization: {
-            type: organizationType,
-            resolve: (payload, args, { organization }) => {
-                return organization;
+        piece: {
+            type: pieceType,
+            resolve: (payload) => {
+                return payload;
             },
         },
     },
@@ -2100,10 +2092,10 @@ const mutationSaveProject = mutationWithClientMutationId({
         managers: { type: new GraphQLList(GraphQLID) },
     },
     outputFields: {
-        organization: {
-            type: organizationType,
-            resolve: (payload, args, { organization }) => {
-                return organization;
+        project: {
+            type: projectType,
+            resolve: (payload) => {
+                return payload;
             },
         },
     },
@@ -2122,7 +2114,7 @@ const mutationSaveProject = mutationWithClientMutationId({
         },
         { viewer },
     ) => {
-        if (!viewer) {
+        if (!viewer) { // TODO: more
             throw new Error('Nobody!');
         }
         const permissionObj = buildPermissionObject(permissions);
@@ -2146,7 +2138,7 @@ const mutationSaveProject = mutationWithClientMutationId({
             managers: managers.map((manager) => {
                 return fromGlobalId(manager).id;
             }),
-        }).exec();
+        }, { new: true }).exec();
     },
 });
 

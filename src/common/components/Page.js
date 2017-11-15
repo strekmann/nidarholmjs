@@ -123,21 +123,13 @@ class Page extends React.Component {
 export default createFragmentContainer(
     Page,
     {
-        viewer: graphql`
-        fragment Page_viewer on User {
-            id
-            groups {
-                id
-                name
-            }
-        }`,
         organization: graphql`
         fragment Page_organization on Organization {
             isMember
             memberGroup {
                 id
             }
-            page(slug:$slug) {
+            page(slug: $slug) {
                 id
                 slug
                 title
@@ -155,6 +147,14 @@ export default createFragmentContainer(
                 updator {
                     name
                 }
+            }
+        }`,
+        viewer: graphql`
+        fragment Page_viewer on User {
+            id
+            groups {
+                id
+                name
             }
         }`,
     },

@@ -1,5 +1,5 @@
 import React from 'react';
-import { Link } from 'react-router';
+import Link from 'found/lib/Link';
 import { TableRow, TableRowColumn } from 'material-ui/Table';
 import List from './List';
 
