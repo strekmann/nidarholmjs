@@ -5,19 +5,15 @@ import { Toolbar, ToolbarGroup } from 'material-ui/Toolbar';
 import getMuiTheme from 'material-ui/styles/getMuiTheme';
 import PropTypes from 'prop-types';
 import React from 'react';
-import Relay from 'react-relay';
+import { createRefetchContainer, graphql } from 'react-relay';
 
 import theme from '../theme';
 
 import EventItem from './EventItem';
 
-const itemsPerPage = 10;
+const ITEMS_PER_PAGE = 20;
 
 class Events extends React.Component {
-    static contextTypes = {
-        relay: Relay.PropTypes.Environment,
-    };
-
     static propTypes = {
         organization: PropTypes.object,
         relay: PropTypes.object,
@@ -37,9 +33,10 @@ class Events extends React.Component {
     }
 
     loadMoreEvents = () => {
-        const events = this.props.organization.events;
-        this.props.relay.setVariables({
-            showItems: events.edges.length + itemsPerPage,
+        this.props.relay.refetch((variables) => {
+            return {
+                showItems: variables.showItems + ITEMS_PER_PAGE,
+            };
         });
     }
 
@@ -70,43 +67,49 @@ class Events extends React.Component {
                     })}
                 </div>
                 {events.pageInfo.hasNextPage
-                        ? <RaisedButton
-                            primary
-                            onClick={this.loadMoreEvents}
-                            label="Mer"
-                        />
-                        : null
+                    ? <RaisedButton
+                        primary
+                        onClick={this.loadMoreEvents}
+                        label="Mer"
+                    />
+                    : null
                 }
             </Paper>
         );
     }
 }
 
-export default Relay.createContainer(Events, {
-    initialVariables: {
-        showItems: itemsPerPage,
-    },
-    fragments: {
-        organization: () => {
-            return Relay.QL`
-            fragment on Organization {
+export default createRefetchContainer(
+    Events,
+    {
+        organization: graphql`
+        fragment Events_organization on Organization
+        @argumentDefinitions(
+            showItems: {type: "Int", defaultValue: 20}
+        )
+        {
+            id
+            memberGroup {
                 id
-                memberGroup {
-                    id
-                }
-                webdomain
-                events(first:$showItems) {
-                    edges {
-                        node {
-                            id
-                            ${EventItem.getFragment('event')}
-                        }
-                    }
-                    pageInfo {
-                        hasNextPage
+            }
+            webdomain
+            events(first: $showItems) {
+                edges {
+                    node {
+                        id
+                        ...EventItem_event
                     }
                 }
-            }`;
-        },
+                pageInfo {
+                    hasNextPage
+                }
+            }
+        }`,
     },
-});
+    graphql`
+    query EventsRefetchQuery($showItems: Int) {
+        organization {
+            ...Events_organization @arguments(showItems: $showItems)
+        }
+    }`,
+);

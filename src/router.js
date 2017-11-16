@@ -10,6 +10,8 @@ import { Environment, Network, RecordSource, Store } from 'relay-runtime';
 import App from './common/components/App';
 import Home from './common/components/Home';
 import Login from './common/components/Login';
+import Event from './common/components/Event';
+import Events from './common/components/Events';
 import Files from './common/components/Files';
 import Page from './common/components/Page';
 import Pages from './common/components/Pages';
@@ -107,6 +109,31 @@ export const routeConfig = makeRouteConfig(
                     }
                     organization {
                         ...Projects_organization
+                    }
+                }
+            `}
+        />
+        <Route
+            path="events"
+            Component={Events}
+            query={graphql`
+                query router_Events_Query {
+                    organization {
+                        ...Events_organization
+                    }
+                }
+            `}
+        />
+        <Route
+            path="events/:eventId"
+            Component={Event}
+            query={graphql`
+                query router_Event_Query($eventId: ID) {
+                    organization {
+                        ...Event_organization
+                    }
+                    viewer {
+                        ...Event_viewer
                     }
                 }
             `}

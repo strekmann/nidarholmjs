@@ -1,5 +1,3 @@
-import React from 'react';
-import Relay from 'react-relay';
 import getMuiTheme from 'material-ui/styles/getMuiTheme';
 import Chip from 'material-ui/Chip';
 import Dialog from 'material-ui/Dialog';
@@ -10,10 +8,12 @@ import IconButton from 'material-ui/IconButton';
 import Paper from 'material-ui/Paper';
 import MoreVertIcon from 'material-ui/svg-icons/navigation/more-vert';
 import PropTypes from 'prop-types';
+import React from 'react';
+import { createFragmentContainer, graphql } from 'react-relay';
 
 import theme from '../theme';
-import EditEventMutation from '../mutations/editEvent';
-import DeleteEventMutation from '../mutations/deleteEvent';
+import EditEventMutation from '../mutations/EditEvent';
+import DeleteEventMutation from '../mutations/DeleteEvent';
 
 import Daterange from './Daterange';
 import Text from './Text';
@@ -22,7 +22,6 @@ import EventForm from './EventForm';
 
 class Event extends React.Component {
     static contextTypes = {
-        relay: Relay.PropTypes.Environment,
         router: PropTypes.object.isRequired,
     }
 
@@ -32,6 +31,7 @@ class Event extends React.Component {
 
     static propTypes = {
         organization: PropTypes.object,
+        relay: PropTypes.object.isRequired,
         viewer: PropTypes.object,
     }
 
@@ -71,31 +71,35 @@ class Event extends React.Component {
     }
 
     saveEvent = (event) => {
+        const { relay } = this.props;
         this.setState({ editing: false });
-        this.context.relay.commitUpdate(new EditEventMutation({
-            viewer: null,
-            eventid: event.id,
-            title: event.title,
-            location: event.location,
-            start: event.start,
-            end: event.end,
-            mdtext: event.mdtext,
-            permissions: event.permissions,
-            tags: event.tags,
-            highlighted: event.highlighted,
-        }));
+        EditEventMutation.commit(
+            relay.environment,
+            {
+                eventid: event.id,
+                title: event.title,
+                location: event.location,
+                start: event.start,
+                end: event.end,
+                mdtext: event.mdtext,
+                permissions: event.permissions,
+                tags: event.tags,
+                highlighted: event.highlighted,
+            },
+        );
     }
 
     deleteEvent = () => {
-        const { organization } = this.props;
-        this.context.relay.commitUpdate(new DeleteEventMutation({
-            event: organization.event,
-            organization,
-        }), {
-            onSuccess: () => {
-                this.context.router.goBack();
+        const { organization, relay } = this.props;
+        DeleteEventMutation.commit(
+            relay.environment,
+            {
+                id: organization.event.id,
             },
-        });
+            () => {
+                this.props.router.go(-1);
+            },
+        );
     }
 
     goTo = (project) => {
@@ -111,15 +115,15 @@ class Event extends React.Component {
                 <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                     <h1>{event.title}</h1>
                     {isMember
-                            ? <IconMenu
-                                iconButtonElement={<IconButton><MoreVertIcon /></IconButton>}
-                                anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
-                                targetOrigin={{ vertical: 'top', horizontal: 'right' }}
-                            >
-                                <MenuItem primaryText="Rediger" onTouchTap={this.toggleEdit} />
-                                <MenuItem primaryText="Slett" onTouchTap={this.toggleDelete} />
-                            </IconMenu>
-                            : null
+                        ? <IconMenu
+                            iconButtonElement={<IconButton><MoreVertIcon /></IconButton>}
+                            anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
+                            targetOrigin={{ vertical: 'top', horizontal: 'right' }}
+                        >
+                            <MenuItem primaryText="Rediger" onTouchTap={this.toggleEdit} />
+                            <MenuItem primaryText="Slett" onTouchTap={this.toggleDelete} />
+                        </IconMenu>
+                        : null
                     }
                 </div>
                 <div className="meta">
@@ -169,52 +173,44 @@ class Event extends React.Component {
     }
 }
 
-export default Relay.createContainer(Event, {
-    initialVariables: {
-        eventid: null,
-    },
-    fragments: {
-        viewer: () => {
-            return Relay.QL`
-            fragment on User {
+export default createFragmentContainer(
+    Event,
+    {
+        viewer: graphql`
+        fragment Event_viewer on User {
+            id
+            ...EventForm_viewer
+        }`,
+        organization: graphql`
+        fragment Event_organization on Organization {
+            isMember
+            event(eventid: $eventId) {
                 id
-                ${EventForm.getFragment('viewer')}
-                ${EditEventMutation.getFragment('viewer')},
-            }`;
-        },
-        organization: () => {
-            return Relay.QL`
-            fragment on Organization {
-                isMember
-                event(eventid:$eventid) {
+                title
+                location
+                start
+                end
+                projects {
                     id
+                    year
+                    tag
                     title
-                    location
-                    start
-                    end
-                    projects {
-                        id
-                        year
-                        tag
-                        title
-                    }
-                    mdtext
-                    permissions {
-                        public
-                        groups {
-                            id
-                            name
-                        }
-                        users {
-                            id
-                            name
-                        }
-                    }
-                    highlighted
-                    ${DeleteEventMutation.getFragment('event')}
                 }
-                ${EventForm.getFragment('organization')}
-            }`;
-        },
+                mdtext
+                permissions {
+                    public
+                    groups {
+                        id
+                        name
+                    }
+                    users {
+                        id
+                        name
+                    }
+                }
+                highlighted
+            }
+            ...EventForm_organization
+        }`,
     },
-});
+);
