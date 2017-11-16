@@ -21,10 +21,6 @@ import EventForm from './EventForm';
 
 
 class Event extends React.Component {
-    static contextTypes = {
-        router: PropTypes.object.isRequired,
-    }
-
     static childContextTypes = {
         muiTheme: PropTypes.object.isRequired,
     }
@@ -32,6 +28,7 @@ class Event extends React.Component {
     static propTypes = {
         organization: PropTypes.object,
         relay: PropTypes.object.isRequired,
+        router: PropTypes.object.isRequired,
         viewer: PropTypes.object,
     }
 
@@ -104,7 +101,7 @@ class Event extends React.Component {
 
     goTo = (project) => {
         const { year, tag } = project;
-        this.context.router.push({ pathname: `/${year}/${tag}` });
+        this.props.router.push({ pathname: `/${year}/${tag}` });
     }
 
     render() {
