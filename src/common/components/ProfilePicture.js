@@ -7,36 +7,35 @@ import Camera from 'material-ui/svg-icons/image/photo-camera';
 import PropTypes from 'prop-types';
 import React from 'react';
 import Dropzone from 'react-dropzone';
-import Relay from 'react-relay';
+import { createFragmentContainer, graphql } from 'react-relay';
 
 import theme from '../theme';
-import SetProfilePictureMutation from '../mutations/setProfilePicture';
+import SetProfilePictureMutation from '../mutations/SetProfilePicture';
 
 class ProfilePicture extends React.Component {
-    static contextTypes = {
-        relay: Relay.PropTypes.Environment,
-    };
-
     static propTypes = {
-        user: PropTypes.object,
         isViewer: PropTypes.bool,
         isAdmin: PropTypes.bool,
+        relay: PropTypes.object.isRequired,
+        user: PropTypes.object,
     }
 
     onDrop = (files) => {
-        const { user } = this.props;
+        const { relay, user } = this.props;
         files.forEach((file) => {
             const data = new FormData();
             data.append('file', file);
 
-            axios.post('/upload', data)
-            .then((response) => {
-                this.context.relay.commitUpdate(new SetProfilePictureMutation({
-                    hash: response.data.hex,
-                    mimetype: response.data.mimetype,
-                    size: response.data.size,
-                    user,
-                }));
+            axios.post('/upload', data).then((response) => {
+                SetProfilePictureMutation.commit(
+                    relay.environment,
+                    {
+                        hash: response.data.hex,
+                        mimetype: response.data.mimetype,
+                        size: response.data.size,
+                        userId: user.id,
+                    },
+                );
             });
         });
     }
@@ -89,18 +88,16 @@ class ProfilePicture extends React.Component {
     }
 }
 
-export default Relay.createContainer(ProfilePicture, {
-    fragments: {
-        user: () => {
-            return Relay.QL`
-            fragment on User {
-                id
-                name
-                profilePicture {
-                    normalPath
-                }
-                ${SetProfilePictureMutation.getFragment('user')}
-            }`;
-        },
+export default createFragmentContainer(
+    ProfilePicture,
+    {
+        user: graphql`
+        fragment ProfilePicture_user on User {
+            id
+            name
+            profilePicture {
+                normalPath
+            }
+        }`,
     },
-});
+);

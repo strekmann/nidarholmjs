@@ -47,25 +47,10 @@ export default createRoutes(
             <IndexRoute component={Login} />
             <Route path="reset" component={Reset} queries={organizationQueries} />
         </Route>
-        <Route path="members" component={Members} queries={organizationQueries} />
         <Route path="members/roles" component={Roles} queries={organizationQueries} />
-        <Route path="users/:id">
-            <IndexRoute component={Member} queries={queries} />
-            <Route path="reset" component={MemberReset} queries={queries} />
-        </Route>
-        <Route path="projects" component={Projects} queries={queries} />
-        <Route path="events/:eventid" component={Event} queries={queries} />
-        <Route path="events" component={Events} queries={organizationQueries} />
-        <Route path="music/:pieceId" component={Piece} queries={organizationQueries} />
-        <Route path="music" component={Pieces} queries={organizationQueries} />
-        <Route path="files" component={Files} queries={queries} />
-        <Route path="groups" component={Groups} queries={queries} />
-        <Route path="group/:groupId" component={Group} queries={queries} />
         <Route path="org" component={Organization} queries={organizationQueries} />
         <Route path="contact" component={Contact} queries={organizationQueries} />
-        <Route path="pages" component={Pages} queries={queries} />
-        <Route path=":slug" component={Page} queries={queries} />
-        <Route path=":year/:tag" component={Project} queries={queries} />
         <Route path="*" component={NoMatch} />
+        <!--<Route path="reset" component={MemberReset} queries={queries} />-->
     </Route>,
 );

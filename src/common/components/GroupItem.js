@@ -1,10 +1,10 @@
+import Link from 'found/lib/Link';
 import Divider from 'material-ui/Divider';
 import { List } from 'material-ui/List';
 import Subheader from 'material-ui/Subheader';
 import PropTypes from 'prop-types';
 import React from 'react';
-import Relay from 'react-relay';
-import { Link } from 'react-router';
+import { createFragmentContainer, graphql } from 'react-relay';
 
 import MemberItem from './MemberItem';
 
@@ -57,22 +57,21 @@ class GroupItem extends React.Component {
     }
 }
 
-export default Relay.createContainer(GroupItem, {
-    fragments: {
-        group: () => {
-            return Relay.QL`
-            fragment on Group {
+export default createFragmentContainer(
+    GroupItem,
+    {
+        group: graphql`
+        fragment GroupItem_group on Group {
+            id
+            name
+            members {
                 id
-                name
-                members {
+                user(active:true) {
                     id
-                    user(active:true) {
-                        id
-                        name
-                    }
-                    ${MemberItem.getFragment('member')}
+                    name
                 }
-            }`;
-        },
+                ...MemberItem_member
+            }
+        }`,
     },
-});
+);

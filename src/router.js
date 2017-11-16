@@ -13,6 +13,10 @@ import Login from './common/components/Login';
 import Event from './common/components/Event';
 import Events from './common/components/Events';
 import Files from './common/components/Files';
+import Group from './common/components/Group';
+import Groups from './common/components/Groups';
+import Member from './common/components/Member';
+import Members from './common/components/Members';
 import Page from './common/components/Page';
 import Pages from './common/components/Pages';
 import Piece from './common/components/Piece';
@@ -64,15 +68,69 @@ export const routeConfig = makeRouteConfig(
             Component={Login}
         />
         <Route
+            path="members"
+            Component={Members}
+            query={graphql`
+                query router_Members_Query {
+                    organization {
+                        ...Members_organization
+                    }
+                }
+            `}
+        />
+        <Route path="users/:id">
+            <Route
+                Component={Member}
+                query={graphql`
+                    query router_Member_Query($id: String) {
+                        organization {
+                            ...Member_organization
+                        }
+                        viewer {
+                            ...Member_viewer
+                        }
+                    }
+                `}
+            />
+        </Route>
+        <Route
+            path="groups"
+            Component={Groups}
+            query={graphql`
+                query router_Groups_Query {
+                    organization {
+                        ...Groups_organization
+                    }
+                    viewer {
+                        ...Groups_viewer
+                    }
+                }
+            `}
+        />
+        <Route
+            path="group/:groupId"
+            Component={Group}
+            query={graphql`
+                query router_Group_Query($groupId: ID) {
+                    organization {
+                        ...Group_organization
+                    }
+                    viewer {
+                        ...Group_viewer
+                    }
+                }
+            `}
+        />
+        <Route
             path="files"
             Component={Files}
             query={graphql`
                 query router_Files_Query {
-                    viewer {
-                        ...Files_viewer
-                    }
                     organization {
                         ...Files_organization
+                    }
+                    viewer {
+                        ...Files_viewer
                     }
                 }
             `}

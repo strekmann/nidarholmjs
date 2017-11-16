@@ -19,6 +19,7 @@ import {
     globalIdField,
     mutationWithClientMutationId,
     nodeDefinitions,
+    toGlobalId,
 } from 'graphql-relay';
 import config from 'config';
 import moment from 'moment';
@@ -1207,12 +1208,14 @@ organizationType = new GraphQLObjectType({
                     throw new Error('Not a member and not self');
                 }
                 let query = User.findById(userId);
-                if (admin(organization, viewer)) {
+                if (isAdmin(organization, viewer)) {
                     query = query.select('+facebook_id +twitter_id +google_id +nmf_id');
                     query = query.select('+instrument_insurance +reskontro +membership_history');
                 }
                 return query.exec().then((user) => {
-                    return member(organization, user);
+                    const m = member(organization, user);
+                    m.id = m._id;
+                    return m;
                 });
             },
         },
@@ -1712,10 +1715,10 @@ const mutationEditUser = mutationWithClientMutationId({
         noEmail: { type: GraphQLBoolean },
     },
     outputFields: {
-        organization: {
-            type: organizationType,
-            resolve: (payload, args, { organization }) => {
-                return organization;
+        user: {
+            type: userType,
+            resolve: (payload) => {
+                return payload;
             },
         },
     },
@@ -2480,7 +2483,7 @@ const mutationAddRole = mutationWithClientMutationId({
         },
     },
     mutateAndGetPayload: ({ roleId, memberId }, { viewer, organization }) => {
-        if (!admin(organization, viewer)) {
+        if (!isAdmin(organization, viewer)) {
             return null;
         }
         const rId = fromGlobalId(roleId).id;

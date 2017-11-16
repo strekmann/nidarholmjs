@@ -1,9 +1,9 @@
+import Link from 'found/lib/Link';
 import Avatar from 'material-ui/Avatar';
 import { ListItem } from 'material-ui/List';
 import PropTypes from 'prop-types';
 import React from 'react';
-import Relay from 'react-relay';
-import { Link } from 'react-router';
+import { createFragmentContainer, graphql } from 'react-relay';
 
 import Phone from './Phone';
 
@@ -93,35 +93,34 @@ class MemberItem extends React.Component {
     }
 }
 
-export default Relay.createContainer(MemberItem, {
-    fragments: {
-        member: () => {
-            return Relay.QL`
-            fragment on Member {
+export default createFragmentContainer(
+    MemberItem,
+    {
+        member: graphql`
+        fragment MemberItem_member on Member {
+            id
+            user(active:true) {
                 id
-                user(active:true) {
-                    id
-                    name
-                    username
-                    email
-                    phone
-                    membershipStatus
-                    instrument
-                    profilePicture {
-                        thumbnailPath
-                    }
+                name
+                username
+                email
+                phone
+                membershipStatus
+                instrument
+                profilePicture {
+                    thumbnailPath
                 }
-                roles {
-                    id
-                    name
-                    email
-                }
-                organizationRoles {
-                    id
-                    name
-                    email
-                }
-            }`;
-        },
+            }
+            roles {
+                id
+                name
+                email
+            }
+            organizationRoles {
+                id
+                name
+                email
+            }
+        }`,
     },
-});
+);

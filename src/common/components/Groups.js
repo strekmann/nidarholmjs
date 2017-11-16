@@ -1,17 +1,13 @@
+import Link from 'found/lib/Link';
 import Paper from 'material-ui/Paper';
 import getMuiTheme from 'material-ui/styles/getMuiTheme';
 import PropTypes from 'prop-types';
 import React from 'react';
-import Relay from 'react-relay';
-import { Link } from 'react-router';
+import { createFragmentContainer, graphql } from 'react-relay';
 
 import theme from '../theme';
 
 class Groups extends React.Component {
-    static contextTypes = {
-        relay: Relay.PropTypes.Environment,
-    }
-
     static childContextTypes = {
         muiTheme: PropTypes.object.isRequired,
     }
@@ -40,8 +36,8 @@ class Groups extends React.Component {
                             <div key={group.id}>
                                 <Link to={`/group/${group.id}`}>{group.name}</Link>
                                 {group.externallyHidden
-                                        ? ' h'
-                                        : null
+                                    ? ' h'
+                                    : null
                                 }
                             </div>
                         );
@@ -52,26 +48,20 @@ class Groups extends React.Component {
     }
 }
 
-export default Relay.createContainer(Groups, {
-    initialVariables: {
-        groupId: null,
-    },
-    fragments: {
-        viewer: () => {
-            return Relay.QL`
-            fragment on User {
+export default createFragmentContainer(
+    Groups,
+    {
+        organization: graphql`
+        fragment Groups_organization on Organization {
+            groups {
                 id
-            }`;
-        },
-        organization: () => {
-            return Relay.QL`
-            fragment on Organization {
-                groups {
-                    id
-                    name
-                    externallyHidden
-                }
-            }`;
-        },
+                name
+                externallyHidden
+            }
+        }`,
+        viewer: graphql`
+        fragment Groups_viewer on User {
+            id
+        }`,
     },
-});
+);
