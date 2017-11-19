@@ -98,19 +98,20 @@ function getConnectionFromSlice(inSlice, mapper, args, count) {
 export function connectionFromMongooseQuery(query, inArgs, mapper) {
     const args = inArgs || {};
 
-    return query.count()
-    .then((count) => {
-        const pagination = getOffsetsFromArgs(args, count);
+    return query
+        .count()
+        .then((count) => {
+            const pagination = getOffsetsFromArgs(args, count);
 
-        if (pagination.limit === 0) {
-            return getConnectionFromSlice([], mapper, args, count);
-        }
+            if (pagination.limit === 0) {
+                return getConnectionFromSlice([], mapper, args, count);
+            }
 
-        query.skip(pagination.skip);
-        query.limit(pagination.limit);
+            query.skip(pagination.skip);
+            query.limit(pagination.limit);
 
-        return query.find().then((slice) => {
-            return getConnectionFromSlice(slice, mapper, args, count);
+            return query.find().then((slice) => {
+                return getConnectionFromSlice(slice, mapper, args, count);
+            });
         });
-    });
 }

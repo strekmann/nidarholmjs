@@ -1,11 +1,22 @@
 import fs from 'fs';
 import path from 'path';
+
 import mmmagic, { Magic } from 'mmmagic';
+
 import File from '../models/File';
 import Piece from '../models/Piece';
+
 import findFilePath from './findFilePath';
 
-export default function insertFile(filename, hex, permissions, tags, user, site, piece = null) {
+export default function insertFile(
+    filename,
+    hex,
+    permissions,
+    tags,
+    user,
+    organization,
+    piece = null,
+) {
     return new Promise((resolve, reject) => {
         const directory = path.join(findFilePath('originals'), hex.substr(0, 2), hex.substr(2, 2));
         const filePath = path.join(directory, hex);
@@ -22,7 +33,7 @@ export default function insertFile(filename, hex, permissions, tags, user, site,
                     size: stats.size,
                     permissions,
                     tags,
-                    site,
+                    organization,
                     creator: user,
                 });
 

@@ -16,7 +16,7 @@ class ProjectListPrevious extends React.Component {
 
     loadMore = () => {
         const { previousProjects } = this.props.organization;
-        this.props.relay.refetch((variables) => {
+        this.props.relay.refetch(() => {
             return {
                 showProjects: previousProjects.edges.length + PROJECTS_PER_PAGE,
             };

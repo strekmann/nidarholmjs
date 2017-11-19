@@ -1,4 +1,4 @@
-/* eslint "react/no-danger": 1 */
+/* eslint "react/no-danger": 0 */
 
 import React from 'react';
 import { createFragmentContainer, graphql } from 'react-relay';
@@ -201,8 +201,8 @@ class Home extends React.Component {
                     : null
                 }
                 <div>
-                    {org.summaries.length > 0 ?
-                        <div>
+                    {org.summaries.length > 0
+                        ? <div>
                             <h2>
                                 <Link to={`/${org.summaries[0].slug}`}>
                                     {org.summaries[0].title}
@@ -211,7 +211,8 @@ class Home extends React.Component {
                             <Text text={org.summaries[0].summary} />
                             <Link to={`/${org.summaries[0].slug}`}>Les mer</Link>
                         </div>
-                    : null }
+                        : null
+                    }
                 </div>
                 <div
                     className="small-narrow"
@@ -221,8 +222,8 @@ class Home extends React.Component {
                         marginRight: -desktopGutterLess,
                     }}
                 >
-                    {org.summaries.length > 1 ?
-                        <div
+                    {org.summaries.length > 1
+                        ? <div
                             style={{
                                 flex: '1 1 50%',
                                 paddingLeft: desktopGutterLess,
@@ -237,9 +238,10 @@ class Home extends React.Component {
                             <Text text={org.summaries[1].summary} />
                             <Link to={`/${org.summaries[1].slug}`}>Les mer</Link>
                         </div>
-                    : null }
-                    {org.summaries.length > 2 ?
-                        <div
+                        : null
+                    }
+                    {org.summaries.length > 2
+                        ? <div
                             style={{
                                 flex: '1 1 50%',
                                 paddingLeft: desktopGutterLess,
@@ -255,7 +257,8 @@ class Home extends React.Component {
                             <Text text={org.summaries[2].summary} />
                             <Link to={`/${org.summaries[2].slug}`}>Les mer</Link>
                         </div>
-                    : null }
+                        : null
+                    }
                 </div>
                 <div>
                     <ContactForm
@@ -283,8 +286,9 @@ class Home extends React.Component {
                         >
                             <Paper>
                                 <iframe
+                                    title="Map"
                                     width="100%"
-                                    height="300px"
+                                    height="300"
                                     frameBorder="0"
                                     src={org.mapUrl}
                                 />

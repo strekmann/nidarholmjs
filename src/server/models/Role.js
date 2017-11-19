@@ -1,5 +1,6 @@
 import mongoose from 'mongoose';
 import uuid from 'node-uuid';
+
 import schemaOptions from './schemaOptions';
 
 /* Organizations have users which may have a role. (Strictly, we allow roles to

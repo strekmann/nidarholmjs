@@ -206,7 +206,6 @@ class Members extends React.Component {
                                     >
                                         <MenuItem primaryText="(Ingen)" />
                                         {instrumentGroups.map((group) => {
-                                            console.log(group);
                                             return (
                                                 <MenuItem
                                                     key={group.id}

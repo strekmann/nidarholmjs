@@ -1,4 +1,5 @@
 import uuid from 'node-uuid';
+
 import RememberMeToken from '../models/RememberMeToken';
 
 export default function persistentLoginMiddleware(req, res, next) {

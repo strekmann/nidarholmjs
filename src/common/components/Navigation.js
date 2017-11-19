@@ -22,7 +22,7 @@ class Navigation extends React.Component {
     static propTypes = {
         viewer: PropTypes.object,
         organization: PropTypes.object,
-        //socket: PropTypes.object,
+        // socket: PropTypes.object,
     }
 
     static childContextTypes = {
