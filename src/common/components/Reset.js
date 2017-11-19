@@ -6,22 +6,18 @@ import TextField from 'material-ui/TextField';
 import getMuiTheme from 'material-ui/styles/getMuiTheme';
 import PropTypes from 'prop-types';
 import React from 'react';
-import Relay from 'react-relay';
+import { createFragmentContainer, graphql } from 'react-relay';
 
 import theme from '../theme';
-import SendResetMutation from '../mutations/sendReset';
+import SendResetMutation from '../mutations/SendReset';
 
 class Reset extends React.Component {
-    static contextTypes = {
-        relay: Relay.PropTypes.Environment,
-    }
-
     static childContextTypes = {
         muiTheme: PropTypes.object.isRequired,
     }
 
     static propTypes = {
-        organization: PropTypes.object,
+        relay: PropTypes.object.isRequired,
     }
 
     constructor(props) {
@@ -45,10 +41,12 @@ class Reset extends React.Component {
     sendReset = (event) => {
         event.preventDefault();
         this.setState({ sent: true });
-        this.context.relay.commitUpdate(new SendResetMutation({
-            email: this.state.email,
-            organization: this.props.organization,
-        }));
+        SendResetMutation.commit(
+            this.props.relay.environment,
+            {
+                email: this.state.email,
+            },
+        );
     }
 
     render() {
@@ -89,14 +87,12 @@ class Reset extends React.Component {
         );
     }
 }
-export default Relay.createContainer(Reset, {
-    fragments: {
-        organization: () => {
-            return Relay.QL`
-            fragment on Organization {
-                id
-                ${SendResetMutation.getFragment('organization')}
-            }`;
-        },
+export default createFragmentContainer(
+    Reset,
+    {
+        organization: graphql`
+        fragment Reset_organization on Organization {
+            id
+        }`,
     },
-});
+);

@@ -1,10 +1,10 @@
 import { commitMutation, graphql } from 'react-relay';
 
 const mutation = graphql`
-mutation AddUserMutation($input: AddUserInput!) {
-    addUser(input: $input) {
-        newUser {
-            id
+mutation SendResetMutation($input: SendResetInput!) {
+    sendReset(input: $input) {
+        organization {
+            ...Reset_organization
         }
     }
 }`;

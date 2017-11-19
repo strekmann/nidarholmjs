@@ -337,6 +337,7 @@ app.get('/login/reset/:code', (req, res, next) => {
                         if (err) {
                             throw err;
                         }
+                        // TODO: return res.redirect(`/user/${user.id}/reset`);
                         return res.redirect('/');
                     });
                 });

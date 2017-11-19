@@ -6,22 +6,19 @@ import TextField from 'material-ui/TextField';
 import getMuiTheme from 'material-ui/styles/getMuiTheme';
 import PropTypes from 'prop-types';
 import React from 'react';
-import Relay from 'react-relay';
+import { createFragmentContainer, graphql } from 'react-relay';
 
 import theme from '../theme';
-import SetPasswordMutation from '../mutations/setPassword';
+import SetPasswordMutation from '../mutations/SetPassword';
 
 class MemberReset extends React.Component {
-    static contextTypes = {
-        relay: Relay.PropTypes.Environment,
-        router: PropTypes.object.isRequired,
-    }
-
     static childContextTypes = {
         muiTheme: PropTypes.object.isRequired,
     }
 
     static propTypes = {
+        relay: PropTypes.object.isRequired,
+        router: PropTypes.object.isRequired,
         viewer: PropTypes.object,
     }
 
@@ -49,12 +46,16 @@ class MemberReset extends React.Component {
 
     setPassword = (event) => {
         event.preventDefault();
-        this.context.relay.commitUpdate(new SetPasswordMutation({
-            oldPassword: this.state.oldPassword,
-            newPassword: this.state.newPassword,
-            viewer: this.props.viewer,
-        }));
-        this.context.router.push({ pathname: `/users/${this.props.viewer.id}` });
+        SetPasswordMutation.commit(
+            this.props.relay.environment,
+            {
+                oldPassword: this.state.oldPassword,
+                newPassword: this.state.newPassword,
+            },
+            () => {
+                this.props.router.push({ pathname: `/users/${this.props.viewer.id}` });
+            },
+        );
     }
 
     render() {
@@ -62,9 +63,8 @@ class MemberReset extends React.Component {
             <Paper className="row">
                 <form onSubmit={this.setPassword}>
                     <h1>Sett nytt passord</h1>
-                    <p>For å sette nytt passord, trenger du å kunne det gamle og et nytt passord.</p>
-                    <p>Det er dumt å gjenbruke samme passord flere steder, da en som har snappet opp passordet da kan komme seg inn flere steder.</p>
-                    <p>Trafikken mellom nettleseren din og dette nettstedet er kryptert og kan ikke snappes opp av andre.</p>
+                    <p>For å sette nytt passord, trenger du å huske det gamle.</p>
+                    <p>Du bør ikke bruke samme passord flere steder, da en som har snappet opp passordet da kan komme seg inn flere steder.</p>
                     <div>
                         <TextField
                             floatingLabelText="Gammelt passord"
@@ -94,20 +94,16 @@ class MemberReset extends React.Component {
     }
 }
 
-export default Relay.createContainer(MemberReset, {
-    fragments: {
-        viewer: () => {
-            return Relay.QL`
-            fragment on User {
-                id
-                ${SetPasswordMutation.getFragment('viewer')}
-            }`;
-        },
-        organization: () => {
-            return Relay.QL`
-            fragment on Organization {
-                id
-            }`;
-        },
+export default createFragmentContainer(
+    MemberReset,
+    {
+        organization: graphql`
+        fragment MemberReset_organization on Organization {
+            id
+        }`,
+        viewer: graphql`
+        fragment MemberReset_viewer on User {
+            id
+        }`,
     },
-});
+);

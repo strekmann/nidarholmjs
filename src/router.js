@@ -10,13 +10,16 @@ import { Environment, Network, RecordSource, Store } from 'relay-runtime';
 import App from './common/components/App';
 import Home from './common/components/Home';
 import Login from './common/components/Login';
+import Reset from './common/components/Reset';
 import Event from './common/components/Event';
 import Events from './common/components/Events';
 import Files from './common/components/Files';
 import Group from './common/components/Group';
 import Groups from './common/components/Groups';
 import Member from './common/components/Member';
+import MemberReset from './common/components/MemberReset';
 import Members from './common/components/Members';
+import NoMatch from './common/components/NoMatch';
 import Organization from './common/components/Organization';
 import Page from './common/components/Page';
 import Pages from './common/components/Pages';
@@ -65,10 +68,20 @@ export const routeConfig = makeRouteConfig(
                 }
             `}
         />
-        <Route
-            path="login"
-            Component={Login}
-        />
+        <Route path="login">
+            <Route Component={Login} />
+            <Route
+                path="reset"
+                Component={Reset}
+                query={graphql`
+                    query router_Reset_Query {
+                        organization {
+                            ...Reset_organization
+                        }
+                    }
+                `}
+            />
+        </Route>
         <Route
             path="org"
             Component={Organization}
@@ -112,6 +125,20 @@ export const routeConfig = makeRouteConfig(
                         }
                         viewer {
                             ...Member_viewer
+                        }
+                    }
+                `}
+            />
+            <Route
+                path="reset"
+                Component={MemberReset}
+                query={graphql`
+                    query router_MemberReset_Query {
+                        organization {
+                            ...MemberReset_organization
+                        }
+                        viewer {
+                            ...MemberReset_viewer
                         }
                     }
                 `}
@@ -266,6 +293,10 @@ export const routeConfig = makeRouteConfig(
                     }
                 }
             `}
+        />
+        <Route
+            path="*"
+            Component={NoMatch}
         />
     </Route>,
 );

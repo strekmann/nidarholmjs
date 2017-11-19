@@ -2168,8 +2168,7 @@ const mutationSetPassword = mutationWithClientMutationId({
             .select('+algorithm +password +salt')
             .exec()
             .then((user) => {
-                return user.authenticate(oldPassword)
-                .then((ok) => {
+                return user.authenticate(oldPassword).then((ok) => {
                     if (!ok) {
                         throw new Error('Galt gammelt passord');
                     }
@@ -2209,7 +2208,7 @@ const mutationSendReset = mutationWithClientMutationId({
                     const code = new PasswordCode();
                     code.user = user._id;
                     return code.save().then((newCode) => {
-                        const message = `Hei ${user.name}\r\n\r\nDet kan se ut som du holder på å sette nytt passord. Hvis du ikke prøver på dette, ber vi deg se bort fra denne eposten. For å sette nytt passord, må du gå til lenka:\r\n${config.site.domain}/login/reset/${newCode._id}`;
+                        const message = `Hei ${user.name}\r\n\r\nDet kan se ut som du holder på å sette nytt passord. Hvis du ikke prøver på dette, ber vi deg se bort fra denne eposten. For å sette nytt passord, må du gå til lenka:\r\n${config.site.protocol}://${config.site.domain}/login/reset/${newCode._id}`;
                         if (config.auth && config.auth.smtp && config.auth.smtp.host) {
                             const transporter = nodemailer.createTransport(config.auth.smtp);
                             const mailOptions = {
@@ -2218,13 +2217,12 @@ const mutationSendReset = mutationWithClientMutationId({
                                 subject: 'Nytt passord',
                                 text: message,
                             };
-                            return transporter.sendMail(mailOptions)
-                            .then((info) => {
+                            return transporter.sendMail(mailOptions).then((info) => {
                                 console.info('Email info:', info);
                                 return organization;
                             });
                         }
-                        console.info('No email config, this was the intended message', message);
+                        console.info('No email config, this was the intended message:\n', message);
                         return organization;
                     });
                 }
