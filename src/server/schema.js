@@ -267,19 +267,7 @@ userType = new GraphQLObjectType({
                     return user.nmf_id;
                 },
             },
-            phone: {
-                type: GraphQLString,
-                resolve: (user, args) => {
-                    // TODO: Fix this
-                    /*
-                    if (args.showDetails) {
-                        return user.email;
-                    }
-                    return '';
-                    */
-                    return user.phone;
-                },
-            },
+            phone: { type: GraphQLString },
             address: { type: GraphQLString },
             postcode: { type: GraphQLString },
             city: { type: GraphQLString },
@@ -350,22 +338,6 @@ userType = new GraphQLObjectType({
                     return Group.find({ 'members.user': user._id }).exec();
                 },
             },
-            /*
-            contactEmail: {
-                type: GraphQLString,
-                resolve: (user, args) => {
-                    console.log(args);
-                    return user.email;
-                },
-            },
-            contactPhone: {
-                type: GraphQLString,
-                resolve: (user, args) => {
-                    console.log(args);
-                    return user.phone;
-                },
-            },
-            */
         };
     },
     interfaces: [nodeInterface],
@@ -977,9 +949,9 @@ organizationType = new GraphQLObjectType({
             type: new GraphQLList(memberType),
             resolve: (organization) => {
                 return organization.contactRoles.map((roleId) => {
-                    console.log(roleId);
                     return Group.aggregate(
-                        { $match: { _id: organization.member_group._id } },
+                        { $match:
+                            { _id: organization.member_group._id || organization.member_group } },
                         { $unwind: '$members' },
                         { $match: { 'members.roles': roleId } },
                         { $group: { _id: '$members' } },
@@ -1867,7 +1839,7 @@ const mutationSaveContactRoles = mutationWithClientMutationId({
             organization.id,
             { contactRoles: roleIds },
             { new: true },
-        );
+        ).exec();
     },
 });
 

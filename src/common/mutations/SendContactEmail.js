@@ -9,17 +9,11 @@ mutation SendContactEmailMutation($input: SendContactEmailInput!) {
     }
 }`;
 
-function commit(environment, organization, form) {
+function commit(environment, form) {
     return commitMutation(environment, {
         mutation,
         variables: {
             input: form,
-        },
-        onCompleted(response) {
-            // console.log('completed', response);
-        },
-        onError(error) {
-            console.error(error);
         },
     });
 }

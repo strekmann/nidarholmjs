@@ -7,38 +7,17 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import { createFragmentContainer, graphql } from 'react-relay';
 
-import ShowContactInfoMutation from '../mutations/ShowContactInfo';
-
 import ContactUser from './ContactUser';
 import ContactRoles from './ContactRoles';
 
 class Contact extends React.Component {
     static propTypes = {
         organization: PropTypes.object,
-        relay: PropTypes.object.isRequired,
     }
 
     state = {
         contacts: this.props.organization.contacts,
         editContacts: false,
-    }
-
-    showContactInfo = (user) => {
-        const { relay } = this.props;
-        ShowContactInfoMutation.commit(
-            relay.environment,
-            {
-                userId: user.id,
-            },
-            (results) => {
-                console.log(results, "RR", user);
-            }
-            /*
-            (results) => {
-                Object.assign(user, results.showContactInfo.user);
-            },
-            */
-        );
     }
 
     renderNormal() {
@@ -66,7 +45,7 @@ class Contact extends React.Component {
                 <p>{organization.contactText}</p>
                 <h2>Kontaktpersoner</h2>
                 <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'space-between' }}>
-                    {this.state.contacts.map((contact) => {
+                    {this.props.organization.contacts.map((contact) => {
                         return (
                             <ContactUser
                                 key={contact.id}
@@ -81,7 +60,7 @@ class Contact extends React.Component {
                     <iframe
                         title="map"
                         width="100%"
-                        height="400px"
+                        height="400"
                         frameBorder="0"
                         src={organization.mapUrl}
                     />

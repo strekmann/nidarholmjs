@@ -28,8 +28,8 @@ class Footer extends React.Component {
 
     sendEmail = (form) => {
         this.setState({ sent: true });
-        const { organization, relay } = this.props;
-        SendContactEmailMutation.commit(relay.environment, organization, form);
+        const { relay } = this.props;
+        SendContactEmailMutation.commit(relay.environment, form);
     }
 
     openEmailDialog = () => {
@@ -41,7 +41,7 @@ class Footer extends React.Component {
     }
 
     render() {
-        const org = this.props.organization;
+        const { organization } = this.props;
         return (
             <footer>
                 <div style={{ textAlign: 'center', marginTop: 50, marginBottom: 80 }}>
@@ -49,19 +49,19 @@ class Footer extends React.Component {
                         open={this.state.contactDialogOpen}
                         close={this.closeEmailDialog}
                         save={this.sendEmail}
-                        organization={this.props.organization}
+                        organization={organization}
                     />
                     <a onTouchTap={this.openEmailDialog} style={{ cursor: 'pointer' }}>
                         <i className="fa fa-fw fa-envelope fa-3x" />
                     </a>
-                    <a href={`https://facebook.com/${org.facebook}`}>
+                    <a href={`https://facebook.com/${organization.facebook}`}>
                         <i className="fa fa-fw fa-facebook fa-3x" />
                     </a>
 
-                    <a href={`https://www.instagram.com/${org.instagram}/`}>
+                    <a href={`https://www.instagram.com/${organization.instagram}/`}>
                         <i className="fa fa-fw fa-instagram fa-3x" />
                     </a>
-                    <a href={`https://twitter.com/${org.twitter}`}>
+                    <a href={`https://twitter.com/${organization.twitter}`}>
                         <i className="fa fa-fw fa-twitter fa-3x" />
                     </a>
                     <div

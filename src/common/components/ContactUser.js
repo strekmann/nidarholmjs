@@ -2,7 +2,9 @@ import { Card, CardActions, CardHeader, CardMedia, CardTitle, CardText } from 'm
 import FlatButton from 'material-ui/FlatButton';
 import PropTypes from 'prop-types';
 import React from 'react';
-import { createRefetchContainer, graphql } from 'react-relay';
+import { createFragmentContainer, graphql } from 'react-relay';
+
+import ShowContactInfoMutation from '../mutations/ShowContactInfo';
 
 import Email from './Email';
 import Phone from './Phone';
@@ -14,12 +16,25 @@ class ContactUser extends React.Component {
         user: PropTypes.object.isRequired,
     }
 
+    state = {
+        email: '',
+        phone: '',
+    }
+
     showContactInfo = () => {
-        this.props.relay.refetch(() => {
-            return {
-                showDetails: true,
-            };
-        });
+        const { relay, user } = this.props;
+        ShowContactInfoMutation.commit(
+            relay.environment,
+            {
+                userId: user.id,
+            },
+            (results) => {
+                this.setState({
+                    email: results.showContactInfo.user.email,
+                    phone: results.showContactInfo.user.phone,
+                });
+            },
+        );
     }
 
     render() {
@@ -34,21 +49,18 @@ class ContactUser extends React.Component {
                     }
                 </CardMedia>
                 <CardTitle title={user.name} />
-                {user.phone || user.email
+                {this.state.phone || this.state.email
                     ? <CardText style={{ paddingTop: 0 }}>
                         <div className="noMargins">
                             <div>
-                                <Phone phone={user.phone} />
+                                <Phone phone={this.state.phone} />
                             </div>
                             <div>
-                                <Email email={user.email} />
+                                <Email email={this.state.email} />
                             </div>
                         </div>
                     </CardText>
-                    : null
-                }
-                {!user.phone && !user.email
-                    ? <CardActions>
+                    : <CardActions>
                         <FlatButton
                             onClick={() => {
                                 this.showContactInfo(user);
@@ -56,14 +68,13 @@ class ContactUser extends React.Component {
                             label="Vis kontaktinfo"
                         />
                     </CardActions>
-                    : null
                 }
             </Card>
         );
     }
 }
 
-export default createRefetchContainer(
+export default createFragmentContainer(
     ContactUser,
     {
         user: graphql`
@@ -79,12 +90,4 @@ export default createRefetchContainer(
             }
         }`,
     },
-    /* complains about user unknown on Root
-    graphql`
-    query ContactUserRefetchQuery($showDetails: Boolean) {
-        user {
-            ...ContactUser_user @arguments(showDetails: $showDetails)
-        }
-    }`,
-    */
 );

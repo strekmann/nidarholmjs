@@ -4,7 +4,7 @@
     "rules": {
         "arrow-body-style": ["error", "always"],
         "brace-style": [ 2, "stroustrup", { "allowSingleLine": true } ],
-        "indent": [ 2, 4, {"SwitchCase": 1} ],
+        "indent": [ 1, 4, {"SwitchCase": 1} ],
         "import/no-extraneous-dependencies": [ "error", { "devDependencies": ["**/*.test.js", "**/*.spec.js"] } ],
         "import/order": [ 1, {"newlines-between": "always"} ],
         "max-len": 1,

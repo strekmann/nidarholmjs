@@ -12,21 +12,24 @@ export default class SortableRoleList extends React.Component {
         roles: PropTypes.array.isRequired,
         onChange: PropTypes.func.isRequired,
     }
+
     state = {
         roles: this.props.roles,
     }
 
+    componentWillReceiveProps(nextProps) {
+        this.state.roles = nextProps.roles;
+    }
+
     onRemoveRole = (role) => {
-        const { roles } = this.state;
+        const roles = [...this.state.roles];
         roles.splice(role.index, 1);
         this.setState({ roles });
-        this.props.onChange(this.state.roles);
+        this.props.onChange(roles);
     }
 
     moveRole = (dragIndex, hoverIndex) => {
-        const { roles } = this.state;
-        const dragRole = roles[dragIndex];
-
+        const dragRole = this.state.roles[dragIndex];
         this.setState(update(this.state, {
             roles: {
                 $splice: [

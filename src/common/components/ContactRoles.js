@@ -90,6 +90,9 @@ class ContactRoles extends React.Component {
     }
 
     render() {
+        const roleIds = this.state.contactRoles.map((role) => {
+            return role.id;
+        });
         return (
             <div>
                 <h2>Kontakter</h2>
@@ -106,7 +109,9 @@ class ContactRoles extends React.Component {
                         <div>
                             <h3>Mulige</h3>
                             <div style={{ height: 400, overflow: 'scroll', overflowX: 'hidden' }}>
-                                {this.state.activeRoles.map((role) => {
+                                {this.state.activeRoles.filter((role) => {
+                                    return !roleIds.includes(role.id);
+                                }).map((role) => {
                                     return (
                                         <RoleItem
                                             key={role.id}
