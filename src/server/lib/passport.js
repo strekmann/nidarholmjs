@@ -7,7 +7,6 @@ import { Strategy as RememberMeStrategy } from 'passport-remember-me';
 import { OAuth2Strategy as GoogleStrategy } from 'passport-google-oauth';
 import { Strategy as FacebookStrategy } from 'passport-facebook';
 import { Strategy as TwitterStrategy } from 'passport-twitter';
-import { ExtractJwt, Strategy as JwtStrategy } from 'passport-jwt';
 
 import RememberMeToken from '../models/RememberMeToken';
 import User from '../models/User';

@@ -22,7 +22,7 @@ class Navigation extends React.Component {
     static propTypes = {
         viewer: PropTypes.object,
         organization: PropTypes.object,
-        //socket: PropTypes.object,
+        // socket: PropTypes.object,
     }
 
     static childContextTypes = {
@@ -232,7 +232,7 @@ class Navigation extends React.Component {
                                 <Menu>
                                     <MenuItem>
                                         <Link
-                                            to="/about"
+                                            to="/om"
                                             onClick={this.handleClose}
                                         >
                                             Om oss

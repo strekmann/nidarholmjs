@@ -4,14 +4,15 @@
 import { toGlobalId } from 'graphql-relay';
 import icalendar from 'icalendar';
 import moment from 'moment';
+
 import Event from './models/Event';
 
 export function icalEvents(req, res, next) {
     let query = Event.find({ 'permissions.public': true });
     query = query
-    .where({ start: { $gte: moment().subtract(1, 'years').startOf('day') } })
-    .sort('start')
-    .populate('creator', 'username name');
+        .where({ start: { $gte: moment().subtract(1, 'years').startOf('day') } })
+        .sort('start')
+        .populate('creator', 'username name');
     query.exec((err, events) => {
         if (err) { return next(err); }
 

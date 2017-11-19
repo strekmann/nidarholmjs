@@ -8,9 +8,6 @@ import Dialog from 'material-ui/Dialog';
 import FlatButton from 'material-ui/FlatButton';
 import { List, ListItem } from 'material-ui/List';
 import { Toolbar, ToolbarGroup } from 'material-ui/Toolbar';
-import React from 'react';
-import Relay from 'react-relay';
-import { Link } from 'react-router';
 import getMuiTheme from 'material-ui/styles/getMuiTheme';
 import IconMenu from 'material-ui/IconMenu';
 import MenuItem from 'material-ui/MenuItem';
@@ -23,13 +20,16 @@ import { lightBlue100 } from 'material-ui/styles/colors';
 import Close from 'material-ui/svg-icons/navigation/close';
 import moment from 'moment';
 import PropTypes from 'prop-types';
+import React from 'react';
+import { createFragmentContainer, graphql } from 'react-relay';
+import Link from 'found/lib/Link';
 
 import theme from '../theme';
-import EditUserMutation from '../mutations/editUser';
-import JoinGroupMutation from '../mutations/joinGroup';
-import LeaveGroupMutation from '../mutations/leaveGroup';
-import AddRoleMutation from '../mutations/addRole';
-import RemoveRoleMutation from '../mutations/removeRole';
+import EditUserMutation from '../mutations/EditUser';
+import JoinGroupMutation from '../mutations/JoinGroup';
+import LeaveGroupMutation from '../mutations/LeaveGroup';
+import AddRoleMutation from '../mutations/AddRole';
+import RemoveRoleMutation from '../mutations/RemoveRole';
 
 import Text from './Text';
 import Phone from './Phone';
@@ -44,16 +44,13 @@ if (areIntlLocalesSupported(['nb'])) {
 }
 
 class Member extends React.Component {
-    static contextTypes = {
-        relay: Relay.PropTypes.Environment,
-    }
-
     static childContextTypes = {
         muiTheme: PropTypes.object.isRequired,
     }
 
     static propTypes = {
         organization: PropTypes.object,
+        relay: PropTypes.object.isRequired,
         viewer: PropTypes.object,
     }
 
@@ -140,8 +137,8 @@ class Member extends React.Component {
     }
     saveMember = (event) => {
         event.preventDefault();
+        const { relay } = this.props;
         const data = {
-            organization: this.props.organization,
             userId: this.props.organization.member.user.id,
             username: this.state.username,
             name: this.state.name,
@@ -163,14 +160,16 @@ class Member extends React.Component {
             data.onLeave = this.state.onLeave;
             data.noEmail = this.state.noEmail;
         }
-        this.context.relay.commitUpdate(new EditUserMutation(data), {
-            onSuccess: () => {
+        EditUserMutation.commit(
+            relay.environment,
+            data,
+            () => {
                 this.setState({
                     edit: false,
                     editMember: false,
                 });
             },
-        });
+        );
     }
     closeEditMember = () => {
         this.setState({
@@ -184,29 +183,41 @@ class Member extends React.Component {
     }
     addRole = (roleId) => {
         this.setState({ addingRole: false });
-        this.context.relay.commitUpdate(new AddRoleMutation({
-            roleId,
-            member: this.props.organization.member,
-        }));
+        AddRoleMutation.commit(
+            this.props.relay.environment,
+            {
+                roleId,
+                memberId: this.props.organization.member.id,
+            },
+        );
     }
     removeRole= (roleId) => {
-        this.context.relay.commitUpdate(new RemoveRoleMutation({
-            roleId,
-            member: this.props.organization.member,
-        }));
+        RemoveRoleMutation.commit(
+            this.props.relay.environment,
+            {
+                roleId,
+                memberId: this.props.organization.member.id,
+            },
+        );
     }
     joinGroup = (selection) => {
         this.setState({ joinGroup: false });
-        this.context.relay.commitUpdate(new JoinGroupMutation({
-            group: selection.value,
-            user: this.props.organization.member.user,
-        }));
+        JoinGroupMutation.commit(
+            this.props.relay.environment,
+            {
+                groupId: selection.value.id,
+                userId: this.props.organization.member.user.id,
+            },
+        );
     }
     leaveGroup = (user, group) => {
-        this.context.relay.commitUpdate(new LeaveGroupMutation({
-            group,
-            user,
-        }));
+        LeaveGroupMutation.commit(
+            this.props.relay.environment,
+            {
+                groupId: group.id,
+                userId: user.id,
+            },
+        );
     }
     closeJoinGroup = () => {
         this.setState({ joinGroup: false });
@@ -217,11 +228,9 @@ class Member extends React.Component {
     }
 
     render() {
-        const org = this.props.organization;
-        const viewer = this.props.viewer;
-        const member = org.member;
-        const user = member.user;
-        const isAdmin = org.isAdmin;
+        const { organization, viewer } = this.props;
+        const { groups, isAdmin, member, roles } = organization;
+        const { user } = member;
         const { desktopGutterLess } = theme.spacing;
         if (this.state.editMember) {
             return (
@@ -388,7 +397,7 @@ class Member extends React.Component {
                             actions={<FlatButton label="Avbryt" onTouchTap={this.closeJoinGroup} />}
                         >
                             <AutoComplete
-                                dataSource={org.groups.map((group) => {
+                                dataSource={groups.map((group) => {
                                     return { text: `${group.name}`, value: group };
                                 })}
                                 floatingLabelText="Gruppe"
@@ -408,7 +417,7 @@ class Member extends React.Component {
                             actions={<RaisedButton label="Avbryt" onTouchTap={this.closeAddingRole} />}
                         >
                             <List>
-                                {org.roles.edges.map((edge) => {
+                                {roles.edges.map((edge) => {
                                     return (
                                         <ListItem
                                             key={edge.node.id}
@@ -620,83 +629,71 @@ class Member extends React.Component {
     }
 }
 
-export default Relay.createContainer(Member, {
-    initialVariables: {
-        id: null,
-    },
-    fragments: {
-        viewer: () => {
-            return Relay.QL`
-            fragment on User {
+export default createFragmentContainer(
+    Member,
+    {
+        organization: graphql`
+        fragment Member_organization on Organization {
+            isMember
+            isAdmin
+            member(id:$id) {
                 id
-            }
-            `;
-        },
-        organization: () => {
-            return Relay.QL`
-            fragment on Organization {
-                isMember
-                isAdmin
-                member(id:$id) {
-                    id
-                    roles {
-                        id
-                        name
-                        email
-                    }
-                    user {
-                        id
-                        username
-                        name
-                        email
-                        groups {
-                            id
-                            name
-                        }
-                        isActive
-                        isAdmin
-                        created
-                        facebookId
-                        googleId
-                        twitterId
-                        nmfId
-                        phone
-                        address
-                        postcode
-                        city
-                        country
-                        born
-                        joined
-                        instrument
-                        instrumentInsurance
-                        reskontro
-                        membershipHistory
-                        membershipStatus
-                        inList
-                        onLeave
-                        noEmail
-                        ${ProfilePicture.getFragment('user')}
-                        ${JoinGroupMutation.getFragment('user')}
-                        ${LeaveGroupMutation.getFragment('user')}
-                    }
-                    ${AddRoleMutation.getFragment('member')}
-                    ${RemoveRoleMutation.getFragment('member')}
-                }
-                groups {
+                roles {
                     id
                     name
+                    email
                 }
-                roles(first:100) {
-                    edges {
-                        node {
-                            id
-                            name
-                        }
+                user {
+                    id
+                    username
+                    name
+                    email
+                    groups {
+                        id
+                        name
+                    }
+                    isActive
+                    isAdmin
+                    created
+                    facebookId
+                    googleId
+                    twitterId
+                    nmfId
+                    phone
+                    address
+                    postcode
+                    city
+                    country
+                    born
+                    joined
+                    instrument
+                    instrumentInsurance
+                    reskontro
+                    membershipHistory
+                    membershipStatus
+                    inList
+                    onLeave
+                    noEmail
+                    ...ProfilePicture_user
+                }
+            }
+            groups {
+                id
+                name
+            }
+            roles(first:100) {
+                edges {
+                    node {
+                        id
+                        name
                     }
                 }
-                ${EditUserMutation.getFragment('organization')}
             }
-            `;
-        },
+        }`,
+        viewer: graphql`
+        fragment Member_viewer on User {
+            id
+        }
+        `,
     },
-});
+);

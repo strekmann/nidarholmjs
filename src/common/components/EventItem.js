@@ -52,8 +52,8 @@ class EventItem extends React.Component {
                         onClick={this.expandEvent}
                     >
                         {this.state.expanded
-                                ? <ExpandMore />
-                                : <ExpandLess />
+                            ? <ExpandMore />
+                            : <ExpandLess />
                         }
                     </IconButton>
                 </div>

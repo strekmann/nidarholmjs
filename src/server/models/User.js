@@ -1,6 +1,8 @@
 import crypto from 'crypto';
+
 import mongoose from 'mongoose';
 import uuid from 'node-uuid';
+
 import schemaOptions from './schemaOptions';
 
 const UserSchema = new mongoose.Schema({

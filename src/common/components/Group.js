@@ -1,3 +1,4 @@
+import Link from 'found/lib/Link';
 import AutoComplete from 'material-ui/AutoComplete';
 import Dialog from 'material-ui/Dialog';
 import Divider from 'material-ui/Divider';
@@ -13,27 +14,23 @@ import MoreVertIcon from 'material-ui/svg-icons/navigation/more-vert';
 import getMuiTheme from 'material-ui/styles/getMuiTheme';
 import PropTypes from 'prop-types';
 import React from 'react';
-import { Link } from 'react-router';
-import Relay from 'react-relay';
+import { createFragmentContainer, graphql } from 'react-relay';
 
 import theme from '../theme';
-import AddRoleMutation from '../mutations/addRole';
-import JoinGroupMutation from '../mutations/joinGroup';
-import LeaveGroupMutation from '../mutations/leaveGroup';
-import RemoveRoleMutation from '../mutations/removeRole';
-import SaveGroupMutation from '../mutations/saveGroup';
+import AddRoleMutation from '../mutations/AddRole';
+import JoinGroupMutation from '../mutations/JoinGroup';
+import LeaveGroupMutation from '../mutations/LeaveGroup';
+import RemoveRoleMutation from '../mutations/RemoveRole';
+import SaveGroupMutation from '../mutations/SaveGroup';
 
 class Group extends React.Component {
-    static contextTypes = {
-        relay: Relay.PropTypes.Environment,
-    }
-
     static childContextTypes = {
         muiTheme: PropTypes.object.isRequired,
     }
 
     static propTypes = {
         organization: PropTypes.object,
+        relay: PropTypes.object.isRequired,
     }
 
     constructor(props) {
@@ -56,34 +53,46 @@ class Group extends React.Component {
     onSave = (event) => {
         event.preventDefault();
         this.setState({ editing: false });
-        this.context.relay.commitUpdate(new SaveGroupMutation({
-            group: this.props.organization.group,
-            email: this.state.email,
-            groupLeaderEmail: this.state.groupLeaderEmail,
-        }));
+        SaveGroupMutation.commit(
+            this.props.relay.environment,
+            {
+                groupId: this.props.organization.group.id,
+                email: this.state.email,
+                groupLeaderEmail: this.state.groupLeaderEmail,
+            },
+        );
     }
 
     setGroupLeader = (role) => {
-        this.context.relay.commitUpdate(new AddRoleMutation({
-            roleId: role.value,
-            member: this.state.addingGroupLeader,
-        }));
-        this.setState({ addingGroupLeader: false });
+        AddRoleMutation.commit(
+            this.props.relay.environment,
+            {
+                roleId: role.value,
+                memberId: this.state.addingGroupLeader.id,
+            },
+        );
+        this.setState({ addingGroupLeader: null });
     }
 
     joinGroup = (selection) => {
         this.setState({ joinGroup: false });
-        this.context.relay.commitUpdate(new JoinGroupMutation({
-            group: this.props.organization.group,
-            user: selection.value,
-        }));
+        JoinGroupMutation.commit(
+            this.props.relay.environment,
+            {
+                groupId: this.props.organization.group.id,
+                userId: selection.value.id,
+            },
+        );
     }
 
     leaveGroup = (user, group) => {
-        this.context.relay.commitUpdate(new LeaveGroupMutation({
-            group,
-            user,
-        }));
+        LeaveGroupMutation.commit(
+            this.props.relay.environment,
+            {
+                groupId: group.id,
+                userId: user.id,
+            },
+        );
     }
 
     closeJoinGroup = () => {
@@ -97,10 +106,13 @@ class Group extends React.Component {
             // role. We also assume that there is a role set when we get
             // isGroupLeader.
             const role = member.roles[0];
-            this.context.relay.commitUpdate(new RemoveRoleMutation({
-                roleId: role.id,
-                member,
-            }));
+            RemoveRoleMutation.commit(
+                this.props.relay.environment,
+                {
+                    roleId: role.id,
+                    memberId: member.id,
+                },
+            );
         }
         else {
             // add group leader status
@@ -109,7 +121,7 @@ class Group extends React.Component {
     }
 
     closeAddingGroupLeader = () => {
-        this.setState({ addingGroupLeader: false });
+        this.setState({ addingGroupLeader: null });
     }
 
     closeEditing = () => {
@@ -307,63 +319,51 @@ class Group extends React.Component {
     }
 }
 
-export default Relay.createContainer(Group, {
-    initialVariables: {
-        groupId: null,
-    },
-    fragments: {
-        viewer: () => {
-            return Relay.QL`
-            fragment on User {
+export default createFragmentContainer(
+    Group,
+    {
+        organization: graphql`
+        fragment Group_organization on Organization {
+            isAdmin
+            users {
+                id
+                name
+                username
+            }
+            group(groupId:$groupId) {
+                id
+                name
+                email
+                groupLeaderEmail
+                members {
+                    id
+                    user(active:true) {
+                        id
+                        name
+                    }
+                    roles {
+                        id
+                        name
+                    }
+                }
+                externallyHidden
+            }
+            instrumentGroups {
                 id
             }
-            `;
-        },
-        organization: () => {
-            return Relay.QL`
-            fragment on Organization {
-                isAdmin
-                users {
-                    id
-                    name
-                    username
-                }
-                group(groupId:$groupId) {
-                    id
-                    name
-                    email
-                    groupLeaderEmail
-                    members {
+            roles(first:100) {
+                edges {
+                    node {
                         id
-                        user(active:true) {
-                            id
-                            name
-                            ${JoinGroupMutation.getFragment('user')}
-                            ${LeaveGroupMutation.getFragment('user')}
-                        }
-                        roles {
-                            id
-                            name
-                        }
-                        ${AddRoleMutation.getFragment('member')}
-                        ${RemoveRoleMutation.getFragment('member')}
-                    }
-                    externallyHidden
-                    ${SaveGroupMutation.getFragment('group')}
-                }
-                instrumentGroups {
-                    id
-                }
-                roles(first:100) {
-                    edges {
-                        node {
-                            id
-                            name
+                        name
 
-                        }
                     }
                 }
-            }`;
-        },
+            }
+        }`,
+        viewer: graphql`
+        fragment Group_viewer on User {
+            id
+        }`,
     },
-});
+);

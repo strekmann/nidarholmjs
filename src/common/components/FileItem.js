@@ -1,7 +1,3 @@
-/* eslint "react/require-default-props": 0 */
-
-import React from 'react';
-import Relay from 'react-relay';
 import Link from 'found/lib/Link';
 import { Card, CardTitle, CardMedia, CardActions } from 'material-ui/Card';
 import Chip from 'material-ui/Chip';
@@ -14,6 +10,7 @@ import MenuItem from 'material-ui/MenuItem';
 import RaisedButton from 'material-ui/RaisedButton';
 import { grey400 } from 'material-ui/styles/colors';
 import PropTypes from 'prop-types';
+import React from 'react';
 import { createFragmentContainer, graphql } from 'react-relay';
 
 import { flattenPermissions } from '../utils';

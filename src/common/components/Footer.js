@@ -1,5 +1,5 @@
 import React from 'react';
-import { createFragmentContainer, graphql, Environment } from 'react-relay';
+import { createFragmentContainer, graphql } from 'react-relay';
 import getMuiTheme from 'material-ui/styles/getMuiTheme';
 import PropTypes from 'prop-types';
 

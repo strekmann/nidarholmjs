@@ -1,3 +1,5 @@
+/* global window, document */
+
 import 'babel-polyfill';
 import BrowserProtocol from 'farce/lib/BrowserProtocol';
 import createInitialFarceRouter from 'found/lib/createInitialFarceRouter';

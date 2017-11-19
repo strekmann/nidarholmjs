@@ -112,7 +112,7 @@ class Files extends React.Component {
     }
 
     searchTag = (tag) => {
-        //const fixedTags = tags.sort().join('|').toLowerCase();
+        // const fixedTags = tags.sort().join('|').toLowerCase();
         this.props.relay.refetch((variables) => {
             const tags = variables.searchTags.split('|').filter((t) => {
                 return !!t;

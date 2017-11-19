@@ -1,4 +1,5 @@
 import mongoose from 'mongoose';
+
 import schemaOptions from './schemaOptions';
 
 const GroupSchema = new mongoose.Schema({

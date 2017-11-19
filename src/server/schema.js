@@ -19,6 +19,7 @@ import {
     globalIdField,
     mutationWithClientMutationId,
     nodeDefinitions,
+    // toGlobalId,
 } from 'graphql-relay';
 import config from 'config';
 import moment from 'moment';
@@ -301,8 +302,8 @@ userType = new GraphQLObjectType({
             },
             // Deprecated:
             // profilePicturePath: {
-                // type: GraphQLString,
-                // resolve: user => user.profile_picture_path,
+            //     type: GraphQLString,
+            //     resolve: user => user.profile_picture_path,
             // },
             membershipStatus: {
                 type: GraphQLInt,
@@ -314,12 +315,13 @@ userType = new GraphQLObjectType({
                 type: GraphQLString,
                 resolve: (user, args, { organization, viewer }) => {
                     if (isAdmin(organization, viewer)) {
-                        return User.findById(user._id)
-                        .select('+membership_history')
-                        .exec()
-                        .then((e) => {
-                            return e.membership_history;
-                        });
+                        return User
+                            .findById(user._id)
+                            .select('+membership_history')
+                            .exec()
+                            .then((e) => {
+                                return e.membership_history;
+                            });
                     }
                     return user.membership_history;
                 },
@@ -418,7 +420,7 @@ const memberType = new GraphQLObjectType({
                         query = query.where({
                             on_leave: false,
                             in_list: true,
-                            //membership_status: { $lt: 5 },
+                            // membership_status: { $lt: 5 },
                         });
                     }
                     if (!isMember(organization, viewer)) {
@@ -709,15 +711,16 @@ pieceType = new GraphQLObjectType({
                         return null;
                     }
                     return organization.instrument_groups
-                    .map((groupId) => {
-                        return Group.findById(groupId)
-                        .exec()
-                        .then((_group) => {
-                            const group = _group.toObject();
-                            group.scores = piece.scores;
-                            return group;
+                        .map((groupId) => {
+                            return Group
+                                .findById(groupId)
+                                .exec()
+                                .then((_group) => {
+                                    const group = _group.toObject();
+                                    group.scores = piece.scores;
+                                    return group;
+                                });
                         });
-                    });
                 },
             },
             scoreCount: {
@@ -950,15 +953,15 @@ organizationType = new GraphQLObjectType({
             type: new GraphQLList(roleType),
             resolve: (organization) => {
                 return Group.aggregate(
-                        { $match: { _id: organization.member_group._id } },
-                        { $unwind: '$members' },
-                        { $match: { 'members.roles': { $exists: 1 } } },
-                        { $group: { _id: '$members' } },
-                        { $group: { _id: '$_id.roles' } },
-                        { $unwind: '$_id' },
-                        { $lookup: { from: 'roles', localField: '_id', foreignField: '_id', as: '_id' } },
-                        { $unwind: '$_id' },
-                        { $project: { _id: 0, id: '$_id._id', name: '$_id.name', email: '$_id.email' } },
+                    { $match: { _id: organization.member_group._id } },
+                    { $unwind: '$members' },
+                    { $match: { 'members.roles': { $exists: 1 } } },
+                    { $group: { _id: '$members' } },
+                    { $group: { _id: '$_id.roles' } },
+                    { $unwind: '$_id' },
+                    { $lookup: { from: 'roles', localField: '_id', foreignField: '_id', as: '_id' } },
+                    { $unwind: '$_id' },
+                    { $project: { _id: 0, id: '$_id._id', name: '$_id.name', email: '$_id.email' } },
                 ).exec();
             },
         },
@@ -1027,15 +1030,15 @@ organizationType = new GraphQLObjectType({
             type: new GraphQLList(groupType),
             resolve: (_, args, { organization }) => {
                 return Organization
-                .findById(organization.id)
-                .populate({
-                    path: 'instrument_groups',
-                    match: { externally_hidden: { $ne: true } },
-                })
-                .exec()
-                .then((_organization) => {
-                    return _organization.instrument_groups;
-                });
+                    .findById(organization.id)
+                    .populate({
+                        path: 'instrument_groups',
+                        match: { externally_hidden: { $ne: true } },
+                    })
+                    .exec()
+                    .then((_organization) => {
+                        return _organization.instrument_groups;
+                    });
             },
         },
         users: {
@@ -1162,12 +1165,12 @@ organizationType = new GraphQLObjectType({
             args: connectionArgs,
             resolve: (parent, { ...args }, { viewer }) => {
                 const query = Event
-                .find({
-                    start: {
-                        $gte: moment().startOf('day').toDate(),
-                    },
-                })
-                .sort({ start: 1 });
+                    .find({
+                        start: {
+                            $gte: moment().startOf('day').toDate(),
+                        },
+                    })
+                    .sort({ start: 1 });
                 return connectionFromMongooseQuery(
                     authenticate(query, viewer, { exclude: ['mdtext'] }),
                     args,
@@ -1179,13 +1182,13 @@ organizationType = new GraphQLObjectType({
             args: connectionArgs,
             resolve: (parent, { ...args }, { viewer }) => {
                 const query = Event
-                .find({
-                    start: {
-                        $gte: moment().startOf('day').toDate(),
-                        $lt: moment().add(2, 'months').startOf('day').toDate(),
-                    },
-                })
-                .sort({ start: 1 });
+                    .find({
+                        start: {
+                            $gte: moment().startOf('day').toDate(),
+                            $lt: moment().add(2, 'months').startOf('day').toDate(),
+                        },
+                    })
+                    .sort({ start: 1 });
                 return connectionFromMongooseQuery(
                     authenticate(query, viewer, { exclude: ['mdtext'] }),
                     args,
@@ -1216,12 +1219,12 @@ organizationType = new GraphQLObjectType({
             type: new GraphQLList(pageType),
             resolve: (organization) => {
                 return Organization
-                .findById(organization.id)
-                .populate({ path: 'summaries', select: 'summary title slug' })
-                .exec()
-                .then((org) => {
-                    return org.summaries;
-                });
+                    .findById(organization.id)
+                    .populate({ path: 'summaries', select: 'summary title slug' })
+                    .exec()
+                    .then((org) => {
+                        return org.summaries;
+                    });
             },
         },
         member: {
@@ -1235,12 +1238,14 @@ organizationType = new GraphQLObjectType({
                     throw new Error('Not a member and not self');
                 }
                 let query = User.findById(userId);
-                if (admin(organization, viewer)) {
+                if (isAdmin(organization, viewer)) {
                     query = query.select('+facebook_id +twitter_id +google_id +nmf_id');
                     query = query.select('+instrument_insurance +reskontro +membership_history');
                 }
                 return query.exec().then((user) => {
-                    return member(organization, user);
+                    const m = member(organization, user);
+                    m.id = m._id;
+                    return m;
                 });
             },
         },
@@ -1688,32 +1693,32 @@ const mutationAddUser = mutationWithClientMutationId({
             throw new Error('Nobody!');
         }
         return Organization
-        .findById(organization.id)
-        .populate('member_group')
-        .exec()
-        .then((_organization) => {
-            const userId = uuid.v4();
-            const user = new User({ _id: userId, username: userId, instrument, name });
-            let p = Promise.resolve(_organization);
-            if (setMember) {
-                user.groups.push(_organization.member_group);
-                _organization.member_group.members.push({ user, role: instrument });
-                p = _organization.member_group.save();
-            }
-            return p.then((_org) => {
-                if (groupId) {
-                    const gId = fromGlobalId(groupId).id;
-                    return Group.findById(gId).exec().then((group) => {
-                        user.groups.push(group);
-                        group.members.push({ user });
-                        return group.save();
-                    });
+            .findById(organization.id)
+            .populate('member_group')
+            .exec()
+            .then((_organization) => {
+                const userId = uuid.v4();
+                const user = new User({ _id: userId, username: userId, instrument, name, email });
+                let p = Promise.resolve(_organization);
+                if (setMember) {
+                    user.groups.push(_organization.member_group);
+                    _organization.member_group.members.push({ user, role: instrument });
+                    p = _organization.member_group.save();
                 }
-                return Promise.resolve(_org);
-            }).then(() => {
-                return user.save();
+                return p.then((_org) => {
+                    if (groupId) {
+                        const gId = fromGlobalId(groupId).id;
+                        return Group.findById(gId).exec().then((group) => {
+                            user.groups.push(group);
+                            group.members.push({ user });
+                            return group.save();
+                        });
+                    }
+                    return Promise.resolve(_org);
+                }).then(() => {
+                    return user.save();
+                });
             });
-        });
     },
 });
 
@@ -1740,10 +1745,10 @@ const mutationEditUser = mutationWithClientMutationId({
         noEmail: { type: GraphQLBoolean },
     },
     outputFields: {
-        organization: {
-            type: organizationType,
-            resolve: (payload, args, { organization }) => {
-                return organization;
+        user: {
+            type: userType,
+            resolve: (payload) => {
+                return payload;
             },
         },
     },
@@ -2193,8 +2198,7 @@ const mutationSetPassword = mutationWithClientMutationId({
             .select('+algorithm +password +salt')
             .exec()
             .then((user) => {
-                return user.authenticate(oldPassword)
-                .then((ok) => {
+                return user.authenticate(oldPassword).then((ok) => {
                     if (!ok) {
                         throw new Error('Galt gammelt passord');
                     }
@@ -2234,7 +2238,7 @@ const mutationSendReset = mutationWithClientMutationId({
                     const code = new PasswordCode();
                     code.user = user._id;
                     return code.save().then((newCode) => {
-                        const message = `Hei ${user.name}\r\n\r\nDet kan se ut som du holder på å sette nytt passord. Hvis du ikke prøver på dette, ber vi deg se bort fra denne eposten. For å sette nytt passord, må du gå til lenka:\r\n${config.site.domain}/login/reset/${newCode._id}`;
+                        const message = `Hei ${user.name}\r\n\r\nDet kan se ut som du holder på å sette nytt passord. Hvis du ikke prøver på dette, ber vi deg se bort fra denne eposten. For å sette nytt passord, må du gå til lenka:\r\n${config.site.protocol}://${config.site.domain}/login/reset/${newCode._id}`;
                         if (config.auth && config.auth.smtp && config.auth.smtp.host) {
                             const transporter = nodemailer.createTransport(config.auth.smtp);
                             const mailOptions = {
@@ -2243,13 +2247,12 @@ const mutationSendReset = mutationWithClientMutationId({
                                 subject: 'Nytt passord',
                                 text: message,
                             };
-                            return transporter.sendMail(mailOptions)
-                            .then((info) => {
+                            return transporter.sendMail(mailOptions).then((info) => {
                                 console.info('Email info:', info);
                                 return organization;
                             });
                         }
-                        console.info('No email config, this was the intended message', message);
+                        console.info('No email config, this was the intended message:\n', message);
                         return organization;
                     });
                 }
@@ -2508,7 +2511,7 @@ const mutationAddRole = mutationWithClientMutationId({
         },
     },
     mutateAndGetPayload: ({ roleId, memberId }, { viewer, organization }) => {
-        if (!admin(organization, viewer)) {
+        if (!isAdmin(organization, viewer)) {
             return null;
         }
         const rId = fromGlobalId(roleId).id;
@@ -2610,8 +2613,7 @@ const mutationAddPiece = mutationWithClientMutationId({
         const pId = fromGlobalId(pieceId).id;
         return Project.findByIdAndUpdate(prId, {
             $addToSet: { music: { piece: pId } },
-        }, { new: true })
-        .exec();
+        }, { new: true }).exec();
     },
 });
 const mutationRemovePiece = mutationWithClientMutationId({
@@ -2637,8 +2639,7 @@ const mutationRemovePiece = mutationWithClientMutationId({
         const pId = fromGlobalId(pieceId).id;
         return Project.findByIdAndUpdate(prId, {
             $pull: { music: { piece: pId } },
-        }, { new: true })
-        .exec();
+        }, { new: true }).exec();
     },
 });
 

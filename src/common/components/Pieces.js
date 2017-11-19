@@ -195,7 +195,7 @@ class Pieces extends React.Component {
         );
     }
 }
-    /*
+/*
                                             <div>
                                                 <TextField
                                                     label="Verkbeskrivelse"

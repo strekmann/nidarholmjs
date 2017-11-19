@@ -1,6 +1,7 @@
 import React from 'react';
 import Link from 'found/lib/Link';
 import { TableRow, TableRowColumn } from 'material-ui/Table';
+
 import List from './List';
 
 export default class ProjectItem extends React.Component {

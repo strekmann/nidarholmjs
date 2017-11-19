@@ -8,10 +8,6 @@ import PropTypes from 'prop-types';
 import React from 'react';
 
 class PieceForm extends React.Component {
-    static contextTypes = {
-        router: PropTypes.object.isRequired,
-    }
-
     static propTypes = {
         pieces: PropTypes.object, // for auto-complete
         piece: PropTypes.object, // for edit
@@ -20,6 +16,7 @@ class PieceForm extends React.Component {
         title: PropTypes.string.isRequired, // dialog title
         save: PropTypes.func.isRequired,
         cancel: PropTypes.func.isRequired,
+        router: PropTypes.object.isRequired,
         search: PropTypes.func,
     }
 
@@ -52,7 +49,7 @@ class PieceForm extends React.Component {
     }
 
     goToPiece = (piece) => {
-        this.context.router.push({ pathname: `/music/${piece.id}` });
+        this.props.router.push({ pathname: `/music/${piece.id}` });
     }
 
     search = (title) => {
@@ -172,35 +169,3 @@ class PieceForm extends React.Component {
 }
 
 export default PieceForm;
-
-/*
-export default Relay.createContainer(PieceForm, {
-    initialVariables: {
-        showItems: 50,
-        title: '',
-    },
-    fragments: {
-        organization: () => {
-            return Relay.QL`
-            fragment on Organization {
-                id
-                pieces(first:$showItems,term:$title) {
-                    edges {
-                        node {
-                            id
-                            title
-                            subtitle
-                            composers
-                            arrangers
-                            scoreCount
-                        }
-                    }
-                    pageInfo {
-                        hasNextPage
-                    }
-                }
-            }`;
-        },
-    },
-});
-*/

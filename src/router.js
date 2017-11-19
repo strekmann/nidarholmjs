@@ -11,13 +11,24 @@ import App from './common/components/App';
 import Home from './common/components/Home';
 import Login from './common/components/Login';
 import Contact from './common/components/Contact';
+import Reset from './common/components/Reset';
+import Event from './common/components/Event';
+import Events from './common/components/Events';
 import Files from './common/components/Files';
+import Group from './common/components/Group';
+import Groups from './common/components/Groups';
+import Member from './common/components/Member';
+import MemberReset from './common/components/MemberReset';
+import Members from './common/components/Members';
+import NoMatch from './common/components/NoMatch';
+import Organization from './common/components/Organization';
 import Page from './common/components/Page';
 import Pages from './common/components/Pages';
 import Piece from './common/components/Piece';
 import Pieces from './common/components/Pieces';
 import Project from './common/components/Project';
 import Projects from './common/components/Projects';
+import Roles from './common/components/Roles';
 
 export const historyMiddlewares = [queryMiddleware];
 
@@ -58,9 +69,109 @@ export const routeConfig = makeRouteConfig(
                 }
             `}
         />
+        <Route path="login">
+            <Route Component={Login} />
+            <Route
+                path="reset"
+                Component={Reset}
+                query={graphql`
+                    query router_Reset_Query {
+                        organization {
+                            ...Reset_organization
+                        }
+                    }
+                `}
+            />
+        </Route>
         <Route
-            path="login"
-            Component={Login}
+            path="org"
+            Component={Organization}
+            query={graphql`
+                query router_Organization_Query {
+                    organization {
+                        ...Organization_organization
+                    }
+                }
+            `}
+        />
+        <Route
+            path="members"
+            Component={Members}
+            query={graphql`
+                query router_Members_Query {
+                    organization {
+                        ...Members_organization
+                    }
+                }
+            `}
+        />
+        <Route
+            path="members/roles"
+            Component={Roles}
+            query={graphql`
+                query router_Roles_Query {
+                    organization {
+                        ...Roles_organization
+                    }
+                }
+            `}
+        />
+        <Route path="users/:id">
+            <Route
+                Component={Member}
+                query={graphql`
+                    query router_Member_Query($id: String) {
+                        organization {
+                            ...Member_organization
+                        }
+                        viewer {
+                            ...Member_viewer
+                        }
+                    }
+                `}
+            />
+            <Route
+                path="reset"
+                Component={MemberReset}
+                query={graphql`
+                    query router_MemberReset_Query {
+                        organization {
+                            ...MemberReset_organization
+                        }
+                        viewer {
+                            ...MemberReset_viewer
+                        }
+                    }
+                `}
+            />
+        </Route>
+        <Route
+            path="groups"
+            Component={Groups}
+            query={graphql`
+                query router_Groups_Query {
+                    organization {
+                        ...Groups_organization
+                    }
+                    viewer {
+                        ...Groups_viewer
+                    }
+                }
+            `}
+        />
+        <Route
+            path="group/:groupId"
+            Component={Group}
+            query={graphql`
+                query router_Group_Query($groupId: ID) {
+                    organization {
+                        ...Group_organization
+                    }
+                    viewer {
+                        ...Group_viewer
+                    }
+                }
+            `}
         />
         <Route
             path="contact"
@@ -78,11 +189,11 @@ export const routeConfig = makeRouteConfig(
             Component={Files}
             query={graphql`
                 query router_Files_Query {
-                    viewer {
-                        ...Files_viewer
-                    }
                     organization {
                         ...Files_organization
+                    }
+                    viewer {
+                        ...Files_viewer
                     }
                 }
             `}
@@ -119,6 +230,31 @@ export const routeConfig = makeRouteConfig(
                     }
                     organization {
                         ...Projects_organization
+                    }
+                }
+            `}
+        />
+        <Route
+            path="events"
+            Component={Events}
+            query={graphql`
+                query router_Events_Query {
+                    organization {
+                        ...Events_organization
+                    }
+                }
+            `}
+        />
+        <Route
+            path="events/:eventId"
+            Component={Event}
+            query={graphql`
+                query router_Event_Query($eventId: ID) {
+                    organization {
+                        ...Event_organization
+                    }
+                    viewer {
+                        ...Event_viewer
                     }
                 }
             `}
@@ -169,6 +305,10 @@ export const routeConfig = makeRouteConfig(
                     }
                 }
             `}
+        />
+        <Route
+            path="*"
+            Component={NoMatch}
         />
     </Route>,
 );

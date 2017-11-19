@@ -27,8 +27,9 @@ import jwt from 'jsonwebtoken';
 import { ExtractJwt } from 'passport-jwt';
 
 import { ServerFetcher } from '../fetcher';
-import renderPage from './renderPage';
 import { createResolver, historyMiddlewares, render, routeConfig } from '../router';
+
+import renderPage from './renderPage';
 import passport from './lib/passport';
 import { icalEvents } from './icalRoutes';
 import Organization from './models/Organization';
@@ -337,6 +338,7 @@ app.get('/login/reset/:code', (req, res, next) => {
                         if (err) {
                             throw err;
                         }
+                        // TODO: return res.redirect(`/user/${user.id}/reset`);
                         return res.redirect('/');
                     });
                 });

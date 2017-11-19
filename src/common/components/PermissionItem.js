@@ -21,7 +21,7 @@ export default class PermissionItem extends React.Component {
                     <IconButton onClick={this.removePermission}>
                         <Close />
                     </IconButton>
-                    }
+                }
             />
         );
     }

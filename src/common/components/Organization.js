@@ -1,22 +1,20 @@
+import update from 'immutability-helper';
 import Paper from 'material-ui/Paper';
 import RaisedButton from 'material-ui/RaisedButton';
 import getMuiTheme from 'material-ui/styles/getMuiTheme';
 import PropTypes from 'prop-types';
 import React from 'react';
-import Relay from 'react-relay';
+import { createFragmentContainer, graphql } from 'react-relay';
 
-import SaveOrganizationMutation from '../mutations/saveOrganization';
+import SaveOrganizationMutation from '../mutations/SaveOrganization';
 import theme from '../theme';
 
 import FrontpageSummaries from './FrontpageSummaries';
 
 class Organization extends React.Component {
-    static contextTypes = {
-        relay: Relay.PropTypes.Environment,
-    };
-
     static propTypes = {
         organization: PropTypes.object,
+        relay: PropTypes.object.isRequired,
     }
 
     static childContextTypes = {
@@ -41,20 +39,24 @@ class Organization extends React.Component {
         this.setState({ summaries });
     }
 
-    onAdd = (pageId) => {
-        const summaries = this.state.summaries;
-        summaries.push(pageId);
-        this.setState({ summaries });
+    onAdd = (page) => {
+        this.setState(update(this.state, {
+            summaries: {
+                $push: [page],
+            },
+        }));
     }
 
     saveOrganization = (event) => {
         event.preventDefault();
-        this.context.relay.commitUpdate(new SaveOrganizationMutation({
-            organization: this.props.organization,
-            summaries: this.state.summaries.map((page) => {
-                return page.id;
-            }),
-        }));
+        SaveOrganizationMutation.commit(
+            this.props.relay.environment,
+            {
+                summaryIds: this.state.summaries.map((page) => {
+                    return page.id;
+                }),
+            },
+        );
     }
 
     render() {
@@ -65,7 +67,7 @@ class Organization extends React.Component {
                 <form onSubmit={this.saveOrganization}>
                     <FrontpageSummaries
                         pages={org.pages}
-                        summaries={org.summaries}
+                        summaries={this.state.summaries}
                         onChange={this.onChange}
                         onAdd={this.onAdd}
                     />
@@ -76,29 +78,27 @@ class Organization extends React.Component {
     }
 }
 
-export default Relay.createContainer(Organization, {
-    fragments: {
-        organization: () => {
-            return Relay.QL`
-            fragment on Organization {
+export default createFragmentContainer(
+    Organization,
+    {
+        organization: graphql`
+        fragment Organization_organization on Organization {
+            id
+            summaries {
                 id
-                summaries {
-                    id
-                    title
-                    slug
-                }
-                pages(first:100) {
-                    edges {
-                        cursor
-                        node {
-                            id
-                            title
-                            slug
-                        }
+                title
+                slug
+            }
+            pages(first:100) {
+                edges {
+                    cursor
+                    node {
+                        id
+                        title
+                        slug
                     }
                 }
-                ${SaveOrganizationMutation.getFragment('organization')}
-            }`;
-        },
+            }
+        }`,
     },
-});
+);

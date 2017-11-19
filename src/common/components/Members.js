@@ -1,3 +1,4 @@
+import Link from 'found/lib/Link';
 import AutoComplete from 'material-ui/AutoComplete';
 import Checkbox from 'material-ui/Checkbox';
 import Dialog from 'material-ui/Dialog';
@@ -12,22 +13,18 @@ import getMuiTheme from 'material-ui/styles/getMuiTheme';
 import MoreVertIcon from 'material-ui/svg-icons/navigation/more-vert';
 import PropTypes from 'prop-types';
 import React from 'react';
-import Relay from 'react-relay';
-import { Link } from 'react-router';
+import { createFragmentContainer, graphql } from 'react-relay';
 
-import AddUserMutation from '../mutations/addUser';
+import AddUserMutation from '../mutations/AddUser';
 import theme from '../theme';
 
 import GroupItem from './GroupItem';
 
 class Members extends React.Component {
-    static contextTypes = {
-        relay: Relay.PropTypes.Environment,
-        router: PropTypes.object.isRequired,
-    };
-
     static propTypes = {
         organization: PropTypes.object,
+        relay: PropTypes.object.isRequired,
+        router: PropTypes.object.isRequired,
     }
 
     static childContextTypes = {
@@ -90,19 +87,21 @@ class Members extends React.Component {
 
     addUser = (event) => {
         event.preventDefault();
-        this.context.relay.commitUpdate(new AddUserMutation({
-            organization: this.props.organization,
-            name: this.state.name,
-            email: this.state.email,
-            instrument: this.state.instrument,
-            isMember: this.state.member,
-            groupId: this.state.groupId,
-        }), {
-            onSuccess: (results) => {
+        const { relay } = this.props;
+        const { name, email, instrument, member, groupId } = this.state;
+        AddUserMutation.commit(
+            relay.environment,
+            {
+                name,
+                email,
+                instrument,
+                isMember: !!member,
+                groupId,
+            }, (results) => {
                 this.setState({ addUser: false });
-                this.context.router.push({ pathname: `/users/${results.addUser.newUser.id}` });
+                this.props.router.push({ pathname: `/users/${results.addUser.newUser.id}` });
             },
-        });
+        );
     }
 
     toggleAddUser = () => {
@@ -118,8 +117,8 @@ class Members extends React.Component {
     }
 
     render() {
-        const org = this.props.organization;
-        const isAdmin = org.isAdmin;
+        const { organization } = this.props;
+        const { instrumentGroups, isAdmin, isMember, users } = organization;
         return (
             <Paper className="row">
                 <div style={{ display: 'flex', justifyContent: 'space-between' }}>
@@ -158,7 +157,7 @@ class Members extends React.Component {
                         hele navnet og trykker enter.</p>
                         <AutoComplete
                             hintText="Navn"
-                            dataSource={org.users.map((user) => {
+                            dataSource={users.map((user) => {
                                 return { text: user.name, value: user.id };
                             })}
                             floatingLabelText="Navn"
@@ -206,7 +205,7 @@ class Members extends React.Component {
                                         onChange={this.onChangeGroup}
                                     >
                                         <MenuItem primaryText="(Ingen)" />
-                                        {org.instrumentGroups.map((group) => {
+                                        {instrumentGroups.map((group) => {
                                             return (
                                                 <MenuItem
                                                     key={group.id}
@@ -240,13 +239,13 @@ class Members extends React.Component {
                         }
                     </Dialog>
                 </div>
-                {org.instrumentGroups.map((group) => {
+                {instrumentGroups.map((group) => {
                     return (
                         <GroupItem
                             group={group}
                             key={group.id}
-                            isMember={this.props.organization.isMember}
-                            isAdmin={this.props.organization.isAdmin}
+                            isMember={isMember}
+                            isAdmin={isAdmin}
                         />
                     );
                 })}
@@ -255,24 +254,23 @@ class Members extends React.Component {
     }
 }
 
-export default Relay.createContainer(Members, {
-    fragments: {
-        organization: () => {
-            return Relay.QL`
-            fragment on Organization {
-                isMember
-                isAdmin
-                instrumentGroups {
-                    id
-                    ${GroupItem.getFragment('group')}
-                }
-                users {
-                    id
-                    name
-                    username
-                }
-                ${AddUserMutation.getFragment('organization')}
-            }`;
-        },
+export default createFragmentContainer(
+    Members,
+    {
+        organization: graphql`
+        fragment Members_organization on Organization {
+            isMember
+            isAdmin
+            instrumentGroups {
+                id
+                name
+                ...GroupItem_group
+            }
+            users {
+                id
+                name
+                username
+            }
+        }`,
     },
-});
+);
