@@ -47,7 +47,6 @@ export default createRoutes(
             <IndexRoute component={Login} />
             <Route path="reset" component={Reset} queries={organizationQueries} />
         </Route>
-        <Route path="members/roles" component={Roles} queries={organizationQueries} />
         <Route path="org" component={Organization} queries={organizationQueries} />
         <Route path="contact" component={Contact} queries={organizationQueries} />
         <Route path="*" component={NoMatch} />

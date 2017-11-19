@@ -17,12 +17,14 @@ import Group from './common/components/Group';
 import Groups from './common/components/Groups';
 import Member from './common/components/Member';
 import Members from './common/components/Members';
+import Organization from './common/components/Organization';
 import Page from './common/components/Page';
 import Pages from './common/components/Pages';
 import Piece from './common/components/Piece';
 import Pieces from './common/components/Pieces';
 import Project from './common/components/Project';
 import Projects from './common/components/Projects';
+import Roles from './common/components/Roles';
 
 export const historyMiddlewares = [queryMiddleware];
 
@@ -68,12 +70,34 @@ export const routeConfig = makeRouteConfig(
             Component={Login}
         />
         <Route
+            path="org"
+            Component={Organization}
+            query={graphql`
+                query router_Organization_Query {
+                    organization {
+                        ...Organization_organization
+                    }
+                }
+            `}
+        />
+        <Route
             path="members"
             Component={Members}
             query={graphql`
                 query router_Members_Query {
                     organization {
                         ...Members_organization
+                    }
+                }
+            `}
+        />
+        <Route
+            path="members/roles"
+            Component={Roles}
+            query={graphql`
+                query router_Roles_Query {
+                    organization {
+                        ...Roles_organization
                     }
                 }
             `}

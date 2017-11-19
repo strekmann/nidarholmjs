@@ -6,7 +6,6 @@ import AddCircle from 'material-ui/svg-icons/content/add-circle';
 import getMuiTheme from 'material-ui/styles/getMuiTheme';
 import PropTypes from 'prop-types';
 import React from 'react';
-import Relay from 'react-relay';
 
 import theme from '../theme';
 
@@ -38,15 +37,11 @@ class PageSummaryItem extends React.Component {
 }
 
 class FrontpageSummaries extends React.Component {
-    static contextTypes = {
-        relay: Relay.PropTypes.Environment,
-    };
-
     static propTypes = {
-        summaries: PropTypes.array,
-        pages: PropTypes.object,
         onAdd: PropTypes.func,
         onChange: PropTypes.func,
+        pages: PropTypes.object,
+        summaries: PropTypes.array,
     }
 
     static childContextTypes = {
@@ -70,11 +65,14 @@ class FrontpageSummaries extends React.Component {
         this.props.onChange(summaries);
     }
 
-    onAdd = (pageId) => {
-        this.props.onAdd(pageId);
+    onAdd = (page) => {
+        this.props.onAdd(page);
     }
 
     render() {
+        const summaryIds = this.props.summaries.map((summary) => {
+            return summary.id;
+        });
         return (
             <div>
                 <h2>Forsidesnutter</h2>
@@ -83,14 +81,16 @@ class FrontpageSummaries extends React.Component {
                     <div>
                         <h3>Valgte</h3>
                         <SortablePageList
-                            pages={this.state.summaries}
+                            summaries={this.props.summaries}
                             onChange={this.onChange}
                         />
                     </div>
                     <div>
                         <h3>Mulige</h3>
                         <div style={{ height: 400, overflow: 'scroll', overflowX: 'hidden' }}>
-                            {this.props.pages.edges.map((edge) => {
+                            {this.props.pages.edges.filter((edge) => {
+                                return !summaryIds.includes(edge.node.id);
+                            }).map((edge) => {
                                 return (
                                     <PageSummaryItem
                                         key={edge.cursor}

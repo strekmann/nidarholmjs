@@ -63,6 +63,7 @@
     "graphql-relay": "^0.5.1",
     "http-proxy": "^1.14.0",
     "icalendar": "^0.7.1",
+    "immutability-helper": "^2.5.0",
     "intl-locales-supported": "^1.0.0",
     "isomorphic-fetch": "^2.2.1",
     "jade": "^1.8.0",

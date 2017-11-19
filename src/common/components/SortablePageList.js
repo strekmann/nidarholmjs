@@ -2,47 +2,50 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import { DragDropContext } from 'react-dnd';
 import HTML5Backend from 'react-dnd-html5-backend';
-import update from 'react/lib/update';
+import update from 'immutability-helper';
 
 import SortablePageItem from './SortablePageItem';
 
 @DragDropContext(HTML5Backend)
 export default class SortablePageList extends React.Component {
     static propTypes = {
-        pages: PropTypes.array.isRequired,
+        summaries: PropTypes.array.isRequired,
         onChange: PropTypes.func.isRequired,
     }
+
     state = {
-        pages: this.props.pages,
+        summaries: this.props.summaries,
+    }
+
+    componentWillReceiveProps(nextProps) {
+        this.state.summaries = nextProps.summaries;
     }
 
     onRemoveSummary = (page) => {
-        const { pages } = this.state;
-        pages.splice(page.index, 1);
-        this.setState({ pages });
-        this.props.onChange(this.state.pages);
+        const summaries = [...this.state.summaries];
+        summaries.splice(page.index, 1);
+        this.setState({ summaries });
+        this.props.onChange(summaries);
     }
 
     movePage = (dragIndex, hoverIndex) => {
-        const { pages } = this.state;
-        const dragPage = pages[dragIndex];
-
+        const dragPage = this.state.summaries[dragIndex];
         this.setState(update(this.state, {
-            pages: {
+            summaries: {
                 $splice: [
                     [dragIndex, 1],
                     [hoverIndex, 0, dragPage],
                 ],
             },
         }));
-        this.props.onChange(this.state.pages);
+        this.props.onChange(this.state.summaries);
     }
 
     render() {
-        const { pages } = this.state;
+        const { summaries } = this.state;
         return (
             <div>
-                {pages.map((page, index) => {
+                {summaries.map((page, index) => {
                     return (
                         <SortablePageItem
                             key={page.id}

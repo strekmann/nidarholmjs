@@ -14,23 +14,23 @@ import MoreVertIcon from 'material-ui/svg-icons/navigation/more-vert';
 import Delete from 'material-ui/svg-icons/action/delete';
 import PropTypes from 'prop-types';
 import React from 'react';
-import Relay from 'react-relay';
+import {
+    createFragmentContainer,
+    graphql,
+} from 'react-relay';
 
-import CreateRoleMutation from '../mutations/createRole';
-import DeleteRoleMutation from '../mutations/deleteRole';
+import CreateRoleMutation from '../mutations/CreateRole';
+import DeleteRoleMutation from '../mutations/DeleteRole';
 import theme from '../theme';
 
 class Roles extends React.Component {
-    static contextTypes = {
-        relay: Relay.PropTypes.Environment,
-    }
-
     static childContextTypes = {
         muiTheme: PropTypes.object.isRequired,
     }
 
     static propTypes = {
         organization: PropTypes.object,
+        relay: PropTypes.object.isRequired,
     }
 
     constructor(props) {
@@ -54,10 +54,11 @@ class Roles extends React.Component {
 
     onDelete = (event, id) => {
         event.preventDefault();
-        this.context.relay.commitUpdate(new DeleteRoleMutation({
-            id,
-            organization: this.props.organization,
-        }));
+        DeleteRoleMutation.commit(
+            this.props.relay.environment,
+            {
+                id,
+            });
     }
 
     onSave = (event) => {
@@ -67,22 +68,24 @@ class Roles extends React.Component {
             name,
             email,
         } = this.state;
-        this.context.relay.commitUpdate(new CreateRoleMutation({
-            name,
-            email,
-            organization: this.props.organization,
-        }), {
-            onSuccess: () => {
+        CreateRoleMutation.commit(
+            this.props.relay.environment,
+            {
+                name,
+                email,
+            },
+            () => {
                 this.setState({
                     name: '',
                     email: '',
                 });
             },
-        });
+        );
     }
 
     render() {
-        const { isAdmin } = this.props.organization;
+        const { organization } = this.props;
+        const { isAdmin } = organization;
         const actions = [
             <RaisedButton
                 label="Avbryt"
@@ -141,7 +144,7 @@ class Roles extends React.Component {
                     </div>
                 </Dialog>
                 <List>
-                    {this.props.organization.roles.edges.map((edge) => {
+                    {organization.roles.edges.map((edge) => {
                         const {
                             id,
                             name,
@@ -184,29 +187,26 @@ class Roles extends React.Component {
     }
 }
 
-export default Relay.createContainer(Roles, {
-    fragments: {
-        organization: () => {
-            return Relay.QL`
-            fragment on Organization {
-                isAdmin
-                roles(first:100) {
-                    edges {
-                        node {
+export default createFragmentContainer(
+    Roles,
+    {
+        organization: graphql`
+        fragment Roles_organization on Organization {
+            isAdmin
+            roles(first:100) {
+                edges {
+                    node {
+                        id
+                        name
+                        email
+                        users {
                             id
                             name
                             email
-                            users {
-                                id
-                                name
-                                email
-                            }
                         }
                     }
                 }
-                ${CreateRoleMutation.getFragment('organization')}
-                ${DeleteRoleMutation.getFragment('organization')}
-            }`;
-        },
+            }
+        }`,
     },
-});
+);
