@@ -1,6 +1,6 @@
 /* eslint "react/no-danger": 0 */
 
-import marked from 'marked';
+import marked from '8fold-marked';
 import PropTypes from 'prop-types';
 import React from 'react';
 import { renderToString } from 'react-dom/server';
