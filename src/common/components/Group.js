@@ -129,8 +129,10 @@ class Group extends React.Component {
     }
 
     render() {
-        const org = this.props.organization;
-        const { group, isAdmin, roles, instrumentGroups } = org;
+        const { organization } = this.props;
+        const {
+            group, isAdmin, roles, instrumentGroups,
+        } = organization;
         const members = group.members.filter((member) => {
             return member.user;
         });
@@ -152,7 +154,7 @@ class Group extends React.Component {
                             actions={<FlatButton label="Avbryt" onTouchTap={this.closeJoinGroup} />}
                         >
                             <AutoComplete
-                                dataSource={org.users.map((user) => {
+                                dataSource={organization.users.map((user) => {
                                     return { text: `${user.name} (${user.username})`, value: user };
                                 })}
                                 floatingLabelText="Navn"

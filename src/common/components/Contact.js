@@ -16,7 +16,6 @@ class Contact extends React.Component {
     }
 
     state = {
-        contacts: this.props.organization.contacts,
         editContacts: false,
     }
 

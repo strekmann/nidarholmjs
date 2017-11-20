@@ -12,8 +12,7 @@ export default class Daterange extends React.Component {
     }
 
     render() {
-        const start = this.props.start;
-        const end = this.props.end;
+        const { start, end } = this.props;
         let startm;
         let endm;
         let startd;

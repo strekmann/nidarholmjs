@@ -310,7 +310,6 @@ export const routeConfig = makeRouteConfig(
             path="*"
             Component={NoMatch}
         />
-    </Route>,
-);
+    </Route>);
 
 export const render = createRender({});

@@ -130,7 +130,7 @@ export function roleEmailApiRoute(req, res) {
                 results.forEach((result) => {
                     const { user, roles } = result;
                     roles.forEach((role) => {
-                        const email = role.email;
+                        const { email } = role;
                         if (!aliases[email]) {
                             aliases[email] = [];
                         }

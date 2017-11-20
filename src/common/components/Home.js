@@ -53,8 +53,8 @@ class Home extends React.Component {
     }
 
     render() {
-        const org = this.props.organization;
-        const nextProject = org.nextProject;
+        const { organization } = this.props;
+        const { nextProject } = organization;
         const { desktopGutterLess } = theme.spacing;
         return (
             <Paper
@@ -90,7 +90,7 @@ class Home extends React.Component {
                             display: 'none',
                         }}
                     >
-                        {org.name}
+                        {organization.name}
                     </h1>
                     <div
                         style={{
@@ -181,7 +181,7 @@ class Home extends React.Component {
                             >
                                 <h2>Neste aktiviteter</h2>
                                 <div id="eventList">
-                                    {org.nextEvents.edges.map((edge) => {
+                                    {organization.nextEvents.edges.map((edge) => {
                                         return (
                                             <EventItem
                                                 key={edge.node.id}
@@ -201,15 +201,15 @@ class Home extends React.Component {
                     : null
                 }
                 <div>
-                    {org.summaries.length > 0
+                    {organization.summaries.length > 0
                         ? <div>
                             <h2>
-                                <Link to={`/${org.summaries[0].slug}`}>
-                                    {org.summaries[0].title}
+                                <Link to={`/${organization.summaries[0].slug}`}>
+                                    {organization.summaries[0].title}
                                 </Link>
                             </h2>
-                            <Text text={org.summaries[0].summary} />
-                            <Link to={`/${org.summaries[0].slug}`}>Les mer</Link>
+                            <Text text={organization.summaries[0].summary} />
+                            <Link to={`/${organization.summaries[0].slug}`}>Les mer</Link>
                         </div>
                         : null
                     }
@@ -222,7 +222,7 @@ class Home extends React.Component {
                         marginRight: -desktopGutterLess,
                     }}
                 >
-                    {org.summaries.length > 1
+                    {organization.summaries.length > 1
                         ? <div
                             style={{
                                 flex: '1 1 50%',
@@ -231,16 +231,16 @@ class Home extends React.Component {
                             }}
                         >
                             <h2>
-                                <Link to={`/${org.summaries[1].slug}`}>
-                                    {org.summaries[1].title}
+                                <Link to={`/${organization.summaries[1].slug}`}>
+                                    {organization.summaries[1].title}
                                 </Link>
                             </h2>
-                            <Text text={org.summaries[1].summary} />
-                            <Link to={`/${org.summaries[1].slug}`}>Les mer</Link>
+                            <Text text={organization.summaries[1].summary} />
+                            <Link to={`/${organization.summaries[1].slug}`}>Les mer</Link>
                         </div>
                         : null
                     }
-                    {org.summaries.length > 2
+                    {organization.summaries.length > 2
                         ? <div
                             style={{
                                 flex: '1 1 50%',
@@ -250,12 +250,12 @@ class Home extends React.Component {
                             }}
                         >
                             <h2>
-                                <Link to={`/${org.summaries[2].slug}`}>
-                                    {org.summaries[2].title}
+                                <Link to={`/${organization.summaries[2].slug}`}>
+                                    {organization.summaries[2].title}
                                 </Link>
                             </h2>
-                            <Text text={org.summaries[2].summary} />
-                            <Link to={`/${org.summaries[2].slug}`}>Les mer</Link>
+                            <Text text={organization.summaries[2].summary} />
+                            <Link to={`/${organization.summaries[2].slug}`}>Les mer</Link>
                         </div>
                         : null
                     }
@@ -290,7 +290,7 @@ class Home extends React.Component {
                                     width="100%"
                                     height="300"
                                     frameBorder="0"
-                                    src={org.mapUrl}
+                                    src={organization.mapUrl}
                                 />
                             </Paper>
                         </div>
@@ -303,10 +303,12 @@ class Home extends React.Component {
                         >
                             <h3>E-post</h3>
                             <a onTouchTap={this.openEmailDialog}>
-                                <span dangerouslySetInnerHTML={{ __html: org.encodedEmail }} />
+                                <span
+                                    dangerouslySetInnerHTML={{ __html: organization.encodedEmail }}
+                                />
                             </a>
                             <h3>Øvelser</h3>
-                            <Text text={org.contactText} />
+                            <Text text={organization.contactText} />
                         </div>
                     </div>
                 </div>

@@ -105,7 +105,7 @@ class Pieces extends React.Component {
     }
 
     loadMore = () => {
-        const pieces = this.props.organization.pieces;
+        const { pieces } = this.props.organization;
         this.props.relay.refetch((variables) => {
             variables.showItems = pieces.edges.length + itemsPerPage;
             return variables;

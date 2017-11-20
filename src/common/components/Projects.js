@@ -52,7 +52,7 @@ class Projects extends React.Component {
     }
 
     render() {
-        const isMember = this.props.organization.isMember;
+        const { isMember } = this.props.organization;
         const { desktopGutterLess } = theme.spacing;
         return (
             <section>

@@ -40,7 +40,6 @@ class Event extends React.Component {
     state = {
         editing: false,
         deleting: false,
-        extra: true,
     }
 
     getChildContext() {
@@ -105,8 +104,8 @@ class Event extends React.Component {
     }
 
     render() {
-        const { event, isMember } = this.props.organization;
-        const viewer = this.props.viewer;
+        const { organization, viewer } = this.props;
+        const { event, isMember } = organization;
         return (
             <Paper className="row">
                 <div style={{ display: 'flex', justifyContent: 'space-between' }}>

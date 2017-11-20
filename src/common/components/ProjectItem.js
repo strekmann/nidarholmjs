@@ -32,7 +32,7 @@ class ProjectItem extends React.Component {
             poster,
             conductors,
         } = this.props.project;
-        const showText = this.props.showText;
+        const { showText } = this.props;
         const widePoster = moment(end).isAfter(moment([2016, 7, 1]));
         if (widePoster) {
             return (

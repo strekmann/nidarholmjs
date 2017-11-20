@@ -88,7 +88,9 @@ class Members extends React.Component {
     addUser = (event) => {
         event.preventDefault();
         const { relay } = this.props;
-        const { name, email, instrument, member, groupId } = this.state;
+        const {
+            name, email, instrument, member, groupId,
+        } = this.state;
         AddUserMutation.commit(
             relay.environment,
             {
@@ -118,7 +120,9 @@ class Members extends React.Component {
 
     render() {
         const { organization } = this.props;
-        const { instrumentGroups, isAdmin, isMember, users } = organization;
+        const {
+            instrumentGroups, isAdmin, isMember, users,
+        } = organization;
         return (
             <Paper className="row">
                 <div style={{ display: 'flex', justifyContent: 'space-between' }}>

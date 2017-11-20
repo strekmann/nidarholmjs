@@ -43,7 +43,7 @@ class UserField extends React.Component {
         if (!this.props.organization) {
             return null;
         }
-        const users = this.props.organization.users;
+        const { users } = this.props.organization;
         return (
             <div>
                 <AutoComplete
@@ -74,7 +74,8 @@ class UserField extends React.Component {
 }
 
 export default createFragmentContainer(
-    UserField, {
+    UserField,
+    {
         organization: graphql`
         fragment UserField_organization on Organization {
             id

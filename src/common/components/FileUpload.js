@@ -33,7 +33,7 @@ class FileUpload extends React.Component {
     }
 
     render() {
-        const viewer = this.props.viewer;
+        const { viewer } = this.props;
         return (
             <div style={{ display: 'flex', flexWrap: 'wrap' }}>
                 <div

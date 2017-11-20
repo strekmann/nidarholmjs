@@ -84,6 +84,5 @@ export default createFragmentContainer(App, {
         ...Navigation_organization
         ...BottomNavigation_organization
         ...Footer_organization
-    }
-    ` },
-);
+    }`,
+});

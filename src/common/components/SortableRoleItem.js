@@ -59,19 +59,25 @@ export default class SortableRoleItem extends React.Component {
     }
 
     render() {
-        const { name, isDragging, connectDragSource, connectDropTarget } = this.props;
+        const {
+            name, isDragging, connectDragSource, connectDropTarget,
+        } = this.props;
         const opacity = isDragging ? 0 : 1;
         const dragIcon = <IconButton onClick={this.removeRole}><DragHandle /></IconButton>;
         const removeIcon = <IconButton onClick={this.removeRole}><RemoveCircle /></IconButton>;
 
         return connectDragSource(connectDropTarget(
-            <div style={{ cursor: 'move', opacity, display: 'flex', alignItems: 'center' }} className="draggable">
+            <div
+                style={{
+                    cursor: 'move', opacity, display: 'flex', alignItems: 'center',
+                }}
+                className="draggable"
+            >
                 <div>{dragIcon}</div>
                 <div style={{ flexGrow: 1 }}>
                     <div>{name}</div>
                 </div>
                 <div>{removeIcon}</div>
-            </div>,
-        ));
+            </div>));
     }
 }

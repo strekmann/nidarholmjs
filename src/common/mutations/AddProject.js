@@ -11,7 +11,9 @@ mutation AddProjectMutation($input: AddProjectInput!) {
 
 function commit(
     environment,
-    { title, tag, privateMdtext, publicMdtext, start, end, permissions },
+    {
+        title, tag, privateMdtext, publicMdtext, start, end, permissions,
+    },
     onCompleted,
 ) {
     const variables = {

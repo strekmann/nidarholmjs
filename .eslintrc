@@ -4,9 +4,11 @@
     "rules": {
         "arrow-body-style": ["error", "always"],
         "brace-style": [ 2, "stroustrup", { "allowSingleLine": true } ],
+        "function-paren-newline": [ 1, "multiline" ],
         "indent": [ 1, 4, {"SwitchCase": 1} ],
         "import/no-extraneous-dependencies": [ "error", { "devDependencies": ["**/*.test.js", "**/*.spec.js"] } ],
         "import/order": [ 1, {"newlines-between": "always"} ],
+        "jsx-a11y/anchor-is-valid": [ 0 ],
         "max-len": 1,
         "no-param-reassign": [2, {"props": false}],
         "no-shadow": [2, {"allow": ["err"]}],

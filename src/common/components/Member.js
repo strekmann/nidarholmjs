@@ -229,7 +229,9 @@ class Member extends React.Component {
 
     render() {
         const { organization, viewer } = this.props;
-        const { groups, isAdmin, member, roles } = organization;
+        const {
+            groups, isAdmin, member, roles,
+        } = organization;
         const { user } = member;
         const { desktopGutterLess } = theme.spacing;
         if (this.state.editMember) {

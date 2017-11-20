@@ -13,7 +13,6 @@ import PermissionField from './PermissionField';
 export default class EditPage extends React.Component {
     static propTypes = {
         viewer: PropTypes.object,
-        id: PropTypes.string,
         slug: PropTypes.string,
         title: PropTypes.string,
         summary: PropTypes.string,
@@ -23,7 +22,6 @@ export default class EditPage extends React.Component {
     }
 
     state = {
-        id: this.props.id,
         slug: this.props.slug,
         title: this.props.title,
         summary: this.props.summary,

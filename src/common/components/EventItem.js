@@ -39,7 +39,9 @@ class EventItem extends React.Component {
     }
 
     render() {
-        const { id, title, location, start, end, mdtext, isEnded } = this.props.event;
+        const {
+            id, title, location, start, end, mdtext, isEnded,
+        } = this.props.event;
         const { desktopGutterMini } = theme.spacing;
         return (
             <div

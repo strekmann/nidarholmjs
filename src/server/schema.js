@@ -197,7 +197,9 @@ function authenticate(query, viewer, options = {}) {
     return query;
 }
 
-function sendContactEmail({ name, email, text, organization }) {
+function sendContactEmail({
+    name, email, text, organization,
+}) {
     if (config && config.auth && config.auth.smtp && config.auth.smtp.host) {
         const transporter = nodemailer.createTransport(config.auth.smtp);
         const data = {
@@ -431,15 +433,13 @@ groupType = new GraphQLObjectType({
         members: {
             type: new GraphQLList(memberType),
             resolve: (group, args, { organization }) => {
-                const members = organization.member_group.members.map(
-                    (organizationMember) => {
-                        if (typeof organizationMember.user === 'object') {
-                            // "self" is acutally an object. strange populate?
-                            return organizationMember.user._id;
-                        }
-                        return organizationMember.user;
-                    },
-                );
+                const members = organization.member_group.members.map((organizationMember) => {
+                    if (typeof organizationMember.user === 'object') {
+                        // "self" is acutally an object. strange populate?
+                        return organizationMember.user._id;
+                    }
+                    return organizationMember.user;
+                });
                 const active = group.members.filter((groupMember) => {
                     if (members.includes(groupMember.user)) {
                         return true;
@@ -931,9 +931,17 @@ organizationType = new GraphQLObjectType({
                     { $group: { _id: '$members' } },
                     { $group: { _id: '$_id.roles' } },
                     { $unwind: '$_id' },
-                    { $lookup: { from: 'roles', localField: '_id', foreignField: '_id', as: '_id' } },
+                    {
+                        $lookup: {
+                            from: 'roles', localField: '_id', foreignField: '_id', as: '_id',
+                        },
+                    },
                     { $unwind: '$_id' },
-                    { $project: { _id: 0, id: '$_id._id', name: '$_id.name', email: '$_id.email' } },
+                    {
+                        $project: {
+                            _id: 0, id: '$_id._id', name: '$_id.name', email: '$_id.email',
+                        },
+                    },
                 ).exec();
             },
         },
@@ -950,18 +958,33 @@ organizationType = new GraphQLObjectType({
             resolve: (organization) => {
                 return organization.contactRoles.map((roleId) => {
                     return Group.aggregate(
-                        { $match:
-                            { _id: organization.member_group._id || organization.member_group } },
+                        {
+                            $match: {
+                                _id: organization.member_group._id || organization.member_group,
+                            },
+                        },
                         { $unwind: '$members' },
                         { $match: { 'members.roles': roleId } },
                         { $group: { _id: '$members' } },
                         // From mongodb 3.4, there is no need to unwind the array
                         // Unwinding drops the items after the first of the array
                         { $unwind: '$_id.roles' },
-                        { $lookup: { from: 'users', localField: '_id.user', foreignField: '_id', as: 'user' } },
-                        { $lookup: { from: 'roles', localField: '_id.roles', foreignField: '_id', as: 'roles' } },
+                        {
+                            $lookup: {
+                                from: 'users', localField: '_id.user', foreignField: '_id', as: 'user',
+                            },
+                        },
+                        {
+                            $lookup: {
+                                from: 'roles', localField: '_id.roles', foreignField: '_id', as: 'roles',
+                            },
+                        },
                         { $unwind: '$user' },
-                        { $project: { _id: 0, id: '$_id._id', 'user._id': 1, 'user.name': 1, 'roles._id': 1, 'roles.name': 1 } },
+                        {
+                            $project: {
+                                _id: 0, id: '$_id._id', 'user._id': 1, 'user.name': 1, 'roles._id': 1, 'roles.name': 1,
+                            },
+                        },
                     ).exec().then((g) => {
                         return g[0];
                     });
@@ -1090,7 +1113,7 @@ organizationType = new GraphQLObjectType({
                 ...connectionArgs,
             },
             resolve: (_, args) => {
-                const upcoming = args.upcoming;
+                const { upcoming } = args;
                 let query = Project.find();
                 if (upcoming) {
                     query = query.where({
@@ -1124,7 +1147,7 @@ organizationType = new GraphQLObjectType({
                 eventid: { name: 'eventid', type: GraphQLID },
             },
             resolve: (_, { eventid }, { viewer }) => {
-                let id = fromGlobalId(eventid).id;
+                let { id } = fromGlobalId(eventid);
                 if (!ObjectId.isValid(id)) {
                     id = eventid;
                 }
@@ -1249,7 +1272,7 @@ organizationType = new GraphQLObjectType({
                 if (!member(organization, viewer)) {
                     throw new Error('Not a member, cannot see piece');
                 }
-                const id = fromGlobalId(pieceId).id;
+                const { id } = fromGlobalId(pieceId);
                 return Piece.findById(id).exec();
             },
         },
@@ -1391,14 +1414,12 @@ const mutationEditDescription = mutationWithClientMutationId({
         },
     },
     mutateAndGetPayload: ({ orgid, description_nb }) => {
-        const id = fromGlobalId(orgid).id;
-        return Organization.findByIdAndUpdate(
-            id, {
-                description_nb,
-            }, {
-                new: true,
-            },
-        ).exec();
+        const { id } = fromGlobalId(orgid);
+        return Organization.findByIdAndUpdate(id, {
+            description_nb,
+        }, {
+            new: true,
+        }).exec();
     },
 });
 
@@ -1432,7 +1453,9 @@ const mutationAddEvent = mutationWithClientMutationId({
         },
     },
     mutateAndGetPayload: (
-        { title, location, start, end, tags, mdtext, permissions, highlighted },
+        {
+            title, location, start, end, tags, mdtext, permissions, highlighted,
+        },
         { viewer },
     ) => {
         if (!viewer) {
@@ -1476,7 +1499,7 @@ const mutationSaveFilePermissions = mutationWithClientMutationId({
         if (!viewer) {
             throw new Error('Nobody!');
         }
-        const id = fromGlobalId(fileId).id;
+        const { id } = fromGlobalId(fileId);
         const permissionObj = buildPermissionObject(permissions);
         const query = File.findByIdAndUpdate(
             id,
@@ -1511,7 +1534,7 @@ const mutationSetProjectPoster = mutationWithClientMutationId({
         },
     },
     mutateAndGetPayload: ({ projectId, fileId }, { viewer }) => {
-        const id = fromGlobalId(projectId).id;
+        const { id } = fromGlobalId(projectId);
         const posterId = fromGlobalId(fileId).id;
         if (!viewer) {
             throw new Error('Nobody!');
@@ -1562,7 +1585,7 @@ const mutationEditEvent = mutationWithClientMutationId({
         tags,
         highlighted,
     }, { viewer }) => {
-        const id = fromGlobalId(eventid).id;
+        const { id } = fromGlobalId(eventid);
         if (!viewer) {
             throw new Error('Nobody!');
         }
@@ -1615,7 +1638,9 @@ const mutationAddPage = mutationWithClientMutationId({
             },
         },
     },
-    mutateAndGetPayload: ({ slug, mdtext, title, summary, permissions }, { viewer }) => {
+    mutateAndGetPayload: ({
+        slug, mdtext, title, summary, permissions,
+    }, { viewer }) => {
         if (!viewer) {
             throw new Error('Nobody!');
         }
@@ -1657,10 +1682,9 @@ const mutationAddUser = mutationWithClientMutationId({
             },
         },
     },
-    mutateAndGetPayload: (
-        { name, email, instrument, isMember: setMember, groupId },
-        { viewer, organization },
-    ) => {
+    mutateAndGetPayload: ({
+        name, email, instrument, isMember: setMember, groupId,
+    }, { viewer, organization }) => {
         if (!viewer) {
             throw new Error('Nobody!');
         }
@@ -1670,7 +1694,9 @@ const mutationAddUser = mutationWithClientMutationId({
             .exec()
             .then((_organization) => {
                 const userId = uuid.v4();
-                const user = new User({ _id: userId, username: userId, instrument, name, email });
+                const user = new User({
+                    _id: userId, username: userId, instrument, name, email,
+                });
                 let p = Promise.resolve(_organization);
                 if (setMember) {
                     user.groups.push(_organization.member_group);
@@ -1729,7 +1755,7 @@ const mutationEditUser = mutationWithClientMutationId({
         postcode, city, country, joined, nmfId, reskontro, membershipHistory,
         inList, onLeave, noEmail,
     }, { viewer, organization }) => {
-        const id = fromGlobalId(userId).id;
+        const { id } = fromGlobalId(userId);
         const fields = {};
         if (admin(organization, viewer)) {
             Object.assign(fields, {
@@ -1787,8 +1813,10 @@ const mutationEditPage = mutationWithClientMutationId({
             },
         },
     },
-    mutateAndGetPayload: ({ pageid, slug, mdtext, title, summary, permissions }, { viewer }) => {
-        const id = fromGlobalId(pageid).id;
+    mutateAndGetPayload: ({
+        pageid, slug, mdtext, title, summary, permissions,
+    }, { viewer }) => {
+        const { id } = fromGlobalId(pageid);
         if (!viewer) {
             throw new Error('Nobody!');
         }
@@ -1913,10 +1941,9 @@ const mutationAddFile = mutationWithClientMutationId({
             },
         },
     },
-    mutateAndGetPayload: (
-        { filename, hex, permissions, tags, projectTag },
-        { viewer, organization },
-    ) => {
+    mutateAndGetPayload: ({
+        filename, hex, permissions, tags, projectTag,
+    }, { viewer, organization }) => {
         const permissionObj = buildPermissionObject(permissions);
         return insertFile(filename, hex, permissionObj, tags, viewer, organization).then((file) => {
             return Activity.findOne({
@@ -1988,12 +2015,15 @@ const mutationAddScore = mutationWithClientMutationId({
             },
         },
     },
-    mutateAndGetPayload: ({ filename, hex, groupId, pieceId }, { viewer }) => {
-        const pieceDbId = fromGlobalId(pieceId).id;
-        const groupDbId = fromGlobalId(groupId).id;
+    mutateAndGetPayload: ({
+        filename, hex, groupId, pieceId,
+    }, { viewer }) => {
+        const { pieceDbId } = fromGlobalId(pieceId);
+        const { groupDbId } = fromGlobalId(groupId);
         const permissionObj = { public: false, groups: [groupDbId], users: [] };
         return insertFile(
-            filename, hex, permissionObj, [], config.files.raw_prefix, viewer, pieceDbId,
+            filename, hex, permissionObj, [], config.files.raw_prefix, viewer,
+            pieceDbId,
         ).then(() => {
             if (!viewer) {
                 throw new Error('Nobody!');
@@ -2057,10 +2087,9 @@ const mutationAddProject = mutationWithClientMutationId({
             },
         },
     },
-    mutateAndGetPayload: (
-        { title, tag, privateMdtext, publicMdtext, start, end, permissions },
-        { viewer },
-    ) => {
+    mutateAndGetPayload: ({
+        title, tag, privateMdtext, publicMdtext, start, end, permissions,
+    }, { viewer }) => {
         if (!viewer) {
             throw new Error('Nobody!');
         }
@@ -2328,7 +2357,9 @@ const mutationSendContactEmail = mutationWithClientMutationId({
     },
     mutateAndGetPayload: ({ name, email, text }, { organization }) => {
         // TODO: Check email
-        sendContactEmail({ name, email, text, organization });
+        sendContactEmail({
+            name, email, text, organization,
+        });
         return organization;
     },
 });
@@ -2358,14 +2389,15 @@ const mutationCreatePiece = mutationWithClientMutationId({
             },
         },
     },
-    mutateAndGetPayload: (
-        { title, subtitle, composers, arrangers },
-        { viewer },
-    ) => {
+    mutateAndGetPayload: ({
+        title, subtitle, composers, arrangers,
+    }, { viewer }) => {
         if (!viewer) {
             throw new Error('Nobody!');
         }
-        return Piece.create({ title, subtitle, composers, arrangers, creator: viewer.id });
+        return Piece.create({
+            title, subtitle, composers, arrangers, creator: viewer.id,
+        });
     },
 });
 
@@ -2386,17 +2418,20 @@ const mutationUpdatePiece = mutationWithClientMutationId({
             },
         },
     },
-    mutateAndGetPayload: (
-        { id, title, subtitle, composers, arrangers },
-        { viewer },
-    ) => {
+    mutateAndGetPayload: ({
+        id, title, subtitle, composers, arrangers,
+    }, { viewer }) => {
         if (!viewer) {
             throw new Error('Nobody!');
         }
         const pId = fromGlobalId(id).id;
         return Piece.findByIdAndUpdate(
             pId,
-            { $set: { title, subtitle, composers, arrangers, creator: viewer.id } },
+            {
+                $set: {
+                    title, subtitle, composers, arrangers, creator: viewer.id,
+                },
+            },
             { new: true },
         );
     },
@@ -2554,11 +2589,14 @@ const mutationSaveGroup = mutationWithClientMutationId({
             return null;
         }
         const gId = fromGlobalId(groupId).id;
-        return Group.findByIdAndUpdate(gId, {
-            group_email: email,
-            group_leader_email: groupLeaderEmail,
-        },
-        { new: true });
+        return Group.findByIdAndUpdate(
+            gId,
+            {
+                group_email: email,
+                group_leader_email: groupLeaderEmail,
+            },
+            { new: true },
+        );
     },
 });
 
@@ -2673,7 +2711,9 @@ const mutationSetProfilePicture = mutationWithClientMutationId({
             },
         },
     },
-    mutateAndGetPayload: ({ userId, hash, mimetype, size }, { organization, viewer }) => {
+    mutateAndGetPayload: ({
+        userId, hash, mimetype, size,
+    }, { organization, viewer }) => {
         if (!viewer && !isAdmin(organization, viewer)) {
             return null;
         }
@@ -2711,13 +2751,30 @@ const mutationShowContactInfo = mutationWithClientMutationId({
         return Group.aggregate(
             { $match: { _id: organization.member_group._id } },
             { $unwind: '$members' },
-            { $match: { 'members.roles': { $exists: 1 }, 'members.user': uId } },
+            {
+                $match: {
+                    'members.roles': { $exists: 1 },
+                    'members.user': uId,
+                },
+            },
             { $unwind: '$members.roles' },
-            { $lookup: { from: 'users', localField: 'members.user', foreignField: '_id', as: 'user' } },
-            { $lookup: { from: 'roles', localField: 'members.roles', foreignField: '_id', as: 'roles' } },
+            {
+                $lookup: {
+                    from: 'users', localField: 'members.user', foreignField: '_id', as: 'user',
+                },
+            },
+            {
+                $lookup: {
+                    from: 'roles', localField: 'members.roles', foreignField: '_id', as: 'roles',
+                },
+            },
             { $unwind: '$user' },
             { $unwind: '$roles' },
-            { $project: { _id: 0, id: '$user._id', phone: '$user.phone', email: '$roles.email' } },
+            {
+                $project: {
+                    _id: 0, id: '$user._id', phone: '$user.phone', email: '$roles.email',
+                },
+            },
         ).exec().then((u) => {
             if (u.length) {
                 return u[0];

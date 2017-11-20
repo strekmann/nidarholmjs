@@ -215,7 +215,9 @@ class Project extends React.Component {
 
     render() {
         const { organization, viewer } = this.props;
-        const { project, isMember, isMusicAdmin, memberGroup, baseurl } = organization;
+        const {
+            project, isMember, isMusicAdmin, memberGroup, baseurl,
+        } = organization;
         const hasEndedActivities = project.events.edges.filter((edge) => {
             return edge.node.isEnded;
         }).length;

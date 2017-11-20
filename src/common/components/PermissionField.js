@@ -25,7 +25,7 @@ export default class PermissionField extends React.Component {
     }
 
     addPermission = (chosen) => {
-        const permissions = this.state.permissions;
+        const { permissions } = this.state;
         permissions.push(chosen);
         this.setState({
             permissions,

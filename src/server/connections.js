@@ -26,10 +26,9 @@ function getOffsetWithDefault(cursor, defaultOffset) {
 
 function getOffsetsFromArgs(inArgs, count) {
     const args = inArgs || {};
-    const after = args.after;
-    const before = args.before;
-    const first = args.first;
-    const last = args.last;
+    const {
+        after, before, first, last,
+    } = args;
 
     const beforeOffset = getOffsetWithDefault(before, count);
     const afterOffset = getOffsetWithDefault(after, -1);
@@ -58,16 +57,14 @@ function getOffsetsFromArgs(inArgs, count) {
 }
 
 function getConnectionFromSlice(inSlice, mapper, args, count) {
-    const first = args.first;
-    const last = args.last;
-    const before = args.before;
-    const after = args.after;
+    const {
+        first, last, before, after,
+    } = args;
 
     const offsetsFromArgs = getOffsetsFromArgs(args, count);
-    const startOffset = offsetsFromArgs.startOffset;
-    const endOffset = offsetsFromArgs.endOffset;
-    const beforeOffset = offsetsFromArgs.beforeOffset;
-    const afterOffset = offsetsFromArgs.afterOffset;
+    const {
+        startOffset, endOffset, beforeOffset, afterOffset,
+    } = offsetsFromArgs;
 
     // If we have a mapper function, map it!
     const slice = typeof mapper === 'function' ? inSlice.map(mapper) : inSlice;

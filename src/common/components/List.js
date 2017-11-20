@@ -7,7 +7,7 @@ export default class List extends React.Component {
     }
 
     render() {
-        const items = this.props.items;
+        const { items } = this.props;
         const and = 'og';
         if (!items || items.length === 0) {
             return <span />;

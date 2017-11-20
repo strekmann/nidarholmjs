@@ -60,13 +60,20 @@ export default class SortablePageItem extends React.Component {
     }
 
     render() {
-        const { slug, title, isDragging, connectDragSource, connectDropTarget } = this.props;
+        const {
+            slug, title, isDragging, connectDragSource, connectDropTarget,
+        } = this.props;
         const opacity = isDragging ? 0 : 1;
         const dragIcon = <IconButton onClick={this.removeSummary}><DragHandle /></IconButton>;
         const removeIcon = <IconButton onClick={this.removeSummary}><RemoveCircle /></IconButton>;
 
         return connectDragSource(connectDropTarget(
-            <div style={{ cursor: 'move', opacity, display: 'flex', alignItems: 'center' }} className="draggable">
+            <div
+                style={{
+                    cursor: 'move', opacity, display: 'flex', alignItems: 'center',
+                }}
+                className="draggable"
+            >
                 <div>{dragIcon}</div>
                 <div style={{ flexGrow: 1 }}>
                     <div>{title}</div>

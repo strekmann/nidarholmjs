@@ -139,7 +139,7 @@ class Files extends React.Component {
 
     render() {
         const { organization } = this.props;
-        const isMember = organization.isMember;
+        const { isMember } = organization;
         const { desktopGutterLess } = theme.spacing;
         return (
             <div className="row">

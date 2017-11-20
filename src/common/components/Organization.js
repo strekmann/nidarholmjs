@@ -27,7 +27,6 @@ class Organization extends React.Component {
     }
 
     state = {
-        term: '',
         summaries: this.props.organization.summaries,
     }
 

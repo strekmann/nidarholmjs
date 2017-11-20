@@ -79,18 +79,18 @@ class Page extends React.Component {
     }
 
     render() {
-        const org = this.props.organization;
-        const isMember = org.isMember;
-        if (!org.page || !org.page.slug) {
+        const { location, organization } = this.props;
+        const { isMember } = organization;
+        if (!organization.page || !organization.page.slug) {
             return (
                 <Paper className="row">
-                    <h1>Ikke funnet: {this.props.location.pathname}</h1>
+                    <h1>Ikke funnet: {location.pathname}</h1>
                     <p>Denne sida fins ikke</p>
                 </Paper>
             );
         }
         if (this.state.edit) {
-            const page = { ...org.page };
+            const page = { ...organization.page };
             page.permissions = this.state.permissions;
             return (
                 <EditPage
@@ -114,7 +114,7 @@ class Page extends React.Component {
                     </div>
                     : null
                 }
-                <Text text={org.page.mdtext} />
+                <Text text={organization.page.mdtext} />
             </Paper>
         );
     }

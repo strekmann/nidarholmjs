@@ -87,11 +87,10 @@ class ProjectForm extends React.Component {
     }
 
     addPermission = (chosen) => {
-        const permissions = this.state.permissions;
+        const { permissions } = this.state;
         permissions.push(chosen);
         this.setState({
             permissions,
-            permission: '',
         });
     }
 
@@ -148,7 +147,7 @@ class ProjectForm extends React.Component {
     }
 
     render() {
-        const viewer = this.props.viewer;
+        const { viewer } = this.props;
         const permissions = [];
         if (viewer) {
             permissions.push({ value: 'p', text: 'Verden' });

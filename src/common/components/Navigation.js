@@ -54,7 +54,7 @@ class Navigation extends React.Component {
     }
 
     renderAvatar = () => {
-        const viewer = this.props.viewer;
+        const { viewer } = this.props;
         if (viewer.profilePicture) {
             return (
                 <Avatar
@@ -72,9 +72,8 @@ class Navigation extends React.Component {
     }
 
     render() {
-        const viewer = this.props.viewer;
-        const org = this.props.organization;
-        const isMember = org.isMember;
+        const { organization, viewer } = this.props;
+        const { isMember } = organization;
         const logo = (
             <Link
                 to="/"

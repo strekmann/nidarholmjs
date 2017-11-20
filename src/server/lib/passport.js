@@ -33,33 +33,35 @@ passport.deserializeUser((userId, done) => {
     return fetchUser(userId, done);
 });
 
-passport.use(new LocalStrategy({
-    usernameField: 'email',
-},
-(email, password, done) => {
-    // Log in using either email or username
-    User.findOne()
-        .or([{ email }, { username: email.toLowerCase() }])
-        .select('+algorithm +password +salt')
-        .exec((err, user) => {
-            if (err) {
-                return done(err);
-            }
-            if (!user) {
-                return done(null, false, { message: 'Ukjent e-postadresse eller brukernavn' });
-            }
-            return user.authenticate(password)
-                .then((ok) => {
-                    if (ok) {
-                        return done(null, user);
-                    }
-                    return done(null, false, { message: 'Galt passord' });
-                })
-                .catch((err) => {
-                    return done(err, false, { message: err.message });
-                });
-        });
-}));
+passport.use(new LocalStrategy(
+    {
+        usernameField: 'email',
+    },
+    (email, password, done) => {
+        // Log in using either email or username
+        User.findOne()
+            .or([{ email }, { username: email.toLowerCase() }])
+            .select('+algorithm +password +salt')
+            .exec((err, user) => {
+                if (err) {
+                    return done(err);
+                }
+                if (!user) {
+                    return done(null, false, { message: 'Ukjent e-postadresse eller brukernavn' });
+                }
+                return user.authenticate(password)
+                    .then((ok) => {
+                        if (ok) {
+                            return done(null, user);
+                        }
+                        return done(null, false, { message: 'Galt passord' });
+                    })
+                    .catch((err) => {
+                        return done(err, false, { message: err.message });
+                    });
+            });
+    },
+));
 
 if (config.auth.remember_me) {
     passport.use(new RememberMeStrategy((tokenId, done) => {

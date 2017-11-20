@@ -53,10 +53,6 @@ class FrontpageSummaries extends React.Component {
         this.muiTheme = getMuiTheme(theme);
     }
 
-    state = {
-        summaries: this.props.summaries,
-    }
-
     getChildContext() {
         return { muiTheme: this.muiTheme };
     }

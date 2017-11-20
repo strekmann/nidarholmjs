@@ -13,7 +13,7 @@ export default class PermissionChips extends React.Component {
         this.props.removePermission(id);
     }
     render() {
-        let permissions = this.props.permissions;
+        let { permissions } = this.props;
         if (!permissions.length) {
             permissions = [{ id: null, name: 'Bare meg' }];
         }

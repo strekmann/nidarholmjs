@@ -60,10 +60,6 @@ class ContactRoles extends React.Component {
         return { muiTheme: this.muiTheme };
     }
 
-    onChangeSummaries = (summaries) => {
-        this.setState({ summaries });
-    }
-
     onChange = (contactRoles) => {
         this.setState({ contactRoles });
     }

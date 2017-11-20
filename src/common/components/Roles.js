@@ -58,7 +58,8 @@ class Roles extends React.Component {
             this.props.relay.environment,
             {
                 id,
-            });
+            },
+        );
     }
 
     onSave = (event) => {

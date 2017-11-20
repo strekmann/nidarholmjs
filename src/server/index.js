@@ -411,12 +411,14 @@ app.get(
 
 // Send remaining requests to React frontend route matcher
 app.use(async (req, res, next) => {
-    const token = jwt.sign({
-        sub: req.user,
-        aud: config.get('site.domain'),
-        iss: config.get('site.domain'),
-    },
-    config.get('express.session.secret'));
+    const token = jwt.sign(
+        {
+            sub: req.user,
+            aud: config.get('site.domain'),
+            iss: config.get('site.domain'),
+        },
+        config.get('express.session.secret'),
+    );
     const fetcher = new ServerFetcher(`http://localhost:${port}/graphql`, token);
     try {
         const { redirect, status, element } = await getFarceResult({

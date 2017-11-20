@@ -6,8 +6,12 @@ import uuid from 'node-uuid';
 import schemaOptions from './schemaOptions';
 
 const UserSchema = new mongoose.Schema({
-    _id: { type: String, required: true, unique: true, default: uuid.v4 },
-    username: { type: String, lowercase: true, trim: true, required: true, unique: true },
+    _id: {
+        type: String, required: true, unique: true, default: uuid.v4,
+    },
+    username: {
+        type: String, lowercase: true, trim: true, required: true, unique: true,
+    },
     name: { type: String, required: true },
     email: { type: String },
     password: { type: String, select: false },
@@ -19,9 +23,15 @@ const UserSchema = new mongoose.Schema({
     is_admin: { type: Boolean, default: false },
     created: { type: Date, required: true, default: Date.now },
     nmf_id: { type: String, select: false },
-    facebook_id: { type: String, unique: true, sparse: true, select: false },
-    google_id: { type: String, unique: true, sparse: true, select: false },
-    twitter_id: { type: String, unique: true, sparse: true, select: false },
+    facebook_id: {
+        type: String, unique: true, sparse: true, select: false,
+    },
+    google_id: {
+        type: String, unique: true, sparse: true, select: false,
+    },
+    twitter_id: {
+        type: String, unique: true, sparse: true, select: false,
+    },
     phone: { type: String },
     address: { type: String },
     postcode: { type: String },

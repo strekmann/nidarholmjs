@@ -41,8 +41,8 @@ class Events extends React.Component {
     }
 
     render() {
-        const org = this.props.organization;
-        const events = org.events;
+        const { organization } = this.props;
+        const { events } = organization;
         return (
             <Paper className="row">
                 <div style={{ display: 'flex', justifyContent: 'space-between' }}>
@@ -51,7 +51,7 @@ class Events extends React.Component {
                         <ToolbarGroup lastChild>
                             <FlatButton
                                 label="Kalenderfil"
-                                href={`webcal://${org.webdomain}/events/public.ics`}
+                                href={`webcal://${organization.webdomain}/events/public.ics`}
                             />
                         </ToolbarGroup>
                     </Toolbar>

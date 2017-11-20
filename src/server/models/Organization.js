@@ -4,7 +4,9 @@ import mongoose from 'mongoose';
 import schemaOptions from './schemaOptions';
 
 const OrganizationSchema = new mongoose.Schema({
-    _id: { type: String, lowercase: true, trim: true, required: true, unique: true },
+    _id: {
+        type: String, lowercase: true, trim: true, required: true, unique: true,
+    },
     name: { type: String },
     webdomain: { type: String, trim: true },
     instrument_groups: [{ type: String, ref: 'Group' }],

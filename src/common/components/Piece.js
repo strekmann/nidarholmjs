@@ -61,13 +61,13 @@ class Piece extends React.Component {
                 arrangers: arrangers.split(','),
                 title,
                 subtitle,
-            });
+            },
+        );
     }
 
     render() {
-        const org = this.props.organization;
-        const piece = org.piece;
-        const isMusicAdmin = org.isMusicAdmin;
+        const { organization } = this.props;
+        const { piece, isMusicAdmin } = organization;
         return (
             <Paper className="row">
                 <div style={{ display: 'flex', justifyContent: 'space-between' }}>
@@ -112,7 +112,7 @@ class Piece extends React.Component {
                         </div>
                     );
                 })}
-                {org.isMusicAdmin ?
+                {isMusicAdmin ?
                     <div>
                         <h2>Admin</h2>
                         {piece.groupscores.map((groupscore) => {
