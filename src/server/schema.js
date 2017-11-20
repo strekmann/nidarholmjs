@@ -637,7 +637,7 @@ const groupScoreType = new GraphQLObjectType({
                 type: fileConnection.connectionType,
                 resolve: (group, args) => {
                     return connectionFromMongooseQuery(
-                        File.find({ 'permissions.groups': group.id }).where('_id').in(group.scores).sort('created'),
+                        File.find({ 'permissions.groups': group.id }).where('_id').in(group.scores).sort('filename'),
                         args,
                     );
                 },
@@ -670,7 +670,7 @@ pieceType = new GraphQLObjectType({
                 type: fileConnection.connectionType,
                 resolve: (piece, args, { viewer }) => {
                     return connectionFromMongooseQuery(
-                        authenticate(File.find().where('_id').in(piece.scores), viewer).sort('created'),
+                        authenticate(File.find().where('_id').in(piece.scores), viewer).sort('filename'),
                         args,
                     );
                 },
