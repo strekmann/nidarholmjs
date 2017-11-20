@@ -4,7 +4,7 @@ var CopyWebpackPlugin = require('copy-webpack-plugin');
 var ExtractTextPlugin = require("extract-text-webpack-plugin");
 
 module.exports = {
-    entry: './src/client/app.js',
+    entry: './src/client.js',
     output: {
         path: path.join(__dirname, 'dist', 'static'),
         filename: 'javascript.js'

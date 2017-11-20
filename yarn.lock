@@ -7023,11 +7023,13 @@ relay-debugger-react-native-runtime@0.0.10:
   version "0.0.10"
   resolved "https://registry.yarnpkg.com/relay-debugger-react-native-runtime/-/relay-debugger-react-native-runtime-0.0.10.tgz#0ef36012a1fba928962205514b46f635c652f235"
 
-relay-local-schema@^0.5.3:
-  version "0.5.5"
-  resolved "https://registry.yarnpkg.com/relay-local-schema/-/relay-local-schema-0.5.5.tgz#0ed6f13300cc5fdefaabf009112a23e2eb674c92"
+relay-local-schema@^0.6.2:
+  version "0.6.2"
+  resolved "https://registry.yarnpkg.com/relay-local-schema/-/relay-local-schema-0.6.2.tgz#e2211fd0d60c896f43f54acc854dc5c42ee227b6"
+  dependencies:
+    relay-runtime "^1.0.0"
 
-relay-runtime@1.4.1, relay-runtime@^1.4.1:
+relay-runtime@1.4.1, relay-runtime@^1.0.0, relay-runtime@^1.4.1:
   version "1.4.1"
   resolved "https://registry.yarnpkg.com/relay-runtime/-/relay-runtime-1.4.1.tgz#f88dcd0a422700a04563f291f570e4ce368e36d0"
   dependencies:
