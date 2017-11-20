@@ -2,59 +2,59 @@
 
 // our fonts
 @font-face {
-  font-family: 'Merriweather';
+  font-family: 'Montserrat';
   font-style: normal;
   font-weight: 400;
-  src: local('Merriweather'), url(/fonts/Merriweather-Regular.ttf) format('truetype');
+  src: local('Montserrat'), url(/fonts/Montserrat-Regular.ttf) format('truetype');
 }
 @font-face {
-  font-family: 'Merriweather';
+  font-family: 'Montserrat';
   font-style: normal;
   font-weight: 700;
-  src: local('Merriweather Bold'), local('Merriweather-Bold'), url(/fonts/Merriweather-Bold.ttf) format('truetype');
+  src: local('Montserrat Bold'), local('Montserrat-Bold'), url(/fonts/Montserrat-Bold.ttf) format('truetype');
 }
 @font-face {
-  font-family: 'Merriweather';
+  font-family: 'Montserrat';
   font-style: italic;
   font-weight: 400;
-  src: local('Merriweather Italic'), local('Merriweather-Italic'), url(/fonts/Merriweather-Italic.ttf) format('truetype');
+  src: local('Montserrat Italic'), local('Montserrat-Italic'), url(/fonts/Montserrat-Italic.ttf) format('truetype');
 }
 @font-face {
-  font-family: 'Merriweather';
+  font-family: 'Montserrat';
   font-style: italic;
   font-weight: 700;
-  src: local('Merriweather Italic'), local('Merriweather-Italic'), url(/fonts/Merriweather-Italic.ttf) format('truetype');
+  src: local('Montserrat Italic'), local('Montserrat-Italic'), url(/fonts/Montserrat-Italic.ttf) format('truetype');
 }
 
 @font-face {
-    font-family: 'Open Sans';
+    font-family: 'Roboto';
     font-style: normal;
     font-weight: 400;
-    src: local('Open Sans'), local('OpenSans'), url(/fonts/OpenSans-Regular.ttf) format('truetype');
+    src: local('Roboto'), local('Roboto'), url(/fonts/Roboto-Regular.ttf) format('truetype');
 }
 @font-face {
-  font-family: 'Open Sans';
+  font-family: 'Roboto';
   font-style: normal;
   font-weight: 700;
-  src: local('Open Sans Bold'), local('OpenSans-Bold'), url(/fonts/OpenSans-Bold.ttf) format('truetype');
+  src: local('Roboto Bold'), local('Roboto-Bold'), url(/fonts/Roboto-Bold.ttf) format('truetype');
 }
 @font-face {
-  font-family: 'Open Sans';
+  font-family: 'Roboto';
   font-style: italic;
   font-weight: 400;
-  src: local('Open Sans Italic'), local('OpenSans-Italic'), url(/fonts/OpenSans-Italic.ttf) format('truetype');
+  src: local('Roboto Italic'), local('Roboto-Italic'), url(/fonts/Roboto-Italic.ttf) format('truetype');
 }
 @font-face {
-  font-family: 'Open Sans';
+  font-family: 'Roboto';
   font-style: italic;
   font-weight: 700;
-  src: local('Open Sans Italic'), local('OpenSans-Italic'), url(/fonts/OpenSans-Italic.ttf) format('truetype');
+  src: local('Roboto Italic'), local('Roboto-Italic'), url(/fonts/Roboto-Italic.ttf) format('truetype');
 }
 
 @import 'node_modules/sass-material-colors/sass/sass-material-colors';
 
-$sans-font: "Open Sans", sans-serif;
-$serif-font: "Merriweather", serif;
+$sans-font: "Roboto", sans-serif;
+$serif-font: "Montserrat", serif;
 $rem-base: 14px;
 $line-height: 150%;
 
