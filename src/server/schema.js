@@ -2018,8 +2018,8 @@ const mutationAddScore = mutationWithClientMutationId({
     mutateAndGetPayload: ({
         filename, hex, groupId, pieceId,
     }, { viewer }) => {
-        const { pieceDbId } = fromGlobalId(pieceId);
-        const { groupDbId } = fromGlobalId(groupId);
+        const pieceDbId = fromGlobalId(pieceId).id;
+        const groupDbId = fromGlobalId(groupId).id;
         const permissionObj = { public: false, groups: [groupDbId], users: [] };
         return insertFile(
             filename, hex, permissionObj, [], config.files.raw_prefix, viewer,

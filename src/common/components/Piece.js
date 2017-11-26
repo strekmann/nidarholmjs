@@ -21,6 +21,7 @@ class Piece extends React.Component {
     static propTypes = {
         organization: PropTypes.object.isRequired,
         relay: PropTypes.object.isRequired,
+        router: PropTypes.object.isRequired,
     }
 
     static childContextTypes = {
@@ -66,7 +67,7 @@ class Piece extends React.Component {
     }
 
     render() {
-        const { organization } = this.props;
+        const { organization, router } = this.props;
         const { piece, isMusicAdmin } = organization;
         return (
             <Paper className="row">
@@ -79,6 +80,7 @@ class Piece extends React.Component {
                             save={this.savePiece}
                             cancel={this.handleCloseEditPiece}
                             piece={piece}
+                            router={router}
                         />
                         : null
                     }
