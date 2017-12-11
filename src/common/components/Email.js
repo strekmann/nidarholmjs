@@ -21,13 +21,13 @@ export default class Email extends React.Component {
             return (
                 <span
                     dangerouslySetInnerHTML={{
-                        __html: `<a href=${email} className="email">${renderToString(this.props.children)}</a>`,
+                        __html: `<a href=${email} className="noMargins">${renderToString(this.props.children)}</a>`,
                     }}
                 />);
         }
         const email = marked(`<${this.props.email}>`);
         return (
-            <span dangerouslySetInnerHTML={{ __html: email }} />
+            <span dangerouslySetInnerHTML={{ __html: email }} className="noMargins" />
         );
     }
 }
