@@ -132,13 +132,13 @@ class FileItem extends React.Component {
                 </CardTitle>
                 {this.props.isImage
                     ? <CardMedia><img alt="" src={this.props.thumbnailPath} /></CardMedia>
-                    : <Link
+                    : <a
                         style={{ display: 'block', textAlign: 'center' }}
-                        to={this.props.path}
+                        href={this.props.path}
                         download
                     >
                         <Download style={{ height: 100, width: '100%' }} color={grey400} />
-                    </Link>
+                    </a>
                 }
                 <CardActions style={{ display: 'flex', flexWrap: 'wrap' }}>
                     <PermissionChips

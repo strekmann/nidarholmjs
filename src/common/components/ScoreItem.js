@@ -27,9 +27,9 @@ class ScoreItem extends React.Component {
             </IconButton>
         );
         return (
-            <Link
+            <a
                 key={`${this.props.groupscore.id}-${file.id}`}
-                to={file.path}
+                href={file.path}
                 download
             >
                 <ListItem
@@ -37,7 +37,7 @@ class ScoreItem extends React.Component {
                     leftIcon={<Download />}
                     rightIconButton={del}
                 />
-            </Link>
+            </a>
         );
     }
 }
