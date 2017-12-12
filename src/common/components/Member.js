@@ -40,7 +40,7 @@ import Yesno from './Yesno';
 
 let DateTimeFormat;
 if (areIntlLocalesSupported(['nb'])) {
-    DateTimeFormat = global.Intl.DateTimeFormat;
+    ({ DateTimeFormat } = global.Intl);
 }
 
 class Member extends React.Component {
@@ -60,7 +60,6 @@ class Member extends React.Component {
     }
 
     state = {
-        edit: false,
         editMember: false,
         joinGroup: false,
         addingRole: false,
@@ -111,9 +110,11 @@ class Member extends React.Component {
     onChangeCountry = (event, country) => {
         this.setState({ country });
     }
+    /*
     onChangeNmfId = (event, nmfID) => {
         this.setState({ nmfID });
     }
+    */
     onChangeReskontro = (event, reskontro) => {
         this.setState({ reskontro });
     }
@@ -165,7 +166,6 @@ class Member extends React.Component {
             data,
             () => {
                 this.setState({
-                    edit: false,
                     editMember: false,
                 });
             },
@@ -314,69 +314,71 @@ class Member extends React.Component {
                             />
                         </div>
                         {isAdmin
-                            ? <div>
+                            ? (
                                 <div>
-                                    <TextField
-                                        id="nmfId"
-                                        floatingLabelText="NMF-nummer"
-                                        onChange={this.onChangeNmfId}
-                                        value={this.state.nmfId}
-                                    />
+                                    <div>
+                                        <TextField
+                                            id="nmfId"
+                                            floatingLabelText="NMF-nummer"
+                                            onChange={this.onChangeNmfId}
+                                            value={this.state.nmfId}
+                                        />
+                                    </div>
+                                    <div>
+                                        <TextField
+                                            id="reskontro"
+                                            floatingLabelText="Reskontro"
+                                            onChange={this.onChangeReskontro}
+                                            value={this.state.reskontro}
+                                        />
+                                    </div>
+                                    <div>
+                                        <DatePicker
+                                            id="joined"
+                                            floatingLabelText="Startet i korpset"
+                                            onChange={this.onChangeJoined}
+                                            value={this.state.joined}
+                                            mode="landscape"
+                                            locale="nb"
+                                            DateTimeFormat={DateTimeFormat}
+                                        />
+                                    </div>
+                                    <div>
+                                        <TextField
+                                            id="membershipHistory"
+                                            floatingLabelText="Medlemskapshistorikk"
+                                            onChange={this.onChangeMembershipHistory}
+                                            value={this.state.membershipHistory}
+                                            multiLine
+                                            fullWidth
+                                        />
+                                    </div>
+                                    <div>
+                                        <Checkbox
+                                            id="inList"
+                                            label="Synlig i medlemslista"
+                                            onCheck={this.onChangeInList}
+                                            checked={this.state.inList}
+                                        />
+                                    </div>
+                                    <div>
+                                        <Checkbox
+                                            id="onLeave"
+                                            label="Har permisjon"
+                                            onCheck={this.onChangeOnLeave}
+                                            checked={this.state.onLeave}
+                                        />
+                                    </div>
+                                    <div>
+                                        <Checkbox
+                                            id="noEmail"
+                                            label="Ikke epost"
+                                            onCheck={this.onChangeNoEmail}
+                                            checked={this.state.noEmail}
+                                        />
+                                    </div>
                                 </div>
-                                <div>
-                                    <TextField
-                                        id="reskontro"
-                                        floatingLabelText="Reskontro"
-                                        onChange={this.onChangeReskontro}
-                                        value={this.state.reskontro}
-                                    />
-                                </div>
-                                <div>
-                                    <DatePicker
-                                        id="joined"
-                                        floatingLabelText="Startet i korpset"
-                                        onChange={this.onChangeJoined}
-                                        value={this.state.joined}
-                                        mode="landscape"
-                                        locale="nb"
-                                        DateTimeFormat={DateTimeFormat}
-                                    />
-                                </div>
-                                <div>
-                                    <TextField
-                                        id="membershipHistory"
-                                        floatingLabelText="Medlemskapshistorikk"
-                                        onChange={this.onChangeMembershipHistory}
-                                        value={this.state.membershipHistory}
-                                        multiLine
-                                        fullWidth
-                                    />
-                                </div>
-                                <div>
-                                    <Checkbox
-                                        id="inList"
-                                        label="Synlig i medlemslista"
-                                        onCheck={this.onChangeInList}
-                                        checked={this.state.inList}
-                                    />
-                                </div>
-                                <div>
-                                    <Checkbox
-                                        id="onLeave"
-                                        label="Har permisjon"
-                                        onCheck={this.onChangeOnLeave}
-                                        checked={this.state.onLeave}
-                                    />
-                                </div>
-                                <div>
-                                    <Checkbox
-                                        id="noEmail"
-                                        label="Ikke epost"
-                                        onCheck={this.onChangeNoEmail}
-                                        checked={this.state.noEmail}
-                                    />
-                                </div>
-                            </div>
+                            )
                             : null
                         }
                         <div>
@@ -391,47 +393,51 @@ class Member extends React.Component {
                 <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                     <h1>{user.name}</h1>
                     {isAdmin
-                        ? <Dialog
-                            title="Legg til i gruppe"
-                            open={this.state.joinGroup}
-                            onRequestClose={this.closeJoinGroup}
-                            autoScrollBodyContent
-                            actions={<FlatButton label="Avbryt" onTouchTap={this.closeJoinGroup} />}
-                        >
-                            <AutoComplete
-                                dataSource={groups.map((group) => {
-                                    return { text: `${group.name}`, value: group };
-                                })}
-                                floatingLabelText="Gruppe"
-                                onNewRequest={this.joinGroup}
-                                filter={AutoComplete.fuzzyFilter}
-                                fullWidth
-                            />
-                        </Dialog>
+                        ? (
+                            <Dialog
+                                title="Legg til i gruppe"
+                                open={this.state.joinGroup}
+                                onRequestClose={this.closeJoinGroup}
+                                autoScrollBodyContent
+                                actions={<FlatButton label="Avbryt" onTouchTap={this.closeJoinGroup} />}
+                            >
+                                <AutoComplete
+                                    dataSource={groups.map((group) => {
+                                        return { text: `${group.name}`, value: group };
+                                    })}
+                                    floatingLabelText="Gruppe"
+                                    onNewRequest={this.joinGroup}
+                                    filter={AutoComplete.fuzzyFilter}
+                                    fullWidth
+                                />
+                            </Dialog>
+                        )
                         : null
                     }
                     {isAdmin
-                        ? <Dialog
-                            title="Legg til verv"
-                            open={this.state.addingRole}
-                            onRequestClose={this.closeAddingRole}
-                            autoScrollBodyContent
-                            actions={<RaisedButton label="Avbryt" onTouchTap={this.closeAddingRole} />}
-                        >
-                            <List>
-                                {roles.edges.map((edge) => {
-                                    return (
-                                        <ListItem
-                                            key={edge.node.id}
-                                            primaryText={edge.node.name}
-                                            onTouchTap={() => {
-                                                this.addRole(edge.node.id);
-                                            }}
-                                        />
-                                    );
-                                })}
-                            </List>
-                        </Dialog>
+                        ? (
+                            <Dialog
+                                title="Legg til verv"
+                                open={this.state.addingRole}
+                                onRequestClose={this.closeAddingRole}
+                                autoScrollBodyContent
+                                actions={<RaisedButton label="Avbryt" onTouchTap={this.closeAddingRole} />}
+                            >
+                                <List>
+                                    {roles.edges.map((edge) => {
+                                        return (
+                                            <ListItem
+                                                key={edge.node.id}
+                                                primaryText={edge.node.name}
+                                                onTouchTap={() => {
+                                                    this.addRole(edge.node.id);
+                                                }}
+                                            />
+                                        );
+                                    })}
+                                </List>
+                            </Dialog>
+                        )
                         : null
                     }
                     <Toolbar style={{ backgroundColor: theme.palette.fullWhite }}>
@@ -520,59 +526,31 @@ class Member extends React.Component {
                             {user.postcode} {user.city}
                         </div>
                         {member.roles.length
-                            ? <div>
-                                <h3>Verv</h3>
-                                <List>
-                                    {member.roles.map((role) => {
-                                        return (
-                                            <ListItem
-                                                key={role.id}
-                                                disabled
-                                                primaryText={role.name}
-                                                secondaryText={role.email
-                                                    ? <a href={`mailto:${role.email}`}>{role.email}</a>
-                                                    : null
-                                                }
-                                                rightIconButton={isAdmin
-                                                    ? <IconButton
-                                                        onClick={(event) => {
-                                                            event.preventDefault();
-                                                            return this.removeRole(role.id);
-                                                        }}
-                                                    >
-                                                        <Close />
-                                                    </IconButton>
-                                                    : null
-                                                }
-                                            />
-                                        );
-                                    })}
-                                </List>
-                            </div>
-                            : null
-                        }
-                        <div>
-                            {user.groups.length
-                                ? <div>
-                                    <h3>Grupper</h3>
+                            ? (
+                                <div>
+                                    <h3>Verv</h3>
                                     <List>
-                                        {user.groups.map((group) => {
+                                        {member.roles.map((role) => {
                                             return (
                                                 <ListItem
-                                                    key={group.id}
-                                                    primaryText={group.name}
-                                                    containerElement={
-                                                        <Link to={`/group/${group.id}`} />
+                                                    key={role.id}
+                                                    disabled
+                                                    primaryText={role.name}
+                                                    secondaryText={role.email
+                                                        ? <a href={`mailto:${role.email}`}>{role.email}</a>
+                                                        : null
                                                     }
                                                     rightIconButton={isAdmin
-                                                        ? <IconButton
-                                                            onClick={(event) => {
-                                                                event.preventDefault();
-                                                                return this.leaveGroup(user, group);
-                                                            }}
-                                                        >
-                                                            <Close />
-                                                        </IconButton>
+                                                        ? (
+                                                            <IconButton
+                                                                onClick={(event) => {
+                                                                    event.preventDefault();
+                                                                    return this.removeRole(role.id);
+                                                                }}
+                                                            >
+                                                                <Close />
+                                                            </IconButton>
+                                                        )
                                                         : null
                                                     }
                                                 />
@@ -580,24 +558,62 @@ class Member extends React.Component {
                                         })}
                                     </List>
                                 </div>
+                            )
+                            : null
+                        }
+                        <div>
+                            {user.groups.length
+                                ? (
+                                    <div>
+                                        <h3>Grupper</h3>
+                                        <List>
+                                            {user.groups.map((group) => {
+                                                return (
+                                                    <ListItem
+                                                        key={group.id}
+                                                        primaryText={group.name}
+                                                        containerElement={
+                                                            <Link to={`/group/${group.id}`} />
+                                                        }
+                                                        rightIconButton={isAdmin
+                                                            ? (
+                                                                <IconButton
+                                                                    onClick={(event) => {
+                                                                        event.preventDefault();
+                                                                        return this.leaveGroup(user, group);
+                                                                    }}
+                                                                >
+                                                                    <Close />
+                                                                </IconButton>
+                                                            )
+                                                            : null
+                                                        }
+                                                    />
+                                                );
+                                            })}
+                                        </List>
+                                    </div>
+                                )
                                 : null
                             }
                         </div>
                         {isAdmin
-                            ? <div style={{ backgroundColor: lightBlue100 }}>
-                                <h2>Admininfo</h2>
-                                <div>
-                                    Reskontro: {user.reskontro}
+                            ? (
+                                <div style={{ backgroundColor: lightBlue100 }}>
+                                    <h2>Admininfo</h2>
+                                    <div>
+                                        Reskontro: {user.reskontro}
+                                    </div>
+                                    <Text text={user.membershipHistory} />
+                                    <div>
+                                        Brukernavn {user.username},
+                                        aktiv: <Yesno value={user.isActive} />,
+                                        i medlemslista: <Yesno value={user.inList} />,
+                                        unngår epost: <Yesno value={user.noEmail} />,
+                                        permisjon: <Yesno value={user.onLeave} />
+                                    </div>
                                 </div>
-                                <Text text={user.membershipHistory} />
-                                <div>
-                                    Brukernavn {user.username},
-                                    aktiv: <Yesno value={user.isActive} />,
-                                    i medlemslista: <Yesno value={user.inList} />,
-                                    unngår epost: <Yesno value={user.noEmail} />,
-                                    permisjon: <Yesno value={user.onLeave} />
-                                </div>
-                            </div>
+                            )
                             : null
                         }
                     </div>
@@ -619,9 +635,11 @@ class Member extends React.Component {
                             : null
                         }
                         {user.joined
-                            ? <div>
-                                Startet for <DateFromNow date={user.joined} />{ user.nmfId ? ` og har NMF-nummer ${user.nmfId}` : null }
-                            </div>
+                            ? (
+                                <div>
+                                    Startet for <DateFromNow date={user.joined} />{ user.nmfId ? ` og har NMF-nummer ${user.nmfId}` : null }
+                                </div>
+                            )
                             : null
                         }
                     </div>

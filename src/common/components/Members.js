@@ -123,6 +123,7 @@ class Members extends React.Component {
         const {
             instrumentGroups, isAdmin, isMember, users,
         } = organization;
+        const searchMessage = 'Mens du skriver inn navn, søker vi opp de med likest navn, i tilfelle personen allerede er registrert. For å legge inn en ny person, skriver du hele navnet og trykker enter.';
         return (
             <Paper className="row">
                 <div style={{ display: 'flex', justifyContent: 'space-between' }}>
@@ -130,24 +131,26 @@ class Members extends React.Component {
                         <h1>Medlemmer</h1>
                     </div>
                     {isAdmin
-                        ? <IconMenu
-                            iconButtonElement={<IconButton><MoreVertIcon /></IconButton>}
-                            anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
-                            targetOrigin={{ vertical: 'top', horizontal: 'right' }}
-                        >
-                            <MenuItem
-                                primaryText="Finn / legg til medlem"
-                                onTouchTap={this.toggleAddUser}
-                            />
-                            <MenuItem
-                                primaryText="Grupper"
-                                containerElement={<Link to="/groups" />}
-                            />
-                            <MenuItem
-                                primaryText="Verv og roller"
-                                containerElement={<Link to="/members/roles" />}
-                            />
-                        </IconMenu>
+                        ? (
+                            <IconMenu
+                                iconButtonElement={<IconButton><MoreVertIcon /></IconButton>}
+                                anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
+                                targetOrigin={{ vertical: 'top', horizontal: 'right' }}
+                            >
+                                <MenuItem
+                                    primaryText="Finn / legg til medlem"
+                                    onTouchTap={this.toggleAddUser}
+                                />
+                                <MenuItem
+                                    primaryText="Grupper"
+                                    containerElement={<Link to="/groups" />}
+                                />
+                                <MenuItem
+                                    primaryText="Verv og roller"
+                                    containerElement={<Link to="/members/roles" />}
+                                />
+                            </IconMenu>
+                        )
                         : null
                     }
                     <Dialog
@@ -156,9 +159,7 @@ class Members extends React.Component {
                         onRequestClose={this.closeAddUser}
                         autoScrollBodyContent
                     >
-                        <p>Mens du skriver inn navn, søker vi opp de med likest navn, i tilfelle
-                        personen allerede er registrert. For å legge inn en ny person, skriver du
-                        hele navnet og trykker enter.</p>
+                        <p>{searchMessage}</p>
                         <AutoComplete
                             hintText="Navn"
                             dataSource={users.map((user) => {
@@ -175,71 +176,75 @@ class Members extends React.Component {
                             : null
                         }
                         {this.state.new
-                            ? <form onSubmit={this.addUser}>
+                            ? (
+                                <form onSubmit={this.addUser}>
+                                    <div>
+                                        <TextField
+                                            id="email"
+                                            floatingLabelText="E-post"
+                                            type="email"
+                                            value={this.state.email}
+                                            onChange={this.onChangeEmail}
+                                        />
+                                    </div>
+                                    <div>
+                                        <TextField
+                                            id="instrument"
+                                            floatingLabelText="Instrument"
+                                            value={this.state.instrument}
+                                            onChange={this.onChangeInstrument}
+                                        />
+                                    </div>
+                                    <div>
+                                        <Checkbox
+                                            id="member"
+                                            label="Gi personen medlemsrettigheter"
+                                            checked={this.state.member}
+                                            onCheck={this.onCheckMember}
+                                        />
+                                    </div>
+                                    <div>
+                                        <SelectField
+                                            id="group"
+                                            floatingLabelText="Instrumentgruppe"
+                                            value={this.state.groupId}
+                                            onChange={this.onChangeGroup}
+                                        >
+                                            <MenuItem primaryText="(Ingen)" />
+                                            {instrumentGroups.map((group) => {
+                                                return (
+                                                    <MenuItem
+                                                        key={group.id}
+                                                        value={group.id}
+                                                        primaryText={group.name}
+                                                    />
+                                                );
+                                            })}
+                                        </SelectField>
+                                    </div>
+                                    <div>
+                                        <RaisedButton
+                                            type="submit"
+                                            label="Legg til"
+                                            primary
+                                        />
+                                        <RaisedButton
+                                            type="reset"
+                                            label="Avbryt"
+                                            onTouchTap={this.closeAddUser}
+                                        />
+                                    </div>
+                                </form>
+                            )
+                            : (
                                 <div>
-                                    <TextField
-                                        id="email"
-                                        floatingLabelText="E-post"
-                                        type="email"
-                                        value={this.state.email}
-                                        onChange={this.onChangeEmail}
-                                    />
-                                </div>
-                                <div>
-                                    <TextField
-                                        id="instrument"
-                                        floatingLabelText="Instrument"
-                                        value={this.state.instrument}
-                                        onChange={this.onChangeInstrument}
-                                    />
-                                </div>
-                                <div>
-                                    <Checkbox
-                                        id="member"
-                                        label="Gi personen medlemsrettigheter"
-                                        checked={this.state.member}
-                                        onCheck={this.onCheckMember}
-                                    />
-                                </div>
-                                <div>
-                                    <SelectField
-                                        id="group"
-                                        floatingLabelText="Instrumentgruppe"
-                                        value={this.state.groupId}
-                                        onChange={this.onChangeGroup}
-                                    >
-                                        <MenuItem primaryText="(Ingen)" />
-                                        {instrumentGroups.map((group) => {
-                                            return (
-                                                <MenuItem
-                                                    key={group.id}
-                                                    value={group.id}
-                                                    primaryText={group.name}
-                                                />
-                                            );
-                                        })}
-                                    </SelectField>
-                                </div>
-                                <div>
-                                    <RaisedButton
-                                        type="submit"
-                                        label="Legg til"
-                                        primary
-                                    />
                                     <RaisedButton
                                         type="reset"
                                         label="Avbryt"
                                         onTouchTap={this.closeAddUser}
                                     />
                                 </div>
-                            </form>
-                            : <div>
-                                <RaisedButton
-                                    type="reset"
-                                    label="Avbryt"
-                                    onTouchTap={this.closeAddUser}
-                                />
-                            </div>
+                            )
                         }
                     </Dialog>
                 </div>

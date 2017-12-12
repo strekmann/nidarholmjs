@@ -15,7 +15,7 @@ import PermissionField from './PermissionField';
 
 let DateTimeFormat;
 if (areIntlLocalesSupported(['nb'])) {
-    DateTimeFormat = global.Intl.DateTimeFormat;
+    ({ DateTimeFormat } = global.Intl);
 }
 
 class ProjectForm extends React.Component {
@@ -200,15 +200,17 @@ class ProjectForm extends React.Component {
                     />
                 </div>
                 {this.props.id
-                    ? <div>
-                        <TextField
-                            floatingLabelText="Ekstern beskrivelse"
-                            onChange={this.onChangePublicMdtext}
-                            value={this.state.publicMdtext}
-                            multiLine
-                            fullWidth
-                        />
-                    </div>
+                    ? (
+                        <div>
+                            <TextField
+                                floatingLabelText="Ekstern beskrivelse"
+                                onChange={this.onChangePublicMdtext}
+                                value={this.state.publicMdtext}
+                                multiLine
+                                fullWidth
+                            />
+                        </div>
+                    )
                     : null
                 }
                 <div>

@@ -1399,30 +1399,6 @@ const queryType = new GraphQLObjectType({
     },
 });
 
-const mutationEditDescription = mutationWithClientMutationId({
-    name: 'EditDescription',
-    inputFields: {
-        orgid: { type: new GraphQLNonNull(GraphQLID) },
-        description_nb: { type: GraphQLString },
-    },
-    outputFields: {
-        organization: {
-            type: organizationType,
-            resolve: (payload) => {
-                return payload;
-            },
-        },
-    },
-    mutateAndGetPayload: ({ orgid, description_nb }) => {
-        const { id } = fromGlobalId(orgid);
-        return Organization.findByIdAndUpdate(id, {
-            description_nb,
-        }, {
-            new: true,
-        }).exec();
-    },
-});
-
 const mutationAddEvent = mutationWithClientMutationId({
     name: 'AddEvent',
     inputFields: {
@@ -2790,7 +2766,6 @@ const mutationType = new GraphQLObjectType({
         return {
             addUser: mutationAddUser,
             editUser: mutationEditUser,
-            editDescription: mutationEditDescription,
             addEvent: mutationAddEvent,
             editEvent: mutationEditEvent,
             addPage: mutationAddPage,

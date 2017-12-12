@@ -39,7 +39,6 @@ class Home extends React.Component {
     }
 
     sendEmail = (form) => {
-        this.setState({ sent: true });
         const { organization, relay } = this.props;
         SendContactEmailMutation.commit(relay.environment, organization, form);
     }
@@ -158,9 +157,11 @@ class Home extends React.Component {
                                     );
                                 })}
                                 {!nextProject.events.edges.length
-                                    ? <div className="meta" style={{ fontWeight: 'bold' }}>
-                                        <Date date={nextProject.end} />
-                                    </div>
+                                    ? (
+                                        <div className="meta" style={{ fontWeight: 'bold' }}>
+                                            <Date date={nextProject.end} />
+                                        </div>
+                                    )
                                     : null
                                 }
                                 <div>
@@ -202,15 +203,17 @@ class Home extends React.Component {
                 }
                 <div>
                     {organization.summaries.length > 0
-                        ? <div>
-                            <h2>
-                                <Link to={`/${organization.summaries[0].slug}`}>
-                                    {organization.summaries[0].title}
-                                </Link>
-                            </h2>
-                            <Text text={organization.summaries[0].summary} />
-                            <Link to={`/${organization.summaries[0].slug}`}>Les mer</Link>
-                        </div>
+                        ? (
+                            <div>
+                                <h2>
+                                    <Link to={`/${organization.summaries[0].slug}`}>
+                                        {organization.summaries[0].title}
+                                    </Link>
+                                </h2>
+                                <Text text={organization.summaries[0].summary} />
+                                <Link to={`/${organization.summaries[0].slug}`}>Les mer</Link>
+                            </div>
+                        )
                         : null
                     }
                 </div>
@@ -223,40 +226,44 @@ class Home extends React.Component {
                     }}
                 >
                     {organization.summaries.length > 1
-                        ? <div
-                            style={{
-                                flex: '1 1 50%',
-                                paddingLeft: desktopGutterLess,
-                                paddingRight: desktopGutterLess,
-                            }}
-                        >
-                            <h2>
-                                <Link to={`/${organization.summaries[1].slug}`}>
-                                    {organization.summaries[1].title}
-                                </Link>
-                            </h2>
-                            <Text text={organization.summaries[1].summary} />
-                            <Link to={`/${organization.summaries[1].slug}`}>Les mer</Link>
-                        </div>
+                        ? (
+                            <div
+                                style={{
+                                    flex: '1 1 50%',
+                                    paddingLeft: desktopGutterLess,
+                                    paddingRight: desktopGutterLess,
+                                }}
+                            >
+                                <h2>
+                                    <Link to={`/${organization.summaries[1].slug}`}>
+                                        {organization.summaries[1].title}
+                                    </Link>
+                                </h2>
+                                <Text text={organization.summaries[1].summary} />
+                                <Link to={`/${organization.summaries[1].slug}`}>Les mer</Link>
+                            </div>
+                        )
                         : null
                     }
                     {organization.summaries.length > 2
-                        ? <div
-                            style={{
-                                flex: '1 1 50%',
-                                paddingLeft: desktopGutterLess,
-                                paddingRight: desktopGutterLess,
-                                minWidth: 0,
-                            }}
-                        >
-                            <h2>
-                                <Link to={`/${organization.summaries[2].slug}`}>
-                                    {organization.summaries[2].title}
-                                </Link>
-                            </h2>
-                            <Text text={organization.summaries[2].summary} />
-                            <Link to={`/${organization.summaries[2].slug}`}>Les mer</Link>
-                        </div>
+                        ? (
+                            <div
+                                style={{
+                                    flex: '1 1 50%',
+                                    paddingLeft: desktopGutterLess,
+                                    paddingRight: desktopGutterLess,
+                                    minWidth: 0,
+                                }}
+                            >
+                                <h2>
+                                    <Link to={`/${organization.summaries[2].slug}`}>
+                                        {organization.summaries[2].title}
+                                    </Link>
+                                </h2>
+                                <Text text={organization.summaries[2].summary} />
+                                <Link to={`/${organization.summaries[2].slug}`}>Les mer</Link>
+                            </div>
+                        )
                         : null
                     }
                 </div>

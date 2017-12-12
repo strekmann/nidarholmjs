@@ -66,8 +66,7 @@ export default class SortablePageItem extends React.Component {
         const opacity = isDragging ? 0 : 1;
         const dragIcon = <IconButton onClick={this.removeSummary}><DragHandle /></IconButton>;
         const removeIcon = <IconButton onClick={this.removeSummary}><RemoveCircle /></IconButton>;
-
-        return connectDragSource(connectDropTarget(
+        const element = (
             <div
                 style={{
                     cursor: 'move', opacity, display: 'flex', alignItems: 'center',
@@ -80,7 +79,9 @@ export default class SortablePageItem extends React.Component {
                     <div>/{slug}</div>
                 </div>
                 <div>{removeIcon}</div>
-            </div>,
-        ));
+            </div>
+        );
+
+        return connectDragSource(connectDropTarget(element));
     }
 }

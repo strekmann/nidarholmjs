@@ -1,4 +1,3 @@
-import Link from 'found/lib/Link';
 import IconButton from 'material-ui/IconButton';
 import { ListItem } from 'material-ui/List';
 import Download from 'material-ui/svg-icons/file/file-download';

@@ -20,6 +20,7 @@
         "react/jsx-filename-extension": [1, { "extensions": [".js", ".jsx"] }],
         "react/jsx-indent": [1, 4],
         "react/jsx-indent-props": [2, 4],
+        "react/jsx-wrap-multilines": 1,
         "react/prefer-stateless-function": 0,
         "react/sort-comp": 1,
         "react/forbid-prop-types": 0,

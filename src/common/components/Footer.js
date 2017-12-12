@@ -27,7 +27,6 @@ class Footer extends React.Component {
     }
 
     sendEmail = (form) => {
-        this.setState({ sent: true });
         const { relay } = this.props;
         SendContactEmailMutation.commit(relay.environment, form);
     }

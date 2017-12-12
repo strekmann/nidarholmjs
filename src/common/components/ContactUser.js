@@ -1,4 +1,4 @@
-import { Card, CardActions, CardHeader, CardMedia, CardTitle, CardText } from 'material-ui/Card';
+import { Card, CardActions, CardHeader, CardMedia, CardTitle } from 'material-ui/Card';
 import { ListItem } from 'material-ui/List';
 import FlatButton from 'material-ui/FlatButton';
 import PropTypes from 'prop-types';
@@ -53,28 +53,36 @@ class ContactUser extends React.Component {
                     }
                 </CardMedia>
                 {this.state.show
-                    ? <CardActions>
-                        {this.state.phone
-                            ? <ListItem>
-                                <Phone phone={this.state.phone} />
-                            </ListItem>
-                            : null
-                        }
-                        {this.state.email
-                            ? <ListItem>
-                                <Email email={this.state.email} />
-                            </ListItem>
-                            : null
-                        }
-                    </CardActions>
-                    : <CardActions>
-                        <FlatButton
-                            onClick={() => {
-                                this.showContactInfo(user);
-                            }}
-                            label="Vis kontaktinfo"
-                        />
-                    </CardActions>
+                    ? (
+                        <CardActions>
+                            {this.state.phone
+                                ? (
+                                    <ListItem>
+                                        <Phone phone={this.state.phone} />
+                                    </ListItem>
+                                )
+                                : null
+                            }
+                            {this.state.email
+                                ? (
+                                    <ListItem>
+                                        <Email email={this.state.email} />
+                                    </ListItem>
+                                )
+                                : null
+                            }
+                        </CardActions>
+                    )
+                    : (
+                        <CardActions>
+                            <FlatButton
+                                onClick={() => {
+                                    this.showContactInfo(user);
+                                }}
+                                label="Vis kontaktinfo"
+                            />
+                        </CardActions>
+                    )
                 }
             </Card>
         );

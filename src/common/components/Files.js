@@ -37,7 +37,6 @@ class Files extends React.Component {
     state = {
         addFile: false,
         search: false,
-        tags: [],
     }
 
     getChildContext() {
@@ -118,7 +117,7 @@ class Files extends React.Component {
                 return !!t;
             });
             tags.push(tag);
-            this.setState({ search: true, tags });
+            this.setState({ search: true });
             return {
                 showFiles: variables.showFiles,
                 searchTerm: variables.searchTerm,
@@ -144,48 +143,52 @@ class Files extends React.Component {
         return (
             <div className="row">
                 {isMember
-                    ? <div style={{ float: 'right' }}>
-                        <RaisedButton
-                            label="Last opp filer"
-                            onTouchTap={this.toggleAddFile}
-                        />
-                        <RaisedButton
-                            label="Søk"
-                            onTouchTap={this.toggleSearch}
-                        />
-                        <Dialog
-                            title="Last opp filer"
-                            open={this.state.addFile}
-                            onRequestClose={this.closeAddFile}
-                            autoScrollBodyContent
-                        >
-                            <FileUpload
-                                viewer={this.props.viewer}
-                                organization={this.props.organization}
-                                onDrop={this.onDrop}
-                                memberGroupId={organization.memberGroup.id}
-                                onTagsChange={this.searchTag}
+                    ? (
+                        <div style={{ float: 'right' }}>
+                            <RaisedButton
+                                label="Last opp filer"
+                                onTouchTap={this.toggleAddFile}
                             />
-                            <RaisedButton label="Ferdig" primary onTouchTap={this.closeAddFile} />
-                        </Dialog>
-                    </div>
+                            <RaisedButton
+                                label="Søk"
+                                onTouchTap={this.toggleSearch}
+                            />
+                            <Dialog
+                                title="Last opp filer"
+                                open={this.state.addFile}
+                                onRequestClose={this.closeAddFile}
+                                autoScrollBodyContent
+                            >
+                                <FileUpload
+                                    viewer={this.props.viewer}
+                                    organization={this.props.organization}
+                                    onDrop={this.onDrop}
+                                    memberGroupId={organization.memberGroup.id}
+                                    onTagsChange={this.searchTag}
+                                />
+                                <RaisedButton label="Ferdig" primary onTouchTap={this.closeAddFile} />
+                            </Dialog>
+                        </div>
+                    )
                     : null
                 }
                 <h1>Filer</h1>
                 {this.state.search
-                    ? <Paper
-                        style={{
-                            padding: desktopGutterLess,
-                            marginBottom: desktopGutterLess,
-                        }}
-                    >
-                        <h2>Søk i merkelapper</h2>
-                        <TagField
-                            onChange={this.onTagChange}
-                            organization={this.props.organization}
-                            autoFocus
-                        />
-                    </Paper>
+                    ? (
+                        <Paper
+                            style={{
+                                padding: desktopGutterLess,
+                                marginBottom: desktopGutterLess,
+                            }}
+                        >
+                            <h2>Søk i merkelapper</h2>
+                            <TagField
+                                onChange={this.onTagChange}
+                                organization={this.props.organization}
+                                autoFocus
+                            />
+                        </Paper>
+                    )
                     : null
                 }
                 <FileList

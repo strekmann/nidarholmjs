@@ -58,7 +58,6 @@ class Project extends React.Component {
         addFile: false,
         addPiece: false,
         editProject: false,
-        searchTerm: '',
         showEnded: false,
     }
 
@@ -206,7 +205,6 @@ class Project extends React.Component {
     }
 
     searchPiece = (searchTerm) => {
-        this.setState({ searchTerm });
         this.props.relay.refetch((variables) => {
             variables.searchTerm = searchTerm;
             return variables;
@@ -244,61 +242,67 @@ class Project extends React.Component {
                             />
                         </div>
                         {project.conductors.length
-                            ? <p>Dirigent:
-                                {' '}
-                                <List
-                                    items={project.conductors.map((conductor) => {
-                                        return conductor.name;
-                                    })}
-                                />
-                            </p>
+                            ? (
+                                <p>Dirigent:
+                                    {' '}
+                                    <List
+                                        items={project.conductors.map((conductor) => {
+                                            return conductor.name;
+                                        })}
+                                    />
+                                </p>
+                            )
                             : null
                         }
                         {project.managers.length
-                            ? <p>Prosjektleder:
-                                {' '}
-                                <List
-                                    items={project.managers.map((manager) => {
-                                        return manager.name;
-                                    })}
-                                />
-                            </p>
+                            ? (
+                                <p>Prosjektleder:
+                                    {' '}
+                                    <List
+                                        items={project.managers.map((manager) => {
+                                            return manager.name;
+                                        })}
+                                    />
+                                </p>
+                            )
                             : null
                         }
                     </div>
                     {isMember
-                        ? <IconMenu
-                            iconButtonElement={<IconButton><MoreVertIcon /></IconButton>}
-                            anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
-                            targetOrigin={{ vertical: 'top', horizontal: 'right' }}
-                        >
-                            {hasEndedActivities
-                                ? <MenuItem
-                                    primaryText="Vis tidligere aktiviteter"
-                                    onTouchTap={this.showEnded}
+                        ? (
+                            <IconMenu
+                                iconButtonElement={<IconButton><MoreVertIcon /></IconButton>}
+                                anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
+                                targetOrigin={{ vertical: 'top', horizontal: 'right' }}
+                            >
+                                {hasEndedActivities
+                                    ? <MenuItem
+                                        primaryText="Vis tidligere aktiviteter"
+                                        onTouchTap={this.showEnded}
+                                    />
+                                    : null
+                                }
+                                <MenuItem
+                                    primaryText="Rediger prosjektinfo"
+                                    onTouchTap={this.toggleEditProject}
                                 />
-                                : null
-                            }
-                            <MenuItem
-                                primaryText="Rediger prosjektinfo"
-                                onTouchTap={this.toggleEditProject}
-                            />
-                            <MenuItem
-                                primaryText="Legg til aktivitet"
-                                onTouchTap={this.toggleAddEvent}
-                            />
-                            {isMusicAdmin
-                                ? <MenuItem
-                                    primaryText="Legg til repertoar"
-                                    onTouchTap={this.toggleAddPiece}
+                                <MenuItem
+                                    primaryText="Legg til aktivitet"
+                                    onTouchTap={this.toggleAddEvent}
                                 />
-                                : null
-                            }
-                            <MenuItem
-                                primaryText="Last opp filer"
-                                onTouchTap={this.toggleAddFile}
-                            />
-                        </IconMenu>
+                                {isMusicAdmin
+                                    ? <MenuItem
+                                        primaryText="Legg til repertoar"
+                                        onTouchTap={this.toggleAddPiece}
+                                    />
+                                    : null
+                                }
+                                <MenuItem
+                                    primaryText="Last opp filer"
+                                    onTouchTap={this.toggleAddFile}
+                                />
+                            </IconMenu>
+                        )
                         : null
                     }
                 </div>
@@ -323,29 +327,35 @@ class Project extends React.Component {
                             memberGroupId={memberGroup.id}
                         />
                         {project.publicMdtext
-                            ? <div>
-                                <h2>Informasjon</h2>
-                                <Text text={project.publicMdtext} />
-                            </div>
+                            ? (
+                                <div>
+                                    <h2>Informasjon</h2>
+                                    <Text text={project.publicMdtext} />
+                                </div>
+                            )
                             : null
                         }
                         {isMember && project.privateMdtext
-                            ? <div>
-                                <h2>Intern informasjon</h2>
-                                <Text text={project.privateMdtext} />
-                            </div>
+                            ? (
+                                <div>
+                                    <h2>Intern informasjon</h2>
+                                    <Text text={project.privateMdtext} />
+                                </div>
+                            )
                             : null
                         }
                         {project.music.length
-                            ? <div>
-                                <h2>Repertoar</h2>
-                                <MusicList
-                                    music={project.music}
-                                    isMember={isMember}
-                                    isMusicAdmin={isMusicAdmin}
-                                    remove={this.removePiece}
-                                />
-                            </div>
+                            ? (
+                                <div>
+                                    <h2>Repertoar</h2>
+                                    <MusicList
+                                        music={project.music}
+                                        isMember={isMember}
+                                        isMusicAdmin={isMusicAdmin}
+                                        remove={this.removePiece}
+                                    />
+                                </div>
+                            )
                             : null
                         }
                         {isMember && project.files.edges.length
@@ -378,68 +388,72 @@ class Project extends React.Component {
                             null
                         }
                         {project.events.edges.length
-                            ? <div id="eventList">
-                                {project.events.edges
-                                    .filter((edge) => {
-                                        return this.state.showEnded || !edge.node.isEnded;
-                                    })
-                                    .map((edge) => {
-                                        return (
-                                            <EventItem
-                                                key={edge.node.id}
-                                                event={edge.node}
-                                            />
-                                        );
-                                    })
-                                }
-                            </div>
+                            ? (
+                                <div id="eventList">
+                                    {project.events.edges
+                                        .filter((edge) => {
+                                            return this.state.showEnded || !edge.node.isEnded;
+                                        })
+                                        .map((edge) => {
+                                            return (
+                                                <EventItem
+                                                    key={edge.node.id}
+                                                    event={edge.node}
+                                                />
+                                            );
+                                        })
+                                    }
+                                </div>
+                            )
                             : null
                         }
                     </div>
                 </div>
                 {isMember
-                    ? <div>
-                        <ProjectForm
-                            open={this.state.editProject}
-                            save={this.saveProject}
-                            toggle={this.toggleEditProject}
-                            viewer={this.props.viewer}
-                            organization={this.props.organization}
-                            {...project}
-                        />
-                        <EventForm
-                            title="Legg til aktivitet"
-                            isOpen={this.state.addEvent}
-                            save={this.addEvent}
-                            cancel={this.closeAddEvent}
-                            projectPermissions={{ public: true, groups: [], users: [] }}
-                            viewer={this.props.viewer}
-                            organization={null}
-                        />
-                        <Dialog
-                            title="Last opp filer"
-                            open={this.state.addFile}
-                            onRequestClose={this.closeAddFile}
-                            autoScrollBodyContent
-                        >
-                            <FileUpload
-                                viewer={viewer}
-                                organization={organization}
-                                onDrop={this.onDrop}
+                    ? (
+                        <div>
+                            <ProjectForm
+                                open={this.state.editProject}
+                                save={this.saveProject}
+                                toggle={this.toggleEditProject}
+                                viewer={this.props.viewer}
+                                organization={this.props.organization}
+                                {...project}
                             />
-                            <RaisedButton
-                                label="Ferdig"
-                                primary
-                                onTouchTap={this.closeAddFile}
+                            <EventForm
+                                title="Legg til aktivitet"
+                                isOpen={this.state.addEvent}
+                                save={this.addEvent}
+                                cancel={this.closeAddEvent}
+                                projectPermissions={{ public: true, groups: [], users: [] }}
+                                viewer={this.props.viewer}
+                                organization={null}
                             />
-                        </Dialog>
-                        <ProjectPieceForm
-                            open={this.state.addPiece}
-                            organization={this.props.organization}
-                            toggle={this.closeAddPiece}
-                            save={this.addPiece}
-                        />
-                    </div>
+                            <Dialog
+                                title="Last opp filer"
+                                open={this.state.addFile}
+                                onRequestClose={this.closeAddFile}
+                                autoScrollBodyContent
+                            >
+                                <FileUpload
+                                    viewer={viewer}
+                                    organization={organization}
+                                    onDrop={this.onDrop}
+                                />
+                                <RaisedButton
+                                    label="Ferdig"
+                                    primary
+                                    onTouchTap={this.closeAddFile}
+                                />
+                            </Dialog>
+                            <ProjectPieceForm
+                                open={this.state.addPiece}
+                                organization={this.props.organization}
+                                toggle={this.closeAddPiece}
+                                save={this.addPiece}
+                            />
+                        </div>
+                    )
                     : null
                 }
             </Paper>

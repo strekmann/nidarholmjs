@@ -24,20 +24,22 @@ class Contact extends React.Component {
         return (
             <div>
                 {organization.isAdmin
-                    ? <div style={{ float: 'right' }}>
-                        <IconMenu
-                            iconButtonElement={<IconButton><MoreVertIcon /></IconButton>}
-                            anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
-                            targetOrigin={{ vertical: 'top', horizontal: 'right' }}
-                        >
-                            <MenuItem
-                                primaryText="Rediger kontaktpersoner"
-                                onTouchTap={() => {
-                                    this.setState({ editContacts: !this.state.editContacts });
-                                }}
-                            />
-                        </IconMenu>
-                    </div>
+                    ? (
+                        <div style={{ float: 'right' }}>
+                            <IconMenu
+                                iconButtonElement={<IconButton><MoreVertIcon /></IconButton>}
+                                anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
+                                targetOrigin={{ vertical: 'top', horizontal: 'right' }}
+                            >
+                                <MenuItem
+                                    primaryText="Rediger kontaktpersoner"
+                                    onTouchTap={() => {
+                                        this.setState({ editContacts: !this.state.editContacts });
+                                    }}
+                                />
+                            </IconMenu>
+                        </div>
+                    )
                     : null
                 }
                 <h1>Kontakt oss</h1>

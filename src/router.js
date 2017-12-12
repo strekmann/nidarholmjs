@@ -41,7 +41,7 @@ export function createResolver(fetcher) {
     return new Resolver(environment);
 }
 
-export const routeConfig = makeRouteConfig(
+const routes = (
     <Route
         path="/"
         Component={App}
@@ -311,5 +311,7 @@ export const routeConfig = makeRouteConfig(
             Component={NoMatch}
         />
     </Route>);
+
+export const routeConfig = makeRouteConfig(routes);
 
 export const render = createRender({});

@@ -68,16 +68,18 @@ class Projects extends React.Component {
                 }
                 <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
                     {isMember
-                        ? <IconMenu
-                            iconButtonElement={<IconButton><MoreVertIcon /></IconButton>}
-                            anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
-                            targetOrigin={{ vertical: 'top', horizontal: 'right' }}
-                        >
-                            <MenuItem
-                                primaryText="Nytt prosjekt"
-                                onTouchTap={this.toggleAddProject}
-                            />
-                        </IconMenu>
+                        ? (
+                            <IconMenu
+                                iconButtonElement={<IconButton><MoreVertIcon /></IconButton>}
+                                anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
+                                targetOrigin={{ vertical: 'top', horizontal: 'right' }}
+                            >
+                                <MenuItem
+                                    primaryText="Nytt prosjekt"
+                                    onTouchTap={this.toggleAddProject}
+                                />
+                            </IconMenu>
+                        )
                         : null
                     }
                 </div>

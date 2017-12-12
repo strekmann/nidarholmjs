@@ -158,30 +158,34 @@ class Navigation extends React.Component {
                                 : null
                             }
                             {viewer
-                                ? <Link
-                                    to={`/users/${viewer.id}`}
-                                    style={{
-                                        display: 'flex',
-                                        alignItems: 'center',
-                                        margin: '-5px 0',
-                                        color: 'white',
-                                    }}
-                                >
-                                    {this.renderAvatar()}
-                                    <span>{viewer.name}</span>
-                                </Link>
-                                : <Link
-                                    to="/login"
-                                    style={{
-                                        padding: 0,
-                                        margin: '12px 15px 12px 10px',
-                                    }}
-                                >
-                                    <RaisedButton
-                                        label="Logg inn"
-                                        icon={<ActionLockOpen />}
-                                    />
-                                </Link>
+                                ? (
+                                    <Link
+                                        to={`/users/${viewer.id}`}
+                                        style={{
+                                            display: 'flex',
+                                            alignItems: 'center',
+                                            margin: '-5px 0',
+                                            color: 'white',
+                                        }}
+                                    >
+                                        {this.renderAvatar()}
+                                        <span>{viewer.name}</span>
+                                    </Link>
+                                )
+                                : (
+                                    <Link
+                                        to="/login"
+                                        style={{
+                                            padding: 0,
+                                            margin: '12px 15px 12px 10px',
+                                        }}
+                                    >
+                                        <RaisedButton
+                                            label="Logg inn"
+                                            icon={<ActionLockOpen />}
+                                        />
+                                    </Link>
+                                )
                             }
                         </div>
                     </nav>
@@ -192,15 +196,19 @@ class Navigation extends React.Component {
                     </div>
                     <div>
                         {this.props.viewer
-                            ? <Link to={`/users/${viewer.id}`}>
-                                {this.renderAvatar()}
-                            </Link>
-                            : <Link to="/login">
-                                <RaisedButton
-                                    style={{ minWidth: 44, marginLeft: 10 }}
-                                    icon={<ActionLockOpen />}
-                                />
-                            </Link>
+                            ? (
+                                <Link to={`/users/${viewer.id}`}>
+                                    {this.renderAvatar()}
+                                </Link>
+                            )
+                            : (
+                                <Link to="/login">
+                                    <RaisedButton
+                                        style={{ minWidth: 44, marginLeft: 10 }}
+                                        icon={<ActionLockOpen />}
+                                    />
+                                </Link>
+                            )
                         }
                     </div>
                     <div>
@@ -263,40 +271,50 @@ class Navigation extends React.Component {
                                     </MenuItem>
                                 </Menu>
                                 {isMember
-                                    ? <Menu>
-                                        {isMember
-                                            ? <MenuItem>
-                                                <Link to="/files" onClick={this.handleClose}>
-                                                    Filer
-                                                </Link>
-                                            </MenuItem>
-                                            : null
-                                        }
-                                        {isMember
-                                            ? <MenuItem>
-                                                <Link to="/pages" onClick={this.handleClose}>
-                                                    Sider
-                                                </Link>
-                                            </MenuItem>
-                                            : null
-                                        }
-                                        {isMember
-                                            ? <MenuItem>
-                                                <Link to="/events" onClick={this.handleClose}>
-                                                    Aktiviteter
-                                                </Link>
-                                            </MenuItem>
-                                            : null
-                                        }
-                                        {isMember
-                                            ? <MenuItem>
-                                                <Link to="/music" onClick={this.handleClose}>
-                                                    Notearkiv
-                                                </Link>
-                                            </MenuItem>
-                                            : null
-                                        }
-                                    </Menu>
+                                    ? (
+                                        <Menu>
+                                            {isMember
+                                                ? (
+                                                    <MenuItem>
+                                                        <Link to="/files" onClick={this.handleClose}>
+                                                            Filer
+                                                        </Link>
+                                                    </MenuItem>
+                                                )
+                                                : null
+                                            }
+                                            {isMember
+                                                ? (
+                                                    <MenuItem>
+                                                        <Link to="/pages" onClick={this.handleClose}>
+                                                            Sider
+                                                        </Link>
+                                                    </MenuItem>
+                                                )
+                                                : null
+                                            }
+                                            {isMember
+                                                ? (
+                                                    <MenuItem>
+                                                        <Link to="/events" onClick={this.handleClose}>
+                                                            Aktiviteter
+                                                        </Link>
+                                                    </MenuItem>
+                                                )
+                                                : null
+                                            }
+                                            {isMember
+                                                ? (
+                                                    <MenuItem>
+                                                        <Link to="/music" onClick={this.handleClose}>
+                                                            Notearkiv
+                                                        </Link>
+                                                    </MenuItem>
+                                                )
+                                                : null
+                                            }
+                                        </Menu>
+                                    )
                                     : null
                                 }
                             </nav>

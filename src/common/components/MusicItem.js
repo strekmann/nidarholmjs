@@ -23,14 +23,16 @@ export default class MusicItem extends React.Component {
                     secondaryText={music.piece.composers}
                     containerElement={<Link to={`/music/${music.piece.id}`} />}
                     rightIconButton={this.props.isMusicAdmin
-                        ? <IconButton
-                            onClick={(event) => {
-                                event.preventDefault();
-                                this.props.remove(music.piece);
-                            }}
-                        >
-                            <CloseIcon />
-                        </IconButton>
+                        ? (
+                            <IconButton
+                                onClick={(event) => {
+                                    event.preventDefault();
+                                    this.props.remove(music.piece);
+                                }}
+                            >
+                                <CloseIcon />
+                            </IconButton>
+                        )
                         : null
                     }
                 />

@@ -37,7 +37,6 @@ class Pieces extends React.Component {
 
     state = {
         addPiece: false,
-        newPiece: false,
         term: '',
     }
 
@@ -64,10 +63,6 @@ class Pieces extends React.Component {
             variables.term = '';
             return variables;
         });
-    }
-
-    handleClickNewPiece = () => {
-        this.setState({ newPiece: true });
     }
 
     search = (term) => {

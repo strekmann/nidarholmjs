@@ -107,61 +107,65 @@ class PieceForm extends React.Component {
                 }
             >
                 {this.state.searching
-                    ? <div>
-                        <p>Søk blant stykkene som allerede er i arkivet, og legg til nytt hvis det ikke finnes</p>
-                        <AutoComplete
-                            dataSource={this.props.pieces.edges.map((edge) => {
-                                const piece = edge.node;
-                                return {
-                                    text: `${piece.scoreCount}: ${piece.title} - ${piece.composers} (${piece.arrangers})`,
-                                    value: piece,
-                                };
-                            })}
-                            floatingLabelText="Tittel"
-                            onNewRequest={(selected) => {
-                                this.goToPiece(selected.value);
-                            }}
-                            onUpdateInput={(text) => {
-                                this.search(text);
-                            }}
-                            filter={() => {
-                                return true;
-                            }}
-                            fullWidth
-                        />
-                    </div>
-                    : <div>
+                    ? (
                         <div>
-                            <TextField
+                            <p>Søk blant stykkene som allerede er i arkivet, og legg til nytt hvis det ikke finnes</p>
+                            <AutoComplete
+                                dataSource={this.props.pieces.edges.map((edge) => {
+                                    const piece = edge.node;
+                                    return {
+                                        text: `${piece.scoreCount}: ${piece.title} - ${piece.composers} (${piece.arrangers})`,
+                                        value: piece,
+                                    };
+                                })}
                                 floatingLabelText="Tittel"
-                                onChange={this.handleChangeTitle}
-                                value={this.state.title}
+                                onNewRequest={(selected) => {
+                                    this.goToPiece(selected.value);
+                                }}
+                                onUpdateInput={(text) => {
+                                    this.search(text);
+                                }}
+                                filter={() => {
+                                    return true;
+                                }}
+                                fullWidth
                             />
                         </div>
+                    )
+                    : (
                         <div>
-                            <TextField
-                                floatingLabelText="Undertittel"
-                                onChange={this.handleChangeSubtitle}
-                                value={this.state.subtitle}
-                            />
+                            <div>
+                                <TextField
+                                    floatingLabelText="Tittel"
+                                    onChange={this.handleChangeTitle}
+                                    value={this.state.title}
+                                />
+                            </div>
+                            <div>
+                                <TextField
+                                    floatingLabelText="Undertittel"
+                                    onChange={this.handleChangeSubtitle}
+                                    value={this.state.subtitle}
+                                />
+                            </div>
+                            <div>
+                                <TextField
+                                    floatingLabelText="Komponist(er)"
+                                    onChange={this.handleChangeComposers}
+                                    value={this.state.composers}
+                                    hintText="Bruk komma som skilletegn"
+                                />
+                            </div>
+                            <div>
+                                <TextField
+                                    floatingLabelText="Arrangør(er)"
+                                    onChange={this.handleChangeArrangers}
+                                    value={this.state.arrangers}
+                                    hintText="Bruk komma som skilletegn"
+                                />
+                            </div>
                         </div>
-                        <div>
-                            <TextField
-                                floatingLabelText="Komponist(er)"
-                                onChange={this.handleChangeComposers}
-                                value={this.state.composers}
-                                hintText="Bruk komma som skilletegn"
-                            />
-                        </div>
-                        <div>
-                            <TextField
-                                floatingLabelText="Arrangør(er)"
-                                onChange={this.handleChangeArrangers}
-                                value={this.state.arrangers}
-                                hintText="Bruk komma som skilletegn"
-                            />
-                        </div>
-                    </div>
+                    )
                 }
             </Dialog>
         );

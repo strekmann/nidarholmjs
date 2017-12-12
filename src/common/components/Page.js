@@ -43,22 +43,6 @@ class Page extends React.Component {
         return { muiTheme: this.muiTheme };
     }
 
-    onChangeSlug = (event, slug) => {
-        this.setState({ slug });
-    }
-
-    onChangeTitle = (event, title) => {
-        this.setState({ title });
-    }
-
-    onChangeSummary = (event, summary) => {
-        this.setState({ summary });
-    }
-
-    onChangeContent = (event, mdtext) => {
-        this.setState({ mdtext });
-    }
-
     toggleEdit = () => {
         this.setState({
             edit: !this.state.edit,
@@ -103,15 +87,17 @@ class Page extends React.Component {
         return (
             <Paper className="row">
                 {isMember
-                    ? <div style={{ float: 'right' }}>
-                        <IconMenu
-                            iconButtonElement={<IconButton><MoreVertIcon /></IconButton>}
-                            anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
-                            targetOrigin={{ vertical: 'top', horizontal: 'right' }}
-                        >
-                            <MenuItem primaryText="Rediger" onTouchTap={this.toggleEdit} />
-                        </IconMenu>
-                    </div>
+                    ? (
+                        <div style={{ float: 'right' }}>
+                            <IconMenu
+                                iconButtonElement={<IconButton><MoreVertIcon /></IconButton>}
+                                anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
+                                targetOrigin={{ vertical: 'top', horizontal: 'right' }}
+                            >
+                                <MenuItem primaryText="Rediger" onTouchTap={this.toggleEdit} />
+                            </IconMenu>
+                        </div>
+                    )
                     : null
                 }
                 <Text text={organization.page.mdtext} />

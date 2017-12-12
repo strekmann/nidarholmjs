@@ -51,36 +51,42 @@ class Reset extends React.Component {
 
     render() {
         const { desktopGutterLess } = theme.spacing;
+        const sentMessage = 'Hvis du er registrert i systemet vil du snart motta en epost med en lenke til hvor du kan endre passordet.';
+        const forgottenPasswordMessage = 'Om du har glemt passordet, eller ikke fått noe passord til å begynne med, kan du få tilsendt en lenke hvor du kan sette nytt passord på epost. Vi trenger derfor epostadresse for å finne deg i databasen.';
         return (
             <section>
                 <Paper style={{ padding: desktopGutterLess }}>
                     <h1>Nytt passord</h1>
                     {this.state.sent
-                        ? <div>
-                            <p>Hvis du er registrert i systemet vil du snart motta en epost med en lenke til hvor du kan endre passordet.</p>
-                        </div>
-                        : <div>
-                            <p>Om du har glemt passordet, eller ikke fått noe passord til å begynne med, kan du få tilsendt en lenke hvor du kan sette nytt passord på epost. Vi trenger derfor epostadresse for å finne deg i databasen.</p>
-                            <form onSubmit={this.sendReset}>
-                                <div>
-                                    <TextField
-                                        floatingLabelText="E-postadresse"
-                                        name="email"
-                                        onChange={this.onChangeEmail}
-                                        required
-                                        type="email"
-                                        value={this.state.email}
-                                    />
-                                </div>
-                                <div>
-                                    <RaisedButton
-                                        label="Send"
-                                        type="submit"
-                                        primary
-                                    />
-                                </div>
-                            </form>
-                        </div>
+                        ? (
+                            <div>
+                                <p>{ sentMessage }</p>
+                            </div>
+                        )
+                        : (
+                            <div>
+                                <p>{forgottenPasswordMessage}</p>
+                                <form onSubmit={this.sendReset}>
+                                    <div>
+                                        <TextField
+                                            floatingLabelText="E-postadresse"
+                                            name="email"
+                                            onChange={this.onChangeEmail}
+                                            required
+                                            type="email"
+                                            value={this.state.email}
+                                        />
+                                    </div>
+                                    <div>
+                                        <RaisedButton
+                                            label="Send"
+                                            type="submit"
+                                            primary
+                                        />
+                                    </div>
+                                </form>
+                            </div>
+                        )
                     }
                 </Paper>
             </section>

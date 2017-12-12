@@ -1,11 +1,11 @@
 const PREFIX = 'connection:';
 
 function base64(str) {
-    return new Buffer(str, 'ascii').toString('base64');
+    return Buffer.from(str, 'ascii').toString('base64');
 }
 
 function unbase64(b64) {
-    return new Buffer(b64, 'base64').toString('ascii');
+    return Buffer.from(b64, 'base64').toString('ascii');
 }
 
 export function offsetToCursor(offset) {
@@ -21,7 +21,7 @@ function getOffsetWithDefault(cursor, defaultOffset) {
         return defaultOffset;
     }
     const offset = cursorToOffset(cursor);
-    return isNaN(offset) ? defaultOffset : offset;
+    return Number.isNaN(offset) ? defaultOffset : offset;
 }
 
 function getOffsetsFromArgs(inArgs, count) {

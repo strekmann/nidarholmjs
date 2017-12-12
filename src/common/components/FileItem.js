@@ -1,4 +1,3 @@
-import Link from 'found/lib/Link';
 import { Card, CardTitle, CardMedia, CardActions } from 'material-ui/Card';
 import Chip from 'material-ui/Chip';
 import MoreVertIcon from 'material-ui/svg-icons/navigation/more-vert';
@@ -132,13 +131,15 @@ class FileItem extends React.Component {
                 </CardTitle>
                 {this.props.isImage
                     ? <CardMedia><img alt="" src={this.props.thumbnailPath} /></CardMedia>
-                    : <a
-                        style={{ display: 'block', textAlign: 'center' }}
-                        href={this.props.path}
-                        download
-                    >
-                        <Download style={{ height: 100, width: '100%' }} color={grey400} />
-                    </a>
+                    : (
+                        <a
+                            style={{ display: 'block', textAlign: 'center' }}
+                            href={this.props.path}
+                            download
+                        >
+                            <Download style={{ height: 100, width: '100%' }} color={grey400} />
+                        </a>
+                    )
                 }
                 <CardActions style={{ display: 'flex', flexWrap: 'wrap' }}>
                     <PermissionChips
@@ -159,25 +160,27 @@ class FileItem extends React.Component {
                     })}
                 </CardActions>
                 {this.state.editPermissions
-                    ? <Dialog
-                        title="Rediger rettigheter"
-                        open={this.state.editPermissions}
-                        onRequestClose={this.closeEditPermissions}
-                        autoScrollBodyContent
-                    >
-                        <PermissionField
-                            permissions={this.state.permissions}
-                            onChange={this.onPermissionChange}
-                            groups={this.props.viewer.groups}
-                            users={this.props.viewer.friends}
-                        />
-                        <TagField
-                            organization={this.props.organization}
-                            onChange={this.onTagChange}
-                            fileTags={this.props.tags}
-                        />
-                        <RaisedButton label="Lagre" onClick={this.savePermissions} primary />
-                    </Dialog>
+                    ? (
+                        <Dialog
+                            title="Rediger rettigheter"
+                            open={this.state.editPermissions}
+                            onRequestClose={this.closeEditPermissions}
+                            autoScrollBodyContent
+                        >
+                            <PermissionField
+                                permissions={this.state.permissions}
+                                onChange={this.onPermissionChange}
+                                groups={this.props.viewer.groups}
+                                users={this.props.viewer.friends}
+                            />
+                            <TagField
+                                organization={this.props.organization}
+                                onChange={this.onTagChange}
+                                fileTags={this.props.tags}
+                            />
+                            <RaisedButton label="Lagre" onClick={this.savePermissions} primary />
+                        </Dialog>
+                    )
                     : null
                 }
             </Card>

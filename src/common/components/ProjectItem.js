@@ -38,13 +38,15 @@ class ProjectItem extends React.Component {
             return (
                 <Paper style={{ marginBottom: desktopGutterLess }}>
                     {poster
-                        ? <Link to={`/${year}/${tag}`}>
-                            <img
-                                alt=""
-                                src={poster.normalPath}
-                                className="responsive"
-                            />
-                        </Link>
+                        ? (
+                            <Link to={`/${year}/${tag}`}>
+                                <img
+                                    alt=""
+                                    src={poster.normalPath}
+                                    className="responsive"
+                                />
+                            </Link>
+                        )
                         : null
                     }
                     <div
@@ -68,14 +70,16 @@ class ProjectItem extends React.Component {
                             />
                         </div>
                         {conductors.length
-                            ? <p>Dirigent:
-                                {' '}
-                                <List
-                                    items={conductors.map((conductor) => {
-                                        return conductor.name;
-                                    })}
-                                />
-                            </p>
+                            ? (
+                                <p>Dirigent:
+                                    {' '}
+                                    <List
+                                        items={conductors.map((conductor) => {
+                                            return conductor.name;
+                                        })}
+                                    />
+                                </p>
+                            )
                             : null
                         }
                         {showText
@@ -102,14 +106,16 @@ class ProjectItem extends React.Component {
                         />
                     </div>
                     {conductors.length
-                        ? <p>Dirigent:
-                            {' '}
-                            <List
-                                items={conductors.map((conductor) => {
-                                    return conductor.name;
-                                })}
-                            />
-                        </p>
+                        ? (
+                            <p>Dirigent:
+                                {' '}
+                                <List
+                                    items={conductors.map((conductor) => {
+                                        return conductor.name;
+                                    })}
+                                />
+                            </p>
+                        )
                         : null
                     }
                     {showText

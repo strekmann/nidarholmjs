@@ -74,30 +74,31 @@ class Pages extends React.Component {
                         savePage={this.addPage}
                         {...this.state.page}
                     />
-                    : <div>
-                        <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                            <div>
-                                <h1>Sider</h1>
+                    : (
+                        <div>
+                            <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                                <div>
+                                    <h1>Sider</h1>
+                                </div>
+                                <IconMenu
+                                    iconButtonElement={<IconButton><MoreVertIcon /></IconButton>}
+                                    anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
+                                    targetOrigin={{ vertical: 'top', horizontal: 'right' }}
+                                >
+                                    <MenuItem primaryText="Legg til side" onTouchTap={this.toggleAddPage} />
+                                </IconMenu>
                             </div>
-                            <IconMenu
-                                iconButtonElement={<IconButton><MoreVertIcon /></IconButton>}
-                                anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
-                                targetOrigin={{ vertical: 'top', horizontal: 'right' }}
-                            >
-                                <MenuItem primaryText="Legg til side" onTouchTap={this.toggleAddPage} />
-                            </IconMenu>
+                            <PageList
+                                pages={org.pages}
+                                isAdmin={org.isAdmin}
+                                memberGroupId={org.memberGroup.id}
+                            />
+                            {org.pages.pageInfo.hasNextPage
+                                ? <RaisedButton primary>Mer</RaisedButton>
+                                : null
+                            }
                         </div>
-                        <PageList
-                            pages={org.pages}
-                            isAdmin={org.isAdmin}
-                            memberGroupId={org.memberGroup.id}
-                        />
-                        {org.pages.pageInfo.hasNextPage ?
-                            <RaisedButton primary>Mer</RaisedButton>
-                            :
-                            null
-                        }
-                    </div>
+                    )
                 }
             </Paper>
         );

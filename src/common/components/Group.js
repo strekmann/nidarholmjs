@@ -145,175 +145,181 @@ class Group extends React.Component {
         return (
             <section>
                 {isAdmin
-                    ? <Paper className="row">
-                        <Dialog
-                            title="Legg til gruppemedlem"
-                            open={this.state.joinGroup}
-                            onRequestClose={this.closeJoinGroup}
-                            autoScrollBodyContent
-                            actions={<FlatButton label="Avbryt" onTouchTap={this.closeJoinGroup} />}
-                        >
-                            <AutoComplete
-                                dataSource={organization.users.map((user) => {
-                                    return { text: `${user.name} (${user.username})`, value: user };
-                                })}
-                                floatingLabelText="Navn"
-                                onNewRequest={this.joinGroup}
-                                filter={AutoComplete.fuzzyFilter}
-                                fullWidth
-                            />
-                        </Dialog>
-                        <Dialog
-                            title="Epostinnstillinger"
-                            open={this.state.editing}
-                            onRequestClose={this.closeEditing}
-                            autoScrollBodyContent
-                            actions={[
-                                <FlatButton label="Avbryt" onTouchTap={this.closeEditing} />,
-                                <FlatButton label="Lagre" primary onTouchTap={this.onSave} />,
-                            ]}
-                        >
-                            <div>
-                                <TextField
-                                    floatingLabelText="Epost til liste"
-                                    onChange={(event, email) => {
-                                        this.setState({ email });
-                                    }}
-                                    value={this.state.email}
+                    ? (
+                        <Paper className="row">
+                            <Dialog
+                                title="Legg til gruppemedlem"
+                                open={this.state.joinGroup}
+                                onRequestClose={this.closeJoinGroup}
+                                autoScrollBodyContent
+                                actions={<FlatButton label="Avbryt" onTouchTap={this.closeJoinGroup} />}
+                            >
+                                <AutoComplete
+                                    dataSource={organization.users.map((user) => {
+                                        return { text: `${user.name} (${user.username})`, value: user };
+                                    })}
+                                    floatingLabelText="Navn"
+                                    onNewRequest={this.joinGroup}
+                                    filter={AutoComplete.fuzzyFilter}
+                                    fullWidth
                                 />
-                            </div>
-                            {instrumentGroups.some((g) => {
-                                return group.id === g.id;
-                            })
-                                ? <div>
+                            </Dialog>
+                            <Dialog
+                                title="Epostinnstillinger"
+                                open={this.state.editing}
+                                onRequestClose={this.closeEditing}
+                                autoScrollBodyContent
+                                actions={[
+                                    <FlatButton label="Avbryt" onTouchTap={this.closeEditing} />,
+                                    <FlatButton label="Lagre" primary onTouchTap={this.onSave} />,
+                                ]}
+                            >
+                                <div>
                                     <TextField
-                                        floatingLabelText="Epostalias til gruppeleder"
-                                        onChange={(event, groupLeaderEmail) => {
-                                            this.setState({ groupLeaderEmail });
+                                        floatingLabelText="Epost til liste"
+                                        onChange={(event, email) => {
+                                            this.setState({ email });
                                         }}
-                                        value={this.state.groupLeaderEmail}
+                                        value={this.state.email}
                                     />
                                 </div>
-                                : null
-                            }
-                        </Dialog>
-                        <Toolbar style={{ backgroundColor: theme.palette.fullWhite }}>
-                            <ToolbarGroup firstChild>
-                                <Link to="/groups">Alle grupper</Link>
-                            </ToolbarGroup>
-                            <ToolbarGroup lastChild>
-                                <IconMenu
-                                    iconButtonElement={<IconButton><MoreVertIcon /></IconButton>}
-                                    anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
-                                    targetOrigin={{ vertical: 'top', horizontal: 'right' }}
-                                >
-                                    <MenuItem
-                                        primaryText="Legg til gruppemedlem"
-                                        onTouchTap={() => {
-                                            this.setState({ joinGroup: !this.state.joinGroup });
-                                        }}
-                                    />
-                                    <MenuItem
-                                        primaryText="Epostinnstillinger"
-                                        onTouchTap={() => {
-                                            this.setState({ editing: true });
-                                        }}
-                                    />
-                                </IconMenu>
-                            </ToolbarGroup>
-                        </Toolbar>
-                        <div>
-                            <h1>{group.name}</h1>
-                            {group.email
-                                ? <p>Epost til liste: <a href={`mailto:${group.email}`}>{group.email}</a></p>
-                                : null
-                            }
-                            {group.groupLeaderEmail
-                                ? <p>Epost til gruppeleder <a href={`mailto:${group.groupLeaderEmail}`}>{group.groupLeaderEmail}</a></p>
-                                : null
-                            }
-                            <List>
-                                <Divider />
-                                {members.map((member) => {
-                                    const isGroupLeader = member.roles.some((role) => {
-                                        return !!role.name;
-                                    });
-                                    return (
-                                        <div
-                                            key={member.id}
-                                        >
-                                            <Dialog
-                                                title="Sett som gruppeleder"
-                                                open={!!this.state.addingGroupLeader}
-                                                onRequestClose={this.closeAddingGroupLeader}
-                                            >
-                                                <p>Velg en rolle fra lista under</p>
-                                                <AutoComplete
-                                                    dataSource={roles.edges.map((edge) => {
-                                                        return {
-                                                            text: edge.node.name,
-                                                            value: edge.node.id,
-                                                        };
-                                                    })}
-                                                    floatingLabelText="Rolle"
-                                                    onNewRequest={this.setGroupLeader}
-                                                    openOnFocus
-                                                    filter={AutoComplete.fuzzyFilter}
-                                                    fullWidth
-                                                />
-                                            </Dialog>
-                                            <ListItem
-                                                disabled
-                                                primaryText={member.user.name}
-                                                secondaryText={member.roles.map((role) => {
-                                                    return role.name;
-                                                }).join(', ')}
-                                                rightIconButton={
-                                                    <IconMenu
-                                                        iconButtonElement={
-                                                            <IconButton>
-                                                                <MoreVertIcon />
-                                                            </IconButton>
-                                                        }
-                                                        anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
-                                                        targetOrigin={{ vertical: 'top', horizontal: 'right' }}
-                                                    >
-                                                        <MenuItem
-                                                            primaryText="Gå til brukerside"
-                                                            insetChildren
-                                                            containerElement={<Link to={`/users/${member.user.id}`} />}
-                                                        />
-                                                        <MenuItem
-                                                            primaryText="Fjern fra gruppe"
-                                                            insetChildren
-                                                            onClick={(event) => {
-                                                                event.preventDefault();
-                                                                return this.leaveGroup(
-                                                                    member.user,
-                                                                    group,
-                                                                );
-                                                            }}
-                                                        />
-                                                        <MenuItem
-                                                            primaryText="Gruppeleder"
-                                                            checked={isGroupLeader}
-                                                            insetChildren
-                                                            onClick={() => {
-                                                                this.toggleGroupLeader(
-                                                                    member,
-                                                                    isGroupLeader,
-                                                                );
-                                                            }}
-                                                        />
-                                                    </IconMenu>
-                                                }
+                                {instrumentGroups.some((g) => {
+                                    return group.id === g.id;
+                                })
+                                    ? (
+                                        <div>
+                                            <TextField
+                                                floatingLabelText="Epostalias til gruppeleder"
+                                                onChange={(event, groupLeaderEmail) => {
+                                                    this.setState({ groupLeaderEmail });
+                                                }}
+                                                value={this.state.groupLeaderEmail}
                                             />
                                         </div>
-                                    );
-                                })}
-                            </List>
-                        </div>
-                    </Paper>
+                                    )
+                                    : null
+                                }
+                            </Dialog>
+                            <Toolbar style={{ backgroundColor: theme.palette.fullWhite }}>
+                                <ToolbarGroup firstChild>
+                                    <Link to="/groups">Alle grupper</Link>
+                                </ToolbarGroup>
+                                <ToolbarGroup lastChild>
+                                    <IconMenu
+                                        iconButtonElement={
+                                            <IconButton><MoreVertIcon /></IconButton>
+                                        }
+                                        anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
+                                        targetOrigin={{ vertical: 'top', horizontal: 'right' }}
+                                    >
+                                        <MenuItem
+                                            primaryText="Legg til gruppemedlem"
+                                            onTouchTap={() => {
+                                                this.setState({ joinGroup: !this.state.joinGroup });
+                                            }}
+                                        />
+                                        <MenuItem
+                                            primaryText="Epostinnstillinger"
+                                            onTouchTap={() => {
+                                                this.setState({ editing: true });
+                                            }}
+                                        />
+                                    </IconMenu>
+                                </ToolbarGroup>
+                            </Toolbar>
+                            <div>
+                                <h1>{group.name}</h1>
+                                {group.email
+                                    ? <p>Epost til liste: <a href={`mailto:${group.email}`}>{group.email}</a></p>
+                                    : null
+                                }
+                                {group.groupLeaderEmail
+                                    ? <p>Epost til gruppeleder <a href={`mailto:${group.groupLeaderEmail}`}>{group.groupLeaderEmail}</a></p>
+                                    : null
+                                }
+                                <List>
+                                    <Divider />
+                                    {members.map((member) => {
+                                        const isGroupLeader = member.roles.some((role) => {
+                                            return !!role.name;
+                                        });
+                                        return (
+                                            <div
+                                                key={member.id}
+                                            >
+                                                <Dialog
+                                                    title="Sett som gruppeleder"
+                                                    open={!!this.state.addingGroupLeader}
+                                                    onRequestClose={this.closeAddingGroupLeader}
+                                                >
+                                                    <p>Velg en rolle fra lista under</p>
+                                                    <AutoComplete
+                                                        dataSource={roles.edges.map((edge) => {
+                                                            return {
+                                                                text: edge.node.name,
+                                                                value: edge.node.id,
+                                                            };
+                                                        })}
+                                                        floatingLabelText="Rolle"
+                                                        onNewRequest={this.setGroupLeader}
+                                                        openOnFocus
+                                                        filter={AutoComplete.fuzzyFilter}
+                                                        fullWidth
+                                                    />
+                                                </Dialog>
+                                                <ListItem
+                                                    disabled
+                                                    primaryText={member.user.name}
+                                                    secondaryText={member.roles.map((role) => {
+                                                        return role.name;
+                                                    }).join(', ')}
+                                                    rightIconButton={
+                                                        <IconMenu
+                                                            iconButtonElement={
+                                                                <IconButton>
+                                                                    <MoreVertIcon />
+                                                                </IconButton>
+                                                            }
+                                                            anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
+                                                            targetOrigin={{ vertical: 'top', horizontal: 'right' }}
+                                                        >
+                                                            <MenuItem
+                                                                primaryText="Gå til brukerside"
+                                                                insetChildren
+                                                                containerElement={<Link to={`/users/${member.user.id}`} />}
+                                                            />
+                                                            <MenuItem
+                                                                primaryText="Fjern fra gruppe"
+                                                                insetChildren
+                                                                onClick={(event) => {
+                                                                    event.preventDefault();
+                                                                    return this.leaveGroup(
+                                                                        member.user,
+                                                                        group,
+                                                                    );
+                                                                }}
+                                                            />
+                                                            <MenuItem
+                                                                primaryText="Gruppeleder"
+                                                                checked={isGroupLeader}
+                                                                insetChildren
+                                                                onClick={() => {
+                                                                    this.toggleGroupLeader(
+                                                                        member,
+                                                                        isGroupLeader,
+                                                                    );
+                                                                }}
+                                                            />
+                                                        </IconMenu>
+                                                    }
+                                                />
+                                            </div>
+                                        );
+                                    })}
+                                </List>
+                            </div>
+                        </Paper>
+                    )
                     : null
                 }
             </section>

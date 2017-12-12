@@ -63,55 +63,59 @@ class ContactForm extends React.Component {
                 autoScrollBodyContent
             >
                 {this.state.sent
-                    ? <div>
-                        <p>Du vil få en bekreftelse på epost også</p>
+                    ? (
                         <div>
-                            <RaisedButton
-                                label="Lukk"
-                                onTouchTap={this.close}
-                            />
+                            <p>Du vil få en bekreftelse på epost også</p>
+                            <div>
+                                <RaisedButton
+                                    label="Lukk"
+                                    onTouchTap={this.close}
+                                />
+                            </div>
                         </div>
-                    </div>
-                    : <form onSubmit={this.sendEmail}>
-                        <p>Herfra kan du sende epost til styret i Nidarholm. Du kan også sende vanlig epost til <span dangerouslySetInnerHTML={{ __html: encodedEmail }} /> om du heller foretrekker det.</p>
-                        <div>
-                            <TextField
-                                floatingLabelText="Ditt navn"
-                                onChange={this.onChangeName}
-                                value={this.state.name}
-                                required
-                            />
-                        </div>
-                        <div>
-                            <TextField
-                                floatingLabelText="Din e-postadresse"
-                                onChange={this.onChangeEmail}
-                                value={this.state.email}
-                                required
-                            />
-                        </div>
-                        <div>
-                            <TextField
-                                floatingLabelText="Melding"
-                                onChange={this.onChangeText}
-                                value={this.state.text}
-                                multiLine
-                                fullWidth
-                            />
-                        </div>
-                        <div>
-                            <RaisedButton
-                                type="submit"
-                                label="Send"
-                                primary
-                            />
-                            <RaisedButton
-                                type="reset"
-                                label="Avbryt"
-                                onTouchTap={this.close}
-                            />
-                        </div>
-                    </form>
+                    )
+                    : (
+                        <form onSubmit={this.sendEmail}>
+                            <p>Herfra kan du sende epost til styret i Nidarholm. Du kan også sende vanlig epost til <span dangerouslySetInnerHTML={{ __html: encodedEmail }} /> om du heller foretrekker det.</p>
+                            <div>
+                                <TextField
+                                    floatingLabelText="Ditt navn"
+                                    onChange={this.onChangeName}
+                                    value={this.state.name}
+                                    required
+                                />
+                            </div>
+                            <div>
+                                <TextField
+                                    floatingLabelText="Din e-postadresse"
+                                    onChange={this.onChangeEmail}
+                                    value={this.state.email}
+                                    required
+                                />
+                            </div>
+                            <div>
+                                <TextField
+                                    floatingLabelText="Melding"
+                                    onChange={this.onChangeText}
+                                    value={this.state.text}
+                                    multiLine
+                                    fullWidth
+                                />
+                            </div>
+                            <div>
+                                <RaisedButton
+                                    type="submit"
+                                    label="Send"
+                                    primary
+                                />
+                                <RaisedButton
+                                    type="reset"
+                                    label="Avbryt"
+                                    onTouchTap={this.close}
+                                />
+                            </div>
+                        </form>
+                    )
                 }
             </Dialog>
         );

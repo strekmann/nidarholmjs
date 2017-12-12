@@ -103,18 +103,20 @@ class Roles extends React.Component {
                 <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                     <h1>Verv og roller</h1>
                     {isAdmin
-                        ? <IconMenu
-                            iconButtonElement={<IconButton><MoreVertIcon /></IconButton>}
-                            anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
-                            targetOrigin={{ vertical: 'top', horizontal: 'right' }}
-                        >
-                            <MenuItem
-                                primaryText="Legg til ny rolle"
-                                onTouchTap={() => {
-                                    this.setState({ creating: true });
-                                }}
-                            />
-                        </IconMenu>
+                        ? (
+                            <IconMenu
+                                iconButtonElement={<IconButton><MoreVertIcon /></IconButton>}
+                                anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
+                                targetOrigin={{ vertical: 'top', horizontal: 'right' }}
+                            >
+                                <MenuItem
+                                    primaryText="Legg til ny rolle"
+                                    onTouchTap={() => {
+                                        this.setState({ creating: true });
+                                    }}
+                                />
+                            </IconMenu>
+                        )
                         : null
                     }
                 </div>

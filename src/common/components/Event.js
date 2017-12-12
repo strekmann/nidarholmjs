@@ -111,14 +111,16 @@ class Event extends React.Component {
                 <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                     <h1>{event.title}</h1>
                     {isMember
-                        ? <IconMenu
-                            iconButtonElement={<IconButton><MoreVertIcon /></IconButton>}
-                            anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
-                            targetOrigin={{ vertical: 'top', horizontal: 'right' }}
-                        >
-                            <MenuItem primaryText="Rediger" onTouchTap={this.toggleEdit} />
-                            <MenuItem primaryText="Slett" onTouchTap={this.toggleDelete} />
-                        </IconMenu>
+                        ? (
+                            <IconMenu
+                                iconButtonElement={<IconButton><MoreVertIcon /></IconButton>}
+                                anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
+                                targetOrigin={{ vertical: 'top', horizontal: 'right' }}
+                            >
+                                <MenuItem primaryText="Rediger" onTouchTap={this.toggleEdit} />
+                                <MenuItem primaryText="Slett" onTouchTap={this.toggleDelete} />
+                            </IconMenu>
+                        )
                         : null
                     }
                 </div>
@@ -139,29 +141,31 @@ class Event extends React.Component {
                     );
                 })}
                 {isMember
-                    ? <div>
-                        <EventForm
-                            event={event}
-                            organization={this.props.organization}
-                            viewer={viewer}
-                            isOpen={this.state.editing}
-                            title="Rediger aktivitet"
-                            save={this.saveEvent}
-                            cancel={this.closeEdit}
-                        />
-                        <Dialog
-                            title="Slett aktivitet"
-                            open={this.state.deleting}
-                            onRequestClose={this.closeDelete}
-                            autoScrollBodyContent
-                            actions={[
-                                <FlatButton onTouchTap={this.closeDelete} label="Avbryt" />,
-                                <FlatButton primary onTouchTap={this.deleteEvent} label="Slett" />,
-                            ]}
-                        >
-                            <p>{event.title}</p>
-                        </Dialog>
-                    </div>
+                    ? (
+                        <div>
+                            <EventForm
+                                event={event}
+                                organization={this.props.organization}
+                                viewer={viewer}
+                                isOpen={this.state.editing}
+                                title="Rediger aktivitet"
+                                save={this.saveEvent}
+                                cancel={this.closeEdit}
+                            />
+                            <Dialog
+                                title="Slett aktivitet"
+                                open={this.state.deleting}
+                                onRequestClose={this.closeDelete}
+                                autoScrollBodyContent
+                                actions={[
+                                    <FlatButton onTouchTap={this.closeDelete} label="Avbryt" />,
+                                    <FlatButton primary onTouchTap={this.deleteEvent} label="Slett" />,
+                                ]}
+                            >
+                                <p>{event.title}</p>
+                            </Dialog>
+                        </div>
+                    )
                     : null
                 }
             </Paper>
