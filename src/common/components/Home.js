@@ -140,10 +140,12 @@ class Home extends React.Component {
                                 }
                                 <Link
                                     to={`/${nextProject.year}/${nextProject.tag}`}
+                                    className="header"
                                     style={{
                                         fontSize: '3rem',
                                         paddingTop: '1.5rem',
                                         paddingBottom: '1.5rem',
+                                        lineHeight: '1',
                                     }}
                                 >
                                     {nextProject.title}

@@ -64,8 +64,8 @@ class Footer extends React.Component {
                         <i className="fa fa-fw fa-twitter fa-3x" />
                     </a>
                     <div
+                        className="header"
                         style={{
-                            fontFamily: 'Merriweather, serif',
                             fontSize: '1.0rem',
                             marginTop: 20,
                         }}

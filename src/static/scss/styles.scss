@@ -93,15 +93,21 @@ img {
 h1 {
     font-family: $serif-font;
     font-size: 28px;
+    font-weight: normal;
 }
 
 h2 {
     font-family: $serif-font;
     font-size: 22px;
+    font-weight: normal;
 }
 h3 {
-    font-family: $sans-font;
-    font-size: 18px;
+    font-family: $serif-font;
+    font-size: 17px;
+    font-weight: normal;
+}
+.header {
+    font-family: $serif-font;
 }
 .noMargins p {
     margin-top: 0;
