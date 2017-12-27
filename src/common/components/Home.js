@@ -194,7 +194,7 @@ class Home extends React.Component {
                                     })}
                                 </div>
                                 <div>
-                                    <Link to="events">
+                                    <Link to="/events">
                                         Aktivitetskalender
                                     </Link>
                                 </div>
