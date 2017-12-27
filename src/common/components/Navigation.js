@@ -131,6 +131,9 @@ class Navigation extends React.Component {
                             <Link to="/stott-oss" style={{ color: 'white' }}>
                                 Støtt oss
                             </Link>
+                            <Link to="/contact" style={{ color: 'white' }}>
+                                Kontakt
+                            </Link>
                         </div>
                         <div
                             style={{
@@ -267,6 +270,14 @@ class Navigation extends React.Component {
                                             onClick={this.handleClose}
                                         >
                                             Støtt oss
+                                        </Link>
+                                    </MenuItem>
+                                    <MenuItem>
+                                        <Link
+                                            to="/contact"
+                                            onClick={this.handleClose}
+                                        >
+                                            Kontakt
                                         </Link>
                                     </MenuItem>
                                 </Menu>

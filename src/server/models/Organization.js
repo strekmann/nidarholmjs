@@ -16,6 +16,7 @@ const OrganizationSchema = new mongoose.Schema({
     musicscoreadmin_group: { type: String, ref: 'Group' },
     member_group: { type: String, ref: 'Group' },
     contact_text: { type: String, trim: true },
+    visitor_location: { type: String, trim: true },
     visitor_address: { type: String, trim: true },
     mail_address: { type: String, trim: true },
     postcode: { type: String, trim: true },
@@ -24,6 +25,7 @@ const OrganizationSchema = new mongoose.Schema({
     organization_number: { type: String, trim: true },
     public_bank_account: { type: String, trim: true },
     map_url: { type: String, trim: true },
+    map_text: { type: String, trim: true },
     social_media: {
         website: { type: String },
         blog: { type: String },

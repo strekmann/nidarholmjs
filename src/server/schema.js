@@ -873,6 +873,18 @@ organizationType = new GraphQLObjectType({
         },
         postcode: { type: GraphQLString },
         city: { type: GraphQLString },
+        visitorLocation: {
+            type: GraphQLString,
+            resolve: (organization) => {
+                return organization.visitor_location;
+            },
+        },
+        visitorAddress: {
+            type: GraphQLString,
+            resolve: (organization) => {
+                return organization.visitor_address;
+            },
+        },
         email: { type: GraphQLString },
         publicBankAccount: {
             type: GraphQLString,
@@ -919,6 +931,12 @@ organizationType = new GraphQLObjectType({
             type: GraphQLString,
             resolve: (organization) => {
                 return organization.contact_text;
+            },
+        },
+        mapText: {
+            type: GraphQLString,
+            resolve: (organization) => {
+                return organization.map_text;
             },
         },
         activeRoles: {
@@ -1768,6 +1786,58 @@ const mutationEditUser = mutationWithClientMutationId({
             });
         }
         return User.findByIdAndUpdate(id, fields, { new: true }).exec();
+    },
+});
+
+const mutationEditContactInfo = mutationWithClientMutationId({
+    name: 'EditContactInfo',
+    inputFields: {
+        visitorAddress: { type: GraphQLID },
+        visitorLocation: { type: GraphQLString },
+        mailAddress: { type: GraphQLString },
+        postcode: { type: GraphQLString },
+        city: { type: GraphQLString },
+        organizationNumber: { type: GraphQLString },
+        publicBankAccount: { type: GraphQLString },
+        contactText: { type: GraphQLString },
+        mapText: { type: GraphQLString },
+        mapUrl: { type: GraphQLString },
+    },
+    outputFields: {
+        organization: {
+            type: organizationType,
+            resolve: (payload) => {
+                return payload;
+            },
+        },
+    },
+    mutateAndGetPayload: ({
+        visitorAddress,
+        visitorLocation,
+        mailAddress,
+        postcode,
+        city,
+        organizationNumber,
+        publicBankAccount,
+        contactText,
+        mapText,
+        mapUrl,
+    }, { viewer, organization }) => {
+        if (!isAdmin(organization, viewer)) {
+            return null;
+        }
+        return Organization.findByIdAndUpdate(organization.id, {
+            visitor_address: visitorAddress,
+            visitor_location: visitorLocation,
+            mail_address: mailAddress,
+            postcode,
+            city,
+            organization_number: organizationNumber,
+            public_bank_account: publicBankAccount,
+            contact_text: contactText,
+            map_text: mapText,
+            map_url: mapUrl,
+        }, { new: true }).exec();
     },
 });
 
@@ -2796,6 +2866,7 @@ const mutationType = new GraphQLObjectType({
             deleteEvent: mutationDeleteEvent,
             setProfilePicture: mutationSetProfilePicture,
             showContactInfo: mutationShowContactInfo,
+            editContactInfo: mutationEditContactInfo,
         };
     },
 });

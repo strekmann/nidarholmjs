@@ -130,6 +130,19 @@ a:focus {
     text-decoration: underline;
 }
 
+dl {
+    margin: 0;
+    dt {
+        font-family: $serif-font;
+        font-size: 17px;
+        margin-top: 17px;
+        margin-bottom: 17px;
+    }
+    dd {
+        margin: 0;
+    }
+}
+
 .dropzone {
     min-height: 100px;
 }

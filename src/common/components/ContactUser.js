@@ -44,7 +44,7 @@ class ContactUser extends React.Component {
         const { role, user } = this.props;
         return (
             <Card style={{ width: 220, marginBottom: 15 }}>
-                <CardHeader title={role.name} textStyle={{ paddingRight: 0 }} />
+                <CardHeader title={role.name} textStyle={{ paddingRight: 0, fontFamily: 'Montserrat, serif' }} />
                 <CardTitle title={user.name} />
                 <CardMedia>
                     {user.profilePicture && user.profilePicture.thumbnailPath
