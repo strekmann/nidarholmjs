@@ -170,7 +170,7 @@ class Home extends React.Component {
                                     <Text text={nextProject.publicMdtext} />
                                 </div>
                                 <div>
-                                    <Link to="projects">
+                                    <Link to="/projects">
                                         Prosjektoversikt
                                     </Link>
                                 </div>
