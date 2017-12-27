@@ -1,6 +1,5 @@
-import path from 'path';
-
 import config from 'config';
+import path from 'path';
 
 export default function findPath(configName) {
     let configRoot = 'files';

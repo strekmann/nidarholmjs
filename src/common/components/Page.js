@@ -1,4 +1,4 @@
-import React from 'react';
+import * as React from 'react';
 import { createFragmentContainer, graphql } from 'react-relay';
 import getMuiTheme from 'material-ui/styles/getMuiTheme';
 import IconMenu from 'material-ui/IconMenu';
@@ -15,15 +15,20 @@ import { flattenPermissions } from '../utils';
 import EditPage from './EditPage';
 import Text from './Text';
 
+type Props = {
+    viewer: {},
+    organization: {
+        page: {
+            permissions: [],
+        },
+    },
+    location: {},
+    relay: {
+        environment: {},
+    },
+}
 
-class Page extends React.Component {
-    static propTypes = {
-        viewer: PropTypes.object,
-        organization: PropTypes.object,
-        location: PropTypes.object,
-        relay: PropTypes.object.isRequired,
-    }
-
+class Page extends React.Component<Props> {
     static childContextTypes = {
         muiTheme: PropTypes.object.isRequired,
     }

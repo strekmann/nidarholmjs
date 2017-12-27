@@ -1,7 +1,8 @@
 /* global FormData */
 /* eslint "no-console": 0 */
+/* @flow */
 
-import React from 'react';
+import * as React from 'react';
 import { createRefetchContainer, graphql } from 'react-relay';
 import axios from 'axios';
 import getMuiTheme from 'material-ui/styles/getMuiTheme';
@@ -18,12 +19,33 @@ import FileList from './FileList';
 import FileUpload from './FileUpload';
 import TagField from './TagField';
 
-class Files extends React.Component {
-    static propTypes = {
-        viewer: PropTypes.object,
-        organization: PropTypes.object,
-        relay: PropTypes.object.isRequired,
-    }
+type Props = {
+    organization: {
+        files: {
+            pageInfo: {
+                hasNextPage: bool,
+            },
+        },
+        isMember: bool,
+        memberGroup: {
+            id: string,
+        },
+    },
+    relay: {
+        environment: {},
+        refetch: (variables: {}) => {},
+    },
+    viewer: {},
+}
+
+type State = {
+    addFile: bool,
+    search: bool,
+    tags: string[],
+}
+
+class Files extends React.Component<Props, State> {
+    muiTheme: {};
 
     static childContextTypes = {
         muiTheme: PropTypes.object.isRequired,
@@ -114,7 +136,7 @@ class Files extends React.Component {
 
     searchTag = (tag) => {
         // const fixedTags = tags.sort().join('|').toLowerCase();
-        const tags = this.state.tags;
+        const { tags } = this.state;
         tags.push(tag);
         this.props.relay.refetch((variables) => {
             this.setState({

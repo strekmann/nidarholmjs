@@ -1,25 +1,27 @@
 /* eslint "max-len": 0 */
 /* eslint "react/no-multi-comp": 0 */
+/* @flow */
 
 import IconButton from 'material-ui/IconButton';
 import RaisedButton from 'material-ui/RaisedButton';
 import AddCircle from 'material-ui/svg-icons/content/add-circle';
 import getMuiTheme from 'material-ui/styles/getMuiTheme';
 import PropTypes from 'prop-types';
-import React from 'react';
+import * as React from 'react';
 import { createFragmentContainer, graphql } from 'react-relay';
 
 import SaveContactRolesMutation from '../mutations/SaveContactRoles';
 import theme from '../theme';
 
 import SortableRoleList from './SortableRoleList';
+import type { ContactRoles_organization as OrganizationType } from './__generated__/ContactRoles_organization.graphql';
 
-class RoleItem extends React.Component {
-    static propTypes = {
-        name: PropTypes.string.isRequired,
-        onAddRole: PropTypes.func.isRequired,
-    }
+type ItemProps = {
+    name: string,
+    onAddRole: () => void,
+}
 
+class RoleItem extends React.Component<ItemProps> {
     addRole = () => {
         this.props.onAddRole(this.props);
     }
@@ -35,12 +37,20 @@ class RoleItem extends React.Component {
     }
 }
 
-class ContactRoles extends React.Component {
-    static propTypes = {
-        organization: PropTypes.object,
-        relay: PropTypes.object.isRequired,
-        saveHook: PropTypes.func,
-    }
+type Props = {
+    organization: OrganizationType,
+    relay: {
+        environment: {},
+    },
+    saveHook: () => void,
+}
+
+type State = {
+    activeRoles: Array<{}>,
+}
+
+class ContactRoles extends React.Component<Props, State> {
+    muiTheme: {};
 
     static childContextTypes = {
         muiTheme: PropTypes.object.isRequired,

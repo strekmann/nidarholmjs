@@ -1,14 +1,14 @@
 /* eslint "react/no-danger": 0 */
+/* @flow */
 
 import marked from '8fold-marked';
-import PropTypes from 'prop-types';
-import React from 'react';
+import * as React from 'react';
 
-export default class Text extends React.Component {
-    static propTypes = {
-        text: PropTypes.string,
-    }
+type Props = {
+    text?: string,
+}
 
+export default class Text extends React.Component<Props> {
     render() {
         if (!this.props.text) {
             return null;

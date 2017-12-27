@@ -1,6 +1,6 @@
 /* eslint "react/no-danger": 0 */
 
-import React from 'react';
+import * as React from 'react';
 import { createFragmentContainer, graphql } from 'react-relay';
 import getMuiTheme from 'material-ui/styles/getMuiTheme';
 import { Card, CardActions, CardHeader, CardMedia, CardText, CardTitle } from 'material-ui/Card';
@@ -17,7 +17,8 @@ import Date from './Date';
 import EventItem from './EventItem';
 import Text from './Text';
 
-class Home extends React.Component {
+
+class Home extends React.Component<{}> {
     static childContextTypes = {
         muiTheme: PropTypes.object.isRequired,
     }
@@ -193,7 +194,9 @@ class Home extends React.Component {
                                     flex: '1 1 33%',
                                 }}
                             >
-                                <CardHeader title={<h2 style={{ margin: 0 }}>Neste aktiviteter</h2>} />
+                                <CardHeader
+                                    title={<h2 style={{ margin: 0 }}>Neste aktiviteter</h2>}
+                                />
                                 <CardText id="eventList">
                                     {organization.nextEvents.edges.map((edge) => {
                                         return (
@@ -349,7 +352,9 @@ class Home extends React.Component {
                                 <h3>E-post</h3>
                                 <a onTouchTap={this.openEmailDialog}>
                                     <span
-                                        dangerouslySetInnerHTML={{ __html: organization.encodedEmail }}
+                                        dangerouslySetInnerHTML={{
+                                            __html: organization.encodedEmail,
+                                        }}
                                     />
                                 </a>
                                 <h3>Øvelser</h3>

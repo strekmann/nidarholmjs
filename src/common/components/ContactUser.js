@@ -1,7 +1,8 @@
+/* @flow */
+
 import { Card, CardActions, CardHeader, CardMedia, CardTitle } from 'material-ui/Card';
 import { ListItem } from 'material-ui/List';
 import FlatButton from 'material-ui/FlatButton';
-import PropTypes from 'prop-types';
 import React from 'react';
 import { createFragmentContainer, graphql } from 'react-relay';
 
@@ -9,14 +10,26 @@ import ShowContactInfoMutation from '../mutations/ShowContactInfo';
 
 import Email from './Email';
 import Phone from './Phone';
+import type { ContactUser_user as UserType } from './__generated__/ContactUser_user.graphql';
 
-class ContactUser extends React.Component {
-    static propTypes = {
-        relay: PropTypes.object.isRequired,
-        role: PropTypes.object.isRequired,
-        user: PropTypes.object.isRequired,
-    }
+type Props = {
+    relay: {
+        environment: {},
+    },
+    role: {
+        name: string,
 
+    },
+    user: UserType,
+}
+
+type State = {
+    email: string,
+    phone: string,
+    show: bool,
+}
+
+class ContactUser extends React.Component<Props, State> {
     state = {
         email: '',
         phone: '',
@@ -77,7 +90,7 @@ class ContactUser extends React.Component {
                         <CardActions>
                             <FlatButton
                                 onClick={() => {
-                                    this.showContactInfo(user);
+                                    this.showContactInfo();
                                 }}
                                 label="Vis kontaktinfo"
                             />

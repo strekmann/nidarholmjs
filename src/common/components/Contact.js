@@ -1,3 +1,5 @@
+/* @flow */
+
 import IconButton from 'material-ui/IconButton';
 import IconMenu from 'material-ui/IconMenu';
 import MenuItem from 'material-ui/MenuItem';
@@ -6,7 +8,7 @@ import RaisedButton from 'material-ui/RaisedButton';
 import TextField from 'material-ui/TextField';
 import MoreVertIcon from 'material-ui/svg-icons/navigation/more-vert';
 import PropTypes from 'prop-types';
-import React from 'react';
+import * as React from 'react';
 import { createFragmentContainer, graphql } from 'react-relay';
 
 import EditContactInfoMutation from '../mutations/EditContactInfo';
@@ -14,12 +16,46 @@ import EditContactInfoMutation from '../mutations/EditContactInfo';
 import ContactUser from './ContactUser';
 import ContactRoles from './ContactRoles';
 
-class Contact extends React.Component {
-    static propTypes = {
-        organization: PropTypes.object,
-        relay: PropTypes.object.isRequired,
-    }
+type Props = {
+    organization: {
+        contacts: Array<{
+            id: string,
+            user: {},
+            roles: Array<{}>,
+        }>,
+        isAdmin: bool,
+        visitorLocation: string,
+        visitorAddress: string,
+        city: string,
+        mailAddress: string,
+        postcode: string,
+        organizationNumber: string,
+        publicBankAccount: string,
+        contactText: string,
+        mapText: string,
+        mapUrl: string,
+    },
+    relay: {
+        environment: {},
+    },
+}
 
+type State = {
+    editContacts: bool,
+    editInfo: bool,
+    visitorLocation: string,
+    visitorAddress: string,
+    city: string,
+    mailAddress: string,
+    postcode: string,
+    organizationNumber: string,
+    publicBankAccount: string,
+    contactText: string,
+    mapText: string,
+    mapUrl: string,
+}
+
+class Contact extends React.Component<Props, State> {
     state = {
         editContacts: false,
         editInfo: false,

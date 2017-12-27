@@ -1,5 +1,7 @@
 /* eslint "no-console": 0 */
 
+import config from 'config';
+
 import {
     GraphQLBoolean,
     GraphQLID,
@@ -21,7 +23,6 @@ import {
     nodeDefinitions,
     // toGlobalId,
 } from 'graphql-relay';
-import config from 'config';
 import moment from 'moment';
 import nodemailer from 'nodemailer';
 import uuid from 'node-uuid';

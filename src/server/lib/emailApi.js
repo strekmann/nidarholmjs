@@ -1,7 +1,8 @@
 /* eslint "no-console": 0 */
 
-import async from 'async';
 import config from 'config';
+
+import async from 'async';
 
 import Group from '../models/Group';
 import Role from '../models/Role';

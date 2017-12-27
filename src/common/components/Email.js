@@ -1,16 +1,16 @@
 /* eslint "react/no-danger": 0 */
+/* @flow */
 
 import marked from '8fold-marked';
-import PropTypes from 'prop-types';
-import React from 'react';
+import * as React from 'react';
 import { renderToString } from 'react-dom/server';
 
-export default class Email extends React.Component {
-    static propTypes = {
-        email: PropTypes.string,
-        children: PropTypes.element,
-    }
+type Props = {
+    email?: string,
+    children?: React.Node,
+}
 
+export default class Email extends React.Component<Props> {
     render() {
         if (!this.props.email) {
             return null;

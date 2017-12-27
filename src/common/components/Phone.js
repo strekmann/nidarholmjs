@@ -1,11 +1,10 @@
-import PropTypes from 'prop-types';
-import React from 'react';
+import * as React from 'react';
 
-export default class Phone extends React.Component {
-    static propTypes = {
-        phone: PropTypes.string,
-    }
+type Props = {
+    phone?: string
+}
 
+export default class Phone extends React.Component<Props> {
     render() {
         if (!this.props.phone) {
             return <span />;

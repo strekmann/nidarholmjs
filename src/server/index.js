@@ -3,6 +3,7 @@
 /* eslint no-param-reassign: "off" */
 /* eslint camelcase: "off" */
 
+import config from 'config';
 import fs from 'fs';
 import http from 'http';
 import path from 'path';
@@ -17,7 +18,6 @@ import httpProxy from 'http-proxy';
 import mongoose from 'mongoose';
 import bunyan from 'bunyan';
 import expressBunyan from 'express-bunyan-logger';
-import config from 'config';
 import serveStatic from 'serve-static';
 import connectMongo from 'connect-mongo';
 import moment from 'moment';

@@ -1,24 +1,27 @@
 import Link from 'found/lib/Link';
-import PropTypes from 'prop-types';
-import React from 'react';
+import * as React from 'react';
 
 import { flattenPermissions } from '../utils';
 
 import PermissionChips from './PermissionChips';
 import DateFromNow from './DateFromNow';
 
-export default class PageItem extends React.Component {
-    static propTypes = {
-        slug: PropTypes.string,
-        title: PropTypes.string,
-        permissions: PropTypes.object,
-        memberGroupId: PropTypes.string,
-        creator: PropTypes.object,
-        created: PropTypes.string,
-        updator: PropTypes.object,
-        updated: PropTypes.string,
-    }
+type Props = {
+    slug: string,
+    title: string,
+    permissions: {},
+    memberGroupId: string,
+    creator: {
+        name: string,
+    },
+    created: string,
+    updator: {
+        name: string,
+    },
+    updated: string,
+}
 
+export default class PageItem extends React.Component<Props> {
     render() {
         return (
             <div>

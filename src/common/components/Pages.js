@@ -1,6 +1,3 @@
-import PropTypes from 'prop-types';
-import React from 'react';
-import { createRefetchContainer, graphql } from 'react-relay';
 import MoreVertIcon from 'material-ui/svg-icons/navigation/more-vert';
 import IconButton from 'material-ui/IconButton';
 import IconMenu from 'material-ui/IconMenu';
@@ -8,6 +5,9 @@ import MenuItem from 'material-ui/MenuItem';
 import Paper from 'material-ui/Paper';
 import RaisedButton from 'material-ui/RaisedButton';
 import getMuiTheme from 'material-ui/styles/getMuiTheme';
+import PropTypes from 'prop-types';
+import * as React from 'react';
+import { createRefetchContainer, graphql } from 'react-relay';
 
 import AddPageMutation from '../mutations/AddPage';
 import theme from '../theme';
@@ -15,13 +15,15 @@ import theme from '../theme';
 import EditPage from './EditPage';
 import PageList from './PageList';
 
-class Pages extends React.Component {
-    static propTypes = {
-        viewer: PropTypes.object,
-        organization: PropTypes.object,
-        relay: PropTypes.object.isRequired,
-    }
+type Props = {
+    organization: {},
+    relay: {
+        environment: {},
+    },
+    viewer: {},
+}
 
+class Pages extends React.Component<Props> {
     static childContextTypes = {
         muiTheme: PropTypes.object.isRequired,
     }
