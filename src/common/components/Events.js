@@ -1,8 +1,10 @@
 import FlatButton from 'material-ui/FlatButton';
+import IconButton from 'material-ui/IconButton';
 import Paper from 'material-ui/Paper';
 import RaisedButton from 'material-ui/RaisedButton';
 import { Toolbar, ToolbarGroup } from 'material-ui/Toolbar';
 import getMuiTheme from 'material-ui/styles/getMuiTheme';
+import ActionHelp from 'material-ui/svg-icons/action/help';
 import PropTypes from 'prop-types';
 import React from 'react';
 import { createRefetchContainer, graphql } from 'react-relay';
@@ -50,9 +52,14 @@ class Events extends React.Component {
                     <Toolbar style={{ backgroundColor: theme.palette.fullWhite }}>
                         <ToolbarGroup lastChild>
                             <FlatButton
-                                label="Kalenderfil"
+                                label="Abbonner på kalender"
                                 href={`webcal://${organization.webdomain}/events/public.ics`}
                             />
+                            <IconButton
+                                href="/hjelp-om-aktiviteter"
+                            >
+                                <ActionHelp />
+                            </IconButton>
                         </ToolbarGroup>
                     </Toolbar>
                 </div>
