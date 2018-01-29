@@ -1594,6 +1594,7 @@ const mutationEditEvent = mutationWithClientMutationId({
                 permissions: buildPermissionObject(permissions),
                 tags,
                 highlighted,
+                modified: moment.utc(),
             },
             { new: true },
         );
