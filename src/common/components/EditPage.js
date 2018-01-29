@@ -13,6 +13,7 @@ import PermissionField from './PermissionField';
 export default class EditPage extends React.Component {
     static propTypes = {
         viewer: PropTypes.object,
+        id: PropTypes.string.required,
         slug: PropTypes.string,
         title: PropTypes.string,
         summary: PropTypes.string,
@@ -51,7 +52,14 @@ export default class EditPage extends React.Component {
 
     savePage = (event) => {
         event.preventDefault();
-        this.props.savePage(this.state);
+        this.props.savePage({
+            id: this.props.id,
+            slug: this.state.slug,
+            mdtext: this.state.mdtext,
+            title: this.state.title,
+            summary: this.state.summary,
+            permissions: this.state.permissions,
+        });
     }
 
     render() {
