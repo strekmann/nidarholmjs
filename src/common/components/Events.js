@@ -52,7 +52,7 @@ class Events extends React.Component {
                     <Toolbar style={{ backgroundColor: theme.palette.fullWhite }}>
                         <ToolbarGroup lastChild>
                             <FlatButton
-                                label="Abbonner på kalender"
+                                label="Abonner på kalender"
                                 href={`webcal://${organization.webdomain}/events/public.ics`}
                             />
                             <IconButton
