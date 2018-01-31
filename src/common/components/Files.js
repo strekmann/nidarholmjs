@@ -37,6 +37,7 @@ class Files extends React.Component {
     state = {
         addFile: false,
         search: false,
+        tags: [],
     }
 
     getChildContext() {
@@ -79,6 +80,7 @@ class Files extends React.Component {
     }
 
     onTagChange = (tags) => {
+        this.setState({ tags });
         this.props.relay.refetch((variables) => {
             return {
                 showFiles: variables.showFiles,
@@ -130,7 +132,7 @@ class Files extends React.Component {
         this.props.relay.refetch((variables) => {
             return {
                 showFiles: variables.showFiles + 20,
-                searchTags: variables.searchTags,
+                searchTags: this.state.tags.sort().join('|').toLowerCase(),
                 searchTerm: variables.searchTerm,
             };
         });
