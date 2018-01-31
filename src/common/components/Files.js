@@ -114,16 +114,17 @@ class Files extends React.Component {
 
     searchTag = (tag) => {
         // const fixedTags = tags.sort().join('|').toLowerCase();
+        const tags = this.state.tags;
+        tags.push(tag);
         this.props.relay.refetch((variables) => {
-            const tags = variables.searchTags.split('|').filter((t) => {
-                return !!t;
+            this.setState({
+                search: true,
+                tags,
             });
-            tags.push(tag);
-            this.setState({ search: true });
             return {
                 showFiles: variables.showFiles,
                 searchTerm: variables.searchTerm,
-                searchTags: tags.sort().join('|').toLowerCase(),
+                searchTags: this.state.tags.sort().join('|').toLowerCase(),
             };
         });
     }
@@ -185,9 +186,10 @@ class Files extends React.Component {
                         >
                             <h2>Søk i merkelapper</h2>
                             <TagField
+                                autoFocus
+                                fileTags={this.state.tags}
                                 onChange={this.onTagChange}
                                 organization={this.props.organization}
-                                autoFocus
                             />
                         </Paper>
                     )

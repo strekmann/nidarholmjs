@@ -49,6 +49,7 @@ class FileUpload extends React.Component {
                         memberGroupId={this.props.memberGroupId}
                     />
                     <TagField
+                        fileTags={this.state.tags}
                         onChange={this.onTagChange}
                         organization={this.props.organization}
                     />

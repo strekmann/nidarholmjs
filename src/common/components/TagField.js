@@ -14,7 +14,6 @@ class TagField extends React.Component {
     }
 
     state = {
-        fileTags: this.props.fileTags || [],
         tag: '',
     }
 
@@ -29,20 +28,18 @@ class TagField extends React.Component {
     }
 
     addTag = (chosen) => {
-        const fileTags = new Set(this.state.fileTags);
+        const fileTags = new Set(this.props.fileTags);
         fileTags.add(chosen.value);
         this.setState({
-            fileTags: Array.from(fileTags),
             tag: '',
         });
         this.props.onChange(Array.from(fileTags));
     }
 
     removeTag = (tag) => {
-        const fileTags = this.state.fileTags.filter((t) => {
+        const fileTags = this.props.fileTags.filter((t) => {
             return t !== tag;
         });
-        this.setState({ fileTags });
         this.props.onChange(fileTags);
     }
 
@@ -53,7 +50,7 @@ class TagField extends React.Component {
                 <AutoComplete
                     floatingLabelText="Søk i merkelapper"
                     dataSource={tags.map((tag) => {
-                        return { text: tag.tag, value: tag.tag };
+                        return { text: `${tag.tag} (${tag.count})`, value: tag.tag };
                     })}
                     maxSearchResults={8}
                     searchText={this.state.tag}
@@ -64,7 +61,7 @@ class TagField extends React.Component {
                     }}
                     autoFocus={this.props.autoFocus}
                 />
-                {this.state.fileTags.map((tag) => {
+                {this.props.fileTags.map((tag) => {
                     return (
                         <Chip
                             key={tag}
