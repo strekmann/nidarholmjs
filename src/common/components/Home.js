@@ -3,6 +3,8 @@
 import React from 'react';
 import { createFragmentContainer, graphql } from 'react-relay';
 import getMuiTheme from 'material-ui/styles/getMuiTheme';
+import { Card, CardActions, CardHeader, CardMedia, CardText, CardTitle } from 'material-ui/Card';
+import FlatButton from 'material-ui/FlatButton';
 import Paper from 'material-ui/Paper';
 import PropTypes from 'prop-types';
 import Link from 'found/lib/Link';
@@ -56,21 +58,11 @@ class Home extends React.Component {
         const { nextProject } = organization;
         const { desktopGutterLess } = theme.spacing;
         return (
-            <Paper
-                className="home"
-                style={{
-                    maxWidth: 1000,
-                    margin: '0 auto',
-                    paddingTop: 0,
-                    paddingBottom: desktopGutterLess,
-                    paddingLeft: desktopGutterLess,
-                    paddingRight: desktopGutterLess,
-                }}
-            >
+            <div>
                 <div
                     style={{
                         backgroundImage:
-                            'url(/img/Musikkforeningen-Nidarholm-dir-Trond-Madsen-1.jpg)',
+                        'url(/img/Musikkforeningen-Nidarholm-dir-Trond-Madsen-1.jpg)',
                         backgroundPosition: 'top center',
                         backgroundSize: 'cover',
                         height: '30vw',
@@ -104,86 +96,105 @@ class Home extends React.Component {
                         Foto: Vilde Marie Steen Angell
                     </div>
                 </div>
-                {nextProject ?
-                    <div>
+                <div
+                    style={{
+                        maxWidth: 1000,
+                        margin: '0 auto',
+                    }}
+                >
+                    {nextProject ?
                         <div
-                            className="small-narrow"
                             style={{
                                 display: 'flex',
-                                maxWidth: 1000,
                                 marginLeft: -desktopGutterLess,
                                 marginRight: -desktopGutterLess,
                             }}
                         >
-                            <div
+                            <Card
                                 style={{
-                                    paddingLeft: desktopGutterLess,
-                                    paddingRight: desktopGutterLess,
-                                    flex: '3 1 75%',
+                                    flex: '2 1 66%',
                                     display: 'flex',
                                     flexDirection: 'column',
                                     justifyContent: 'space-between',
+                                    marginBottom: desktopGutterLess,
+                                    marginLeft: desktopGutterLess,
+                                    marginRight: desktopGutterLess,
                                 }}
                             >
-                                <h2>Neste prosjekt</h2>
-                                {nextProject.poster ?
-                                    <Link
-                                        to={`/${nextProject.year}/${nextProject.tag}`}
-                                    >
-                                        <img
-                                            alt="Prosjektplakat"
-                                            src={nextProject.poster.normalPath}
-                                            className="responsive"
+                                <CardHeader
+                                    title={<h2 style={{ margin: 0 }}>Neste prosjekt</h2>}
+                                />
+                                {nextProject.poster
+                                    ? (
+                                        <CardMedia
+                                            overlay={
+                                                <Link
+                                                    to={`/${nextProject.year}/${nextProject.tag}`}
+                                                >
+                                                    <CardTitle
+                                                        title={nextProject.title}
+                                                        titleStyle={{ color: 'white' }}
+                                                    />
+                                                </Link>
+                                            }
+                                        >
+                                            <img
+                                                alt="Prosjektplakat"
+                                                className="responsive"
+                                                src={nextProject.poster.normalPath}
+                                            />
+                                        </CardMedia>
+                                    )
+                                    : (
+                                        <Link
+                                            to={`/${nextProject.year}/${nextProject.tag}`}
+                                        >
+                                            <CardTitle
+                                                title={nextProject.title}
+                                            />
+                                        </Link>
+                                    )
+                                }
+                                <CardText>
+                                    {nextProject.events.edges.map((edge) => {
+                                        const event = edge.node;
+                                        return (
+                                            <div className="meta" key={event.id}>
+                                                { event.location } <Date date={event.start} format="LLL" />
+                                            </div>
+                                        );
+                                    })}
+                                    {!nextProject.events.edges.length
+                                        ? (
+                                            <div className="meta" style={{ fontWeight: 'bold' }}>
+                                                <Date date={nextProject.end} />
+                                            </div>
+                                        )
+                                        : null
+                                    }
+                                    <Text text={nextProject.publicMdtext} />
+                                </CardText>
+                                <CardActions>
+                                    <Link to="/projects">
+                                        <FlatButton
+                                            label="Prosjektoversikt"
                                         />
                                     </Link>
-                                    : null
-                                }
-                                <Link
-                                    to={`/${nextProject.year}/${nextProject.tag}`}
-                                    className="header"
-                                    style={{
-                                        fontSize: '3rem',
-                                        paddingTop: '1.5rem',
-                                        paddingBottom: '1.5rem',
-                                        lineHeight: '1',
-                                    }}
-                                >
-                                    {nextProject.title}
-                                </Link>
-                                {nextProject.events.edges.map((edge) => {
-                                    const event = edge.node;
-                                    return (
-                                        <div className="meta" key={event.id}>
-                                            { event.location } <Date date={event.start} format="LLL" />
-                                        </div>
-                                    );
-                                })}
-                                {!nextProject.events.edges.length
-                                    ? (
-                                        <div className="meta" style={{ fontWeight: 'bold' }}>
-                                            <Date date={nextProject.end} />
-                                        </div>
-                                    )
-                                    : null
-                                }
-                                <div>
-                                    <Text text={nextProject.publicMdtext} />
-                                </div>
-                                <div>
-                                    <Link to="/projects">
-                                        Prosjektoversikt
-                                    </Link>
-                                </div>
-                            </div>
-                            <div
+                                </CardActions>
+                            </Card>
+                            <Card
                                 style={{
-                                    paddingLeft: desktopGutterLess,
-                                    paddingRight: desktopGutterLess,
-                                    flex: '1 1 25%',
+                                    display: 'flex',
+                                    flexDirection: 'column',
+                                    justifyContent: 'flex-start',
+                                    marginLeft: desktopGutterLess,
+                                    marginRight: desktopGutterLess,
+                                    marginBottom: desktopGutterLess,
+                                    flex: '1 1 33%',
                                 }}
                             >
-                                <h2>Neste aktiviteter</h2>
-                                <div id="eventList">
+                                <CardHeader title={<h2 style={{ margin: 0 }}>Neste aktiviteter</h2>} />
+                                <CardText id="eventList">
                                     {organization.nextEvents.edges.map((edge) => {
                                         return (
                                             <EventItem
@@ -192,108 +203,134 @@ class Home extends React.Component {
                                             />
                                         );
                                     })}
-                                </div>
-                                <div>
+                                </CardText>
+                                <CardActions>
                                     <Link to="/events">
-                                        Aktivitetskalender
+                                        <FlatButton label="Aktivitetskalender" />
                                     </Link>
-                                </div>
-                            </div>
+                                </CardActions>
+                            </Card>
                         </div>
-                    </div>
-                    : null
-                }
-                <div>
-                    {organization.summaries.length > 0
-                        ? (
-                            <div>
-                                <h2>
-                                    <Link to={`/${organization.summaries[0].slug}`}>
-                                        {organization.summaries[0].title}
-                                    </Link>
-                                </h2>
-                                <Text text={organization.summaries[0].summary} />
-                                <Link to={`/${organization.summaries[0].slug}`}>Les mer</Link>
-                            </div>
-                        )
                         : null
                     }
-                </div>
-                <div
-                    className="small-narrow"
-                    style={{
-                        display: 'flex',
-                        marginLeft: -desktopGutterLess,
-                        marginRight: -desktopGutterLess,
-                    }}
-                >
-                    {organization.summaries.length > 1
-                        ? (
-                            <div
-                                style={{
-                                    flex: '1 1 50%',
-                                    paddingLeft: desktopGutterLess,
-                                    paddingRight: desktopGutterLess,
-                                }}
-                            >
-                                <h2>
-                                    <Link to={`/${organization.summaries[1].slug}`}>
-                                        {organization.summaries[1].title}
-                                    </Link>
-                                </h2>
-                                <Text text={organization.summaries[1].summary} />
-                                <Link to={`/${organization.summaries[1].slug}`}>Les mer</Link>
-                            </div>
-                        )
-                        : null
-                    }
-                    {organization.summaries.length > 2
-                        ? (
-                            <div
-                                style={{
-                                    flex: '1 1 50%',
-                                    paddingLeft: desktopGutterLess,
-                                    paddingRight: desktopGutterLess,
-                                    minWidth: 0,
-                                }}
-                            >
-                                <h2>
-                                    <Link to={`/${organization.summaries[2].slug}`}>
-                                        {organization.summaries[2].title}
-                                    </Link>
-                                </h2>
-                                <Text text={organization.summaries[2].summary} />
-                                <Link to={`/${organization.summaries[2].slug}`}>Les mer</Link>
-                            </div>
-                        )
-                        : null
-                    }
-                </div>
-                <div>
-                    <ContactForm
-                        open={this.state.contactDialogOpen}
-                        close={this.closeEmailDialog}
-                        save={this.sendEmail}
-                        organization={this.props.organization}
-                    />
-                    <h2>Kontakt</h2>
                     <div
-                        className="small-narrow"
                         style={{
                             display: 'flex',
-                            maxWidth: 1000,
+                            marginLeft: -desktopGutterLess,
+                            marginRight: -desktopGutterLess,
+                            marginBottom: desktopGutterLess,
+                        }}
+                    >
+                        {organization.summaries.length > 0
+                            ? (
+                                <Paper
+                                    style={{
+                                        marginLeft: desktopGutterLess,
+                                        marginRight: desktopGutterLess,
+                                        paddingLeft: desktopGutterLess,
+                                        paddingRight: desktopGutterLess,
+                                        width: '100%',
+                                    }}
+                                >
+                                    <h2>
+                                        <Link to={`/${organization.summaries[0].slug}`}>
+                                            {organization.summaries[0].title}
+                                        </Link>
+                                    </h2>
+                                    <Text text={organization.summaries[0].summary} />
+                                    <Link to={`/${organization.summaries[0].slug}`}>Les mer</Link>
+                                </Paper>
+                            )
+                            : null
+                        }
+                    </div>
+                    <div
+                        style={{
+                            display: 'flex',
                             marginLeft: -desktopGutterLess,
                             marginRight: -desktopGutterLess,
                         }}
                     >
+                        {organization.summaries.length > 1
+                            ? (
+                                <Paper
+                                    style={{
+                                        flex: '1 1 50%',
+                                        marginLeft: desktopGutterLess,
+                                        marginRight: desktopGutterLess,
+                                        marginBottom: desktopGutterLess,
+                                        paddingLeft: desktopGutterLess,
+                                        paddingRight: desktopGutterLess,
+                                    }}
+                                >
+                                    <h2>
+                                        <Link to={`/${organization.summaries[1].slug}`}>
+                                            {organization.summaries[1].title}
+                                        </Link>
+                                    </h2>
+                                    <Text text={organization.summaries[1].summary} />
+                                    <Link to={`/${organization.summaries[1].slug}`}>Les mer</Link>
+                                </Paper>
+                            )
+                            : null
+                        }
+                        {organization.summaries.length > 2
+                            ? (
+                                <Paper
+                                    style={{
+                                        flex: '1 1 50%',
+                                        marginLeft: desktopGutterLess,
+                                        marginRight: desktopGutterLess,
+                                        marginBottom: desktopGutterLess,
+                                        paddingLeft: desktopGutterLess,
+                                        paddingRight: desktopGutterLess,
+                                        minWidth: 0,
+                                    }}
+                                >
+                                    <h2>
+                                        <Link to={`/${organization.summaries[2].slug}`}>
+                                            {organization.summaries[2].title}
+                                        </Link>
+                                    </h2>
+                                    <Text text={organization.summaries[2].summary} />
+                                    <Link to={`/${organization.summaries[2].slug}`}>Les mer</Link>
+                                </Paper>
+                            )
+                            : null
+                        }
+                    </div>
+                    <Paper
+                        style={{
+                            paddingLeft: desktopGutterLess,
+                            paddingRight: desktopGutterLess,
+                        }}
+                    >
+                        <ContactForm
+                            open={this.state.contactDialogOpen}
+                            close={this.closeEmailDialog}
+                            save={this.sendEmail}
+                            organization={this.props.organization}
+                        />
+                        <h2 style={{ display: 'inline-block' }}>
+                            <Link to="/contact">
+                                Kontakt
+                            </Link>
+                        </h2>
                         <div
+                            className="small-narrow"
                             style={{
-                                flex: '1 1 66%',
-                                paddingLeft: desktopGutterLess,
-                                paddingRight: desktopGutterLess,
+                                display: 'flex',
+                                marginLeft: -desktopGutterLess,
+                                marginRight: -desktopGutterLess,
                             }}
                         >
-                            <Paper>
+                            <div
+                                style={{
+                                    flex: '2 1 66%',
+                                    paddingLeft: desktopGutterLess,
+                                    paddingRight: desktopGutterLess,
+                                }}
+                            >
                                 <iframe
                                     title="Map"
                                     width="100%"
@@ -301,27 +338,27 @@ class Home extends React.Component {
                                     frameBorder="0"
                                     src={organization.mapUrl}
                                 />
-                            </Paper>
+                            </div>
+                            <div
+                                style={{
+                                    flex: '1 1 33%',
+                                    paddingLeft: desktopGutterLess,
+                                    paddingRight: desktopGutterLess,
+                                }}
+                            >
+                                <h3>E-post</h3>
+                                <a onTouchTap={this.openEmailDialog}>
+                                    <span
+                                        dangerouslySetInnerHTML={{ __html: organization.encodedEmail }}
+                                    />
+                                </a>
+                                <h3>Øvelser</h3>
+                                <Text text={organization.contactText} />
+                            </div>
                         </div>
-                        <div
-                            style={{
-                                flex: '1 1 33%',
-                                paddingLeft: desktopGutterLess,
-                                paddingRight: desktopGutterLess,
-                            }}
-                        >
-                            <h3>E-post</h3>
-                            <a onTouchTap={this.openEmailDialog}>
-                                <span
-                                    dangerouslySetInnerHTML={{ __html: organization.encodedEmail }}
-                                />
-                            </a>
-                            <h3>Øvelser</h3>
-                            <Text text={organization.contactText} />
-                        </div>
-                    </div>
+                    </Paper>
                 </div>
-            </Paper>
+            </div>
         );
     }
 }
