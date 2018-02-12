@@ -176,7 +176,7 @@ class FileItem extends React.Component {
                             <TagField
                                 organization={this.props.organization}
                                 onChange={this.onTagChange}
-                                fileTags={this.props.tags}
+                                fileTags={this.state.tags}
                             />
                             <RaisedButton label="Lagre" onClick={this.savePermissions} primary />
                         </Dialog>

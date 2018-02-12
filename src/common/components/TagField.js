@@ -29,7 +29,7 @@ class TagField extends React.Component {
 
     addTag = (chosen) => {
         const fileTags = new Set(this.props.fileTags);
-        fileTags.add(chosen.value);
+        fileTags.add(chosen);
         this.setState({
             tag: '',
         });
@@ -61,18 +61,20 @@ class TagField extends React.Component {
                     }}
                     autoFocus={this.props.autoFocus}
                 />
-                {this.props.fileTags.map((tag) => {
-                    return (
-                        <Chip
-                            key={tag}
-                            onRequestDelete={() => {
-                                this.removeTag(tag);
-                            }}
-                        >
-                            {tag}
-                        </Chip>
-                    );
-                })}
+                <div style={{ display: 'flex' }}>
+                    {this.props.fileTags.map((tag) => {
+                        return (
+                            <Chip
+                                key={tag}
+                                onRequestDelete={() => {
+                                    this.removeTag(tag);
+                                }}
+                            >
+                                {tag}
+                            </Chip>
+                        );
+                    })}
+                </div>
             </div>
         );
     }
