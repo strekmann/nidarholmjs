@@ -20,7 +20,6 @@ if (areIntlLocalesSupported(['nb'])) {
 
 class ProjectForm extends React.Component {
     static propTypes = {
-        cancel: PropTypes.func,
         open: PropTypes.bool,
         save: PropTypes.func,
         toggle: PropTypes.func,
@@ -164,7 +163,7 @@ class ProjectForm extends React.Component {
                 autoScrollBodyContent
                 actions={[
                     <FlatButton
-                        onTouchTap={this.props.cancel}
+                        onTouchTap={this.toggle}
                         label="Avbryt"
                     />,
                     <FlatButton

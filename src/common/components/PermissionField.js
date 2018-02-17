@@ -14,7 +14,6 @@ export default class PermissionField extends React.Component {
     }
 
     state = {
-        permissions: this.props.permissions || [],
         permission: '',
     }
 
@@ -24,22 +23,20 @@ export default class PermissionField extends React.Component {
         });
     }
 
-    addPermission = (chosen) => {
-        const { permissions } = this.state;
-        permissions.push(chosen);
+    addPermission = (chosen, index) => {
+        const { permissions } = this.props;
+        if (index > -1) {
+            permissions.push(chosen);
+        }
         this.setState({
-            permissions,
             permission: '',
         });
         this.props.onChange(permissions);
     }
 
     removePermission = (permissionId) => {
-        const permissions = this.state.permissions.filter((_p) => {
+        const permissions = this.props.permissions.filter((_p) => {
             return _p.id !== permissionId;
-        });
-        this.setState({
-            permissions,
         });
         this.props.onChange(permissions);
     }
@@ -71,7 +68,7 @@ export default class PermissionField extends React.Component {
                     onUpdateInput={this.onPermissionChange}
                 />
                 <PermissionChips
-                    permissions={this.state.permissions}
+                    permissions={this.props.permissions}
                     groups={this.props.groups}
                     users={this.props.users}
                     memberGroupId={this.props.memberGroupId}

@@ -12,10 +12,11 @@ class FileUpload extends React.Component {
         onDrop: PropTypes.func,
         memberGroupId: PropTypes.string,
         organization: PropTypes.object,
+        permissions: PropTypes.array,
     }
 
     state = {
-        permissions: [],
+        permissions: this.props.permissions || [],
         tags: [],
     }
 

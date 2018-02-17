@@ -11,6 +11,17 @@ mutation SaveProjectMutation($input: SaveProjectInput!) {
             year
             publicMdtext
             privateMdtext
+            permissions {
+                public
+                groups {
+                    id
+                    name
+                }
+                users {
+                    id
+                    name
+                }
+            }
         }
     }
 }`;

@@ -76,7 +76,9 @@ class Project extends React.Component {
                 tags.push(this.props.organization.project.tag);
                 AddProjectFileMutation.commit(relay.environment, {
                     hex: response.data.hex,
-                    permissions,
+                    permissions: permissions.map((permission) => {
+                        return permission.id;
+                    }),
                     tags,
                     filename: file.name,
                     projectTag: this.props.organization.project.tag,
@@ -439,6 +441,7 @@ class Project extends React.Component {
                                     viewer={viewer}
                                     organization={organization}
                                     onDrop={this.onDrop}
+                                    permissions={flattenPermissions(project.permissions)}
                                 />
                                 <RaisedButton
                                     label="Ferdig"
