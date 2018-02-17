@@ -365,8 +365,8 @@ class Project extends React.Component {
                                 onSavePermissions={this.onSaveFilePermissions}
                                 onSetProjectPoster={this.onSetProjectPoster}
                                 style={{
-                                    marginLeft: desktopGutterLess,
-                                    marginRight: desktopGutterLess,
+                                    marginLeft: -desktopGutterLess,
+                                    marginRight: -desktopGutterLess,
                                 }}
                                 title="Prosjektfiler"
                                 viewer={this.props.viewer}

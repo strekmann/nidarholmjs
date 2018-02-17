@@ -37,6 +37,7 @@ export default class PermissionChipItem extends React.Component {
                     ? this.removePermission
                     : null
                 }
+                style={{ marginRight: 8 }}
             >
                 {icon} {this.props.text}
             </Chip>

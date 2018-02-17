@@ -28,8 +28,12 @@ class TagField extends React.Component {
     }
 
     addTag = (chosen) => {
+        let tag = chosen;
+        if (tag instanceof Object) {
+            tag = tag.value;
+        }
         const fileTags = new Set(this.props.fileTags);
-        fileTags.add(chosen);
+        fileTags.add(tag);
         this.setState({
             tag: '',
         });
@@ -61,7 +65,7 @@ class TagField extends React.Component {
                     }}
                     autoFocus={this.props.autoFocus}
                 />
-                <div style={{ display: 'flex' }}>
+                <div style={{ display: 'flex', flexWrap: 'wrap' }}>
                     {this.props.fileTags.map((tag) => {
                         return (
                             <Chip

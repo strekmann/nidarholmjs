@@ -201,8 +201,8 @@ class Files extends React.Component {
                     onSavePermissions={this.onSaveFilePermissions}
                     searchTag={this.searchTag}
                     style={{
-                        marginLeft: desktopGutterLess,
-                        marginRight: desktopGutterLess,
+                        marginLeft: -desktopGutterLess,
+                        marginRight: -desktopGutterLess,
                     }}
                     viewer={this.props.viewer}
                     organization={this.props.organization}

@@ -88,7 +88,7 @@ class FileItem extends React.Component {
             <Card
                 key={this.props.id}
                 style={{
-                    width: 292,
+                    width: 300,
                     marginLeft: desktopGutterLess,
                     marginRight: desktopGutterLess,
                     marginBottom: desktopGutterLess,
