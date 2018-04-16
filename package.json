@@ -73,7 +73,7 @@
     "material-ui": "^0.19.2",
     "mkdirp": "^0.5.1",
     "mmmagic": "^0.4.1",
-    "moment": "^2.17.1",
+    "moment": "^2.22.0",
     "mongoose": "^4.0.5",
     "multer": "^1.1.0",
     "node-sass": "^4.5.0",
