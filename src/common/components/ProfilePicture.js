@@ -1,25 +1,33 @@
 /* global FormData */
+/* @flow */
 
 import axios from 'axios';
 import IconButton from 'material-ui/IconButton';
 import Person from 'material-ui/svg-icons/social/person';
 import Camera from 'material-ui/svg-icons/image/photo-camera';
-import PropTypes from 'prop-types';
-import React from 'react';
+import * as React from 'react';
 import Dropzone from 'react-dropzone';
 import { createFragmentContainer, graphql } from 'react-relay';
 
 import theme from '../theme';
 import SetProfilePictureMutation from '../mutations/SetProfilePicture';
 
-class ProfilePicture extends React.Component {
-    static propTypes = {
-        isViewer: PropTypes.bool,
-        isAdmin: PropTypes.bool,
-        relay: PropTypes.object.isRequired,
-        user: PropTypes.object,
-    }
+type Props = {
+    isViewer: boolean,
+    isAdmin: boolean,
+    relay: {
+        environment: {},
+    },
+    user: {
+        id: string,
+        name: string,
+        profilePicture: {
+            normalPath: string,
+        },
+    },
+}
 
+class ProfilePicture extends React.Component<Props> {
     onDrop = (files) => {
         const { relay, user } = this.props;
         files.forEach((file) => {

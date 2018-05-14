@@ -1,14 +1,15 @@
-import PropTypes from 'prop-types';
-import React from 'react';
+/* @flow */
 
-export default class Date extends React.Component {
-    static propTypes = {
-        value: PropTypes.bool,
-        yes: PropTypes.string,
-        no: PropTypes.string,
-        maybe: PropTypes.string,
-    }
+import * as React from 'react';
 
+type Props = {
+    value: boolean,
+    maybe?: string,
+    no?: string,
+    yes?: string,
+}
+
+export default class Date extends React.Component<Props> {
     render() {
         const yes = this.props.yes || 'ja';
         const no = this.props.no || 'nei';

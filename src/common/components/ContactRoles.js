@@ -1,6 +1,5 @@
 /* eslint "max-len": 0 */
 /* eslint "react/no-multi-comp": 0 */
-/* @flow */
 
 import IconButton from 'material-ui/IconButton';
 import RaisedButton from 'material-ui/RaisedButton';
@@ -22,6 +21,11 @@ type ItemProps = {
 }
 
 class RoleItem extends React.Component<ItemProps> {
+    static propTypes = {
+        name: PropTypes.string.isRequired,
+        onAddRole: PropTypes.func.isRequired,
+    }
+
     addRole = () => {
         this.props.onAddRole(this.props);
     }
@@ -45,13 +49,7 @@ type Props = {
     saveHook: () => void,
 }
 
-type State = {
-    activeRoles: Array<{}>,
-}
-
-class ContactRoles extends React.Component<Props, State> {
-    muiTheme: {};
-
+class ContactRoles extends React.Component<Props> {
     static childContextTypes = {
         muiTheme: PropTypes.object.isRequired,
     }

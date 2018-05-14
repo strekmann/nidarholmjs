@@ -1,23 +1,34 @@
 /* eslint "react/require-default-props": 0 */
+/* @flow */
 
 import PropTypes from 'prop-types';
-import React from 'react';
+import * as React from 'react';
 import { createFragmentContainer, graphql } from 'react-relay';
 
 import FileItem from './FileItem';
 
-class FileList extends React.Component {
-    static propTypes = {
-        files: PropTypes.object,
-        memberGroupId: PropTypes.string,
-        style: PropTypes.object,
-        title: PropTypes.string,
-        onSavePermissions: PropTypes.func,
-        onSetProjectPoster: PropTypes.func,
-        viewer: PropTypes.object,
-        organization: PropTypes.object,
-        searchTag: PropTypes.func,
-    }
+type Props = {
+    files: {
+        edges: [{
+            node: {
+                id: string,
+            },
+        }],
+    },
+    memberGroupId: string,
+    style: {
+        display: string,
+        flexWrap: string,
+    },
+    title: string,
+    onSavePermissions: () => {},
+    onSetProjectPoster: () => {},
+    viewer: {},
+    organization: {},
+    searchTag: () => {},
+}
+
+class FileList extends React.Component<Props> {
     render() {
         const style = this.props.style || {};
         style.display = 'flex';

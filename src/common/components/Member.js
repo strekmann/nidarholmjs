@@ -1,3 +1,4 @@
+/* @flow */
 /* eslint "max-len": 0 */
 
 import areIntlLocalesSupported from 'intl-locales-supported';
@@ -20,7 +21,7 @@ import { lightBlue100 } from 'material-ui/styles/colors';
 import Close from 'material-ui/svg-icons/navigation/close';
 import moment from 'moment';
 import PropTypes from 'prop-types';
-import React from 'react';
+import * as React from 'react';
 import { createFragmentContainer, graphql } from 'react-relay';
 import Link from 'found/lib/Link';
 
@@ -43,15 +44,90 @@ if (areIntlLocalesSupported(['nb'])) {
     ({ DateTimeFormat } = global.Intl);
 }
 
-class Member extends React.Component {
+type Props = {
+    organization: {
+        isAdmin: boolean,
+        member: {
+            id: string,
+            user: {
+                id: string,
+                name: string,
+                username: string,
+                phone: string,
+                email: string,
+                instrument: string,
+                born: string,
+                address: string,
+                postcode: string,
+                city: string,
+                country: string,
+                joined: Date,
+                nmfId: string,
+                reskontro: string,
+                membershipHistory: string,
+                inList: boolean,
+                onLeave: boolean,
+                noEmail: boolean,
+                isActive: boolean,
+                groups: [{
+                    id: string,
+                    name: string,
+                }],
+            },
+            roles: [{
+                id: string,
+                email: string,
+                name: string,
+            }],
+        },
+        groups: [{
+            name: string,
+        }],
+        roles: {
+            edges: [{
+                node: {
+                    id: string,
+                    name: string,
+                },
+            }],
+        },
+    },
+    relay: {
+        environment: {},
+    },
+    viewer: {
+        id: string,
+    },
+}
+
+type State = {
+    name: string,
+    username: string,
+    phone: string,
+    email: string,
+    instrument: string,
+    born: ?string,
+    address: string,
+    postcode: string,
+    city: string,
+    country: string,
+    joined: ?string,
+    nmfId: string,
+    reskontro: string,
+    membershipHistory: string,
+    inList: boolean,
+    onLeave: boolean,
+    noEmail: boolean,
+    addingRole: boolean,
+    editMember: boolean,
+    joinGroup: boolean,
+}
+
+class Member extends React.Component<Props, State> {
+    muiTheme: {};
+
     static childContextTypes = {
         muiTheme: PropTypes.object.isRequired,
-    }
-
-    static propTypes = {
-        organization: PropTypes.object,
-        relay: PropTypes.object.isRequired,
-        viewer: PropTypes.object,
     }
 
     constructor(props) {
@@ -151,6 +227,13 @@ class Member extends React.Component {
             postcode: this.state.postcode,
             city: this.state.city,
             country: this.state.country,
+            joined: undefined,
+            nmfId: undefined,
+            reskontro: undefined,
+            membershipHistory: undefined,
+            inList: undefined,
+            onLeave: undefined,
+            noEmail: undefined,
         };
         if (this.props.organization.isAdmin) {
             data.joined = this.state.joined;
@@ -320,7 +403,6 @@ class Member extends React.Component {
                                         <TextField
                                             id="nmfId"
                                             floatingLabelText="NMF-nummer"
-                                            onChange={this.onChangeNmfId}
                                             value={this.state.nmfId}
                                         />
                                     </div>

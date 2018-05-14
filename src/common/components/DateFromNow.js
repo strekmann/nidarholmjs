@@ -1,12 +1,13 @@
+/* @flow */
+
 import moment from 'moment';
-import PropTypes from 'prop-types';
-import React from 'react';
+import * as React from 'react';
 
-export default class Date extends React.Component {
-    static propTypes = {
-        date: PropTypes.oneOfType([PropTypes.node, PropTypes.object]),
-    }
+type Props = {
+    date: any, // react node or moment object
+}
 
+export default class Date extends React.Component<Props> {
     render() {
         if (!this.props.date) {
             return null;

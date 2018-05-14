@@ -1,3 +1,5 @@
+/* @flow */
+
 import { Card, CardTitle, CardMedia, CardActions } from 'material-ui/Card';
 import Chip from 'material-ui/Chip';
 import MoreVertIcon from 'material-ui/svg-icons/navigation/more-vert';
@@ -8,8 +10,7 @@ import IconButton from 'material-ui/IconButton';
 import MenuItem from 'material-ui/MenuItem';
 import RaisedButton from 'material-ui/RaisedButton';
 import { grey400 } from 'material-ui/styles/colors';
-import PropTypes from 'prop-types';
-import React from 'react';
+import * as React from 'react';
 import { createFragmentContainer, graphql } from 'react-relay';
 
 import { flattenPermissions } from '../utils';
@@ -19,26 +20,45 @@ import PermissionChips from './PermissionChips';
 import PermissionField from './PermissionField';
 import TagField from './TagField';
 
-class FileItem extends React.Component {
-    static propTypes = {
-        id: PropTypes.string.isRequired,
-        filename: PropTypes.string.isRequired,
-        // created: PropTypes.string.isRequired,
-        // mimetype: PropTypes.string.isRequired,
-        // size: PropTypes.number.isRequired,
-        tags: PropTypes.array,
-        permissions: PropTypes.object.isRequired,
-        memberGroupId: PropTypes.string.isRequired,
-        isImage: PropTypes.bool.isRequired,
-        thumbnailPath: PropTypes.string.isRequired,
-        path: PropTypes.string,
-        onSavePermissions: PropTypes.func.isRequired,
-        onSetProjectPoster: PropTypes.func,
-        viewer: PropTypes.object,
-        searchTag: PropTypes.func,
-        organization: PropTypes.object,
-    }
 
+type Props = {
+    id: string,
+    filename: string,
+    isImage: boolean,
+    memberGroupId: string,
+    onSavePermissions: (string, Array<{
+        id: string,
+        name: string,
+    }>, string[], () => void) => {},
+    onSetProjectPoster: (string) => {},
+    organization: {},
+    permissions: {},
+    path: string,
+    searchTag: (string) => {},
+    tags: string[],
+    thumbnailPath: string,
+    viewer: {
+        friends: Array<{
+            id: string,
+            name: string,
+        }>,
+        groups: Array<{
+            id: string,
+            name: string,
+        }>,
+    },
+}
+
+type State = {
+    editPermissions: boolean,
+    permissions: Array<{
+        id: string,
+        name: string,
+    }>,
+    tags: string[],
+}
+
+class FileItem extends React.Component<Props, State> {
     state = {
         editPermissions: false,
         permissions: flattenPermissions(this.props.permissions),

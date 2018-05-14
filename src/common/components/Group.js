@@ -1,3 +1,5 @@
+/* @flow */
+
 import Link from 'found/lib/Link';
 import AutoComplete from 'material-ui/AutoComplete';
 import Dialog from 'material-ui/Dialog';
@@ -13,7 +15,7 @@ import { Toolbar, ToolbarGroup } from 'material-ui/Toolbar';
 import MoreVertIcon from 'material-ui/svg-icons/navigation/more-vert';
 import getMuiTheme from 'material-ui/styles/getMuiTheme';
 import PropTypes from 'prop-types';
-import React from 'react';
+import * as React from 'react';
 import { createFragmentContainer, graphql } from 'react-relay';
 
 import theme from '../theme';
@@ -23,14 +25,63 @@ import LeaveGroupMutation from '../mutations/LeaveGroup';
 import RemoveRoleMutation from '../mutations/RemoveRole';
 import SaveGroupMutation from '../mutations/SaveGroup';
 
-class Group extends React.Component {
+type Props = {
+    organization: {
+        group: {
+            id: string,
+            email: string,
+            members: [{
+                id: string,
+                roles: [{
+                    id: string,
+                    name: string,
+                }],
+                user: {
+                    id: string,
+                    name: string,
+                },
+            }],
+            name: string,
+            groupLeaderEmail: string,
+        },
+        instrumentGroups: [{
+            id: string,
+        }],
+        isAdmin: boolean,
+        roles: {
+            edges: [{
+                node: {
+                    id: string,
+                    name: string,
+                },
+            }],
+        },
+        users: [{
+            id: string,
+            name: string,
+            username: string,
+        }],
+    },
+    relay: {
+        environment: {},
+    },
+}
+
+type State = {
+    joinGroup: boolean,
+    addingGroupLeader: {
+        id: string,
+    } | null,
+    editing: boolean,
+    email: string,
+    groupLeaderEmail: string,
+}
+
+class Group extends React.Component<Props, State> {
+    muiTheme: {};
+
     static childContextTypes = {
         muiTheme: PropTypes.object.isRequired,
-    }
-
-    static propTypes = {
-        organization: PropTypes.object,
-        relay: PropTypes.object.isRequired,
     }
 
     constructor(props) {
@@ -40,7 +91,7 @@ class Group extends React.Component {
 
     state = {
         joinGroup: false,
-        addingGroupLeader: false,
+        addingGroupLeader: null,
         editing: false,
         email: this.props.organization.group.email || '',
         groupLeaderEmail: this.props.organization.group.groupLeaderEmail || '',
@@ -64,13 +115,15 @@ class Group extends React.Component {
     }
 
     setGroupLeader = (role) => {
-        AddRoleMutation.commit(
-            this.props.relay.environment,
-            {
-                roleId: role.value,
-                memberId: this.state.addingGroupLeader.id,
-            },
-        );
+        if (this.state.addingGroupLeader) {
+            AddRoleMutation.commit(
+                this.props.relay.environment,
+                {
+                    roleId: role.value,
+                    memberId: this.state.addingGroupLeader.id,
+                },
+            );
+        }
         this.setState({ addingGroupLeader: null });
     }
 

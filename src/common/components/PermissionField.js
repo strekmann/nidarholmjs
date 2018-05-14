@@ -1,30 +1,48 @@
+/* @flow */
+
 import PropTypes from 'prop-types';
-import React from 'react';
+import * as React from 'react';
 import AutoComplete from 'material-ui/AutoComplete';
 
 import PermissionChips from './PermissionChips';
 
-export default class PermissionField extends React.Component {
-    static propTypes = {
-        permissions: PropTypes.array,
-        groups: PropTypes.array,
-        users: PropTypes.array,
-        onChange: PropTypes.func,
-        memberGroupId: PropTypes.string,
-    }
+type Props = {
+    groups: Array<{
+        id: string,
+        name: string,
+    }>,
+    memberGroupId?: string,
+    onChange: (Array<{
+        id: string,
+        name: string,
+    }>) => void,
+    permissions: Array<{
+        id: string,
+        name: string,
+    }>,
+    users: Array<{
+        id: string,
+        name: string,
+    }>,
+}
 
+type State = {
+    permission: string,
+}
+
+export default class PermissionField extends React.Component<Props, State> {
     state = {
         permission: '',
     }
 
-    onPermissionChange = (value) => {
+    onPermissionChange = (value: string) => {
         this.setState({
             permission: value,
         });
     }
 
-    addPermission = (chosen, index) => {
-        const { permissions } = this.props;
+    addPermission = (chosen: {id: string, name: string}, index: number) => {
+        const permissions = this.props.permissions.slice();
         if (index > -1) {
             permissions.push(chosen);
         }
@@ -34,7 +52,7 @@ export default class PermissionField extends React.Component {
         this.props.onChange(permissions);
     }
 
-    removePermission = (permissionId) => {
+    removePermission = (permissionId: string) => {
         const permissions = this.props.permissions.filter((_p) => {
             return _p.id !== permissionId;
         });

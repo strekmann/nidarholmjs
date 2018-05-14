@@ -1,19 +1,21 @@
+/* @flow */
+
 import Avatar from 'material-ui/Avatar';
 import Chip from 'material-ui/Chip';
 import { red500, green500, lightBlue500 } from 'material-ui/styles/colors';
 import VisibilityOff from 'material-ui/svg-icons/action/visibility-off';
 import Group from 'material-ui/svg-icons/social/group';
 import Public from 'material-ui/svg-icons/social/public';
-import PropTypes from 'prop-types';
-import React from 'react';
+import * as React from 'react';
 
-export default class PermissionChipItem extends React.Component {
-    static propTypes = {
-        removePermission: PropTypes.func,
-        id: PropTypes.string,
-        text: PropTypes.string,
-        memberGroupId: PropTypes.string,
-    }
+type Props = {
+    id: ?string,
+    memberGroupId: ?string,
+    removePermission: (string) => void,
+    text: string,
+}
+
+export default class PermissionChipItem extends React.Component<Props> {
     removePermission = () => {
         if (this.props.id && this.props.removePermission) {
             this.props.removePermission(this.props.id);

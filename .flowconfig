@@ -1,3 +1,4 @@
 [ignore]
-.*/ansible/.*
-.*/dist/.*
+/ansible/.*
+.*/flow-type/.*
+/dist/.*

@@ -1,18 +1,31 @@
+/* @flow */
+
 import AutoComplete from 'material-ui/AutoComplete';
 import Chip from 'material-ui/Chip';
-import PropTypes from 'prop-types';
-import React from 'react';
+import * as React from 'react';
 import { createRefetchContainer, graphql } from 'react-relay';
 
-class TagField extends React.Component {
-    static propTypes = {
-        fileTags: PropTypes.array,
-        onChange: PropTypes.func,
-        organization: PropTypes.object,
-        relay: PropTypes.object.isRequired,
-        autoFocus: PropTypes.bool,
-    }
+type Props = {
+    autoFocus: boolean,
+    fileTags: string[],
+    onChange: (string[]) => {},
+    organization: {
+        tags: [{
+            tag: string,
+            count: number,
+        }],
+    },
+    relay: {
+        environment: {},
+        refetch: (variables: {}) => {},
+    },
+}
 
+type State = {
+    tag: string,
+}
+
+class TagField extends React.Component<Props, State> {
     state = {
         tag: '',
     }

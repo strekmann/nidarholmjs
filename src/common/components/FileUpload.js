@@ -1,20 +1,44 @@
-import PropTypes from 'prop-types';
+/* @flow */
+
 import Dropzone from 'react-dropzone';
-import React from 'react';
+import * as React from 'react';
 import { createFragmentContainer, graphql } from 'react-relay';
 
 import PermissionField from './PermissionField';
 import TagField from './TagField';
 
-class FileUpload extends React.Component {
-    static propTypes = {
-        viewer: PropTypes.object,
-        onDrop: PropTypes.func,
-        memberGroupId: PropTypes.string,
-        organization: PropTypes.object,
-        permissions: PropTypes.array,
-    }
+type Props = {
+    memberGroupId: string,
+    onDrop: ([{}], Array<{
+        id: string,
+        name: string,
+    }>, string[]) => {},
+    organization: {},
+    permissions: Array<{
+        id: string,
+        name: string,
+    }>,
+    viewer: {
+        friends: Array<{
+            id: string,
+            name: string,
+        }>,
+        groups: Array<{
+            id: string,
+            name: string,
+        }>,
+    },
+}
 
+type State = {
+    permissions: Array<{
+        id: string,
+        name: string,
+    }>,
+    tags: Array<string>,
+}
+
+class FileUpload extends React.Component<Props, State> {
     state = {
         permissions: this.props.permissions || [],
         tags: [],
