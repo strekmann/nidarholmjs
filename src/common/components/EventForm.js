@@ -1,3 +1,4 @@
+/* @flow */
 /* eslint "no-nested-ternary": 0 */
 
 import Checkbox from 'material-ui/Checkbox';
@@ -9,7 +10,7 @@ import TimePicker from 'material-ui/TimePicker';
 import Chip from 'material-ui/Chip';
 import moment from 'moment';
 import PropTypes from 'prop-types';
-import React from 'react';
+import * as React from 'react';
 import { createFragmentContainer, graphql } from 'react-relay';
 
 import { flattenPermissions } from '../utils';
@@ -17,19 +18,63 @@ import { flattenPermissions } from '../utils';
 import PermissionField from './PermissionField';
 import ProjectField from './ProjectField';
 
-class EventForm extends React.Component {
-    static propTypes = {
-        title: PropTypes.string.isRequired,
-        event: PropTypes.object,
-        viewer: PropTypes.object,
-        organization: PropTypes.object,
-        isOpen: PropTypes.bool.isRequired,
-        save: PropTypes.func.isRequired,
-        cancel: PropTypes.func.isRequired,
-        projectPermissions: PropTypes.object,
-        highlighted: PropTypes.bool,
-    }
+type Props = {
+    title: string,
+    event: {
+        id: string,
+        title: string,
+        location: string,
+        start: any,
+        end: any,
+        mdtext: string,
+        highlighted: boolean,
+        permissions: Array<{
+            id: string,
+            name: string,
+        }>,
+        projects: Array<{
+            id: string,
+            tag: string,
+        }>,
+    },
+    viewer: {
+        groups: Array<{
+            id: string,
+            name: string,
+        }>,
+        friends: Array<{
+            id: string,
+            name: string,
+        }>,
+    },
+    organization: {},
+    isOpen: boolean,
+    save: ({}) => void,
+    cancel: () => void,
+    projectPermissions: {},
+    highlighted: boolean,
+}
 
+type State = {
+    id: ?string,
+    title: string,
+    location: string,
+    start: any,
+    end: any,
+    mdtext: string,
+    permissions: Array<{
+        id: string,
+        name: string,
+    }>,
+    projects: Array<{
+        id: string,
+        tag: string,
+    }>,
+    tags: Array<string>,
+    highlighted: boolean,
+}
+
+class EventForm extends React.Component<Props, State> {
     state = {
         id: this.props.event ? this.props.event.id : null,
         title: this.props.event ? this.props.event.title : '',
@@ -55,6 +100,7 @@ class EventForm extends React.Component {
         ),
         projects: this.props.event ? this.props.event.projects : [],
         highlighted: !!(this.props.event && this.props.event.highlighted),
+        tags: [],
     }
 
     onChangeTitle = (event, title) => {

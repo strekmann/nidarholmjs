@@ -1,3 +1,5 @@
+/* @flow */
+
 import getMuiTheme from 'material-ui/styles/getMuiTheme';
 import Chip from 'material-ui/Chip';
 import Dialog from 'material-ui/Dialog';
@@ -8,7 +10,7 @@ import IconButton from 'material-ui/IconButton';
 import Paper from 'material-ui/Paper';
 import MoreVertIcon from 'material-ui/svg-icons/navigation/more-vert';
 import PropTypes from 'prop-types';
-import React from 'react';
+import * as React from 'react';
 import { createFragmentContainer, graphql } from 'react-relay';
 
 import theme from '../theme';
@@ -20,16 +22,46 @@ import Text from './Text';
 import EventForm from './EventForm';
 
 
-class Event extends React.Component {
+type Props = {
+    organization: {
+        event: {
+            id: string,
+            title: string,
+            location: string,
+            start: string,
+            end: string,
+            mdtext: string,
+            projects: Array<{
+                id: string,
+                title: string,
+                year: string,
+                tag: string,
+            }>,
+        },
+        isMember: boolean,
+    },
+    relay: {
+        environment: {},
+    },
+    router: {
+        go: (number) => void,
+        push: ({
+            pathname: string,
+        }) => void,
+    },
+    viewer: {},
+}
+
+type State = {
+    editing: boolean,
+    deleting: boolean,
+}
+
+class Event extends React.Component<Props, State> {
+    muiTheme: {};
+
     static childContextTypes = {
         muiTheme: PropTypes.object.isRequired,
-    }
-
-    static propTypes = {
-        organization: PropTypes.object,
-        relay: PropTypes.object.isRequired,
-        router: PropTypes.object.isRequired,
-        viewer: PropTypes.object,
     }
 
     constructor(props) {

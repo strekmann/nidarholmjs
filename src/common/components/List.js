@@ -1,11 +1,13 @@
+/* @flow */
+
 import PropTypes from 'prop-types';
-import React from 'react';
+import * as React from 'react';
 
-export default class List extends React.Component {
-    static propTypes = {
-        items: PropTypes.array.isRequired,
-    }
+type Props = {
+    items: Array<React.Node>,
+}
 
+export default class List extends React.Component<Props> {
     render() {
         const { items } = this.props;
         const and = 'og';

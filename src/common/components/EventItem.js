@@ -1,4 +1,5 @@
-import React from 'react';
+/* @flow */
+
 import { createFragmentContainer, graphql } from 'react-relay';
 import Link from 'found/lib/Link';
 import IconButton from 'material-ui/IconButton';
@@ -6,6 +7,7 @@ import ExpandLess from 'material-ui/svg-icons/navigation/expand-less';
 import ExpandMore from 'material-ui/svg-icons/navigation/expand-more';
 import moment from 'moment';
 import PropTypes from 'prop-types';
+import * as React from 'react';
 
 import theme from '../theme';
 
@@ -23,11 +25,23 @@ function isSoon(date) {
     return false;
 }
 
-class EventItem extends React.Component {
-    static propTypes = {
-        event: PropTypes.object,
-    }
+type Props = {
+    event: {
+        id: string,
+        title: string,
+        location: string,
+        start: any,
+        end: any,
+        mdtext: string,
+        isEnded: boolean,
+    },
+}
 
+type State = {
+    expanded: boolean,
+}
+
+class EventItem extends React.Component<Props, State> {
     state = {
         expanded: isSoon(this.props.event.start),
     }

@@ -1,19 +1,31 @@
-import React from 'react';
+/* @flow */
+
 import { createFragmentContainer, graphql } from 'react-relay';
 import getMuiTheme from 'material-ui/styles/getMuiTheme';
 import PropTypes from 'prop-types';
+import * as React from 'react';
 
 import theme from '../theme';
 import SendContactEmailMutation from '../mutations/SendContactEmail';
 
 import ContactForm from './ContactForm';
 
-class Footer extends React.Component {
-    static propTypes = {
-        organization: PropTypes.object.isRequired,
-        relay: PropTypes.object.isRequired,
+type Props = {
+    organization: {
+        facebook: string,
+        instagram: string,
+        twitter: string,
+    },
+    relay: {
+        environment: {},
     }
+}
 
+type State = {
+    contactDialogOpen: boolean,
+}
+
+class Footer extends React.Component<Props, State> {
     static childContextTypes = {
         muiTheme: PropTypes.object.isRequired,
     }

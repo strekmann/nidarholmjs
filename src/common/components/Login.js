@@ -1,21 +1,26 @@
+/* @flow */
 /* eslint "max-len": 0 */
 
+import Link from 'found/lib/Link';
 import { Card, CardTitle, CardText, CardActions } from 'material-ui/Card';
 import FlatButton from 'material-ui/FlatButton';
 import RaisedButton from 'material-ui/RaisedButton';
 import TextField from 'material-ui/TextField';
-import PropTypes from 'prop-types';
-import React from 'react';
-import Link from 'found/lib/Link';
 import getMuiTheme from 'material-ui/styles/getMuiTheme';
+import PropTypes from 'prop-types';
+import * as React from 'react';
 
 import theme from '../theme';
 
-class Login extends React.Component {
+type Props = {}
+
+class Login extends React.Component<Props> {
+    muiTheme: {};
+
     static childContextTypes = {
         muiTheme: PropTypes.object.isRequired,
     }
-    constructor(props) {
+    constructor(props: {}) {
         super(props);
         this.muiTheme = getMuiTheme(theme);
     }

@@ -1,3 +1,5 @@
+/* @flow */
+
 import { BottomNavigation, BottomNavigationItem } from 'material-ui/BottomNavigation';
 import Paper from 'material-ui/Paper';
 import ActionDateRange from 'material-ui/svg-icons/action/date-range';
@@ -6,17 +8,19 @@ import SocialGroupIcon from 'material-ui/svg-icons/social/group';
 import { indigo50 } from 'material-ui/styles/colors';
 import getMuiTheme from 'material-ui/styles/getMuiTheme';
 import PropTypes from 'prop-types';
-import React from 'react';
+import * as React from 'react';
 import { createFragmentContainer, graphql } from 'react-relay';
 import Link from 'found/lib/Link';
 
 import theme from '../theme';
 
-class Navigation extends React.Component {
-    static propTypes = {
-        organization: PropTypes.object,
-    }
+type Props = {
+    organization: {
+        isMember: boolean,
+    },
+}
 
+class Navigation extends React.Component<Props> {
     static childContextTypes = {
         muiTheme: PropTypes.object.isRequired,
     }

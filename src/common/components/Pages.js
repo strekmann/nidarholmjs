@@ -1,3 +1,5 @@
+/* @flow */
+
 import MoreVertIcon from 'material-ui/svg-icons/navigation/more-vert';
 import IconButton from 'material-ui/IconButton';
 import IconMenu from 'material-ui/IconMenu';
@@ -16,14 +18,67 @@ import EditPage from './EditPage';
 import PageList from './PageList';
 
 type Props = {
-    organization: {},
+    organization: {
+        isAdmin: boolean,
+        isMember: boolean,
+        memberGroup: {
+            id: string,
+        },
+        pages: {
+            edges: Array<{
+                node: {
+                    id: string,
+                    slug: string,
+                    title: string,
+                    permissions: Array<{}>,
+                    creator: {
+                        name: string,
+                    },
+                    created: string,
+                    updator: {
+                        name: string,
+                    },
+                    updated: string,
+                },
+            }>,
+            pageInfo: {
+                hasNextPage: boolean,
+            },
+        },
+    },
     relay: {
         environment: {},
     },
-    viewer: {},
+    viewer: {
+        friends: Array<{
+            id: string,
+            name: string,
+        }>,
+        groups: Array<{
+            id: string,
+            name: string,
+        }>,
+    },
 }
 
-class Pages extends React.Component<Props> {
+type State = {
+    addPage: boolean,
+    page: {
+        id: ?string,
+        slug: string,
+        mdtext: string,
+        title: string,
+        summary: string,
+        permissions: Array<{
+            id: string,
+            name: string,
+        }>,
+    }
+}
+
+class Pages extends React.Component<Props, State> {
+    muiTheme: {};
+
     static childContextTypes = {
         muiTheme: PropTypes.object.isRequired,
     }
@@ -36,6 +91,7 @@ class Pages extends React.Component<Props> {
     state = {
         addPage: false,
         page: {
+            id: null,
             slug: '',
             mdtext: '',
             title: '',

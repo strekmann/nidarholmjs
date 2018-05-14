@@ -1,3 +1,4 @@
+/* @flow */
 /* eslint "max-len": 0 */
 
 import Paper from 'material-ui/Paper';
@@ -5,21 +6,34 @@ import RaisedButton from 'material-ui/RaisedButton';
 import TextField from 'material-ui/TextField';
 import getMuiTheme from 'material-ui/styles/getMuiTheme';
 import PropTypes from 'prop-types';
-import React from 'react';
+import * as React from 'react';
 import { createFragmentContainer, graphql } from 'react-relay';
 
 import theme from '../theme';
 import SetPasswordMutation from '../mutations/SetPassword';
 
-class MemberReset extends React.Component {
+type Props = {
+    relay: {
+        environment: {},
+    },
+    router: {
+        push: ({}) => void,
+    },
+    viewer: {
+        id: string,
+    },
+}
+
+type State = {
+    newPassword: string,
+    oldPassword: string,
+}
+
+class MemberReset extends React.Component<Props, State> {
+    muiTheme: {};
+
     static childContextTypes = {
         muiTheme: PropTypes.object.isRequired,
-    }
-
-    static propTypes = {
-        relay: PropTypes.object.isRequired,
-        router: PropTypes.object.isRequired,
-        viewer: PropTypes.object,
     }
 
     constructor(props) {

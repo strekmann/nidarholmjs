@@ -1,9 +1,11 @@
+/* @flow */
+
 import update from 'immutability-helper';
 import Paper from 'material-ui/Paper';
 import RaisedButton from 'material-ui/RaisedButton';
 import getMuiTheme from 'material-ui/styles/getMuiTheme';
 import PropTypes from 'prop-types';
-import React from 'react';
+import * as React from 'react';
 import { createFragmentContainer, graphql } from 'react-relay';
 
 import SaveOrganizationMutation from '../mutations/SaveOrganization';
@@ -11,11 +13,40 @@ import theme from '../theme';
 
 import FrontpageSummaries from './FrontpageSummaries';
 
-class Organization extends React.Component {
-    static propTypes = {
-        organization: PropTypes.object,
-        relay: PropTypes.object.isRequired,
-    }
+type Props = {
+    organization: {
+        pages: {
+            edges: Array<{
+                node: {
+                    id: string,
+                    key: string,
+                    slug: string,
+                    title: string,
+                },
+                cursor: string,
+            }>,
+        },
+        summaries: Array<{
+            id: string,
+            slug: string,
+            title: string,
+        }>,
+    },
+    relay: {
+        environment: {},
+    },
+}
+
+type State = {
+    summaries: Array<{
+        id: string,
+        slug: string,
+        title: string,
+    }>,
+}
+
+class Organization extends React.Component<Props, State> {
+    muiTheme: {};
 
     static childContextTypes = {
         muiTheme: PropTypes.object.isRequired,

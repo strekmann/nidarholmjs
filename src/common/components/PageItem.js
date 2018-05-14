@@ -1,3 +1,5 @@
+/* @flow */
+
 import Link from 'found/lib/Link';
 import * as React from 'react';
 
@@ -9,7 +11,7 @@ import DateFromNow from './DateFromNow';
 type Props = {
     slug: string,
     title: string,
-    permissions: {},
+    permissions: Array<{}>,
     memberGroupId: string,
     creator: {
         name: string,

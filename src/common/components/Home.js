@@ -1,3 +1,4 @@
+/* @flow */
 /* eslint "react/no-danger": 0 */
 
 import * as React from 'react';
@@ -17,15 +18,59 @@ import Date from './Date';
 import EventItem from './EventItem';
 import Text from './Text';
 
+type Props = {
+    organization: {
+        contactText: string,
+        encodedEmail: string,
+        mapUrl: string,
+        name: string,
+        nextEvents: {
+            edges: Array<{
+                node: {
+                    id: string,
+                },
+            }>,
+        },
+        nextProject: {
+            end: any,
+            events: {
+                edges: Array<{
+                    node: {
+                        id: string,
+                        location: string,
+                        start: any,
+                        end: any,
+                        publicMdtext: string,
+                    },
+                }>,
+            },
+            poster: {
+                normalPath: string,
+            },
+            publicMdtext: string,
+            tag: string,
+            title: string,
+            year: string,
+        },
+        summaries: Array<{
+            slug: string,
+            summary: string,
+            title: string,
+        }>,
+    },
+    relay: {
+        environment: {},
+    },
+}
 
-class Home extends React.Component<{}> {
+type State = {
+    contactDialogOpen: boolean,
+}
+
+class Home extends React.Component<Props, State> {
+    muiTheme: {};
     static childContextTypes = {
         muiTheme: PropTypes.object.isRequired,
-    }
-
-    static propTypes = {
-        organization: PropTypes.object.isRequired,
-        relay: PropTypes.object.isRequired,
     }
 
     constructor(props) {

@@ -1,20 +1,31 @@
+/* @flow */
+
 import Link from 'found/lib/Link';
 import Divider from 'material-ui/Divider';
 import { List } from 'material-ui/List';
 import Subheader from 'material-ui/Subheader';
 import PropTypes from 'prop-types';
-import React from 'react';
+import * as React from 'react';
 import { createFragmentContainer, graphql } from 'react-relay';
 
 import MemberItem from './MemberItem';
 
-class GroupItem extends React.Component {
-    static propTypes = {
-        group: PropTypes.object,
-        isAdmin: PropTypes.bool,
-        isMember: PropTypes.bool,
-    }
+type Props = {
+    group: {
+        id: string,
+        name: string,
+        members: Array<{
+            id: string,
+            user: {
+                name: string,
+            },
+        }>,
+    },
+    isAdmin: boolean,
+    isMember: boolean,
+}
 
+class GroupItem extends React.Component<Props> {
     renderHeader() {
         const {
             id,

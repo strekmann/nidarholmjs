@@ -1,19 +1,28 @@
+/* @flow */
+
 import Link from 'found/lib/Link';
 import Paper from 'material-ui/Paper';
 import getMuiTheme from 'material-ui/styles/getMuiTheme';
 import PropTypes from 'prop-types';
-import React from 'react';
+import * as React from 'react';
 import { createFragmentContainer, graphql } from 'react-relay';
 
 import theme from '../theme';
 
-class Groups extends React.Component {
+type Props = {
+    organization: {
+        groups: Array<{
+            id: string,
+            name: string,
+            externallyHidden: boolean,
+        }>,
+    },
+}
+
+class Groups extends React.Component<Props> {
+    muiTheme: {};
     static childContextTypes = {
         muiTheme: PropTypes.object.isRequired,
-    }
-
-    static propTypes = {
-        organization: PropTypes.object,
     }
 
     constructor(props) {

@@ -1,4 +1,5 @@
-import * as React from 'react';
+/* @flow */
+
 import { createFragmentContainer, graphql } from 'react-relay';
 import getMuiTheme from 'material-ui/styles/getMuiTheme';
 import IconMenu from 'material-ui/IconMenu';
@@ -7,6 +8,7 @@ import IconButton from 'material-ui/IconButton';
 import Paper from 'material-ui/Paper';
 import MoreVertIcon from 'material-ui/svg-icons/navigation/more-vert';
 import PropTypes from 'prop-types';
+import * as React from 'react';
 
 import EditPageMutation from '../mutations/EditPage';
 import theme from '../theme';
@@ -16,19 +18,49 @@ import EditPage from './EditPage';
 import Text from './Text';
 
 type Props = {
-    viewer: {},
+    viewer: {
+        friends: Array<{
+            id: string,
+            name: string,
+        }>,
+        groups: Array<{
+            id: string,
+            name: string,
+        }>,
+    },
     organization: {
+        isMember: boolean,
         page: {
-            permissions: [],
+            id: string,
+            mdtext: string,
+            permissions: Array<{
+                id: string,
+                name: string,
+            }>,
+            slug: string,
+            summary: string,
+            title: string,
         },
     },
-    location: {},
+    location: {
+        pathname: string,
+    },
     relay: {
         environment: {},
     },
 }
 
-class Page extends React.Component<Props> {
+type State = {
+    edit: boolean,
+    permissions: Array<{
+        id: string,
+        name: string,
+    }>,
+}
+
+class Page extends React.Component<Props, State> {
+    muiTheme: {};
+
     static childContextTypes = {
         muiTheme: PropTypes.object.isRequired,
     }

@@ -1,16 +1,25 @@
+/* @flow */
+
 import { List } from 'material-ui/List';
-import PropTypes from 'prop-types';
-import React from 'react';
+import * as React from 'react';
 
 import MusicItem from './MusicItem';
 
-export default class MusicList extends React.Component {
-    static propTypes = {
-        music: PropTypes.array,
-        isMember: PropTypes.bool,
-        isMusicAdmin: PropTypes.bool,
-        remove: PropTypes.func,
-    }
+type Props = {
+    music: Array<{
+        id: string,
+        piece: {
+            id: string,
+            title: string,
+            composers: Array<string>,
+        },
+    }>,
+    isMember: boolean,
+    isMusicAdmin: boolean,
+    remove: ({}) => void,
+}
+
+export default class MusicList extends React.Component<Props> {
     render() {
         return (
             <List>

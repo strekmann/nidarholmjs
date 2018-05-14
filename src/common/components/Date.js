@@ -5,7 +5,7 @@ import * as React from 'react';
 
 type Props = {
     date: any, // react node or moment object
-    format: string,
+    format?: string,
 }
 
 export default class Date extends React.Component<Props> {

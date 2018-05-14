@@ -1,18 +1,26 @@
+/* @flow */
+
 import Link from 'found/lib/Link';
 import IconButton from 'material-ui/IconButton';
 import { ListItem } from 'material-ui/List';
 import CloseIcon from 'material-ui/svg-icons/navigation/close';
-import PropTypes from 'prop-types';
-import React from 'react';
+import * as React from 'react';
 
-export default class MusicItem extends React.Component {
-    static propTypes = {
-        music: PropTypes.object,
-        isMember: PropTypes.bool,
-        isMusicAdmin: PropTypes.bool,
-        remove: PropTypes.func,
-    }
+type Props = {
+    music: {
+        id: string,
+        piece: {
+            id: string,
+            title: string,
+            composers: Array<string>,
+        },
+    },
+    isMember: boolean,
+    isMusicAdmin: boolean,
+    remove: ({}) => void,
+}
 
+export default class MusicItem extends React.Component<Props> {
     render() {
         const { music } = this.props;
         if (this.props.isMember) {

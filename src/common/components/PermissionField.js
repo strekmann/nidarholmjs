@@ -1,8 +1,7 @@
 /* @flow */
 
-import PropTypes from 'prop-types';
-import * as React from 'react';
 import AutoComplete from 'material-ui/AutoComplete';
+import * as React from 'react';
 
 import PermissionChips from './PermissionChips';
 

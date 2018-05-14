@@ -1,8 +1,7 @@
+/* @flow */
 /* global FormData */
 /* eslint "no-console": 0 */
-/* @flow */
 
-import * as React from 'react';
 import { createRefetchContainer, graphql } from 'react-relay';
 import axios from 'axios';
 import getMuiTheme from 'material-ui/styles/getMuiTheme';
@@ -10,6 +9,7 @@ import RaisedButton from 'material-ui/RaisedButton';
 import Dialog from 'material-ui/Dialog';
 import Paper from 'material-ui/Paper';
 import PropTypes from 'prop-types';
+import * as React from 'react';
 
 import theme from '../theme';
 import AddFileMutation from '../mutations/AddFile';

@@ -1,7 +1,7 @@
+/* @flow */
 /* eslint "react/require-default-props": 0 */
 
-import React from 'react';
-import { createFragmentContainer, graphql } from 'react-relay';
+import Link from 'found/lib/Link';
 import ActionLockOpen from 'material-ui/svg-icons/action/lock-open';
 import Person from 'material-ui/svg-icons/social/person';
 import Avatar from 'material-ui/Avatar';
@@ -13,24 +13,37 @@ import RaisedButton from 'material-ui/RaisedButton';
 import getMuiTheme from 'material-ui/styles/getMuiTheme';
 import { fullWhite, indigo900 } from 'material-ui/styles/colors';
 import PropTypes from 'prop-types';
-import Link from 'found/lib/Link';
+import * as React from 'react';
+import { createFragmentContainer, graphql } from 'react-relay';
 
 import theme from '../theme';
 
+type Props = {
+    organization: {
+        isMember: boolean,
+    },
+    viewer: {
+        id: string,
+        name: string,
+        profilePicture: {
+            thumbnailPath: string,
+        },
+    },
+}
 
-class Navigation extends React.Component {
-    static propTypes = {
-        viewer: PropTypes.object,
-        organization: PropTypes.object,
-        // socket: PropTypes.object,
-    }
+type State = {
+    open: boolean,
+    anchorEl?: any,
+}
 
+class Navigation extends React.Component<Props, State> {
     static childContextTypes = {
         muiTheme: PropTypes.object.isRequired,
     };
 
     state = {
         open: false,
+        anchorEl: null,
     }
 
     getChildContext() {

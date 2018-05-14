@@ -1,3 +1,5 @@
+/* @flow */
+
 import * as React from 'react';
 
 import PageItem from './PageItem';
@@ -5,7 +7,22 @@ import PageItem from './PageItem';
 type Props = {
     memberGroupId: string,
     pages: {
-        edges: [],
+        edges: Array<{
+            node: {
+                id: string,
+                created: string,
+                creator: {
+                    name: string,
+                },
+                permissions: Array<{}>,
+                slug: string,
+                title: string,
+                updated: string,
+                updator: {
+                    name: string,
+                },
+            },
+        }>,
     },
 }
 

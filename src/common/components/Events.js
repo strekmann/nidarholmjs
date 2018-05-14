@@ -1,3 +1,5 @@
+/* @flow */
+
 import FlatButton from 'material-ui/FlatButton';
 import IconButton from 'material-ui/IconButton';
 import Paper from 'material-ui/Paper';
@@ -6,7 +8,7 @@ import { Toolbar, ToolbarGroup } from 'material-ui/Toolbar';
 import getMuiTheme from 'material-ui/styles/getMuiTheme';
 import ActionHelp from 'material-ui/svg-icons/action/help';
 import PropTypes from 'prop-types';
-import React from 'react';
+import * as React from 'react';
 import { createRefetchContainer, graphql } from 'react-relay';
 
 import theme from '../theme';
@@ -15,11 +17,28 @@ import EventItem from './EventItem';
 
 const ITEMS_PER_PAGE = 20;
 
-class Events extends React.Component {
-    static propTypes = {
-        organization: PropTypes.object,
-        relay: PropTypes.object,
+type Props = {
+    organization: {
+        events: {
+            edges: Array<{
+                node: {
+                    id: string,
+                },
+            }>,
+            pageInfo: {
+                hasNextPage: boolean,
+            },
+        },
+        webdomain: string,
+    },
+    relay: {
+        environment: {},
+        refetch: (variables: {}) => {},
     }
+}
+
+class Events extends React.Component<Props> {
+    muiTheme: {};
 
     static childContextTypes = {
         muiTheme: PropTypes.object.isRequired,

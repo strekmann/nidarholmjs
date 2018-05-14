@@ -1,16 +1,17 @@
+/* @flow */
+
 import moment from 'moment';
-import PropTypes from 'prop-types';
-import React from 'react';
+import * as React from 'react';
 
 import Date from './Date';
 
-export default class Daterange extends React.Component {
-    static propTypes = {
-        start: PropTypes.node,
-        end: PropTypes.node,
-        noTime: PropTypes.bool,
-    }
+type Props = {
+    start: any,
+    end: any,
+    noTime?: boolean,
+}
 
+export default class Daterange extends React.Component<Props> {
     render() {
         const { start, end } = this.props;
         let startm;

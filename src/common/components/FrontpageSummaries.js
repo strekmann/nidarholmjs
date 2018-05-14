@@ -1,3 +1,4 @@
+/* @flow */
 /* eslint "max-len": 0 */
 /* eslint "react/no-multi-comp": 0 */
 
@@ -5,18 +6,19 @@ import IconButton from 'material-ui/IconButton';
 import AddCircle from 'material-ui/svg-icons/content/add-circle';
 import getMuiTheme from 'material-ui/styles/getMuiTheme';
 import PropTypes from 'prop-types';
-import React from 'react';
+import * as React from 'react';
 
 import theme from '../theme';
 
 import SortablePageList from './SortablePageList';
 
-class PageSummaryItem extends React.Component {
-    static propTypes = {
-        slug: PropTypes.string.isRequired,
-        title: PropTypes.string,
-        onAdd: PropTypes.func.isRequired,
-    }
+type PageSummaryProps = {
+    slug: string,
+    title: string,
+    onAdd: ({}) => void,
+}
+
+class PageSummaryItem extends React.Component<PageSummaryProps> {
     onAdd = () => {
         this.props.onAdd(this.props);
     }
@@ -36,19 +38,39 @@ class PageSummaryItem extends React.Component {
     }
 }
 
-class FrontpageSummaries extends React.Component {
-    static propTypes = {
-        onAdd: PropTypes.func,
-        onChange: PropTypes.func,
-        pages: PropTypes.object,
-        summaries: PropTypes.array,
-    }
+type Props = {
+    onAdd: ({}) => void,
+    onChange: (Array<{
+        id: string,
+        slug: string,
+        title: string,
+    }>) => void,
+    pages: {
+        edges: Array<{
+            node: {
+                id: string,
+                key: string,
+                slug: string,
+                title: string,
+            },
+            cursor: string,
+        }>,
+    },
+    summaries: Array<{
+        id: string,
+        slug: string,
+        title: string,
+    }>,
+}
+
+class FrontpageSummaries extends React.Component<Props> {
+    muiTheme: {};
 
     static childContextTypes = {
         muiTheme: PropTypes.object.isRequired,
     }
 
-    constructor(props) {
+    constructor(props: any) {
         super(props);
         this.muiTheme = getMuiTheme(theme);
     }
@@ -57,11 +79,15 @@ class FrontpageSummaries extends React.Component {
         return { muiTheme: this.muiTheme };
     }
 
-    onChange = (summaries) => {
+    onChange = (summaries: Array<{
+        id: string,
+        slug: string,
+        title: string,
+    }>) => {
         this.props.onChange(summaries);
     }
 
-    onAdd = (page) => {
+    onAdd = (page: {}) => {
         this.props.onAdd(page);
     }
 

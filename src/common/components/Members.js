@@ -1,3 +1,5 @@
+/* @flow */
+
 import Link from 'found/lib/Link';
 import AutoComplete from 'material-ui/AutoComplete';
 import Checkbox from 'material-ui/Checkbox';
@@ -12,7 +14,7 @@ import TextField from 'material-ui/TextField';
 import getMuiTheme from 'material-ui/styles/getMuiTheme';
 import MoreVertIcon from 'material-ui/svg-icons/navigation/more-vert';
 import PropTypes from 'prop-types';
-import React from 'react';
+import * as React from 'react';
 import { createFragmentContainer, graphql } from 'react-relay';
 
 import AddUserMutation from '../mutations/AddUser';
@@ -20,12 +22,43 @@ import theme from '../theme';
 
 import GroupItem from './GroupItem';
 
-class Members extends React.Component {
-    static propTypes = {
-        organization: PropTypes.object,
-        relay: PropTypes.object.isRequired,
-        router: PropTypes.object.isRequired,
-    }
+type Props = {
+    relay: {
+        environment: {},
+    },
+    router: {
+        push: ({}) => void,
+    },
+    organization: {
+        instrumentGroups: Array<{
+            id: string,
+            name: string,
+        }>,
+        isAdmin: boolean,
+        isMember: boolean,
+        users: Array<{
+            id: string,
+            name: string,
+            username: string,
+        }>,
+    },
+}
+
+type State = {
+    addUser: boolean,
+    name: string,
+    email: string,
+    instrument: string,
+    exists: ?{
+        value: string,
+    },
+    new: boolean,
+    groupId: ?string,
+    member: boolean,
+}
+
+class Members extends React.Component<Props, State> {
+    muiTheme: {};
 
     static childContextTypes = {
         muiTheme: PropTypes.object.isRequired,
@@ -78,7 +111,7 @@ class Members extends React.Component {
     }
 
     onChangeUserName = (name) => {
-        this.setState({ name, exists: false });
+        this.setState({ name, exists: null });
     }
 
     onCheckMember = (event, member) => {

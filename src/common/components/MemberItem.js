@@ -1,13 +1,39 @@
+/* @flow */
+
 import Link from 'found/lib/Link';
 import Avatar from 'material-ui/Avatar';
 import { ListItem } from 'material-ui/List';
 import PropTypes from 'prop-types';
-import React from 'react';
+import * as React from 'react';
 import { createFragmentContainer, graphql } from 'react-relay';
 
 import Phone from './Phone';
 
-class MemberItem extends React.Component {
+type Props = {
+    isMember: boolean,
+    member: {
+        user: {
+            id: string,
+            email: string,
+            instrument: string,
+            name: string,
+            phone: string,
+            profilePicture: {
+                thumbnailPath: string,
+            },
+        },
+        roles: Array<{
+            id: string,
+            name: string,
+        }>,
+        organizationRoles: Array<{
+            id: string,
+            name: string,
+        }>,
+    },
+}
+
+class MemberItem extends React.Component<Props> {
     static propTypes = {
         isMember: PropTypes.bool,
         member: PropTypes.object,

@@ -1,9 +1,10 @@
+/* @flow */
 /* global FormData */
 
 import { List } from 'material-ui/List';
 import axios from 'axios';
 import PropTypes from 'prop-types';
-import React from 'react';
+import * as React from 'react';
 import Dropzone from 'react-dropzone';
 import { createFragmentContainer, graphql } from 'react-relay';
 
@@ -12,14 +13,27 @@ import RemoveScoreMutation from '../mutations/RemoveScore';
 
 import ScoreItem from './ScoreItem';
 
-class Groupscore extends React.Component {
-    static propTypes = {
-        name: PropTypes.string,
-        groupscore: PropTypes.object,
-        piece: PropTypes.object,
-        relay: PropTypes.object.isRequired,
-    }
+type Props = {
+    name: string,
+    groupscore: {
+        name: string,
+        files: {
+            edges: Array<{
+                node: {
+                    id: string,
+                },
+            }>,
+        },
+    },
+    piece: {
+        id: string,
+    },
+    relay: {
+        environment: {},
+    },
+}
 
+class Groupscore extends React.Component<Props> {
     onDrop = (files) => {
         this.uploadScores(files, this.props.groupscore);
     }

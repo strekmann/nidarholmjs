@@ -1,3 +1,4 @@
+/* @flow */
 /* eslint "max-len": 0 */
 
 import React from 'react';
@@ -10,18 +11,51 @@ import theme from '../theme';
 
 import PermissionField from './PermissionField';
 
-export default class EditPage extends React.Component {
-    static propTypes = {
-        viewer: PropTypes.object,
-        id: PropTypes.string.required,
-        slug: PropTypes.string,
-        title: PropTypes.string,
-        summary: PropTypes.string,
-        mdtext: PropTypes.string,
-        permissions: PropTypes.array,
-        savePage: PropTypes.func,
-    }
+type Props = {
+    viewer: {
+        groups: Array<{
+            id: string,
+            name: string,
+        }>,
+        friends: Array<{
+            id: string,
+            name: string,
+        }>,
+    },
+    id: ?string,
+    slug: string,
+    title: string,
+    summary: string,
+    mdtext: string,
+    permissions: Array<{
+        id: string,
+        name: string,
+    }>,
+    savePage: ({
+        id: ?string,
+        slug: string,
+        mdtext: string,
+        title: string,
+        summary: string,
+        permissions: Array<{
+            id: string,
+            name: string,
+        }>,
+    }) => void,
+}
 
+type State = {
+    slug: string,
+    title: string,
+    summary: string,
+    mdtext: string,
+    permissions: Array<{
+        id: string,
+        name: string,
+    }>,
+}
+
+export default class EditPage extends React.Component<Props, State> {
     state = {
         slug: this.props.slug,
         title: this.props.title,
@@ -30,27 +64,30 @@ export default class EditPage extends React.Component {
         permissions: this.props.permissions,
     }
 
-    onChangeSlug = (event, slug) => {
+    onChangeSlug = (event: void, slug: string) => {
         this.setState({ slug });
     }
 
-    onChangeTitle = (event, title) => {
+    onChangeTitle = (event:void, title: string) => {
         this.setState({ title });
     }
 
-    onChangeSummary = (event, summary) => {
+    onChangeSummary = (event: void, summary: string) => {
         this.setState({ summary });
     }
 
-    onChangeContent = (event, mdtext) => {
+    onChangeContent = (event: void, mdtext: string) => {
         this.setState({ mdtext });
     }
 
-    onPermissionChange = (permissions) => {
+    onPermissionChange = (permissions: Array<{
+        id: string,
+        name: string,
+    }>) => {
         this.setState({ permissions });
     }
 
-    savePage = (event) => {
+    savePage = (event: any) => {
         event.preventDefault();
         this.props.savePage({
             id: this.props.id,
