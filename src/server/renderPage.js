@@ -1,5 +1,4 @@
 import config from 'config';
-
 import ReactDOMServer from 'react-dom/server';
 import serialize from 'serialize-javascript';
 import 'cookie-parser';

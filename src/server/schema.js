@@ -1,7 +1,6 @@
 /* eslint "no-console": 0 */
 
 import config from 'config';
-
 import {
     GraphQLBoolean,
     GraphQLID,

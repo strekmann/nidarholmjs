@@ -4,7 +4,6 @@ import Link from 'found/lib/Link';
 import Divider from 'material-ui/Divider';
 import { List } from 'material-ui/List';
 import Subheader from 'material-ui/Subheader';
-import PropTypes from 'prop-types';
 import * as React from 'react';
 import { createFragmentContainer, graphql } from 'react-relay';
 

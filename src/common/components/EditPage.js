@@ -5,7 +5,6 @@ import React from 'react';
 import Paper from 'material-ui/Paper';
 import RaisedButton from 'material-ui/RaisedButton';
 import TextField from 'material-ui/TextField';
-import PropTypes from 'prop-types';
 
 import theme from '../theme';
 
@@ -68,7 +67,7 @@ export default class EditPage extends React.Component<Props, State> {
         this.setState({ slug });
     }
 
-    onChangeTitle = (event:void, title: string) => {
+    onChangeTitle = (event: void, title: string) => {
         this.setState({ title });
     }
 

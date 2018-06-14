@@ -59,8 +59,6 @@ type State = {
 }
 
 class Page extends React.Component<Props, State> {
-    muiTheme: {};
-
     static childContextTypes = {
         muiTheme: PropTypes.object.isRequired,
     }
@@ -79,6 +77,8 @@ class Page extends React.Component<Props, State> {
     getChildContext() {
         return { muiTheme: this.muiTheme };
     }
+
+    muiTheme: {};
 
     toggleEdit = () => {
         this.setState({

@@ -15,8 +15,6 @@ import theme from '../theme';
 type Props = {}
 
 class Login extends React.Component<Props> {
-    muiTheme: {};
-
     static childContextTypes = {
         muiTheme: PropTypes.object.isRequired,
     }
@@ -28,6 +26,8 @@ class Login extends React.Component<Props> {
     getChildContext() {
         return { muiTheme: this.muiTheme };
     }
+
+    muiTheme: {};
 
     render() {
         const { desktopGutterLess } = theme.spacing;

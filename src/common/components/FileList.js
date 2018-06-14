@@ -1,7 +1,6 @@
 /* eslint "react/require-default-props": 0 */
 /* @flow */
 
-import PropTypes from 'prop-types';
 import * as React from 'react';
 import { createFragmentContainer, graphql } from 'react-relay';
 

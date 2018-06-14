@@ -58,8 +58,6 @@ type State = {
 }
 
 class Members extends React.Component<Props, State> {
-    muiTheme: {};
-
     static childContextTypes = {
         muiTheme: PropTypes.object.isRequired,
     }
@@ -117,6 +115,8 @@ class Members extends React.Component<Props, State> {
     onCheckMember = (event, member) => {
         this.setState({ member });
     }
+
+    muiTheme: {};
 
     addUser = (event) => {
         event.preventDefault();

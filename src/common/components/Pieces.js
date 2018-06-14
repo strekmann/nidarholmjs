@@ -1,3 +1,5 @@
+/* @flow */
+
 import IconButton from 'material-ui/IconButton';
 import IconMenu from 'material-ui/IconMenu';
 import { MenuItem } from 'material-ui/Menu';
@@ -9,7 +11,7 @@ import { Toolbar, ToolbarGroup } from 'material-ui/Toolbar';
 import getMuiTheme from 'material-ui/styles/getMuiTheme';
 import MoreVertIcon from 'material-ui/svg-icons/navigation/more-vert';
 import PropTypes from 'prop-types';
-import React from 'react';
+import * as React from 'react';
 import { createRefetchContainer, graphql } from 'react-relay';
 
 import theme from '../theme';
@@ -20,7 +22,37 @@ import PieceItem from './PieceItem';
 
 const itemsPerPage = 50;
 
-class Pieces extends React.Component {
+type Props = {
+    organization: {
+        isMusicAdmin: boolean,
+        pieces: {
+            edges: Array<{
+                node: {
+                    id: string,
+                    arrangers: Array<string>,
+                    composers: Array<string>,
+                    scoreCount: number,
+                    subtitle: string,
+                    title: string,
+                }
+            }>,
+            pageInfo: {
+                hasNextPage: boolean,
+            },
+        },
+    },
+    relay: {
+        environment: {},
+        refetch: (variables: {}) => {},
+    }
+}
+
+type State = {
+    addPiece: boolean,
+    term: string,
+}
+
+class Pieces extends React.Component<Props, State> {
     static propTypes = {
         organization: PropTypes.object.isRequired,
         relay: PropTypes.object.isRequired,
@@ -64,6 +96,8 @@ class Pieces extends React.Component {
             return variables;
         });
     }
+
+    muiTheme: {};
 
     search = (term) => {
         this.props.relay.refetch((variables) => {

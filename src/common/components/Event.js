@@ -58,8 +58,6 @@ type State = {
 }
 
 class Event extends React.Component<Props, State> {
-    muiTheme: {};
-
     static childContextTypes = {
         muiTheme: PropTypes.object.isRequired,
     }
@@ -77,6 +75,8 @@ class Event extends React.Component<Props, State> {
     getChildContext() {
         return { muiTheme: this.muiTheme };
     }
+
+    muiTheme: {};
 
     toggleEdit = () => {
         this.setState({

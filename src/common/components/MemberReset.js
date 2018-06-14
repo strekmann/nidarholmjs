@@ -30,8 +30,6 @@ type State = {
 }
 
 class MemberReset extends React.Component<Props, State> {
-    muiTheme: {};
-
     static childContextTypes = {
         muiTheme: PropTypes.object.isRequired,
     }
@@ -71,6 +69,8 @@ class MemberReset extends React.Component<Props, State> {
             },
         );
     }
+
+    muiTheme: {};
 
     render() {
         return (

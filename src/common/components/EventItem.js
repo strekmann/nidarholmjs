@@ -6,7 +6,6 @@ import IconButton from 'material-ui/IconButton';
 import ExpandLess from 'material-ui/svg-icons/navigation/expand-less';
 import ExpandMore from 'material-ui/svg-icons/navigation/expand-more';
 import moment from 'moment';
-import PropTypes from 'prop-types';
 import * as React from 'react';
 
 import theme from '../theme';

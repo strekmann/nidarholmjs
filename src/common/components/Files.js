@@ -23,10 +23,10 @@ type Props = {
     organization: {
         files: {
             pageInfo: {
-                hasNextPage: bool,
+                hasNextPage: boolean,
             },
         },
-        isMember: bool,
+        isMember: boolean,
         memberGroup: {
             id: string,
         },
@@ -39,14 +39,12 @@ type Props = {
 }
 
 type State = {
-    addFile: bool,
-    search: bool,
+    addFile: boolean,
+    search: boolean,
     tags: string[],
 }
 
 class Files extends React.Component<Props, State> {
-    muiTheme: {};
-
     static childContextTypes = {
         muiTheme: PropTypes.object.isRequired,
     }
@@ -121,6 +119,8 @@ class Files extends React.Component<Props, State> {
             };
         });
     }
+
+    muiTheme: {};
 
     toggleAddFile = () => {
         this.setState({ addFile: !this.state.addFile });

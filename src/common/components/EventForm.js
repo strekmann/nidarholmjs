@@ -9,7 +9,6 @@ import DatePicker from 'material-ui/DatePicker';
 import TimePicker from 'material-ui/TimePicker';
 import Chip from 'material-ui/Chip';
 import moment from 'moment';
-import PropTypes from 'prop-types';
 import * as React from 'react';
 import { createFragmentContainer, graphql } from 'react-relay';
 

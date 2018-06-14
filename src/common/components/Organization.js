@@ -46,8 +46,6 @@ type State = {
 }
 
 class Organization extends React.Component<Props, State> {
-    muiTheme: {};
-
     static childContextTypes = {
         muiTheme: PropTypes.object.isRequired,
     }
@@ -76,6 +74,8 @@ class Organization extends React.Component<Props, State> {
             },
         }));
     }
+
+    muiTheme: {};
 
     saveOrganization = (event) => {
         event.preventDefault();

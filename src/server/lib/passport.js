@@ -1,7 +1,6 @@
 /* eslint no-param-reassign: 0 */
 
 import config from 'config';
-
 import passport from 'passport';
 import LocalStrategy from 'passport-local';
 import { Strategy as RememberMeStrategy } from 'passport-remember-me';

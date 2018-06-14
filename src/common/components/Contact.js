@@ -7,7 +7,6 @@ import Paper from 'material-ui/Paper';
 import RaisedButton from 'material-ui/RaisedButton';
 import TextField from 'material-ui/TextField';
 import MoreVertIcon from 'material-ui/svg-icons/navigation/more-vert';
-import PropTypes from 'prop-types';
 import * as React from 'react';
 import { createFragmentContainer, graphql } from 'react-relay';
 
@@ -23,7 +22,7 @@ type Props = {
             user: {},
             roles: Array<{}>,
         }>,
-        isAdmin: bool,
+        isAdmin: boolean,
         visitorLocation: string,
         visitorAddress: string,
         city: string,
@@ -41,8 +40,8 @@ type Props = {
 }
 
 type State = {
-    editContacts: bool,
-    editInfo: bool,
+    editContacts: boolean,
+    editInfo: boolean,
     visitorLocation: string,
     visitorAddress: string,
     city: string,

@@ -38,8 +38,6 @@ type Props = {
 }
 
 class Events extends React.Component<Props> {
-    muiTheme: {};
-
     static childContextTypes = {
         muiTheme: PropTypes.object.isRequired,
     }
@@ -52,6 +50,8 @@ class Events extends React.Component<Props> {
     getChildContext() {
         return { muiTheme: this.muiTheme };
     }
+
+    muiTheme: {};
 
     loadMoreEvents = () => {
         this.props.relay.refetch((variables) => {

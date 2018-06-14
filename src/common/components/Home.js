@@ -68,7 +68,6 @@ type State = {
 }
 
 class Home extends React.Component<Props, State> {
-    muiTheme: {};
     static childContextTypes = {
         muiTheme: PropTypes.object.isRequired,
     }
@@ -85,6 +84,8 @@ class Home extends React.Component<Props, State> {
     getChildContext() {
         return { muiTheme: this.muiTheme };
     }
+
+    muiTheme: {};
 
     sendEmail = (form) => {
         const { organization, relay } = this.props;

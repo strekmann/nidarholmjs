@@ -77,8 +77,6 @@ type State = {
 }
 
 class Pages extends React.Component<Props, State> {
-    muiTheme: {};
-
     static childContextTypes = {
         muiTheme: PropTypes.object.isRequired,
     }
@@ -103,6 +101,8 @@ class Pages extends React.Component<Props, State> {
     getChildContext() {
         return { muiTheme: this.muiTheme };
     }
+
+    muiTheme: {};
 
     toggleAddPage = () => {
         this.setState({ addPage: !this.state.addPage });

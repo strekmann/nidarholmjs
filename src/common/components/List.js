@@ -1,10 +1,9 @@
 /* @flow */
 
-import PropTypes from 'prop-types';
 import * as React from 'react';
 
 type Props = {
-    items: Array<React.Node>,
+    items: Array<any>,
 }
 
 export default class List extends React.Component<Props> {

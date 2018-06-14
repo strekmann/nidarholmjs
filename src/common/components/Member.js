@@ -124,8 +124,6 @@ type State = {
 }
 
 class Member extends React.Component<Props, State> {
-    muiTheme: {};
-
     static childContextTypes = {
         muiTheme: PropTypes.object.isRequired,
     }
@@ -212,6 +210,9 @@ class Member extends React.Component<Props, State> {
     onChangeNoEmail = (event, noEmail) => {
         this.setState({ noEmail });
     }
+
+    muiTheme: {};
+
     saveMember = (event) => {
         event.preventDefault();
         const { relay } = this.props;

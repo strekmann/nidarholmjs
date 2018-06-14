@@ -26,7 +26,7 @@ type Props = {
 type State = {
     email: string,
     phone: string,
-    show: bool,
+    show: boolean,
 }
 
 class ContactUser extends React.Component<Props, State> {

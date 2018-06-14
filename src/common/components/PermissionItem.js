@@ -1,10 +1,18 @@
-import React from 'react';
+/* @flow */
+
 import IconButton from 'material-ui/IconButton';
 import { ListItem } from 'material-ui/List';
 import Close from 'material-ui/svg-icons/navigation/close';
 import PropTypes from 'prop-types';
+import * as React from 'react';
 
-export default class PermissionItem extends React.Component {
+type Props = {
+    name: string,
+    id: string,
+    removePermission: (string) => void,
+}
+
+export default class PermissionItem extends React.Component<Props> {
     static propTypes = {
         name: PropTypes.string,
         id: PropTypes.string,

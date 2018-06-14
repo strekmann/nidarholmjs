@@ -3,7 +3,6 @@
 
 import { List } from 'material-ui/List';
 import axios from 'axios';
-import PropTypes from 'prop-types';
 import * as React from 'react';
 import Dropzone from 'react-dropzone';
 import { createFragmentContainer, graphql } from 'react-relay';

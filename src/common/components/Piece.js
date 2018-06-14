@@ -1,3 +1,5 @@
+/* @flow */
+
 import FlatButton from 'material-ui/FlatButton';
 import IconButton from 'material-ui/IconButton';
 import IconMenu from 'material-ui/IconMenu';
@@ -7,7 +9,7 @@ import { Toolbar, ToolbarGroup } from 'material-ui/Toolbar';
 import getMuiTheme from 'material-ui/styles/getMuiTheme';
 import MoreVertIcon from 'material-ui/svg-icons/navigation/more-vert';
 import PropTypes from 'prop-types';
-import React from 'react';
+import * as React from 'react';
 import { createFragmentContainer, graphql } from 'react-relay';
 
 import theme from '../theme';
@@ -17,7 +19,42 @@ import List from './List';
 import Groupscore from './Groupscore';
 import PieceForm from './PieceForm';
 
-class Piece extends React.Component {
+type Props = {
+    organization: {
+        isMusicAdmin: boolean,
+        piece: {
+            arrangers: Array<string>,
+            composers: Array<string>,
+            id: string,
+            files: {
+                edges: Array<{
+                    node: {
+                        id: string,
+                        filename: string,
+                        path: string,
+                    }
+                }>,
+            },
+            groupscores: Array<{
+                id: string,
+            }>,
+            subtitle: string,
+            title: string,
+        },
+    },
+    relay: {
+        environment: {},
+    },
+    router: {
+        push: ({}) => void,
+    },
+}
+
+type State = {
+    editPiece: boolean,
+}
+
+class Piece extends React.Component<Props, State> {
     static propTypes = {
         organization: PropTypes.object.isRequired,
         relay: PropTypes.object.isRequired,
@@ -40,6 +77,8 @@ class Piece extends React.Component {
     getChildContext() {
         return { muiTheme: this.muiTheme };
     }
+
+    muiTheme: {};
 
     handleCloseEditPiece = () => {
         this.setState({ editPiece: false });

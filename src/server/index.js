@@ -3,11 +3,11 @@
 /* eslint no-param-reassign: "off" */
 /* eslint camelcase: "off" */
 
-import config from 'config';
 import fs from 'fs';
 import http from 'http';
 import path from 'path';
 
+import config from 'config';
 import 'regenerator-runtime/runtime';
 import bodyParser from 'body-parser';
 import cookieParser from 'cookie-parser';

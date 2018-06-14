@@ -1,5 +1,6 @@
 /* eslint "max-len": 0 */
 /* eslint "react/no-multi-comp": 0 */
+// @flow
 
 import IconButton from 'material-ui/IconButton';
 import RaisedButton from 'material-ui/RaisedButton';
@@ -17,15 +18,10 @@ import type { ContactRoles_organization as OrganizationType } from './__generate
 
 type ItemProps = {
     name: string,
-    onAddRole: () => void,
+    onAddRole: (any) => void,
 }
 
 class RoleItem extends React.Component<ItemProps> {
-    static propTypes = {
-        name: PropTypes.string.isRequired,
-        onAddRole: PropTypes.func.isRequired,
-    }
-
     addRole = () => {
         this.props.onAddRole(this.props);
     }
@@ -49,19 +45,26 @@ type Props = {
     saveHook: () => void,
 }
 
-class ContactRoles extends React.Component<Props> {
+type State = {
+    activeRoles: Array<{|
+        id: string,
+        name: string,
+    |}>,
+    contactRoles: Array<{
+        id: string,
+    }>,
+}
+
+class ContactRoles extends React.Component<Props, State> {
     static childContextTypes = {
         muiTheme: PropTypes.object.isRequired,
     }
 
     constructor(props) {
         super(props);
+        const { activeRoles, contactRoles } = props.organization;
+        this.state = { activeRoles, contactRoles };
         this.muiTheme = getMuiTheme(theme);
-    }
-
-    state = {
-        activeRoles: this.props.organization.activeRoles,
-        contactRoles: this.props.organization.contactRoles,
     }
 
     getChildContext() {
@@ -92,6 +95,8 @@ class ContactRoles extends React.Component<Props> {
             },
         );
     }
+
+    muiTheme: {};
 
     render() {
         const roleIds = this.state.contactRoles.map((role) => {

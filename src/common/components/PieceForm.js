@@ -1,46 +1,80 @@
+/* @flow */
 /* eslint "max-len": 0 */
 
 import AutoComplete from 'material-ui/AutoComplete';
 import Dialog from 'material-ui/Dialog';
 import FlatButton from 'material-ui/FlatButton';
 import TextField from 'material-ui/TextField';
-import PropTypes from 'prop-types';
-import React from 'react';
+import * as React from 'react';
 
-class PieceForm extends React.Component {
-    static propTypes = {
-        pieces: PropTypes.object, // for auto-complete
-        piece: PropTypes.object, // for edit
-        searching: PropTypes.bool, // for auto-complete
-        isOpen: PropTypes.bool.isRequired,
-        title: PropTypes.string.isRequired, // dialog title
-        save: PropTypes.func.isRequired,
-        cancel: PropTypes.func.isRequired,
-        router: PropTypes.object.isRequired,
-        search: PropTypes.func,
+type Props = {
+    pieces?: {
+        edges: Array<{
+            node: {
+                id: string,
+                title: string,
+                subtitle: string,
+                arrangers: Array<string>,
+                composers: Array<string>,
+                scoreCount: number,
+            },
+        }>,
+    },
+    piece?: {
+        title: string,
+        subtitle: string,
+        composers: Array<string>,
+        arrangers: Array<string>,
+    },
+    searching?: boolean,
+    isOpen: boolean,
+    title: string,
+    save: ({
+        title: string,
+        subtitle: string,
+        composers: string,
+        arrangers: string,
+    }) => void,
+    cancel: () => void,
+    router?: {
+        push: ({}) => void,
+    },
+    search?: (string) => void,
+}
+
+type State = {
+    title: string,
+    subtitle: string,
+    composers: string,
+    arrangers: string,
+    searching: boolean,
+}
+
+class PieceForm extends React.Component<Props, State> {
+    constructor(props: Props) {
+        super(props);
+        this.state = {
+            title: this.props.piece && this.props.piece.title ? this.props.piece.title : '',
+            subtitle: this.props.piece && this.props.piece.subtitle ? this.props.piece.subtitle : '',
+            composers: this.props.piece && this.props.piece.composers && this.props.piece.composers.length ? this.props.piece.composers.join(', ') : '',
+            arrangers: this.props.piece && this.props.piece.arrangers && this.props.piece.arrangers.length ? this.props.piece.arrangers.join(', ') : '',
+            searching: this.props.searching ? this.props.searching : false,
+        };
     }
 
-    state = {
-        title: this.props.piece && this.props.piece.title ? this.props.piece.title : '',
-        subtitle: this.props.piece && this.props.piece.subtitle ? this.props.piece.subtitle : '',
-        composers: this.props.piece && this.props.piece.composers && this.props.piece.composers.length ? this.props.piece.composers.join(', ') : '',
-        arrangers: this.props.piece && this.props.piece.arrangers && this.props.piece.arrangers.length ? this.props.piece.arrangers.join(', ') : '',
-        searching: this.props.searching,
-    }
-
-    handleChangeTitle = (event, title) => {
+    handleChangeTitle = (event: void, title: string) => {
         this.setState({ title });
     }
 
-    handleChangeSubtitle = (event, subtitle) => {
+    handleChangeSubtitle = (event: void, subtitle: string) => {
         this.setState({ subtitle });
     }
 
-    handleChangeComposers = (event, composers) => {
+    handleChangeComposers = (event: void, composers: string) => {
         this.setState({ composers });
     }
 
-    handleChangeArrangers = (event, arrangers) => {
+    handleChangeArrangers = (event: void, arrangers: string) => {
         this.setState({ arrangers });
     }
 
@@ -48,13 +82,19 @@ class PieceForm extends React.Component {
         this.setState({ searching: false });
     }
 
-    goToPiece = (piece) => {
-        this.props.router.push({ pathname: `/music/${piece.id}` });
+    goToPiece = (piece: {
+        id: string,
+    }) => {
+        if (this.props.router) {
+            this.props.router.push({ pathname: `/music/${piece.id}` });
+        }
     }
 
-    search = (title) => {
+    search = (title: string) => {
         this.setState({ title });
-        this.props.search(title);
+        if (this.props.search) {
+            this.props.search(title);
+        }
     }
 
     savePiece = () => {
@@ -106,7 +146,7 @@ class PieceForm extends React.Component {
                     ]
                 }
             >
-                {this.state.searching
+                {this.state.searching && this.props.pieces
                     ? (
                         <div>
                             <p>Søk blant stykkene som allerede er i arkivet, og legg til nytt hvis det ikke finnes</p>
@@ -114,7 +154,7 @@ class PieceForm extends React.Component {
                                 dataSource={this.props.pieces.edges.map((edge) => {
                                     const piece = edge.node;
                                     return {
-                                        text: `${piece.scoreCount}: ${piece.title} - ${piece.composers} (${piece.arrangers})`,
+                                        text: `${piece.scoreCount}: ${piece.title} - ${piece.composers.join(', ')} (${piece.arrangers.join(', ')})`,
                                         value: piece,
                                     };
                                 })}

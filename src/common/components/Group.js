@@ -78,8 +78,6 @@ type State = {
 }
 
 class Group extends React.Component<Props, State> {
-    muiTheme: {};
-
     static childContextTypes = {
         muiTheme: PropTypes.object.isRequired,
     }
@@ -126,6 +124,8 @@ class Group extends React.Component<Props, State> {
         }
         this.setState({ addingGroupLeader: null });
     }
+
+    muiTheme: {};
 
     joinGroup = (selection) => {
         this.setState({ joinGroup: false });

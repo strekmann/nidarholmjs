@@ -64,8 +64,6 @@ type Props = {
 }
 
 class FrontpageSummaries extends React.Component<Props> {
-    muiTheme: {};
-
     static childContextTypes = {
         muiTheme: PropTypes.object.isRequired,
     }
@@ -90,6 +88,8 @@ class FrontpageSummaries extends React.Component<Props> {
     onAdd = (page: {}) => {
         this.props.onAdd(page);
     }
+
+    muiTheme: {};
 
     render() {
         const summaryIds = this.props.summaries.map((summary) => {

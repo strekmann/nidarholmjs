@@ -1,6 +1,5 @@
-import config from 'config';
-
 import Promise from 'bluebird';
+import config from 'config';
 import mongoose from 'mongoose';
 
 mongoose.Promise = Promise;

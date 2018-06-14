@@ -20,7 +20,6 @@ type Props = {
 }
 
 class Groups extends React.Component<Props> {
-    muiTheme: {};
     static childContextTypes = {
         muiTheme: PropTypes.object.isRequired,
     }
@@ -33,6 +32,8 @@ class Groups extends React.Component<Props> {
     getChildContext() {
         return { muiTheme: this.muiTheme };
     }
+
+    muiTheme: {};
 
     render() {
         const { groups } = this.props.organization;
