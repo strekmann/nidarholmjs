@@ -17,6 +17,7 @@ import SortableRoleList from './SortableRoleList';
 import type { ContactRoles_organization as OrganizationType } from './__generated__/ContactRoles_organization.graphql';
 
 type ItemProps = {
+    // id: string,
     name: string,
     onAddRole: (any) => void,
 }
@@ -46,12 +47,13 @@ type Props = {
 }
 
 type State = {
-    activeRoles: Array<{|
+    activeRoles: Array<{
         id: string,
         name: string,
-    |}>,
+    }>,
     contactRoles: Array<{
         id: string,
+        name: string,
     }>,
 }
 
@@ -63,7 +65,7 @@ class ContactRoles extends React.Component<Props, State> {
     constructor(props) {
         super(props);
         const { activeRoles, contactRoles } = props.organization;
-        this.state = { activeRoles, contactRoles };
+        this.state = { activeRoles: [...activeRoles], contactRoles: [...contactRoles] };
         this.muiTheme = getMuiTheme(theme);
     }
 
@@ -75,9 +77,9 @@ class ContactRoles extends React.Component<Props, State> {
         this.setState({ contactRoles });
     }
 
-    onAdd = (roleId) => {
+    onAdd = ({ id, name }) => {
         const { contactRoles } = this.state;
-        contactRoles.push(roleId);
+        contactRoles.push({ id, name });
         this.setState({ contactRoles });
     }
 

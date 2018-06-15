@@ -942,8 +942,13 @@ organizationType = new GraphQLObjectType({
         activeRoles: {
             type: new GraphQLList(roleType),
             resolve: (organization) => {
+                // FIXME: When called by server, or by graphiql, member_group IS the _id.
+                let memberGroupId = organization.member_group._id;
+                if (!memberGroupId) {
+                    memberGroupId = organization.member_group;
+                }
                 return Group.aggregate(
-                    { $match: { _id: organization.member_group._id } },
+                    { $match: { _id: memberGroupId } },
                     { $unwind: '$members' },
                     { $match: { 'members.roles': { $exists: 1 } } },
                     { $group: { _id: '$members' } },
