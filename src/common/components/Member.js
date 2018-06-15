@@ -38,6 +38,7 @@ import Date from './Date';
 import DateFromNow from './DateFromNow';
 import ProfilePicture from './ProfilePicture';
 import Yesno from './Yesno';
+import type { Member_organization as MemberOrganization } from './__generated__/Member_organization.graphql';
 
 let DateTimeFormat;
 if (areIntlLocalesSupported(['nb'])) {
@@ -45,53 +46,7 @@ if (areIntlLocalesSupported(['nb'])) {
 }
 
 type Props = {
-    organization: {
-        isAdmin: boolean,
-        member: {
-            id: string,
-            user: {
-                id: string,
-                name: string,
-                username: string,
-                phone: string,
-                email: string,
-                instrument: string,
-                born: string,
-                address: string,
-                postcode: string,
-                city: string,
-                country: string,
-                joined: Date,
-                nmfId: string,
-                reskontro: string,
-                membershipHistory: string,
-                inList: boolean,
-                onLeave: boolean,
-                noEmail: boolean,
-                isActive: boolean,
-                groups: [{
-                    id: string,
-                    name: string,
-                }],
-            },
-            roles: [{
-                id: string,
-                email: string,
-                name: string,
-            }],
-        },
-        groups: [{
-            name: string,
-        }],
-        roles: {
-            edges: [{
-                node: {
-                    id: string,
-                    name: string,
-                },
-            }],
-        },
-    },
+    organization: MemberOrganization,
     relay: {
         environment: {},
     },
@@ -113,7 +68,6 @@ type State = {
     country: string,
     joined: ?string,
     nmfId: string,
-    reskontro: string,
     membershipHistory: string,
     inList: boolean,
     onLeave: boolean,
@@ -131,29 +85,77 @@ class Member extends React.Component<Props, State> {
     constructor(props) {
         super(props);
         this.muiTheme = getMuiTheme(theme);
-    }
-
-    state = {
-        editMember: false,
-        joinGroup: false,
-        addingRole: false,
-        name: this.props.organization.member.user.name || '',
-        username: this.props.organization.member.user.username || '',
-        phone: this.props.organization.member.user.phone || '',
-        email: this.props.organization.member.user.email || '',
-        instrument: this.props.organization.member.user.instrument || '',
-        born: this.props.organization.member.user.born ? moment(this.props.organization.member.user.born).toDate() : null,
-        address: this.props.organization.member.user.address || '',
-        postcode: this.props.organization.member.user.postcode || '',
-        city: this.props.organization.member.user.city || '',
-        country: this.props.organization.member.user.country || '',
-        joined: this.props.organization.member.user.joined ? moment(this.props.organization.member.user.joined).toDate() : null,
-        nmfId: this.props.organization.member.user.nmfId || '',
-        reskontro: this.props.organization.member.user.reskontro || '',
-        membershipHistory: this.props.organization.member.user.membershipHistory || '',
-        inList: this.props.organization.member.user.inList,
-        onLeave: this.props.organization.member.user.onLeave,
-        noEmail: this.props.organization.member.user.noEmail,
+        let member;
+        let user;
+        const { organization } = this.props;
+        this.state = {
+            name: '',
+            username: '',
+            phone: '',
+            email: '',
+            instrument: '',
+            born: null,
+            address: '',
+            postcode: '',
+            city: '',
+            country: '',
+            joined: null,
+            nmfId: '',
+            membershipHistory: '',
+            inList: true,
+            onLeave: false,
+            noEmail: false,
+            addingRole: false,
+            editMember: false,
+            joinGroup: false,
+        };
+        if (organization) {
+            ({ member } = organization);
+            if (member) {
+                ({ user } = member);
+                if (user) {
+                    const {
+                        name,
+                        username,
+                        phone,
+                        email,
+                        instrument,
+                        born,
+                        address,
+                        postcode,
+                        city,
+                        country,
+                        joined,
+                        nmfId,
+                        membershipHistory,
+                        inList,
+                        onLeave,
+                        noEmail,
+                    } = user;
+                    this.state = {
+                        name: name || '',
+                        username: username || '',
+                        phone: phone || '',
+                        email: email || '',
+                        instrument: instrument || '',
+                        born: born ? moment(born).toDate() : null,
+                        address: address || '',
+                        postcode: postcode || '',
+                        city: city || '',
+                        country: country || '',
+                        joined: joined ? moment(joined).toDate() : null,
+                        nmfId: nmfId || '',
+                        membershipHistory: membershipHistory || '',
+                        inList: !!inList,
+                        onLeave: !!onLeave,
+                        noEmail: !!noEmail,
+                        addingRole: false,
+                        editMember: false,
+                        joinGroup: false,
+                    };
+                }
+            }
+        }
     }
 
     getChildContext() {
@@ -184,14 +186,6 @@ class Member extends React.Component<Props, State> {
     onChangeCountry = (event, country) => {
         this.setState({ country });
     }
-    /*
-    onChangeNmfId = (event, nmfID) => {
-        this.setState({ nmfID });
-    }
-    */
-    onChangeReskontro = (event, reskontro) => {
-        this.setState({ reskontro });
-    }
     onChangeMembershipHistory = (event, membershipHistory) => {
         this.setState({ membershipHistory });
     }
@@ -217,7 +211,7 @@ class Member extends React.Component<Props, State> {
         event.preventDefault();
         const { relay } = this.props;
         const data = {
-            userId: this.props.organization.member.user.id,
+            userId: this.props.organization && this.props.organization.member && this.props.organization.member.user && this.props.organization.member.user.id ? this.props.organization.member.user.id : null,
             username: this.state.username,
             name: this.state.name,
             phone: this.state.phone,
@@ -230,7 +224,6 @@ class Member extends React.Component<Props, State> {
             country: this.state.country,
             joined: undefined,
             nmfId: undefined,
-            reskontro: undefined,
             membershipHistory: undefined,
             inList: undefined,
             onLeave: undefined,
@@ -239,7 +232,6 @@ class Member extends React.Component<Props, State> {
         if (this.props.organization.isAdmin) {
             data.joined = this.state.joined;
             data.nmfId = this.state.nmfId;
-            data.reskontro = this.state.reskontro;
             data.membershipHistory = this.state.membershipHistory;
             data.inList = this.state.inList;
             data.onLeave = this.state.onLeave;
@@ -267,41 +259,49 @@ class Member extends React.Component<Props, State> {
     }
     addRole = (roleId) => {
         this.setState({ addingRole: false });
-        AddRoleMutation.commit(
-            this.props.relay.environment,
-            {
-                roleId,
-                memberId: this.props.organization.member.id,
-            },
-        );
+        if (this.props.organization.member) {
+            AddRoleMutation.commit(
+                this.props.relay.environment,
+                {
+                    roleId,
+                    memberId: this.props.organization.member.id,
+                },
+            );
+        }
     }
     removeRole= (roleId) => {
-        RemoveRoleMutation.commit(
-            this.props.relay.environment,
-            {
-                roleId,
-                memberId: this.props.organization.member.id,
-            },
-        );
+        if (this.props.organization.member) {
+            RemoveRoleMutation.commit(
+                this.props.relay.environment,
+                {
+                    roleId,
+                    memberId: this.props.organization.member.id,
+                },
+            );
+        }
     }
     joinGroup = (selection) => {
         this.setState({ joinGroup: false });
-        JoinGroupMutation.commit(
-            this.props.relay.environment,
-            {
-                groupId: selection.value.id,
-                userId: this.props.organization.member.user.id,
-            },
-        );
+        if (this.props.organization.member && this.props.organization.member.user) {
+            JoinGroupMutation.commit(
+                this.props.relay.environment,
+                {
+                    groupId: selection.value.id,
+                    userId: this.props.organization.member.user.id,
+                },
+            );
+        }
     }
     leaveGroup = (user, group) => {
-        LeaveGroupMutation.commit(
-            this.props.relay.environment,
-            {
-                groupId: group.id,
-                userId: user.id,
-            },
-        );
+        if (user && group) {
+            LeaveGroupMutation.commit(
+                this.props.relay.environment,
+                {
+                    groupId: group.id,
+                    userId: user.id,
+                },
+            );
+        }
     }
     closeJoinGroup = () => {
         this.setState({ joinGroup: false });
@@ -316,7 +316,13 @@ class Member extends React.Component<Props, State> {
         const {
             groups, isAdmin, member, roles,
         } = organization;
+        if (!member) {
+            throw new Error('Member not defined');
+        }
         const { user } = member;
+        if (!user) {
+            throw new Error('User not defined in member');
+        }
         const { desktopGutterLess } = theme.spacing;
         if (this.state.editMember) {
             return (
@@ -408,14 +414,6 @@ class Member extends React.Component<Props, State> {
                                         />
                                     </div>
                                     <div>
-                                        <TextField
-                                            id="reskontro"
-                                            floatingLabelText="Reskontro"
-                                            onChange={this.onChangeReskontro}
-                                            value={this.state.reskontro}
-                                        />
-                                    </div>
-                                    <div>
                                         <DatePicker
                                             id="joined"
                                             floatingLabelText="Startet i korpset"
@@ -475,7 +473,7 @@ class Member extends React.Component<Props, State> {
             <Paper className="row">
                 <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                     <h1>{user.name}</h1>
-                    {isAdmin
+                    {isAdmin && groups
                         ? (
                             <Dialog
                                 title="Legg til i gruppe"
@@ -486,7 +484,7 @@ class Member extends React.Component<Props, State> {
                             >
                                 <AutoComplete
                                     dataSource={groups.map((group) => {
-                                        return { text: `${group.name}`, value: group };
+                                        return { text: `${group && group.name ? group.name : ''}`, value: group };
                                     })}
                                     floatingLabelText="Gruppe"
                                     onNewRequest={this.joinGroup}
@@ -497,7 +495,7 @@ class Member extends React.Component<Props, State> {
                         )
                         : null
                     }
-                    {isAdmin
+                    {isAdmin && roles && roles.edges
                         ? (
                             <Dialog
                                 title="Legg til verv"
@@ -508,15 +506,20 @@ class Member extends React.Component<Props, State> {
                             >
                                 <List>
                                     {roles.edges.map((edge) => {
-                                        return (
-                                            <ListItem
-                                                key={edge.node.id}
-                                                primaryText={edge.node.name}
-                                                onTouchTap={() => {
-                                                    this.addRole(edge.node.id);
-                                                }}
-                                            />
-                                        );
+                                        if (edge && edge.node) {
+                                            return (
+                                                <ListItem
+                                                    key={edge.node.id}
+                                                    primaryText={edge.node.name}
+                                                    onTouchTap={() => {
+                                                        if (edge && edge.node) {
+                                                            this.addRole(edge.node.id);
+                                                        }
+                                                    }}
+                                                />
+                                            );
+                                        }
+                                        return null;
                                     })}
                                 </List>
                             </Dialog>
@@ -597,73 +600,55 @@ class Member extends React.Component<Props, State> {
                             paddingRight: desktopGutterLess,
                         }}
                     >
-                        <div>
-                            <a href={`mailto:${user.email}`}>{user.email}</a>
-                        </div>
-                        <div>
-                            <Phone phone={user.phone} />
-                        </div>
-                        <div>
-                            {user.address}
-                            <br />
-                            {user.postcode} {user.city}
-                        </div>
-                        {member.roles.length
+                        {user.email
+                            ? (
+                                <div>
+                                    <a href={`mailto:${user.email}`}>{user.email}</a>
+                                </div>
+                            )
+                            : null
+                        }
+                        {user.phone
+                            ? (
+                                <div>
+                                    <Phone phone={user.phone} />
+                                </div>
+                            )
+                            : null
+                        }
+                        {user.address && user.postcode && user.city
+                            ? (
+                                <div>
+                                    {user.address}
+                                    <br />
+                                    {user.postcode} {user.city}
+                                </div>
+
+                            )
+                            : null
+                        }
+                        {member.roles && member.roles.length
                             ? (
                                 <div>
                                     <h3>Verv</h3>
                                     <List>
                                         {member.roles.map((role) => {
-                                            return (
-                                                <ListItem
-                                                    key={role.id}
-                                                    disabled
-                                                    primaryText={role.name}
-                                                    secondaryText={role.email
-                                                        ? <a href={`mailto:${role.email}`}>{role.email}</a>
-                                                        : null
-                                                    }
-                                                    rightIconButton={isAdmin
-                                                        ? (
-                                                            <IconButton
-                                                                onClick={(event) => {
-                                                                    event.preventDefault();
-                                                                    return this.removeRole(role.id);
-                                                                }}
-                                                            >
-                                                                <Close />
-                                                            </IconButton>
-                                                        )
-                                                        : null
-                                                    }
-                                                />
-                                            );
-                                        })}
-                                    </List>
-                                </div>
-                            )
-                            : null
-                        }
-                        <div>
-                            {user.groups.length
-                                ? (
-                                    <div>
-                                        <h3>Grupper</h3>
-                                        <List>
-                                            {user.groups.map((group) => {
+                                            if (role) {
                                                 return (
                                                     <ListItem
-                                                        key={group.id}
-                                                        primaryText={group.name}
-                                                        containerElement={
-                                                            <Link to={`/group/${group.id}`} />
+                                                        key={role.id}
+                                                        disabled
+                                                        primaryText={role.name}
+                                                        secondaryText={role.email
+                                                            ? <a href={`mailto:${role.email}`}>{role.email}</a>
+                                                            : null
                                                         }
                                                         rightIconButton={isAdmin
                                                             ? (
                                                                 <IconButton
                                                                     onClick={(event) => {
                                                                         event.preventDefault();
-                                                                        return this.leaveGroup(user, group);
+                                                                        return this.removeRole(role.id);
                                                                     }}
                                                                 >
                                                                     <Close />
@@ -673,6 +658,46 @@ class Member extends React.Component<Props, State> {
                                                         }
                                                     />
                                                 );
+                                            }
+                                            return null;
+                                        })}
+                                    </List>
+                                </div>
+                            )
+                            : null
+                        }
+                        <div>
+                            {user.groups && user.groups.length
+                                ? (
+                                    <div>
+                                        <h3>Grupper</h3>
+                                        <List>
+                                            {user.groups.map((group) => {
+                                                if (group) {
+                                                    return (
+                                                        <ListItem
+                                                            key={group.id}
+                                                            primaryText={group.name}
+                                                            containerElement={
+                                                                <Link to={`/group/${group.id}`} />
+                                                            }
+                                                            rightIconButton={isAdmin
+                                                                ? (
+                                                                    <IconButton
+                                                                        onClick={(event) => {
+                                                                            event.preventDefault();
+                                                                            return this.leaveGroup(user, group);
+                                                                        }}
+                                                                    >
+                                                                        <Close />
+                                                                    </IconButton>
+                                                                )
+                                                                : null
+                                                            }
+                                                        />
+                                                    );
+                                                }
+                                                return null;
                                             })}
                                         </List>
                                     </div>
@@ -680,20 +705,17 @@ class Member extends React.Component<Props, State> {
                                 : null
                             }
                         </div>
-                        {isAdmin
+                        {isAdmin && user
                             ? (
                                 <div style={{ backgroundColor: lightBlue100 }}>
                                     <h2>Admininfo</h2>
-                                    <div>
-                                        Reskontro: {user.reskontro}
-                                    </div>
-                                    <Text text={user.membershipHistory} />
+                                    <Text text={user.membershipHistory || ''} />
                                     <div>
                                         Brukernavn {user.username},
-                                        aktiv: <Yesno value={user.isActive} />,
-                                        i medlemslista: <Yesno value={user.inList} />,
-                                        unngår epost: <Yesno value={user.noEmail} />,
-                                        permisjon: <Yesno value={user.onLeave} />
+                                        aktiv: <Yesno value={user.isActive || true} />,
+                                        i medlemslista: <Yesno value={user.inList || true} />,
+                                        unngår epost: <Yesno value={user.noEmail || false} />,
+                                        permisjon: <Yesno value={user.onLeave || false} />
                                     </div>
                                 </div>
                             )
@@ -771,7 +793,6 @@ export default createFragmentContainer(
                     joined
                     instrument
                     instrumentInsurance
-                    reskontro
                     membershipHistory
                     membershipStatus
                     inList
