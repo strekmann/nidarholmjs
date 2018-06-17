@@ -33,6 +33,7 @@ import { createResolver, historyMiddlewares, render, routeConfig } from '../rout
 import renderPage from './renderPage';
 import passport from './lib/passport';
 import { icalEvents } from './icalRoutes';
+import { downloadArchive } from './musicRoutes';
 import Organization from './models/Organization';
 import PasswordCode from './models/PasswordCode';
 import User from './models/User';
@@ -297,6 +298,8 @@ app.get('/files/o/:path/:filename', (req, res) => {
 
 app.get('/events/public.ics', icalEvents);
 app.get('/events/export.ics', icalEvents);
+
+app.get('/music/archive.xlsx', downloadArchive);
 
 /* Socket.io routes */
 // socketRoutes(io);

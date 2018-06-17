@@ -177,6 +177,10 @@ class Pieces extends React.Component<Props, State> {
                                     />
                                     : null
                                 }
+                                <MenuItem
+                                    primaryText="Last ned regneark"
+                                    href="/music/archive.xlsx"
+                                />
                             </IconMenu>
                         </ToolbarGroup>
                     </Toolbar>
