@@ -225,10 +225,9 @@ class Pieces extends React.Component<Props, State> {
                         })}
                     </TableBody>
                 </Table>
-                {pieces.pageInfo.hasNextPage ?
-                    <RaisedButton primary onClick={this.loadMore}>Mer</RaisedButton>
-                    :
-                    null
+                {pieces.pageInfo.hasNextPage
+                    ? <RaisedButton primary onClick={this.loadMore} label="Mer" />
+                    : null
                 }
             </Paper>
         );

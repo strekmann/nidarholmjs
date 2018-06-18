@@ -55,11 +55,12 @@ type State = {
 class PieceForm extends React.Component<Props, State> {
     constructor(props: Props) {
         super(props);
+        const { piece } = this.props;
         this.state = {
-            title: this.props.piece && this.props.piece.title ? this.props.piece.title : '',
-            subtitle: this.props.piece && this.props.piece.subtitle ? this.props.piece.subtitle : '',
-            composers: this.props.piece && this.props.piece.composers && this.props.piece.composers.length ? this.props.piece.composers.join(', ') : '',
-            arrangers: this.props.piece && this.props.piece.arrangers && this.props.piece.arrangers.length ? this.props.piece.arrangers.join(', ') : '',
+            title: piece && piece.title ? piece.title : '',
+            subtitle: piece && piece.subtitle ? piece.subtitle : '',
+            composers: piece && piece.composers && piece.composers.length ? piece.composers.join(', ') : '',
+            arrangers: piece && piece.arrangers && piece.arrangers.length ? piece.arrangers.join(', ') : '',
             searching: this.props.searching ? this.props.searching : false,
         };
     }
