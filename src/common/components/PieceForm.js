@@ -36,8 +36,10 @@ type Props = {
         arrangers: string,
     }) => void,
     cancel: () => void,
-    router?: {
-        push: ({}) => void,
+    router: {
+        push: ({
+            pathname: string,
+        }) => void,
     },
     search?: (string) => void,
 }
@@ -85,9 +87,7 @@ class PieceForm extends React.Component<Props, State> {
     goToPiece = (piece: {
         id: string,
     }) => {
-        if (this.props.router) {
-            this.props.router.push({ pathname: `/music/${piece.id}` });
-        }
+        this.props.router.push({ pathname: `/music/${piece.id}` });
     }
 
     search = (title: string) => {

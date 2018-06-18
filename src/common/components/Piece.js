@@ -46,7 +46,9 @@ type Props = {
         environment: {},
     },
     router: {
-        push: ({}) => void,
+        push: ({
+            pathname: string,
+        }) => void,
     },
 }
 

@@ -44,7 +44,12 @@ type Props = {
     relay: {
         environment: {},
         refetch: (variables: {}) => {},
-    }
+    },
+    router: {
+        push: ({
+            pathname: string,
+        }) => void,
+    },
 }
 
 type State = {
@@ -157,6 +162,7 @@ class Pieces extends React.Component<Props, State> {
                             cancel={this.closeAddPiece}
                             pieces={this.props.organization.pieces}
                             search={this.search}
+                            router={this.props.router}
                             searching
                         />
                         : null

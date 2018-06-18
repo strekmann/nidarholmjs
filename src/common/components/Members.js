@@ -49,9 +49,6 @@ type State = {
     name: string,
     email: string,
     instrument: string,
-    exists: ?{
-        value: string,
-    },
     new: boolean,
     groupId: ?string,
     member: boolean,
@@ -72,7 +69,6 @@ class Members extends React.Component<Props, State> {
         name: '',
         email: '',
         instrument: '',
-        exists: null,
         new: false,
         groupId: null,
         member: false,
@@ -84,11 +80,7 @@ class Members extends React.Component<Props, State> {
 
     onAutoCompleteChoose = (element, chosen) => {
         if (chosen > -1) {
-            this.setState({
-                new: false,
-                exists: element,
-                name: element.text,
-            });
+            this.props.router.push({ pathname: `/users/${element.value}` });
         }
         else {
             // Pressed enter without choosing
@@ -109,7 +101,7 @@ class Members extends React.Component<Props, State> {
     }
 
     onChangeUserName = (name) => {
-        this.setState({ name, exists: null });
+        this.setState({ name });
     }
 
     onCheckMember = (event, member) => {
@@ -204,10 +196,6 @@ class Members extends React.Component<Props, State> {
                             filter={AutoComplete.fuzzyFilter}
                             fullWidth
                         />
-                        {this.state.exists
-                            ? <div>{this.state.name} finnes i systemet fra før, gå til <Link to={`/users/${this.state.exists.value}`}>brukersiden</Link></div>
-                            : null
-                        }
                         {this.state.new
                             ? (
                                 <form onSubmit={this.addUser}>
