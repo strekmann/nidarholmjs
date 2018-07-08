@@ -10,10 +10,14 @@ type Props = {
 };
 
 export default class Date extends React.Component<Props> {
+  static defaultProps = {
+    yes: "ja",
+    no: "nei",
+    maybe: "kanskje",
+  };
+
   render() {
-    const yes = this.props.yes || "ja";
-    const no = this.props.no || "nei";
-    const maybe = this.props.maybe || "kanskje";
+    const { yes, no, maybe } = this.props;
     if (this.props.value) {
       return <span>{yes}</span>;
     }

@@ -9,6 +9,10 @@ type Props = {
 };
 
 export default class Date extends React.Component<Props> {
+  static defaultProps = {
+    format: "LL",
+  };
+
   render() {
     if (!this.props.date) {
       return null;
@@ -16,7 +20,7 @@ export default class Date extends React.Component<Props> {
     const date = moment.isMoment(this.props.date)
       ? this.props.date
       : moment(this.props.date);
-    let format = this.props.format ? this.props.format : "LL";
+    let { format } = this.props;
 
     // If we are don't have a time, i.e. at midnight, don't show time
     // This will be buggy if we start something at midnight.

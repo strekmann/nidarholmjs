@@ -3,7 +3,7 @@
 import * as React from "react";
 
 type Props = {
-  phone?: string,
+  phone: string,
 };
 
 export default class Phone extends React.Component<Props> {

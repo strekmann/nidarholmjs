@@ -6,8 +6,8 @@ import { createFragmentContainer, graphql } from "react-relay";
 
 class UserField extends React.Component {
   static propTypes = {
-    organization: PropTypes.object,
-    users: PropTypes.array,
+    organization: PropTypes.object.isRequired,
+    users: PropTypes.array.isRequired,
     onChange: PropTypes.func.isRequired,
     title: PropTypes.string.isRequired,
   };

@@ -9,10 +9,11 @@ type Props = {
 };
 
 export default class Text extends React.Component<Props> {
+  static defaultProps = {
+    text: "",
+  };
+
   render() {
-    if (!this.props.text) {
-      return null;
-    }
     const text = marked(this.props.text);
     return <span dangerouslySetInnerHTML={{ __html: text }} />;
   }

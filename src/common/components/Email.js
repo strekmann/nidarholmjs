@@ -11,6 +11,11 @@ type Props = {
 };
 
 export default class Email extends React.Component<Props> {
+  static defaultProps = {
+    children: null,
+    email: null,
+  };
+
   render() {
     if (!this.props.email) {
       return null;

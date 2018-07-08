@@ -12,6 +12,10 @@ type Props = {
 };
 
 export default class Daterange extends React.Component<Props> {
+  static defaultProps = {
+    noTime: false,
+  };
+
   render() {
     const { start, end } = this.props;
     let startm;

@@ -19,11 +19,25 @@ if (areIntlLocalesSupported(["nb"])) {
 }
 
 class ProjectForm extends React.Component {
+  static defaultProps = {
+    open: false,
+    id: null,
+    title: "",
+    tag: "",
+    privateMdtext: "",
+    publicMdtext: "",
+    start: null,
+    end: null,
+    permissions: [],
+    conductors: [],
+    managers: [],
+  };
+
   static propTypes = {
     open: PropTypes.bool,
-    save: PropTypes.func,
-    toggle: PropTypes.func,
-    viewer: PropTypes.object,
+    save: PropTypes.func.isRequired,
+    toggle: PropTypes.func.isRequired,
+    viewer: PropTypes.object.isRequired,
     id: PropTypes.string,
     title: PropTypes.string,
     tag: PropTypes.string,
@@ -38,10 +52,10 @@ class ProjectForm extends React.Component {
   };
 
   state = {
-    title: this.props.title || "",
-    tag: this.props.tag || "",
-    privateMdtext: this.props.privateMdtext || "",
-    publicMdtext: this.props.publicMdtext || "",
+    title: this.props.title,
+    tag: this.props.tag,
+    privateMdtext: this.props.privateMdtext,
+    publicMdtext: this.props.publicMdtext,
     start: this.props.start ? moment(this.props.start).toDate() : null,
     end: this.props.end ? moment(this.props.end).toDate() : null,
     permissions: this.props.permissions
