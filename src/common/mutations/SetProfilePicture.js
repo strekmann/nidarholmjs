@@ -1,26 +1,27 @@
-import { commitMutation, graphql } from 'react-relay';
+import { commitMutation, graphql } from "react-relay";
 
 const mutation = graphql`
-mutation SetProfilePictureMutation($input: SetProfilePictureInput!) {
+  mutation SetProfilePictureMutation($input: SetProfilePictureInput!) {
     setProfilePicture(input: $input) {
-        user {
-            profilePicture {
-                normalPath
-            }
+      user {
+        profilePicture {
+          normalPath
         }
+      }
     }
-}`;
+  }
+`;
 
 function commit(environment, input, onCompleted) {
-    const variables = {
-        input,
-    };
+  const variables = {
+    input,
+  };
 
-    return commitMutation(environment, {
-        mutation,
-        variables,
-        onCompleted,
-    });
+  return commitMutation(environment, {
+    mutation,
+    variables,
+    onCompleted,
+  });
 }
 
 export default { commit };

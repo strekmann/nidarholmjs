@@ -1,24 +1,25 @@
-import { commitMutation, graphql } from 'react-relay';
+import { commitMutation, graphql } from "react-relay";
 
 const mutation = graphql`
-mutation CreateRoleMutation($input: CreateRoleInput!) {
+  mutation CreateRoleMutation($input: CreateRoleInput!) {
     createRole(input: $input) {
-        organization {
-            ...Roles_organization
-        }
+      organization {
+        ...Roles_organization
+      }
     }
-}`;
+  }
+`;
 
 function commit(environment, input, onCompleted) {
-    const variables = {
-        input,
-    };
+  const variables = {
+    input,
+  };
 
-    return commitMutation(environment, {
-        mutation,
-        variables,
-        onCompleted,
-    });
+  return commitMutation(environment, {
+    mutation,
+    variables,
+    onCompleted,
+  });
 }
 
 export default { commit };

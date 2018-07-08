@@ -1,28 +1,29 @@
-import { commitMutation, graphql } from 'react-relay';
+import { commitMutation, graphql } from "react-relay";
 
 const mutation = graphql`
-mutation UpdatePieceMutation($input: UpdatePieceInput!) {
+  mutation UpdatePieceMutation($input: UpdatePieceInput!) {
     updatePiece(input: $input) {
-        piece {
-            id
-            title
-            subtitle
-            composers
-            arrangers
-        }
+      piece {
+        id
+        title
+        subtitle
+        composers
+        arrangers
+      }
     }
-}`;
+  }
+`;
 
 function commit(environment, input, onCompleted) {
-    const variables = {
-        input,
-    };
+  const variables = {
+    input,
+  };
 
-    return commitMutation(environment, {
-        mutation,
-        variables,
-        onCompleted,
-    });
+  return commitMutation(environment, {
+    mutation,
+    variables,
+    onCompleted,
+  });
 }
 
 export default { commit };

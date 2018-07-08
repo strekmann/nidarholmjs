@@ -1,24 +1,25 @@
-import { commitMutation, graphql } from 'react-relay';
+import { commitMutation, graphql } from "react-relay";
 
 const mutation = graphql`
-mutation SetPasswordMutation($input: SetPasswordInput!) {
+  mutation SetPasswordMutation($input: SetPasswordInput!) {
     setPassword(input: $input) {
-        viewer {
-            ...MemberReset_viewer
-        }
+      viewer {
+        ...MemberReset_viewer
+      }
     }
-}`;
+  }
+`;
 
 function commit(environment, input, onCompleted) {
-    const variables = {
-        input,
-    };
+  const variables = {
+    input,
+  };
 
-    return commitMutation(environment, {
-        mutation,
-        variables,
-        onCompleted,
-    });
+  return commitMutation(environment, {
+    mutation,
+    variables,
+    onCompleted,
+  });
 }
 
 export default { commit };

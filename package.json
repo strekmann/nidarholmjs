@@ -28,12 +28,17 @@
     "relay": "relay-compiler --src ./src --schema ./src/server/schema.graphql",
     "retire": "retire || :",
     "start": "npm run nodemon",
-    "vm": "vagrant up"
+    "vm": "vagrant up",
+    "prettier": "prettier --write --ignore-path .gitignore \"src/**/*js\""
   },
   "metadata": {
     "graphql": {
       "schema": "./src/server/schema.json"
     }
+  },
+  "prettier": {
+    "arrowParens": "always",
+    "trailingComma": "all"
   },
   "dependencies": {
     "8fold-marked": "^0.3.6",
@@ -138,6 +143,7 @@
     "mocha": "^3.3.0",
     "nodemon": "^1.11.0",
     "postcss-loader": "^1.2.2",
+    "prettier": "^1.13.7",
     "retire": "^1.2.10",
     "sass-loader": "^4.0.2",
     "sass-material-colors": "^0.0.5",

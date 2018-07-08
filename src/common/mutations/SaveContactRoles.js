@@ -1,34 +1,35 @@
-import { commitMutation, graphql } from 'react-relay';
+import { commitMutation, graphql } from "react-relay";
 
 const mutation = graphql`
-mutation SaveContactRolesMutation($input: SaveContactRolesInput!) {
+  mutation SaveContactRolesMutation($input: SaveContactRolesInput!) {
     saveContactRoles(input: $input) {
-        organization {
-            contacts {
-                id
-                user {
-                    ...ContactUser_user
-                }
-                roles {
-                    id
-                    name
-                }
-            }
-            ...ContactRoles_organization
+      organization {
+        contacts {
+          id
+          user {
+            ...ContactUser_user
+          }
+          roles {
+            id
+            name
+          }
         }
+        ...ContactRoles_organization
+      }
     }
-}`;
+  }
+`;
 
 function commit(environment, input, onCompleted) {
-    const variables = {
-        input,
-    };
+  const variables = {
+    input,
+  };
 
-    return commitMutation(environment, {
-        mutation,
-        variables,
-        onCompleted,
-    });
+  return commitMutation(environment, {
+    mutation,
+    variables,
+    onCompleted,
+  });
 }
 
 export default { commit };

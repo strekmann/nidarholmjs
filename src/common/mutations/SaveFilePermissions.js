@@ -1,31 +1,32 @@
-import { commitMutation, graphql } from 'react-relay';
+import { commitMutation, graphql } from "react-relay";
 
 const mutation = graphql`
-mutation SaveFilePermissionsMutation($input: SaveFilePermissionsInput!) {
+  mutation SaveFilePermissionsMutation($input: SaveFilePermissionsInput!) {
     saveFilePermissions(input: $input) {
-        file {
+      file {
+        id
+        permissions {
+          public
+          groups {
             id
-            permissions {
-                public
-                groups {
-                    id
-                    name
-                }
-            }
-            tags
+            name
+          }
         }
+        tags
+      }
     }
-}`;
+  }
+`;
 
 function commit(environment, input, onCompleted) {
-    const variables = {
-        input,
-    };
-    return commitMutation(environment, {
-        mutation,
-        variables,
-        onCompleted,
-    });
+  const variables = {
+    input,
+  };
+  return commitMutation(environment, {
+    mutation,
+    variables,
+    onCompleted,
+  });
 }
 
 export default { commit };

@@ -1,237 +1,236 @@
 /* @flow */
 
-import IconButton from 'material-ui/IconButton';
-import IconMenu from 'material-ui/IconMenu';
-import { MenuItem } from 'material-ui/Menu';
-import Paper from 'material-ui/Paper';
-import RaisedButton from 'material-ui/RaisedButton';
-import { Table, TableHeader, TableBody, TableRow, TableHeaderColumn } from 'material-ui/Table';
-import TextField from 'material-ui/TextField';
-import { Toolbar, ToolbarGroup } from 'material-ui/Toolbar';
-import getMuiTheme from 'material-ui/styles/getMuiTheme';
-import MoreVertIcon from 'material-ui/svg-icons/navigation/more-vert';
-import PropTypes from 'prop-types';
-import * as React from 'react';
-import { createRefetchContainer, graphql } from 'react-relay';
+import IconButton from "material-ui/IconButton";
+import IconMenu from "material-ui/IconMenu";
+import { MenuItem } from "material-ui/Menu";
+import Paper from "material-ui/Paper";
+import RaisedButton from "material-ui/RaisedButton";
+import {
+  Table,
+  TableHeader,
+  TableBody,
+  TableRow,
+  TableHeaderColumn,
+} from "material-ui/Table";
+import TextField from "material-ui/TextField";
+import { Toolbar, ToolbarGroup } from "material-ui/Toolbar";
+import getMuiTheme from "material-ui/styles/getMuiTheme";
+import MoreVertIcon from "material-ui/svg-icons/navigation/more-vert";
+import PropTypes from "prop-types";
+import * as React from "react";
+import { createRefetchContainer, graphql } from "react-relay";
 
-import theme from '../theme';
-import CreatePieceMutation from '../mutations/CreatePiece';
+import theme from "../theme";
+import CreatePieceMutation from "../mutations/CreatePiece";
 
-import PieceForm from './PieceForm';
-import PieceItem from './PieceItem';
+import PieceForm from "./PieceForm";
+import PieceItem from "./PieceItem";
 
 const itemsPerPage = 50;
 
 type Props = {
-    organization: {
-        isMusicAdmin: boolean,
-        pieces: {
-            edges: Array<{
-                node: {
-                    id: string,
-                    arrangers: Array<string>,
-                    composers: Array<string>,
-                    scoreCount: number,
-                    subtitle: string,
-                    title: string,
-                }
-            }>,
-            pageInfo: {
-                hasNextPage: boolean,
-            },
+  organization: {
+    isMusicAdmin: boolean,
+    pieces: {
+      edges: Array<{
+        node: {
+          id: string,
+          arrangers: Array<string>,
+          composers: Array<string>,
+          scoreCount: number,
+          subtitle: string,
+          title: string,
         },
+      }>,
+      pageInfo: {
+        hasNextPage: boolean,
+      },
     },
-    relay: {
-        environment: {},
-        refetch: (variables: {}) => {},
-    },
-    router: {
-        push: ({
-            pathname: string,
-        }) => void,
-    },
-}
+  },
+  relay: {
+    environment: {},
+    refetch: (variables: {}) => {},
+  },
+  router: {
+    push: ({
+      pathname: string,
+    }) => void,
+  },
+};
 
 type State = {
-    addPiece: boolean,
-    term: string,
-}
+  addPiece: boolean,
+  term: string,
+};
 
 class Pieces extends React.Component<Props, State> {
-    static propTypes = {
-        organization: PropTypes.object.isRequired,
-        relay: PropTypes.object.isRequired,
-    }
+  static propTypes = {
+    organization: PropTypes.object.isRequired,
+    relay: PropTypes.object.isRequired,
+  };
 
-    static childContextTypes = {
-        muiTheme: PropTypes.object.isRequired,
-    }
+  static childContextTypes = {
+    muiTheme: PropTypes.object.isRequired,
+  };
 
-    constructor(props) {
-        super(props);
-        this.muiTheme = getMuiTheme(theme);
-    }
+  constructor(props) {
+    super(props);
+    this.muiTheme = getMuiTheme(theme);
+  }
 
-    state = {
-        addPiece: false,
-        term: '',
-    }
+  state = {
+    addPiece: false,
+    term: "",
+  };
 
-    getChildContext() {
-        return { muiTheme: this.muiTheme };
-    }
+  getChildContext() {
+    return { muiTheme: this.muiTheme };
+  }
 
-    onSearchChange = (event, term) => {
-        this.setState({
-            term,
-        });
-    }
+  onSearchChange = (event, term) => {
+    this.setState({
+      term,
+    });
+  };
 
-    onSearch = (event) => {
-        event.preventDefault();
-        this.search(this.state.term);
-    }
+  onSearch = (event) => {
+    event.preventDefault();
+    this.search(this.state.term);
+  };
 
-    onClear = () => {
-        this.setState({
-            term: '',
-        });
+  onClear = () => {
+    this.setState({
+      term: "",
+    });
+    this.props.relay.refetch((variables) => {
+      variables.term = "";
+      return variables;
+    });
+  };
+
+  muiTheme: {};
+
+  search = (term) => {
+    this.props.relay.refetch((variables) => {
+      variables.term = term;
+      return variables;
+    });
+  };
+
+  savePiece = (piece) => {
+    this.setState({ addPiece: false });
+    const { relay } = this.props;
+    const { composers, arrangers, title, subtitle } = piece;
+    CreatePieceMutation.commit(
+      relay.environment,
+      {
+        composers: composers.split(","),
+        arrangers: arrangers.split(","),
+        title,
+        subtitle,
+      },
+      () => {
+        this.state.term = title;
         this.props.relay.refetch((variables) => {
-            variables.term = '';
-            return variables;
+          variables.term = title;
+          return variables;
         });
-    }
+      },
+    );
+  };
 
-    muiTheme: {};
+  closeAddPiece = () => {
+    this.setState({ addPiece: false });
+  };
 
-    search = (term) => {
-        this.props.relay.refetch((variables) => {
-            variables.term = term;
-            return variables;
-        });
-    }
+  loadMore = () => {
+    const { pieces } = this.props.organization;
+    this.props.relay.refetch((variables) => {
+      variables.showItems = pieces.edges.length + itemsPerPage;
+      return variables;
+    });
+  };
 
-    savePiece = (piece) => {
-        this.setState({ addPiece: false });
-        const { relay } = this.props;
-        const {
-            composers,
-            arrangers,
-            title,
-            subtitle,
-        } = piece;
-        CreatePieceMutation.commit(relay.environment, {
-            composers: composers.split(','),
-            arrangers: arrangers.split(','),
-            title,
-            subtitle,
-        }, () => {
-            this.state.term = title;
-            this.props.relay.refetch((variables) => {
-                variables.term = title;
-                return variables;
-            });
-        });
-    }
-
-    closeAddPiece = () => {
-        this.setState({ addPiece: false });
-    }
-
-    loadMore = () => {
-        const { pieces } = this.props.organization;
-        this.props.relay.refetch((variables) => {
-            variables.showItems = pieces.edges.length + itemsPerPage;
-            return variables;
-        });
-    }
-
-    render() {
-        const { organization } = this.props;
-        const { pieces, isMusicAdmin } = organization;
-        const { desktopGutterLess } = theme.spacing;
-        return (
-            <Paper className="row">
-                <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                    <h1>Notearkivet</h1>
-                    {isMusicAdmin
-                        ? <PieceForm
-                            title="Nytt stykke"
-                            isOpen={this.state.addPiece}
-                            save={this.savePiece}
-                            cancel={this.closeAddPiece}
-                            pieces={this.props.organization.pieces}
-                            search={this.search}
-                            router={this.props.router}
-                            searching
-                        />
-                        : null
-                    }
-                    <Toolbar style={{ backgroundColor: theme.palette.fullWhite }}>
-                        <ToolbarGroup lastChild>
-                            <IconMenu
-                                iconButtonElement={<IconButton><MoreVertIcon /></IconButton>}
-                                anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
-                                targetOrigin={{ vertical: 'top', horizontal: 'right' }}
-                            >
-                                {isMusicAdmin
-                                    ? <MenuItem
-                                        primaryText="Nytt stykke"
-                                        onTouchTap={() => {
-                                            this.setState({ addPiece: !this.state.addPiece });
-                                        }}
-                                    />
-                                    : null
-                                }
-                                <MenuItem
-                                    primaryText="Last ned regneark"
-                                    href="/music/archive.xlsx"
-                                />
-                            </IconMenu>
-                        </ToolbarGroup>
-                    </Toolbar>
-                </div>
-                <form onSubmit={this.onSearch} style={{ marginBottom: desktopGutterLess }}>
-                    <TextField
-                        id="term"
-                        floatingLabelText="Tittel"
-                        value={this.state.term}
-                        onChange={this.onSearchChange}
-                    />
-                    <RaisedButton
-                        label="Søk"
-                        type="submit"
-                        primary
-                    />
-                    <RaisedButton
-                        label="Tøm"
-                        type="reset"
-                        onTouchTap={this.onClear}
-                    />
-                </form>
-                <Table>
-                    <TableHeader displaySelectAll={false} adjustForCheckbox={false}>
-                        <TableRow>
-                            <TableHeaderColumn>Digitale stemmer</TableHeaderColumn>
-                            <TableHeaderColumn>Tittel</TableHeaderColumn>
-                            <TableHeaderColumn>Komponist (Arrangør)</TableHeaderColumn>
-                        </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                        {pieces.edges.map((edge) => {
-                            return (
-                                <PieceItem key={edge.node.id} {...edge.node} />
-                            );
-                        })}
-                    </TableBody>
-                </Table>
-                {pieces.pageInfo.hasNextPage
-                    ? <RaisedButton primary onClick={this.loadMore} label="Mer" />
-                    : null
+  render() {
+    const { organization } = this.props;
+    const { pieces, isMusicAdmin } = organization;
+    const { desktopGutterLess } = theme.spacing;
+    return (
+      <Paper className="row">
+        <div style={{ display: "flex", justifyContent: "space-between" }}>
+          <h1>Notearkivet</h1>
+          {isMusicAdmin ? (
+            <PieceForm
+              title="Nytt stykke"
+              isOpen={this.state.addPiece}
+              save={this.savePiece}
+              cancel={this.closeAddPiece}
+              pieces={this.props.organization.pieces}
+              search={this.search}
+              router={this.props.router}
+              searching
+            />
+          ) : null}
+          <Toolbar style={{ backgroundColor: theme.palette.fullWhite }}>
+            <ToolbarGroup lastChild>
+              <IconMenu
+                iconButtonElement={
+                  <IconButton>
+                    <MoreVertIcon />
+                  </IconButton>
                 }
-            </Paper>
-        );
-    }
+                anchorOrigin={{ vertical: "top", horizontal: "right" }}
+                targetOrigin={{ vertical: "top", horizontal: "right" }}
+              >
+                {isMusicAdmin ? (
+                  <MenuItem
+                    primaryText="Nytt stykke"
+                    onTouchTap={() => {
+                      this.setState({ addPiece: !this.state.addPiece });
+                    }}
+                  />
+                ) : null}
+                <MenuItem
+                  primaryText="Last ned regneark"
+                  href="/music/archive.xlsx"
+                />
+              </IconMenu>
+            </ToolbarGroup>
+          </Toolbar>
+        </div>
+        <form
+          onSubmit={this.onSearch}
+          style={{ marginBottom: desktopGutterLess }}
+        >
+          <TextField
+            id="term"
+            floatingLabelText="Tittel"
+            value={this.state.term}
+            onChange={this.onSearchChange}
+          />
+          <RaisedButton label="Søk" type="submit" primary />
+          <RaisedButton label="Tøm" type="reset" onTouchTap={this.onClear} />
+        </form>
+        <Table>
+          <TableHeader displaySelectAll={false} adjustForCheckbox={false}>
+            <TableRow>
+              <TableHeaderColumn>Digitale stemmer</TableHeaderColumn>
+              <TableHeaderColumn>Tittel</TableHeaderColumn>
+              <TableHeaderColumn>Komponist (Arrangør)</TableHeaderColumn>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {pieces.edges.map((edge) => {
+              return <PieceItem key={edge.node.id} {...edge.node} />;
+            })}
+          </TableBody>
+        </Table>
+        {pieces.pageInfo.hasNextPage ? (
+          <RaisedButton primary onClick={this.loadMore} label="Mer" />
+        ) : null}
+      </Paper>
+    );
+  }
 }
 /*
                                             <div>
@@ -344,41 +343,42 @@ class Pieces extends React.Component<Props, State> {
                                             */
 
 export default createRefetchContainer(
-    Pieces,
-    {
-        organization: graphql`
-        fragment Pieces_organization on Organization
+  Pieces,
+  {
+    organization: graphql`
+      fragment Pieces_organization on Organization
         @argumentDefinitions(
-            showItems: {type: "Int", defaultValue: 20}
-            term: {type: "String", defaultValue: ""}
-        )
-        {
-            id
-            isMusicAdmin
-            memberGroup {
-                id
-            }
-            pieces(first:$showItems, term:$term) {
-                edges {
-                    node {
-                        id
-                        title
-                        subtitle
-                        composers
-                        arrangers
-                        scoreCount
-                    }
-                }
-                pageInfo {
-                    hasNextPage
-                }
-            }
-        }`,
-    },
-    graphql`
-    query PiecesRefetchQuery($showItems: Int, $term: String) {
-        organization {
-            ...Pieces_organization @arguments(showItems: $showItems, term: $term)
+          showItems: { type: "Int", defaultValue: 20 }
+          term: { type: "String", defaultValue: "" }
+        ) {
+        id
+        isMusicAdmin
+        memberGroup {
+          id
         }
-    }`,
+        pieces(first: $showItems, term: $term) {
+          edges {
+            node {
+              id
+              title
+              subtitle
+              composers
+              arrangers
+              scoreCount
+            }
+          }
+          pageInfo {
+            hasNextPage
+          }
+        }
+      }
+    `,
+  },
+  graphql`
+    query PiecesRefetchQuery($showItems: Int, $term: String) {
+      organization {
+        ...Pieces_organization @arguments(showItems: $showItems, term: $term)
+      }
+    }
+  `,
 );

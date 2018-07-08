@@ -1,24 +1,24 @@
-import config from 'config';
-import ReactDOMServer from 'react-dom/server';
-import serialize from 'serialize-javascript';
-import 'cookie-parser';
-import moment from 'moment';
-import Helmet from 'react-helmet';
-import injectTapEventPlugin from 'react-tap-event-plugin';
+import config from "config";
+import ReactDOMServer from "react-dom/server";
+import serialize from "serialize-javascript";
+import "cookie-parser";
+import moment from "moment";
+import Helmet from "react-helmet";
+import injectTapEventPlugin from "react-tap-event-plugin";
 
 injectTapEventPlugin();
 
 export default function renderPage(element, fetcher, userAgent) {
-    const elementRendered = ReactDOMServer.renderToString(element);
-    const helmet = Helmet.renderStatic();
+  const elementRendered = ReactDOMServer.renderToString(element);
+  const helmet = Helmet.renderStatic();
 
-    let link = '';
-    if (config.get('html.style')) {
-        link = helmet.link.toString();
-    }
-    moment.locale('nb');
-    global.navigator = { userAgent };
-    return `
+  let link = "";
+  if (config.get("html.style")) {
+    link = helmet.link.toString();
+  }
+  moment.locale("nb");
+  global.navigator = { userAgent };
+  return `
     <!doctype html>
     <html>
     <head>

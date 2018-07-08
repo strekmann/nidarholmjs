@@ -1,7 +1,7 @@
-import mongoose from 'mongoose';
-import uuid from 'node-uuid';
+import mongoose from "mongoose";
+import uuid from "node-uuid";
 
-import schemaOptions from './schemaOptions';
+import schemaOptions from "./schemaOptions";
 
 /* Organizations have users which may have a role. (Strictly, we allow roles to
  * all groups in the data model, but we should only implement this for the
@@ -14,15 +14,15 @@ import schemaOptions from './schemaOptions';
  */
 
 const RoleSchema = new mongoose.Schema({
-    _id: { type: String, required: true, default: uuid.v4 },
-    name: { type: String, required: true },
-    email: { type: String },
-    organization: { type: String, ref: 'Organization' },
+  _id: { type: String, required: true, default: uuid.v4 },
+  name: { type: String, required: true },
+  email: { type: String },
+  organization: { type: String, ref: "Organization" },
 });
 
-RoleSchema.set('toJSON', schemaOptions);
-RoleSchema.set('toObject', schemaOptions);
-RoleSchema.virtual('_type').get(() => {
-    return 'Role';
+RoleSchema.set("toJSON", schemaOptions);
+RoleSchema.set("toObject", schemaOptions);
+RoleSchema.virtual("_type").get(() => {
+  return "Role";
 });
-export default mongoose.model('Role', RoleSchema);
+export default mongoose.model("Role", RoleSchema);

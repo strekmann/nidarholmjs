@@ -1,24 +1,25 @@
-import { commitMutation, graphql } from 'react-relay';
+import { commitMutation, graphql } from "react-relay";
 
 const mutation = graphql`
-mutation SaveOrganizationMutation($input: SaveOrganizationInput!) {
+  mutation SaveOrganizationMutation($input: SaveOrganizationInput!) {
     saveOrganization(input: $input) {
-        organization {
-            ...Organization_organization
-        }
+      organization {
+        ...Organization_organization
+      }
     }
-}`;
+  }
+`;
 
 function commit(environment, input, onCompleted) {
-    const variables = {
-        input,
-    };
+  const variables = {
+    input,
+  };
 
-    return commitMutation(environment, {
-        mutation,
-        variables,
-        onCompleted,
-    });
+  return commitMutation(environment, {
+    mutation,
+    variables,
+    onCompleted,
+  });
 }
 
 export default { commit };

@@ -1,28 +1,29 @@
-import { commitMutation, graphql } from 'react-relay';
+import { commitMutation, graphql } from "react-relay";
 
 const mutation = graphql`
-mutation RemoveRoleMutation($input: RemoveRoleInput!) {
+  mutation RemoveRoleMutation($input: RemoveRoleInput!) {
     removeRole(input: $input) {
-        member {
-            id
-            roles {
-                id
-                name
-            }
+      member {
+        id
+        roles {
+          id
+          name
         }
+      }
     }
-}`;
+  }
+`;
 
 function commit(environment, input, onCompleted) {
-    const variables = {
-        input,
-    };
+  const variables = {
+    input,
+  };
 
-    return commitMutation(environment, {
-        mutation,
-        variables,
-        onCompleted,
-    });
+  return commitMutation(environment, {
+    mutation,
+    variables,
+    onCompleted,
+  });
 }
 
 export default { commit };

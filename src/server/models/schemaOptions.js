@@ -1,5 +1,5 @@
 const options = {
-    versionKey: false,
-    virtuals: true,
+  versionKey: false,
+  virtuals: true,
 };
 export default options;
