@@ -1387,7 +1387,12 @@ organizationType = new GraphQLObjectType({
         if (!args.term) {
           query = Piece.find();
         } else {
-          query = Piece.find().regex("title", new RegExp(args.term, "i"));
+          const re = new RegExp(args.term, "i");
+          query = Piece.find().or([
+            { title: re },
+            { composers: re },
+            { arrangers: re },
+          ]);
         }
         return connectionFromMongooseQuery(query.sort({ title: 1 }), args);
       },
