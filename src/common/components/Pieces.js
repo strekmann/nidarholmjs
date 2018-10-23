@@ -1,5 +1,6 @@
 /* @flow */
 
+import type { RelayRefetchProp } from "react-relay";
 import IconButton from "material-ui/IconButton";
 import IconMenu from "material-ui/IconMenu";
 import { MenuItem } from "material-ui/Menu";
@@ -12,7 +13,6 @@ import {
   TableRow,
   TableHeaderColumn,
 } from "material-ui/Table";
-import TextField from "material-ui/TextField";
 import { Toolbar, ToolbarGroup } from "material-ui/Toolbar";
 import getMuiTheme from "material-ui/styles/getMuiTheme";
 import MoreVertIcon from "material-ui/svg-icons/navigation/more-vert";
@@ -25,6 +25,7 @@ import CreatePieceMutation from "../mutations/CreatePiece";
 
 import PieceForm from "./PieceForm";
 import PieceItem from "./PieceItem";
+import PieceSearch from "./PieceSearch";
 
 const itemsPerPage = 50;
 
@@ -47,12 +48,9 @@ type Props = {
       },
     },
   },
-  relay: {
-    environment: {},
-    refetch: (variables: {}) => {},
-  },
+  relay: RelayRefetchProp,
   router: {
-    push: ({}) => void,
+    push: ({ pathname?: string }) => void,
   },
   location: {
     query: {
@@ -78,27 +76,40 @@ class Pieces extends React.Component<Props, State> {
 
   state = {
     addPiece: false,
-    term: this.props.location.query.term || "",
+    term: "",
   };
 
   getChildContext() {
     return { muiTheme: this.muiTheme };
   }
 
-  onSearchChange = (event, term) => {
-    this.setState({
-      term,
+  componentDidMount() {
+    this.props.relay.refetch((variables) => {
+      variables.term = this.state.term;
+      return variables;
     });
-  };
+  }
 
-  onSearch = (event) => {
-    event.preventDefault();
-    this.search(this.state.term);
-  };
+  componentDidUpdate(prevProps, prevState) {
+    if (prevState.term !== this.state.term) {
+      this.props.relay.refetch((variables) => {
+        variables.term = this.state.term;
+        return variables;
+      });
+    }
+  }
+
+  static getDerivedStateFromProps(props, state) {
+    if (props.location.query.term !== state.term) {
+      return { term: props.location.query.term };
+    }
+    return null;
+  }
 
   onClear = () => {
-    this.setState({
-      term: "",
+    this.props.router.push({
+      ...this.props.location,
+      query: { term: undefined },
     });
     this.props.relay.refetch((variables) => {
       variables.term = "";
@@ -106,15 +117,15 @@ class Pieces extends React.Component<Props, State> {
     });
   };
 
-  muiTheme: {};
-
-  search = (term) => {
-    //this.props.router.push({ ...this.props.location, query: { term } });
+  onSearch = (term) => {
+    this.props.router.push({ ...this.props.location, query: { term } });
     this.props.relay.refetch((variables) => {
       variables.term = term;
       return variables;
     });
   };
+
+  muiTheme: {};
 
   savePiece = (piece) => {
     this.setState({ addPiece: false });
@@ -175,7 +186,7 @@ class Pieces extends React.Component<Props, State> {
               save={this.savePiece}
               cancel={this.closeAddPiece}
               pieces={this.props.organization.pieces}
-              search={this.search}
+              search={this.onSearch}
               router={this.props.router}
               searching
             />
@@ -207,19 +218,12 @@ class Pieces extends React.Component<Props, State> {
             </ToolbarGroup>
           </Toolbar>
         </div>
-        <form
-          onSubmit={this.onSearch}
-          style={{ marginBottom: desktopGutterLess }}
-        >
-          <TextField
-            id="term"
-            floatingLabelText="Tittel"
-            value={this.state.term}
-            onChange={this.onSearchChange}
-          />
-          <RaisedButton label="Søk" type="submit" primary />
-          <RaisedButton label="Tøm" type="reset" onTouchTap={this.onClear} />
-        </form>
+        <PieceSearch
+          term={this.state.term}
+          onSearch={this.onSearch}
+          onClear={this.onClear}
+          key={this.state.term}
+        />
         <Table>
           <TableHeader displaySelectAll={false} adjustForCheckbox={false}>
             <TableRow>

@@ -47,7 +47,7 @@ type Props = {
   },
   router: {
     push: ({
-      pathname: string,
+      pathname?: string,
     }) => void,
   },
 };
@@ -57,12 +57,6 @@ type State = {
 };
 
 class Piece extends React.Component<Props, State> {
-  static propTypes = {
-    organization: PropTypes.object.isRequired,
-    relay: PropTypes.object.isRequired,
-    router: PropTypes.object.isRequired,
-  };
-
   static childContextTypes = {
     muiTheme: PropTypes.object.isRequired,
   };

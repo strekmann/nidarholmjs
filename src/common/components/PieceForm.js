@@ -38,7 +38,7 @@ type Props = {
   cancel: () => void,
   router: {
     push: ({
-      pathname: string,
+      pathname?: string,
     }) => void,
   },
   search?: (string) => void,
