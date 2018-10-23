@@ -52,9 +52,12 @@ type Props = {
     refetch: (variables: {}) => {},
   },
   router: {
-    push: ({
-      pathname: string,
-    }) => void,
+    push: ({}) => void,
+  },
+  location: {
+    query: {
+      term: string,
+    },
   },
 };
 
@@ -64,11 +67,6 @@ type State = {
 };
 
 class Pieces extends React.Component<Props, State> {
-  static propTypes = {
-    organization: PropTypes.object.isRequired,
-    relay: PropTypes.object.isRequired,
-  };
-
   static childContextTypes = {
     muiTheme: PropTypes.object.isRequired,
   };
@@ -80,7 +78,7 @@ class Pieces extends React.Component<Props, State> {
 
   state = {
     addPiece: false,
-    term: "",
+    term: this.props.location.query.term || "",
   };
 
   getChildContext() {
@@ -111,6 +109,7 @@ class Pieces extends React.Component<Props, State> {
   muiTheme: {};
 
   search = (term) => {
+    //this.props.router.push({ ...this.props.location, query: { term } });
     this.props.relay.refetch((variables) => {
       variables.term = term;
       return variables;
@@ -156,8 +155,18 @@ class Pieces extends React.Component<Props, State> {
     const { pieces, isMusicAdmin } = organization;
     const { desktopGutterLess } = theme.spacing;
     return (
-      <Paper className="row">
-        <div style={{ display: "flex", justifyContent: "space-between" }}>
+      <Paper
+        className="row"
+        style={{
+          paddingBottom: desktopGutterLess,
+        }}
+      >
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "space-between",
+          }}
+        >
           <h1>Notearkivet</h1>
           {isMusicAdmin ? (
             <PieceForm
