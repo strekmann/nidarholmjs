@@ -35,7 +35,7 @@ class PieceSearch extends React.Component<Props, State> {
       <form onSubmit={this.onSearch}>
         <TextField
           id="term"
-          floatingLabelText="Tittel"
+          floatingLabelText="Tittel, komponist eller arrangør"
           value={this.state.term}
           onChange={this.onSearchChange}
         />
