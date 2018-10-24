@@ -10,7 +10,7 @@
     "url": "https://github.com/strekmann/nidarholmjs"
   },
   "engines": {
-    "node": "10.12.0",
+    "node": ">4.0.0"
   },
   "scripts": {
     "env": "env",
@@ -41,7 +41,7 @@
     "trailingComma": "all"
   },
   "dependencies": {
-    "8fold-marked": "^0.3.6",
+    "marked": "^0.5.0",
     "async": "^2.1.4",
     "async-replace": "^1.0.0",
     "autoprefixer": "^7.1.1",

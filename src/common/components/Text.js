@@ -1,7 +1,7 @@
 /* eslint "react/no-danger": 0 */
 /* @flow */
 
-import marked from "8fold-marked";
+import marked from "marked";
 import * as React from "react";
 
 type Props = {

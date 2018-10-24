@@ -1,4 +1,4 @@
-import marked from "8fold-marked";
+import marked from "marked";
 import mongoose from "mongoose";
 
 import schemaOptions from "./schemaOptions";
