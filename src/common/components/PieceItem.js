@@ -2,6 +2,7 @@
 
 import Link from "found/lib/Link";
 import { TableRow, TableRowColumn } from "material-ui/Table";
+import { ListItem } from "material-ui/List";
 import * as React from "react";
 
 import List from "./List";
@@ -27,10 +28,14 @@ export default class ProjectItem extends React.Component<Props> {
     } = this.props;
     return (
       <TableRow>
-        <TableRowColumn>{scoreCount}</TableRowColumn>
+        <TableRowColumn
+          style={{ width: "10%", minWidth: 50, overflow: "visible" }}
+        >
+          {scoreCount}
+        </TableRowColumn>
         <TableRowColumn>
           <Link to={`/music/${id}`}>
-            {title} <small>{subtitle}</small>
+            <ListItem primaryText={title} secondaryText={subtitle} />
           </Link>
         </TableRowColumn>
         <TableRowColumn>
