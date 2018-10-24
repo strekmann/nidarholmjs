@@ -2,6 +2,7 @@
 /* global FormData */
 /* eslint "no-console": 0 */
 
+import type { RelayRefetchProp } from "react-relay";
 import { createRefetchContainer, graphql } from "react-relay";
 import axios from "axios";
 import getMuiTheme from "material-ui/styles/getMuiTheme";
@@ -22,6 +23,11 @@ import TagField from "./TagField";
 type Props = {
   organization: {
     files: {
+      edges: Array<{
+        node: {
+          id: string,
+        },
+      }>,
       pageInfo: {
         hasNextPage: boolean,
       },
@@ -31,10 +37,7 @@ type Props = {
       id: string,
     },
   },
-  relay: {
-    environment: {},
-    refetch: (variables: {}) => {},
-  },
+  relay: RelayRefetchProp,
   viewer: {},
 };
 
@@ -107,24 +110,18 @@ class Files extends React.Component<Props, State> {
   onTagChange = (tags) => {
     this.setState({ tags });
     this.props.relay.refetch((variables) => {
-      return {
-        showFiles: variables.showFiles,
-        searchTerm: variables.searchTerm,
-        searchTags: tags
-          .sort()
-          .join("|")
-          .toLowerCase(),
-      };
+      variables.searchTags = tags
+        .sort()
+        .join("|")
+        .toLowerCase();
+      return variables;
     });
   };
 
   onChangeTerm = (searchTerm) => {
     this.props.relay.refetch((variables) => {
-      return {
-        showFiles: variables.showFiles,
-        searchTags: variables.searchTags,
-        searchTerm,
-      };
+      variables.searchTerm = searchTerm;
+      return variables;
     });
   };
 
@@ -151,27 +148,24 @@ class Files extends React.Component<Props, State> {
         search: true,
         tags,
       });
-      return {
-        showFiles: variables.showFiles,
-        searchTerm: variables.searchTerm,
-        searchTags: this.state.tags
-          .sort()
-          .join("|")
-          .toLowerCase(),
-      };
+      variables.searchTags = this.state.tags
+        .sort()
+        .join("|")
+        .toLowerCase();
+      return variables;
     });
   };
 
   fetchMore = () => {
+    const { files } = this.props.organization;
     this.props.relay.refetch((variables) => {
-      return {
-        showFiles: variables.showFiles + 20,
-        searchTags: this.state.tags
-          .sort()
-          .join("|")
-          .toLowerCase(),
-        searchTerm: variables.searchTerm,
-      };
+      variables.showFiles = files.edges.length + 20;
+      variables.searchTags = this.state.tags
+        .sort()
+        .join("|")
+        .toLowerCase();
+      variables.searchTerm = variables.searchTerm;
+      return variables;
     });
   };
 
