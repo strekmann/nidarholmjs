@@ -14,7 +14,7 @@ export default class Text extends React.Component<Props> {
   };
 
   render() {
-    const text = marked(this.props.text);
+    const text = marked(this.props.text || "");
     return <span dangerouslySetInnerHTML={{ __html: text }} />;
   }
 }
