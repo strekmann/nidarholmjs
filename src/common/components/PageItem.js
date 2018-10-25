@@ -4,6 +4,7 @@ import Link from "found/lib/Link";
 import * as React from "react";
 
 import { flattenPermissions } from "../utils";
+import type { PermissionObject } from "../types";
 
 import PermissionChips from "./PermissionChips";
 import DateFromNow from "./DateFromNow";
@@ -11,7 +12,7 @@ import DateFromNow from "./DateFromNow";
 type Props = {
   slug: string,
   title: string,
-  permissions: Array<{}>,
+  permissions: PermissionObject,
   memberGroupId: string,
   creator: {
     name: string,

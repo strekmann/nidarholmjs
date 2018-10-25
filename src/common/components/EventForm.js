@@ -13,6 +13,7 @@ import * as React from "react";
 import { createFragmentContainer, graphql } from "react-relay";
 
 import { flattenPermissions } from "../utils";
+import type { PermissionObject, Viewer } from "../types";
 
 import PermissionField from "./PermissionField";
 import ProjectField from "./ProjectField";
@@ -27,25 +28,13 @@ type Props = {
     end: any,
     mdtext: string,
     highlighted: boolean,
-    permissions: Array<{
-      id: string,
-      name: string,
-    }>,
+    permissions: PermissionObject,
     projects: Array<{
       id: string,
       tag: string,
     }>,
   },
-  viewer: {
-    groups: Array<{
-      id: string,
-      name: string,
-    }>,
-    friends: Array<{
-      id: string,
-      name: string,
-    }>,
-  },
+  viewer: Viewer,
   organization: {},
   isOpen: boolean,
   save: ({}) => void,

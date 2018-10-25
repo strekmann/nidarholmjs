@@ -15,6 +15,7 @@ import { createFragmentContainer, graphql } from "react-relay";
 
 import { flattenPermissions } from "../utils";
 import theme from "../theme";
+import type { PermissionObject, Viewer } from "../types";
 
 import PermissionChips from "./PermissionChips";
 import PermissionField from "./PermissionField";
@@ -36,21 +37,12 @@ type Props = {
   ) => {},
   onSetProjectPoster: (string) => {},
   organization: {},
-  permissions: {},
+  permissions: PermissionObject,
   path: string,
   searchTag: (string) => {},
   tags: string[],
   thumbnailPath: string,
-  viewer: {
-    friends: Array<{
-      id: string,
-      name: string,
-    }>,
-    groups: Array<{
-      id: string,
-      name: string,
-    }>,
-  },
+  viewer: Viewer,
 };
 
 type State = {

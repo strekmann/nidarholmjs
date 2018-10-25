@@ -7,39 +7,25 @@ import RaisedButton from "material-ui/RaisedButton";
 import TextField from "material-ui/TextField";
 
 import theme from "../theme";
+import type { PermissionArray, Viewer } from "../types";
 
 import PermissionField from "./PermissionField";
 
 type Props = {
-  viewer: {
-    groups: Array<{
-      id: string,
-      name: string,
-    }>,
-    friends: Array<{
-      id: string,
-      name: string,
-    }>,
-  },
+  viewer: Viewer,
   id: ?string,
   slug: string,
   title: string,
   summary: string,
   mdtext: string,
-  permissions: Array<{
-    id: string,
-    name: string,
-  }>,
+  permissions: PermissionArray,
   savePage: ({
     id: ?string,
     slug: string,
     mdtext: string,
     title: string,
     summary: string,
-    permissions: Array<{
-      id: string,
-      name: string,
-    }>,
+    permissions: PermissionArray,
   }) => void,
 };
 
@@ -48,10 +34,7 @@ type State = {
   title: string,
   summary: string,
   mdtext: string,
-  permissions: Array<{
-    id: string,
-    name: string,
-  }>,
+  permissions: PermissionArray,
 };
 
 export default class EditPage extends React.Component<Props, State> {

@@ -13,6 +13,7 @@ import * as React from "react";
 import EditPageMutation from "../mutations/EditPage";
 import theme from "../theme";
 import { flattenPermissions } from "../utils";
+import type { Page as PageType, PermissionArray } from "../types";
 
 import EditPage from "./EditPage";
 import Text from "./Text";
@@ -30,17 +31,7 @@ type Props = {
   },
   organization: {
     isMember: boolean,
-    page: {
-      id: string,
-      mdtext: string,
-      permissions: Array<{
-        id: string,
-        name: string,
-      }>,
-      slug: string,
-      summary: string,
-      title: string,
-    },
+    page: PageType,
   },
   location: {
     pathname: string,
@@ -52,10 +43,7 @@ type Props = {
 
 type State = {
   edit: boolean,
-  permissions: Array<{
-    id: string,
-    name: string,
-  }>,
+  permissions: PermissionArray,
 };
 
 class Page extends React.Component<Props, State> {
@@ -112,8 +100,16 @@ class Page extends React.Component<Props, State> {
       );
     }
     if (this.state.edit) {
-      const page = { ...organization.page };
-      page.permissions = this.state.permissions;
+      const { page: pageProps } = organization;
+      const page = {
+        id: pageProps.id,
+        mdtext: pageProps.mdtext,
+        slug: pageProps.slug,
+        summary: pageProps.summary,
+        title: pageProps.title,
+        permissions: this.state.permissions,
+      };
+      // page.permissions = this.state.permissions;
       return (
         <EditPage
           viewer={this.props.viewer}

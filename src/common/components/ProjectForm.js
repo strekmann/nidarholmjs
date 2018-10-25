@@ -1,14 +1,16 @@
+/* @flow */
+
 import areIntlLocalesSupported from "intl-locales-supported";
 import DatePicker from "material-ui/DatePicker";
 import Dialog from "material-ui/Dialog";
 import FlatButton from "material-ui/FlatButton";
 import TextField from "material-ui/TextField";
 import moment from "moment";
-import PropTypes from "prop-types";
 import React from "react";
 import { createFragmentContainer, graphql } from "react-relay";
 
 import { flattenPermissions } from "../utils";
+import type { PermissionObject, PermissionArray } from "../types";
 
 import UserField from "./UserField";
 import PermissionField from "./PermissionField";
@@ -18,7 +20,56 @@ if (areIntlLocalesSupported(["nb"])) {
   ({ DateTimeFormat } = global.Intl);
 }
 
-class ProjectForm extends React.Component {
+type Props = {
+  open: () => void,
+  save: (
+    {
+      id: string,
+      title: string,
+      tag: string,
+      privateMdtext: string,
+      publicMdtext: string,
+      start: moment,
+      end: moment,
+      permissions: Array<string>,
+      conductors: Array<string>,
+      managers: Array<string>,
+    },
+    {
+      onSuccess: () => void,
+    },
+  ) => void,
+  toggle: () => void,
+  viewer: {
+    groups: Array<{ id: string, name: string }>,
+    friends: Array<{ id: string, name: string }>,
+  },
+  organization: {},
+  id: string,
+  title: string,
+  tag: string,
+  privateMdtext: string,
+  publicMdtext: string,
+  start: string,
+  end: string,
+  permissions: PermissionObject,
+  conductors: [],
+  managers: [],
+};
+
+type State = {
+  title: string,
+  tag: string,
+  privateMdtext: string,
+  publicMdtext: string,
+  start: moment,
+  end: moment,
+  permissions: PermissionArray,
+  conductors: [],
+  managers: [],
+};
+
+class ProjectForm extends React.Component<Props, State> {
   static defaultProps = {
     open: false,
     id: null,
@@ -28,27 +79,9 @@ class ProjectForm extends React.Component {
     publicMdtext: "",
     start: null,
     end: null,
-    permissions: [],
+    permissions: { public: false, groups: [], friends: [] },
     conductors: [],
     managers: [],
-  };
-
-  static propTypes = {
-    open: PropTypes.bool,
-    save: PropTypes.func.isRequired,
-    toggle: PropTypes.func.isRequired,
-    viewer: PropTypes.object.isRequired,
-    id: PropTypes.string,
-    title: PropTypes.string,
-    tag: PropTypes.string,
-    privateMdtext: PropTypes.string,
-    publicMdtext: PropTypes.string,
-    start: PropTypes.string,
-    end: PropTypes.string,
-    permissions: PropTypes.object,
-    conductors: PropTypes.array,
-    managers: PropTypes.array,
-    organization: PropTypes.object,
   };
 
   state = {
@@ -111,7 +144,7 @@ class ProjectForm extends React.Component {
 
   removePermission = (permissionId) => {
     const permissions = this.state.permissions.filter((_p) => {
-      return _p.value !== permissionId;
+      return _p.id !== permissionId;
     });
     this.setState({
       permissions,

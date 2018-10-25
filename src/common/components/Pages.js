@@ -13,6 +13,7 @@ import { createRefetchContainer, graphql } from "react-relay";
 
 import AddPageMutation from "../mutations/AddPage";
 import theme from "../theme";
+import type { Page, Viewer } from "../types";
 
 import EditPage from "./EditPage";
 import PageList from "./PageList";
@@ -26,20 +27,7 @@ type Props = {
     },
     pages: {
       edges: Array<{
-        node: {
-          id: string,
-          slug: string,
-          title: string,
-          permissions: Array<{}>,
-          creator: {
-            name: string,
-          },
-          created: string,
-          updator: {
-            name: string,
-          },
-          updated: string,
-        },
+        node: Page,
       }>,
       pageInfo: {
         hasNextPage: boolean,
@@ -49,16 +37,7 @@ type Props = {
   relay: {
     environment: {},
   },
-  viewer: {
-    friends: Array<{
-      id: string,
-      name: string,
-    }>,
-    groups: Array<{
-      id: string,
-      name: string,
-    }>,
-  },
+  viewer: Viewer,
 };
 
 type State = {

@@ -1,12 +1,17 @@
+/* @flow */
 /* eslint "import/prefer-default-export": 0 */
 
-export function flattenPermissions(perms) {
-  const permissions = [];
-  if (perms.public) {
-    permissions.push({ id: "p", name: "Verden" });
+import type { PermissionArray, PermissionObject } from "./types";
+
+export function flattenPermissions(
+  permissionObject: PermissionObject,
+): PermissionArray {
+  const permissionArray = [];
+  if (permissionObject.public) {
+    permissionArray.push({ id: "p", name: "Verden" });
   }
-  perms.groups.forEach((group) => {
-    permissions.push({ id: group.id, name: group.name });
+  permissionObject.groups.forEach((group) => {
+    permissionArray.push({ id: group.id, name: group.name });
   });
-  return permissions;
+  return permissionArray;
 }
