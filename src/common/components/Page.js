@@ -13,26 +13,16 @@ import * as React from "react";
 import EditPageMutation from "../mutations/EditPage";
 import theme from "../theme";
 import { flattenPermissions } from "../utils";
-import type { Page as PageType, PermissionArray } from "../types";
+import type { PermissionArray } from "../types";
 
+import type { Page_organization as PageOrganization } from "./__generated__/Page_organization.graphql";
+import type { Page_viewer as PageViewer } from "./__generated__/Page_viewer.graphql";
 import EditPage from "./EditPage";
 import Text from "./Text";
 
 type Props = {
-  viewer: {
-    friends: Array<{
-      id: string,
-      name: string,
-    }>,
-    groups: Array<{
-      id: string,
-      name: string,
-    }>,
-  },
-  organization: {
-    isMember: boolean,
-    page: PageType,
-  },
+  viewer: PageViewer,
+  organization: PageOrganization,
   location: {
     pathname: string,
   },
@@ -59,8 +49,9 @@ class Page extends React.Component<Props, State> {
   state = {
     edit: false,
     permissions:
-      this.props.organization.page &&
-      flattenPermissions(this.props.organization.page.permissions),
+      this.props.organization.page && this.props.organization.page.permissions
+        ? flattenPermissions(this.props.organization.page.permissions)
+        : [],
   };
 
   getChildContext() {
@@ -157,6 +148,10 @@ export default createFragmentContainer(Page, {
         permissions {
           public
           groups {
+            id
+            name
+          }
+          users {
             id
             name
           }

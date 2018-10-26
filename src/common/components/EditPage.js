@@ -14,26 +14,26 @@ import PermissionField from "./PermissionField";
 type Props = {
   viewer: Viewer,
   id: ?string,
-  slug: string,
-  title: string,
-  summary: string,
-  mdtext: string,
+  slug: ?string,
+  title: ?string,
+  summary: ?string,
+  mdtext: ?string,
   permissions: PermissionArray,
   savePage: ({
     id: ?string,
-    slug: string,
-    mdtext: string,
-    title: string,
-    summary: string,
+    slug: ?string,
+    mdtext: ?string,
+    title: ?string,
+    summary: ?string,
     permissions: PermissionArray,
   }) => void,
 };
 
 type State = {
-  slug: string,
-  title: string,
-  summary: string,
-  mdtext: string,
+  slug: ?string,
+  title: ?string,
+  summary: ?string,
+  mdtext: ?string,
   permissions: PermissionArray,
 };
 
@@ -65,7 +65,7 @@ export default class EditPage extends React.Component<Props, State> {
   onPermissionChange = (
     permissions: Array<{
       id: string,
-      name: string,
+      name: ?string,
     }>,
   ) => {
     this.setState({ permissions });
@@ -134,7 +134,7 @@ export default class EditPage extends React.Component<Props, State> {
               permissions={this.state.permissions}
               onChange={this.onPermissionChange}
               groups={this.props.viewer.groups}
-              users={this.props.viewer.friends}
+              users={[]}
             />
           </div>
           <div>

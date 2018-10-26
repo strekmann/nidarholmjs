@@ -14,6 +14,7 @@ import type { PermissionObject, PermissionArray } from "../types";
 
 import UserField from "./UserField";
 import PermissionField from "./PermissionField";
+import type ProjectFormViewer from "./__generated__/ProjectForm_organization.graphql";
 
 let DateTimeFormat;
 if (areIntlLocalesSupported(["nb"])) {
@@ -40,10 +41,7 @@ type Props = {
     },
   ) => void,
   toggle: () => void,
-  viewer: {
-    groups: Array<{ id: string, name: string }>,
-    friends: Array<{ id: string, name: string }>,
-  },
+  viewer: ProjectFormViewer,
   organization: {},
   id: string,
   title: string,

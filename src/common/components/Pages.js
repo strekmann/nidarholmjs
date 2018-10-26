@@ -10,34 +10,22 @@ import getMuiTheme from "material-ui/styles/getMuiTheme";
 import PropTypes from "prop-types";
 import * as React from "react";
 import { createRefetchContainer, graphql } from "react-relay";
+import type { RelayRefetchProp } from "react-relay";
 
 import AddPageMutation from "../mutations/AddPage";
 import theme from "../theme";
-import type { Page, Viewer } from "../types";
+import type { PermissionArray } from "../types";
+
+import type PagesOrganization from "./__generated__/Pages_organization.graphql";
+import type PagesViewer from "./__generated__/Pages_viewer.graphql";
 
 import EditPage from "./EditPage";
 import PageList from "./PageList";
 
 type Props = {
-  organization: {
-    isAdmin: boolean,
-    isMember: boolean,
-    memberGroup: {
-      id: string,
-    },
-    pages: {
-      edges: Array<{
-        node: Page,
-      }>,
-      pageInfo: {
-        hasNextPage: boolean,
-      },
-    },
-  },
-  relay: {
-    environment: {},
-  },
-  viewer: Viewer,
+  organization: PagesOrganization,
+  relay: RelayRefetchProp,
+  viewer: PagesViewer,
 };
 
 type State = {
@@ -48,10 +36,7 @@ type State = {
     mdtext: string,
     title: string,
     summary: string,
-    permissions: Array<{
-      id: string,
-      name: string,
-    }>,
+    permissions: PermissionArray,
   },
 };
 

@@ -15,7 +15,7 @@ import { createFragmentContainer, graphql } from "react-relay";
 
 import { flattenPermissions } from "../utils";
 import theme from "../theme";
-import type { PermissionObject, Viewer } from "../types";
+import type { PermissionArray, PermissionObject, Viewer } from "../types";
 
 import PermissionChips from "./PermissionChips";
 import PermissionField from "./PermissionField";
@@ -26,15 +26,7 @@ type Props = {
   filename: string,
   isImage: boolean,
   memberGroupId: string,
-  onSavePermissions: (
-    string,
-    Array<{
-      id: string,
-      name: string,
-    }>,
-    string[],
-    () => void,
-  ) => {},
+  onSavePermissions: (string, PermissionArray, string[], () => void) => {},
   onSetProjectPoster: (string) => {},
   organization: {},
   permissions: PermissionObject,
@@ -47,10 +39,7 @@ type Props = {
 
 type State = {
   editPermissions: boolean,
-  permissions: Array<{
-    id: string,
-    name: string,
-  }>,
+  permissions: PermissionArray,
   tags: string[],
 };
 
@@ -192,7 +181,7 @@ class FileItem extends React.Component<Props, State> {
               permissions={this.state.permissions}
               onChange={this.onPermissionChange}
               groups={this.props.viewer.groups}
-              users={this.props.viewer.friends}
+              users={[]}
             />
             <TagField
               organization={this.props.organization}

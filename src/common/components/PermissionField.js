@@ -3,27 +3,21 @@
 import AutoComplete from "material-ui/AutoComplete";
 import * as React from "react";
 
+import type { PermissionArray } from "../types";
+
 import PermissionChips from "./PermissionChips";
 
 type Props = {
-  groups: Array<{
-    id: string,
-    name: string,
+  groups: ?$ReadOnlyArray<?{
+    +id: string,
+    +name: ?string,
   }>,
   memberGroupId?: string,
-  onChange: (
-    Array<{
-      id: string,
-      name: string,
-    }>,
-  ) => void,
-  permissions: Array<{
-    id: string,
-    name: string,
-  }>,
-  users: Array<{
-    id: string,
-    name: string,
+  onChange: (PermissionArray) => void,
+  permissions: PermissionArray,
+  users: Array<?{
+    +id: string,
+    +name: ?string,
   }>,
 };
 
@@ -42,7 +36,7 @@ export default class PermissionField extends React.Component<Props, State> {
     });
   };
 
-  addPermission = (chosen: { id: string, name: string }, index: number) => {
+  addPermission = (chosen: { id: string, name: ?string }, index: number) => {
     const permissions = this.props.permissions.slice();
     if (index > -1) {
       permissions.push(chosen);
@@ -66,7 +60,9 @@ export default class PermissionField extends React.Component<Props, State> {
     // const users = this.props.users || [];
     permissions.push({ id: "p", name: "Verden" });
     groups.forEach((group) => {
-      permissions.push({ id: group.id, name: group.name });
+      if (group) {
+        permissions.push({ id: group.id, name: group.name });
+      }
     });
     /*
         users.forEach(user => {

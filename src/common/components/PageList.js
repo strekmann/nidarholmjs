@@ -2,15 +2,14 @@
 
 import * as React from "react";
 
-import type { Page } from "../types";
-
+import type PagesOrganization from "./__generated__/Pages_organization.graphql";
 import PageItem from "./PageItem";
 
 type Props = {
   memberGroupId: string,
   pages: {
     edges: Array<{
-      node: Page,
+      node: PagesOrganization,
     }>,
   },
 };

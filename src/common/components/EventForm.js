@@ -13,7 +13,10 @@ import * as React from "react";
 import { createFragmentContainer, graphql } from "react-relay";
 
 import { flattenPermissions } from "../utils";
-import type { PermissionObject, Viewer } from "../types";
+import type { PermissionArray, PermissionObject } from "../types";
+
+import type EventFormOrganization from "./__generated__/EventForm_organization.graphql";
+import type EventFormViewer from "./__generated__/EventForm_viewer.graphql";
 
 import PermissionField from "./PermissionField";
 import ProjectField from "./ProjectField";
@@ -34,8 +37,8 @@ type Props = {
       tag: string,
     }>,
   },
-  viewer: Viewer,
-  organization: {},
+  viewer: EventFormViewer,
+  organization: EventFormOrganization,
   isOpen: boolean,
   save: ({}) => void,
   cancel: () => void,
@@ -50,10 +53,7 @@ type State = {
   start: any,
   end: any,
   mdtext: string,
-  permissions: Array<{
-    id: string,
-    name: string,
-  }>,
+  permissions: PermissionArray,
   projects: Array<{
     id: string,
     tag: string,
@@ -275,7 +275,7 @@ class EventForm extends React.Component<Props, State> {
             permissions={this.state.permissions}
             onChange={this.onChangePermissions}
             groups={this.props.viewer.groups}
-            users={this.props.viewer.friends}
+            users={[]}
           />
         </div>
       </Dialog>

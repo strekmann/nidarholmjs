@@ -12,43 +12,28 @@ import MoreVertIcon from "material-ui/svg-icons/navigation/more-vert";
 import PropTypes from "prop-types";
 import * as React from "react";
 import { createFragmentContainer, graphql } from "react-relay";
+import type { RelayRefetchProp } from "react-relay";
 
 import theme from "../theme";
 import EditEventMutation from "../mutations/EditEvent";
 import DeleteEventMutation from "../mutations/DeleteEvent";
+import type { Event_viewer as EventViewer } from "./__generated__/Event_viewer.graphql";
+import type { Event_organization as EventOrganization } from "./__generated__/Event_organization.graphql";
 
 import Daterange from "./Daterange";
 import Text from "./Text";
 import EventForm from "./EventForm";
 
 type Props = {
-  organization: {
-    event: {
-      id: string,
-      title: string,
-      location: string,
-      start: string,
-      end: string,
-      mdtext: string,
-      projects: Array<{
-        id: string,
-        title: string,
-        year: string,
-        tag: string,
-      }>,
-    },
-    isMember: boolean,
-  },
-  relay: {
-    environment: {},
-  },
+  organization: EventOrganization,
+  relay: RelayRefetchProp,
   router: {
     go: (number) => void,
     push: ({
       pathname: string,
     }) => void,
   },
-  viewer: {},
+  viewer: EventViewer,
 };
 
 type State = {
@@ -115,10 +100,15 @@ class Event extends React.Component<Props, State> {
 
   deleteEvent = () => {
     const { organization, relay } = this.props;
+    const { event } = organization;
+    if (!event) {
+      throw new Error("Event not defined");
+    }
+    const { id } = event;
     DeleteEventMutation.commit(
       relay.environment,
       {
-        id: organization.event.id,
+        id,
       },
       () => {
         this.props.router.go(-1);
@@ -128,12 +118,17 @@ class Event extends React.Component<Props, State> {
 
   goTo = (project) => {
     const { year, tag } = project;
-    this.props.router.push({ pathname: `/${year}/${tag}` });
+    if (year && tag) {
+      this.props.router.push({ pathname: `/${year}/${tag}` });
+    }
   };
 
   render() {
     const { organization, viewer } = this.props;
     const { event, isMember } = organization;
+    if (!event) {
+      throw new Error("Event not defined");
+    }
     return (
       <Paper className="row">
         <div style={{ display: "flex", justifyContent: "space-between" }}>
@@ -157,18 +152,22 @@ class Event extends React.Component<Props, State> {
           {event.location} <Daterange start={event.start} end={event.end} />
         </div>
         <Text text={event.mdtext} />
-        {event.projects.map((project) => {
-          return (
-            <Chip
-              key={project.id}
-              onTouchTap={() => {
-                this.goTo(project);
-              }}
-            >
-              {project.title}
-            </Chip>
-          );
-        })}
+        {event.projects &&
+          event.projects.map((project) => {
+            if (!project) {
+              return null;
+            }
+            return (
+              <Chip
+                key={project.id}
+                onTouchTap={() => {
+                  this.goTo(project);
+                }}
+              >
+                {project.title}
+              </Chip>
+            );
+          })}
         {isMember ? (
           <div>
             <EventForm

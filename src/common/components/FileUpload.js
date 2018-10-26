@@ -4,41 +4,21 @@ import Dropzone from "react-dropzone";
 import * as React from "react";
 import { createFragmentContainer, graphql } from "react-relay";
 
+import type { PermissionArray, Viewer } from "../types";
+
 import PermissionField from "./PermissionField";
 import TagField from "./TagField";
 
 type Props = {
   memberGroupId: string,
-  onDrop: (
-    [{}],
-    Array<{
-      id: string,
-      name: string,
-    }>,
-    string[],
-  ) => {},
+  onDrop: ([{}], PermissionArray, string[]) => {},
   organization: {},
-  permissions: Array<{
-    id: string,
-    name: string,
-  }>,
-  viewer: {
-    friends: Array<{
-      id: string,
-      name: string,
-    }>,
-    groups: Array<{
-      id: string,
-      name: string,
-    }>,
-  },
+  permissions: PermissionArray,
+  viewer: Viewer,
 };
 
 type State = {
-  permissions: Array<{
-    id: string,
-    name: string,
-  }>,
+  permissions: PermissionArray,
   tags: Array<string>,
 };
 
@@ -72,7 +52,7 @@ class FileUpload extends React.Component<Props, State> {
             permissions={this.state.permissions}
             onChange={this.onPermissionChange}
             groups={viewer.groups}
-            users={viewer.friends}
+            users={[]}
             memberGroupId={this.props.memberGroupId}
           />
           <TagField

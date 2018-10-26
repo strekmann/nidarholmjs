@@ -12,7 +12,7 @@ type Props = {
   id: ?string,
   memberGroupId: ?string,
   removePermission: (string) => void,
-  text: string,
+  text: ?string,
 };
 
 export default class PermissionChipItem extends React.Component<Props> {

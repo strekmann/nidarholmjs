@@ -10,8 +10,12 @@ export function flattenPermissions(
   if (permissionObject.public) {
     permissionArray.push({ id: "p", name: "Verden" });
   }
-  permissionObject.groups.forEach((group) => {
-    permissionArray.push({ id: group.id, name: group.name });
-  });
+  if (permissionObject.groups) {
+    permissionObject.groups.forEach((group) => {
+      if (group) {
+        permissionArray.push({ id: group.id, name: group.name });
+      }
+    });
+  }
   return permissionArray;
 }

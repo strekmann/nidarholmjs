@@ -2,13 +2,12 @@
 
 import * as React from "react";
 
+import type { PermissionArray } from "../types";
+
 import PermissionChipItem from "./PermissionChipItem";
 
 type Props = {
-  permissions: Array<{
-    id: string,
-    name: string,
-  }>,
+  permissions: PermissionArray,
   memberGroupId?: string,
   removePermission?: (string) => void,
 };

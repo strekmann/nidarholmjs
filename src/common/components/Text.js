@@ -5,7 +5,7 @@ import marked from "marked";
 import * as React from "react";
 
 type Props = {
-  text?: string,
+  text: ?string,
 };
 
 export default class Text extends React.Component<Props> {

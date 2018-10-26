@@ -23,6 +23,7 @@ import moment from "moment";
 import PropTypes from "prop-types";
 import * as React from "react";
 import { createFragmentContainer, graphql } from "react-relay";
+import type { RelayProp } from "react-relay";
 import Link from "found/lib/Link";
 
 import theme from "../theme";
@@ -47,9 +48,7 @@ if (areIntlLocalesSupported(["nb"])) {
 
 type Props = {
   organization: MemberOrganization,
-  relay: {
-    environment: {},
-  },
+  relay: RelayProp,
   viewer: {
     id: string,
   },
