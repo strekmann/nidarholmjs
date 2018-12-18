@@ -7,9 +7,24 @@ import Link from "found/lib/Link";
 
 import theme from "../theme";
 
+import Date from "./Date";
 import Daterange from "./Daterange";
 import List from "./List";
 import Text from "./Text";
+
+const renderPublicEvents = (edges) => {
+  return (
+    <div className="meta">
+      {edges.map((edge) => {
+        return (
+          <p key={edge.node.id}>
+            {edge.node.location} <Date date={edge.node.start} format="llll" />
+          </p>
+        );
+      })}
+    </div>
+  );
+};
 
 class ProjectItem extends React.Component {
   static propTypes = {
@@ -26,6 +41,7 @@ class ProjectItem extends React.Component {
       tag,
       year,
       publicMdtext,
+      events,
       poster,
       conductors,
     } = this.props.project;
@@ -50,9 +66,7 @@ class ProjectItem extends React.Component {
             <h2 style={{ marginTop: desktopGutterMini }}>
               <Link to={`/${year}/${tag}`}>{title}</Link>
             </h2>
-            <div className="meta">
-              <Daterange start={start} end={end} noTime />
-            </div>
+            {renderPublicEvents(events.edges)}
             {conductors.length ? (
               <p>
                 Dirigent:{" "}
@@ -64,6 +78,9 @@ class ProjectItem extends React.Component {
               </p>
             ) : null}
             {showText ? <Text text={publicMdtext} /> : null}
+            <div className="meta">
+              <Daterange start={start} end={end} noTime />
+            </div>
           </div>
         </Paper>
       );
@@ -76,9 +93,7 @@ class ProjectItem extends React.Component {
           <h2 style={{ marginTop: desktopGutterMini }}>
             <Link to={`/${year}/${tag}`}>{title}</Link>
           </h2>
-          <div className="meta">
-            <Daterange start={start} end={end} noTime />
-          </div>
+          {renderPublicEvents(events.edges)}
           {conductors.length ? (
             <p>
               Dirigent:{" "}
@@ -90,6 +105,9 @@ class ProjectItem extends React.Component {
             </p>
           ) : null}
           {showText ? <Text text={publicMdtext} /> : null}
+          <div className="meta">
+            <Daterange start={start} end={end} noTime />
+          </div>
         </div>
         {poster ? (
           <img
@@ -125,6 +143,15 @@ export default createFragmentContainer(ProjectItem, {
       }
       conductors {
         name
+      }
+      events(first: 5, highlighted: true) {
+        edges {
+          node {
+            id
+            location
+            start
+          }
+        }
       }
     }
   `,
