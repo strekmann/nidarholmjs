@@ -8,7 +8,7 @@ import axios from "axios";
 import getMuiTheme from "material-ui/styles/getMuiTheme";
 import RaisedButton from "material-ui/RaisedButton";
 import Dialog from "material-ui/Dialog";
-import Paper from "material-ui/Paper";
+import { Toolbar, ToolbarGroup, ToolbarTitle } from "material-ui/Toolbar";
 import PropTypes from "prop-types";
 import * as React from "react";
 
@@ -174,67 +174,66 @@ class Files extends React.Component<Props, State> {
     const { isMember } = organization;
     const { desktopGutterLess } = theme.spacing;
     return (
-      <div className="row">
-        {isMember ? (
-          <div style={{ float: "right" }}>
-            <RaisedButton
-              label="Last opp filer"
-              onTouchTap={this.toggleAddFile}
-            />
-            <RaisedButton label="Søk" onTouchTap={this.toggleSearch} />
-            <Dialog
-              title="Last opp filer"
-              open={this.state.addFile}
-              onRequestClose={this.closeAddFile}
-              autoScrollBodyContent
-            >
-              <FileUpload
-                viewer={this.props.viewer}
-                organization={this.props.organization}
-                onDrop={this.onDrop}
-                memberGroupId={organization.memberGroup.id}
-                onTagsChange={this.searchTag}
-              />
-              <RaisedButton
-                label="Ferdig"
-                primary
-                onTouchTap={this.closeAddFile}
-              />
-            </Dialog>
-          </div>
-        ) : null}
-        <h1>Filer</h1>
-        {this.state.search ? (
-          <Paper
+      <div>
+        <div className="row">
+          {isMember ? (
+            <Toolbar style={{ height: 106, backgroundColor: "none" }}>
+              <ToolbarGroup firstChild>
+                <ToolbarTitle
+                  text="Filer"
+                  style={{ color: theme.palette.textColor }}
+                />
+              </ToolbarGroup>
+              <ToolbarGroup lastChild>
+                <TagField
+                  autoFocus
+                  fileTags={this.state.tags}
+                  onChange={this.onTagChange}
+                  organization={this.props.organization}
+                />
+                <RaisedButton
+                  label="Last opp filer"
+                  onTouchTap={this.toggleAddFile}
+                />
+                <Dialog
+                  title="Last opp filer"
+                  open={this.state.addFile}
+                  onRequestClose={this.closeAddFile}
+                  autoScrollBodyContent
+                >
+                  <FileUpload
+                    viewer={this.props.viewer}
+                    organization={this.props.organization}
+                    onDrop={this.onDrop}
+                    memberGroupId={organization.memberGroup.id}
+                    onTagsChange={this.searchTag}
+                  />
+                  <RaisedButton
+                    label="Ferdig"
+                    primary
+                    onTouchTap={this.closeAddFile}
+                  />
+                </Dialog>
+              </ToolbarGroup>
+            </Toolbar>
+          ) : null}
+          {isMember ? null : <h1>Filer</h1>}
+          <FileList
+            files={organization.files}
+            memberGroupId={organization.memberGroup.id}
+            onSavePermissions={this.onSaveFilePermissions}
+            searchTag={this.searchTag}
             style={{
-              padding: desktopGutterLess,
-              marginBottom: desktopGutterLess,
+              marginLeft: -desktopGutterLess,
+              marginRight: -desktopGutterLess,
             }}
-          >
-            <h2>Søk i merkelapper</h2>
-            <TagField
-              autoFocus
-              fileTags={this.state.tags}
-              onChange={this.onTagChange}
-              organization={this.props.organization}
-            />
-          </Paper>
-        ) : null}
-        <FileList
-          files={organization.files}
-          memberGroupId={organization.memberGroup.id}
-          onSavePermissions={this.onSaveFilePermissions}
-          searchTag={this.searchTag}
-          style={{
-            marginLeft: -desktopGutterLess,
-            marginRight: -desktopGutterLess,
-          }}
-          viewer={this.props.viewer}
-          organization={this.props.organization}
-        />
-        {organization.files.pageInfo.hasNextPage ? (
-          <RaisedButton onTouchTap={this.fetchMore} label="Mer" primary />
-        ) : null}
+            viewer={this.props.viewer}
+            organization={this.props.organization}
+          />
+          {organization.files.pageInfo.hasNextPage ? (
+            <RaisedButton onTouchTap={this.fetchMore} label="Mer" primary />
+          ) : null}
+        </div>
       </div>
     );
   }
