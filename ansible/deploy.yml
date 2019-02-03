@@ -63,14 +63,9 @@
 
       - name: Install dependencies
         apt:
-            name: "{{ item }}"
+            name: ["build-essential", "nodejs", "rsync", "yarn"]
             state: present
             update_cache: yes
-        with_items:
-            - build-essential
-            - nodejs
-            - rsync
-            - yarn
 
       - name: Create release directory  # Not necessary if we checkout with git
         file:
