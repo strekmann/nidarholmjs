@@ -112,7 +112,7 @@ class Home extends React.Component<Props, State> {
     const { nextProject } = organization;
     const { desktopGutterLess } = theme.spacing;
     return (
-      <div>
+      <div style={{ overflowX: "hidden" }}>
         <div
           style={{
             backgroundImage:
@@ -120,8 +120,6 @@ class Home extends React.Component<Props, State> {
             backgroundPosition: "top center",
             backgroundSize: "cover",
             height: "30vw",
-            marginLeft: -desktopGutterLess,
-            marginRight: -desktopGutterLess,
             position: "relative",
           }}
         >
