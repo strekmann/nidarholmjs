@@ -82,7 +82,12 @@ class Footer extends React.Component<Props, State> {
               marginTop: 20,
             }}
           >
-            © Musikkforeningen Nidarholm
+            <a href="/personvern">Personvern</a> ·{" "}
+            <a href="https://gitlab.com/strekmann/nidarholmjs/issues">
+              Feilrapportering
+            </a>{" "}
+            · <a href="https://gitlab.com/strekmann/nidarholmjs">Kildekode</a>
+            <div style={{ marginTop: 10 }}>© Musikkforeningen Nidarholm</div>
           </div>
         </div>
       </footer>
