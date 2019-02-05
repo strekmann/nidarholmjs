@@ -2,56 +2,64 @@
 
 // our fonts
 @font-face {
-  font-family: 'Montserrat';
+  font-family: "Montserrat";
   font-style: normal;
   font-weight: 400;
-  src: local('Montserrat'), url(/fonts/Montserrat-Regular.ttf) format('truetype');
+  src: local("Montserrat"),
+    url(/fonts/Montserrat-Regular.ttf) format("truetype");
 }
 @font-face {
-  font-family: 'Montserrat';
+  font-family: "Montserrat";
   font-style: normal;
   font-weight: 700;
-  src: local('Montserrat Bold'), local('Montserrat-Bold'), url(/fonts/Montserrat-Bold.ttf) format('truetype');
+  src: local("Montserrat Bold"), local("Montserrat-Bold"),
+    url(/fonts/Montserrat-Bold.ttf) format("truetype");
 }
 @font-face {
-  font-family: 'Montserrat';
+  font-family: "Montserrat";
   font-style: italic;
   font-weight: 400;
-  src: local('Montserrat Italic'), local('Montserrat-Italic'), url(/fonts/Montserrat-Italic.ttf) format('truetype');
+  src: local("Montserrat Italic"), local("Montserrat-Italic"),
+    url(/fonts/Montserrat-Italic.ttf) format("truetype");
 }
 @font-face {
-  font-family: 'Montserrat';
+  font-family: "Montserrat";
   font-style: italic;
   font-weight: 700;
-  src: local('Montserrat Italic'), local('Montserrat-Italic'), url(/fonts/Montserrat-Italic.ttf) format('truetype');
+  src: local("Montserrat Italic"), local("Montserrat-Italic"),
+    url(/fonts/Montserrat-Italic.ttf) format("truetype");
 }
 
 @font-face {
-    font-family: 'Roboto';
-    font-style: normal;
-    font-weight: 400;
-    src: local('Roboto'), local('Roboto'), url(/fonts/Roboto-Regular.ttf) format('truetype');
+  font-family: "Roboto";
+  font-style: normal;
+  font-weight: 400;
+  src: local("Roboto"), local("Roboto"),
+    url(/fonts/Roboto-Regular.ttf) format("truetype");
 }
 @font-face {
-  font-family: 'Roboto';
+  font-family: "Roboto";
   font-style: normal;
   font-weight: 700;
-  src: local('Roboto Bold'), local('Roboto-Bold'), url(/fonts/Roboto-Bold.ttf) format('truetype');
+  src: local("Roboto Bold"), local("Roboto-Bold"),
+    url(/fonts/Roboto-Bold.ttf) format("truetype");
 }
 @font-face {
-  font-family: 'Roboto';
+  font-family: "Roboto";
   font-style: italic;
   font-weight: 400;
-  src: local('Roboto Italic'), local('Roboto-Italic'), url(/fonts/Roboto-Italic.ttf) format('truetype');
+  src: local("Roboto Italic"), local("Roboto-Italic"),
+    url(/fonts/Roboto-Italic.ttf) format("truetype");
 }
 @font-face {
-  font-family: 'Roboto';
+  font-family: "Roboto";
   font-style: italic;
   font-weight: 700;
-  src: local('Roboto Italic'), local('Roboto-Italic'), url(/fonts/Roboto-Italic.ttf) format('truetype');
+  src: local("Roboto Italic"), local("Roboto-Italic"),
+    url(/fonts/Roboto-Italic.ttf) format("truetype");
 }
 
-@import 'node_modules/sass-material-colors/sass/sass-material-colors';
+@import "node_modules/sass-material-colors/sass/sass-material-colors";
 
 $sans-font: "Roboto", sans-serif;
 $serif-font: "Montserrat", serif;
@@ -59,92 +67,94 @@ $rem-base: 14px;
 $line-height: 150%;
 
 html {
-    box-sizing: border-box;
+  box-sizing: border-box;
 }
 
-*, *:before, *:after {
-    box-sizing: inherit;
+*,
+*:before,
+*:after {
+  box-sizing: inherit;
 }
 
 body {
-    margin: 0;
-    font-family: $sans-font;
-    color: material-color('grey', '900');
-    background: #f5f5f5;
-    font-size: $rem-base;
-    line-height: $line-height;
+  margin: 0;
+  font-family: $sans-font;
+  color: material-color("grey", "900");
+  background: #f5f5f5;
+  font-size: $rem-base;
+  line-height: $line-height;
 }
 
 a {
-    color: material-color('light-blue', '900');
-    text-decoration: none;
-    &:hover {
-        text-decoration: underline;
-    }
+  color: material-color("light-blue", "900");
+  text-decoration: none;
+  &:hover {
+    text-decoration: underline;
+  }
 }
 
 img {
-    border: none;
-    &.responsive {
-        width: 100%;
-    }
+  border: none;
+  &.responsive {
+    width: 100%;
+  }
 }
 
 h1 {
-    font-family: $serif-font;
-    font-size: 28px;
-    font-weight: normal;
+  font-family: $serif-font;
+  font-size: 28px;
+  font-weight: normal;
 }
 
 h2 {
-    font-family: $serif-font;
-    font-size: 22px;
-    font-weight: normal;
+  font-family: $serif-font;
+  font-size: 22px;
+  font-weight: normal;
 }
 h3 {
-    font-family: $serif-font;
-    font-size: 17px;
-    font-weight: normal;
+  font-family: $serif-font;
+  font-size: 17px;
+  font-weight: normal;
 }
 .header {
-    font-family: $serif-font;
+  font-family: $serif-font;
 }
 .noMargins p {
-    margin-top: 0;
-    margin-bottom: 0;
+  margin-top: 0;
+  margin-bottom: 0;
 }
 .button {
-    -webkit-box-shadow: none;
-       -moz-box-shadow: none;
-        -ie-box-shadow: none;
-         -o-box-shadow: none;
-            box-shadow: none;
-                border: none;
+  -webkit-box-shadow: none;
+  -moz-box-shadow: none;
+  -ie-box-shadow: none;
+  -o-box-shadow: none;
+  box-shadow: none;
+  border: none;
 }
 .button:hover {
-    text-decoration: none;
+  text-decoration: none;
 }
 
 a:hover,
 a:focus {
-    text-decoration: underline;
+  text-decoration: underline;
 }
 
 dl {
+  margin: 0;
+  dt {
+    font-family: $serif-font;
+    font-size: 17px;
+    margin-top: 17px;
+    margin-bottom: 17px;
+  }
+  dd {
     margin: 0;
-    dt {
-        font-family: $serif-font;
-        font-size: 17px;
-        margin-top: 17px;
-        margin-bottom: 17px;
-    }
-    dd {
-        margin: 0;
-    }
+  }
 }
 
 .dropzone {
-    min-height: 100px;
+  min-height: 100px;
 }
 .dropzone .dz-preview .dz-progress .dz-upload,
 .dropzone-previews .dz-preview .dz-progress .dz-upload,
@@ -153,111 +163,161 @@ dl {
 .dropzone-previews .dz-preview .dz-error-mark,
 .dropzone .dz-preview .dz-success-mark,
 .dropzone-previews .dz-preview .dz-success-mark {
-    background-image: none;
+  background-image: none;
 }
 
 .CodeMirror,
 .CodeMirror-scroll {
-    min-height: 100px;
+  min-height: 100px;
 }
 
 section {
-    max-width: 1000px;
-    margin: 0 auto;
-    padding: 1px 16px;
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 1px 16px;
 }
 .row {
-    max-width: 996px;
-    margin: 0 auto;
-    padding: 1px 16px;
+  max-width: 996px;
+  margin: 0 auto;
+  padding: 1px 16px;
 }
 
 .home h2 {
-    border-top: 1px solid material-color('grey', '300');
-    margin-top: 2rem;
-    padding-top: 1rem;
+  border-top: 1px solid material-color("grey", "300");
+  margin-top: 2rem;
+  padding-top: 1rem;
+}
+
+#home {
+  .grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    grid-gap: 16px;
+    margin: 0 16px;
+    .item {
+      padding-bottom: 16px;
+    }
+  }
+}
+@media all and (min-width: 500px) {
+  #home {
+    .grid {
+      grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr;
+      #next-projects {
+        grid-column-start: 1;
+        grid-column-end: span 3;
+      }
+      #next-events {
+        grid-column-start: span 3;
+        grid-column-end: -1;
+      }
+      #information,
+      #contact {
+        grid-column-start: 1;
+        grid-column-end: -1;
+      }
+      .item {
+        grid-column-start: auto;
+        grid-column-end: span 3;
+      }
+    }
+  }
+}
+@media all and (min-width: 700px) {
+  #home {
+    .grid {
+      #next-projects {
+        grid-column-start: 1;
+        grid-column-end: span 4;
+      }
+      #next-events {
+        grid-column-start: span 2;
+        grid-column-end: -1;
+      }
+    }
+  }
 }
 
 .flex-menu {
-    a {
-        padding: 1rem;
-    }
+  a {
+    padding: 1rem;
+  }
 }
 .flex-menu-mobile {
-    display: none;
+  display: none;
 }
 .giant-image-text {
-    font-size: 3rem;
+  font-size: 3rem;
 }
 @media all and (max-width: 1200px) {
-    .giant-image-text {
-        font-size: 1.5rem;
+  .giant-image-text {
+    font-size: 1.5rem;
+  }
+  .flex-menu {
+    & > div {
+      flex-direction: column;
+      a {
+        width: 100%;
+      }
     }
-    .flex-menu {
-        &> div {
-            flex-direction: column;
-            a {
-                width: 100%;
-            }
-        }
-    }
-    .flex-menu-mobile {
-        display: flex;
-        align-items: center;
-    }
-    .flex-menu-desktop {
-        display: none;
-    }
-    .flex-menu-handler {
-        display: block;
-    }
+  }
+  .flex-menu-mobile {
+    display: flex;
+    align-items: center;
+  }
+  .flex-menu-desktop {
+    display: none;
+  }
+  .flex-menu-handler {
+    display: block;
+  }
 }
 
 nav a {
+  color: white;
+  &:link {
     color: white;
-    &:link {
-        color: white;
-    }
-    &:hover {
-        color: white;
-    }
-    &:active {
-        color: white;
-    }
-    &:visited {
-        color: white;
-    }
+  }
+  &:hover {
+    color: white;
+  }
+  &:active {
+    color: white;
+  }
+  &:visited {
+    color: white;
+  }
 }
 
 .shade {
-    color: material-color('grey', '600');
-    a {
-        color: material-color('grey', '600');
-    }
+  color: material-color("grey", "600");
+  a {
+    color: material-color("grey", "600");
+  }
 }
 
 .draggable {
-    &:hover {
-        background-color: material-color('grey', '200');
-    }
+  &:hover {
+    background-color: material-color("grey", "200");
+  }
 }
 
 #eventList {
-    font-size: 12px;
-    ul {
-        padding-left: 20px;
-    }
+  font-size: 12px;
+  ul {
+    padding-left: 20px;
+  }
 }
 @media screen and (max-width: 700px) {
-    .small-narrow {
-        flex-direction: column;
-        > div {
-            flex-basis: auto !important;
-        }
+  .small-narrow {
+    flex-direction: column;
+    > div {
+      flex-basis: auto !important;
     }
+  }
 }
-@media screen and (min-width: 1200px) {
-    .hide-desktop {
-        display: none;
-    }
+@media screen and (min-width: 1000px) {
+  .hide-desktop {
+    display: none;
+  }
 }

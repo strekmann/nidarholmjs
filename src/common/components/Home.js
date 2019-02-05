@@ -112,7 +112,7 @@ class Home extends React.Component<Props, State> {
     const { nextProject } = organization;
     const { desktopGutterLess } = theme.spacing;
     return (
-      <div style={{ overflowX: "hidden" }}>
+      <div id="home">
         <div
           style={{
             backgroundImage:
@@ -154,116 +154,100 @@ class Home extends React.Component<Props, State> {
             margin: "0 auto",
           }}
         >
-          {nextProject ? (
-            <div
-              style={{
-                display: "flex",
-                marginLeft: -desktopGutterLess,
-                marginRight: -desktopGutterLess,
-              }}
-            >
-              <Card
-                style={{
-                  flex: "2 1 66%",
-                  display: "flex",
-                  flexDirection: "column",
-                  justifyContent: "space-between",
-                  marginBottom: desktopGutterLess,
-                  marginLeft: desktopGutterLess,
-                  marginRight: desktopGutterLess,
-                }}
-              >
-                <CardHeader
-                  title={<h2 style={{ margin: 0 }}>Neste prosjekt</h2>}
-                />
-                {nextProject.poster ? (
-                  <CardMedia
-                    overlay={
-                      <Link to={`/${nextProject.year}/${nextProject.tag}`}>
-                        <CardTitle
-                          title={nextProject.title}
-                          titleStyle={{ color: "white" }}
-                        />
-                      </Link>
-                    }
+          <div className="grid">
+            {nextProject
+              ? [
+                  <Card
+                    id="next-projects"
+                    className="item"
+                    style={{
+                      display: "flex",
+                      flexDirection: "column",
+                      justifyContent: "space-between",
+                    }}
                   >
-                    <img
-                      alt="Prosjektplakat"
-                      className="responsive"
-                      src={nextProject.poster.normalPath}
+                    <CardHeader
+                      title={<h2 style={{ margin: 0 }}>Neste prosjekt</h2>}
                     />
-                  </CardMedia>
-                ) : (
-                  <Link to={`/${nextProject.year}/${nextProject.tag}`}>
-                    <CardTitle title={nextProject.title} />
-                  </Link>
-                )}
-                <CardText>
-                  {nextProject.events.edges.map((edge) => {
-                    const event = edge.node;
-                    return (
-                      <div className="meta" key={event.id}>
-                        {event.location}{" "}
-                        <Date date={event.start} format="LLL" />
-                      </div>
-                    );
-                  })}
-                  {!nextProject.events.edges.length ? (
-                    <div className="meta" style={{ fontWeight: "bold" }}>
-                      <Date date={nextProject.end} />
-                    </div>
-                  ) : null}
-                  <Text text={nextProject.publicMdtext} />
-                </CardText>
-                <CardActions>
-                  <Link to="/projects">
-                    <FlatButton label="Prosjektoversikt" />
-                  </Link>
-                </CardActions>
-              </Card>
-              <Card
-                style={{
-                  display: "flex",
-                  flexDirection: "column",
-                  justifyContent: "flex-start",
-                  marginLeft: desktopGutterLess,
-                  marginRight: desktopGutterLess,
-                  marginBottom: desktopGutterLess,
-                  flex: "1 1 33%",
-                }}
-              >
-                <CardHeader
-                  title={<h2 style={{ margin: 0 }}>Neste aktiviteter</h2>}
-                />
-                <CardText id="eventList">
-                  {organization.nextEvents.edges.map((edge) => {
-                    return <EventItem key={edge.node.id} event={edge.node} />;
-                  })}
-                </CardText>
-                <CardActions>
-                  <Link to="/events">
-                    <FlatButton label="Aktivitetskalender" />
-                  </Link>
-                </CardActions>
-              </Card>
-            </div>
-          ) : null}
-          <div
-            style={{
-              display: "flex",
-              marginLeft: -desktopGutterLess,
-              marginRight: -desktopGutterLess,
-              marginBottom: desktopGutterLess,
-            }}
-          >
+                    {nextProject.poster ? (
+                      <CardMedia
+                        overlay={
+                          <Link to={`/${nextProject.year}/${nextProject.tag}`}>
+                            <CardTitle
+                              title={nextProject.title}
+                              titleStyle={{ color: "white" }}
+                            />
+                          </Link>
+                        }
+                      >
+                        <img
+                          alt="Prosjektplakat"
+                          className="responsive"
+                          src={nextProject.poster.normalPath}
+                        />
+                      </CardMedia>
+                    ) : (
+                      <Link to={`/${nextProject.year}/${nextProject.tag}`}>
+                        <CardTitle title={nextProject.title} />
+                      </Link>
+                    )}
+                    <CardText>
+                      {nextProject.events.edges.map((edge) => {
+                        const event = edge.node;
+                        return (
+                          <div className="meta" key={event.id}>
+                            {event.location}{" "}
+                            <Date date={event.start} format="LLL" />
+                          </div>
+                        );
+                      })}
+                      {!nextProject.events.edges.length ? (
+                        <div className="meta" style={{ fontWeight: "bold" }}>
+                          <Date date={nextProject.end} />
+                        </div>
+                      ) : null}
+                      <Text text={nextProject.publicMdtext} />
+                    </CardText>
+                    <CardActions>
+                      <Link to="/projects">
+                        <FlatButton label="Prosjektoversikt" />
+                      </Link>
+                    </CardActions>
+                  </Card>,
+                  <Card
+                    id="next-events"
+                    className="item"
+                    style={{
+                      display: "flex",
+                      flexDirection: "column",
+                      justifyContent: "flex-start",
+                    }}
+                  >
+                    <CardHeader
+                      title={<h2 style={{ margin: 0 }}>Neste aktiviteter</h2>}
+                    />
+                    <CardText id="eventList">
+                      {organization.nextEvents.edges.map((edge) => {
+                        return (
+                          <EventItem key={edge.node.id} event={edge.node} />
+                        );
+                      })}
+                    </CardText>
+                    <CardActions>
+                      <Link to="/events">
+                        <FlatButton label="Aktivitetskalender" />
+                      </Link>
+                    </CardActions>
+                  </Card>,
+                ]
+              : null}
             {organization.summaries.length > 0 ? (
               <Paper
+                id="information"
+                className="item"
                 style={{
-                  marginLeft: desktopGutterLess,
-                  marginRight: desktopGutterLess,
                   paddingLeft: desktopGutterLess,
                   paddingRight: desktopGutterLess,
-                  width: "100%",
                 }}
               >
                 <h2>
@@ -275,21 +259,10 @@ class Home extends React.Component<Props, State> {
                 <Link to={`/${organization.summaries[0].slug}`}>Les mer</Link>
               </Paper>
             ) : null}
-          </div>
-          <div
-            style={{
-              display: "flex",
-              marginLeft: -desktopGutterLess,
-              marginRight: -desktopGutterLess,
-            }}
-          >
             {organization.summaries.length > 1 ? (
               <Paper
+                className="item"
                 style={{
-                  flex: "1 1 50%",
-                  marginLeft: desktopGutterLess,
-                  marginRight: desktopGutterLess,
-                  marginBottom: desktopGutterLess,
                   paddingLeft: desktopGutterLess,
                   paddingRight: desktopGutterLess,
                 }}
@@ -305,14 +278,10 @@ class Home extends React.Component<Props, State> {
             ) : null}
             {organization.summaries.length > 2 ? (
               <Paper
+                className="item"
                 style={{
-                  flex: "1 1 50%",
-                  marginLeft: desktopGutterLess,
-                  marginRight: desktopGutterLess,
-                  marginBottom: desktopGutterLess,
                   paddingLeft: desktopGutterLess,
                   paddingRight: desktopGutterLess,
-                  minWidth: 0,
                 }}
               >
                 <h2>
@@ -324,65 +293,67 @@ class Home extends React.Component<Props, State> {
                 <Link to={`/${organization.summaries[2].slug}`}>Les mer</Link>
               </Paper>
             ) : null}
-          </div>
-          <Paper
-            style={{
-              paddingLeft: desktopGutterLess,
-              paddingRight: desktopGutterLess,
-            }}
-          >
-            <ContactForm
-              open={this.state.contactDialogOpen}
-              close={this.closeEmailDialog}
-              save={this.sendEmail}
-              organization={this.props.organization}
-            />
-            <h2 style={{ display: "inline-block" }}>
-              <Link to="/contact">Kontakt</Link>
-            </h2>
-            <div
-              className="small-narrow"
+            <Paper
+              id="contact"
+              className="item"
               style={{
-                display: "flex",
-                marginLeft: -desktopGutterLess,
-                marginRight: -desktopGutterLess,
+                paddingLeft: desktopGutterLess,
+                paddingRight: desktopGutterLess,
               }}
             >
+              <ContactForm
+                open={this.state.contactDialogOpen}
+                close={this.closeEmailDialog}
+                save={this.sendEmail}
+                organization={this.props.organization}
+              />
+              <h2 style={{ display: "inline-block" }}>
+                <Link to="/contact">Kontakt</Link>
+              </h2>
               <div
+                className="small-narrow"
                 style={{
-                  flex: "2 1 66%",
-                  paddingLeft: desktopGutterLess,
-                  paddingRight: desktopGutterLess,
+                  display: "flex",
+                  marginLeft: -desktopGutterLess,
+                  marginRight: -desktopGutterLess,
                 }}
               >
-                <iframe
-                  title="Map"
-                  width="100%"
-                  height="300"
-                  frameBorder="0"
-                  src={organization.mapUrl}
-                />
-              </div>
-              <div
-                style={{
-                  flex: "1 1 33%",
-                  paddingLeft: desktopGutterLess,
-                  paddingRight: desktopGutterLess,
-                }}
-              >
-                <h3>E-post</h3>
-                <a onTouchTap={this.openEmailDialog}>
-                  <span
-                    dangerouslySetInnerHTML={{
-                      __html: organization.encodedEmail,
-                    }}
+                <div
+                  style={{
+                    flex: "2 1 66%",
+                    paddingLeft: desktopGutterLess,
+                    paddingRight: desktopGutterLess,
+                  }}
+                >
+                  <iframe
+                    title="Map"
+                    width="100%"
+                    height="300"
+                    frameBorder="0"
+                    src={organization.mapUrl}
                   />
-                </a>
-                <h3>Øvelser</h3>
-                <Text text={organization.contactText} />
+                </div>
+                <div
+                  style={{
+                    flex: "1 1 33%",
+                    paddingLeft: desktopGutterLess,
+                    paddingRight: desktopGutterLess,
+                  }}
+                >
+                  <h3>E-post</h3>
+                  <a onTouchTap={this.openEmailDialog}>
+                    <span
+                      dangerouslySetInnerHTML={{
+                        __html: organization.encodedEmail,
+                      }}
+                    />
+                  </a>
+                  <h3>Øvelser</h3>
+                  <Text text={organization.contactText} />
+                </div>
               </div>
-            </div>
-          </Paper>
+            </Paper>
+          </div>
         </div>
       </div>
     );
