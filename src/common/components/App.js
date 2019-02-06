@@ -8,7 +8,6 @@ import theme from "../theme";
 
 import Footer from "./Footer";
 import Navigation from "./Navigation";
-import BottomNavigation from "./BottomNavigation";
 
 class App extends React.Component {
   static propTypes = {
@@ -63,7 +62,6 @@ jpg`;
         <Navigation viewer={this.props.viewer} organization={organization} />
         {this.props.children}
         <Footer viewer={this.props.viewer} organization={organization} />
-        <BottomNavigation organization={organization} />
       </div>
     );
   }
