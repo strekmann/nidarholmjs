@@ -697,15 +697,35 @@ pieceType = new GraphQLObjectType({
       files: {
         type: fileConnection.connectionType,
         resolve: (piece, args, { viewer }) => {
-          return connectionFromMongooseQuery(
-            authenticate(
-              File.find()
-                .where("_id")
-                .in(piece.scores),
-              viewer,
-            ).sort("filename"),
-            args,
-          );
+          // Find projects where piece is this piece, and project is active.
+          // If some projects are returned, it means this piece should have files listed.
+          // Active period is from six months before end to one week after
+          return Project.find()
+            .where({
+              "music.piece": piece.id,
+              end: {
+                $gte: moment().subtract(1, "week"),
+                $lte: moment().add(6, "months"),
+              },
+            })
+            .then((activeProjectsUsingPiece) => {
+              if (!activeProjectsUsingPiece.length) {
+                // return empty connection
+                // FIXME: This way of doing it is stupid
+                return connectionFromMongooseQuery(
+                  File.find().where({ _id: null }),
+                );
+              }
+              return connectionFromMongooseQuery(
+                authenticate(
+                  File.find()
+                    .where("_id")
+                    .in(piece.scores),
+                  viewer,
+                ).sort("filename"),
+                args,
+              );
+            });
         },
       },
       groupscores: {
