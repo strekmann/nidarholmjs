@@ -24,47 +24,10 @@ import ContactForm from "./ContactForm";
 import Date from "./Date";
 import EventItem from "./EventItem";
 import Text from "./Text";
+import type HomeOrganization from "./__generated__/Home_organization.graphql";
 
 type Props = {
-  organization: {
-    contactText: string,
-    encodedEmail: string,
-    mapUrl: string,
-    name: string,
-    nextEvents: {
-      edges: Array<{
-        node: {
-          id: string,
-        },
-      }>,
-    },
-    nextProject: {
-      end: any,
-      events: {
-        edges: Array<{
-          node: {
-            id: string,
-            location: string,
-            start: any,
-            end: any,
-            publicMdtext: string,
-          },
-        }>,
-      },
-      poster: {
-        normalPath: string,
-      },
-      publicMdtext: string,
-      tag: string,
-      title: string,
-      year: string,
-    },
-    summaries: Array<{
-      slug: string,
-      summary: string,
-      title: string,
-    }>,
-  },
+  organization: HomeOrganization,
   relay: {
     environment: {},
   },

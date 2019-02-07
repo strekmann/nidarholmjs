@@ -1,4 +1,6 @@
-import React from "react";
+// @flow
+
+import * as React from "react";
 import Helmet from "react-helmet";
 import { createFragmentContainer, graphql } from "react-relay";
 import getMuiTheme from "material-ui/styles/getMuiTheme";
@@ -8,14 +10,16 @@ import theme from "../theme";
 
 import Footer from "./Footer";
 import Navigation from "./Navigation";
+import type AppOrganization from "./__generated__/App_organization.graphql";
+import type AppViewer from "./__generated__/App_viewer.graphql";
 
-class App extends React.Component {
-  static propTypes = {
-    children: PropTypes.element,
-    viewer: PropTypes.object,
-    organization: PropTypes.object,
-  };
+type Props = {
+  viewer: AppViewer,
+  organization: AppOrganization,
+  children: React.Node,
+};
 
+class App extends React.Component<Props> {
   static childContextTypes = {
     muiTheme: PropTypes.object.isRequired,
   };
@@ -28,6 +32,8 @@ class App extends React.Component {
   getChildContext() {
     return { muiTheme: this.muiTheme };
   }
+
+  muiTheme: {};
 
   render() {
     const { organization } = this.props;

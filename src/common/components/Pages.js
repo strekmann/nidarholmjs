@@ -18,7 +18,6 @@ import type { PermissionArray } from "../types";
 
 import type PagesOrganization from "./__generated__/Pages_organization.graphql";
 import type PagesViewer from "./__generated__/Pages_viewer.graphql";
-
 import EditPage from "./EditPage";
 import PageList from "./PageList";
 
