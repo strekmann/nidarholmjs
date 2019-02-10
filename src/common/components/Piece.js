@@ -1,10 +1,12 @@
 /* @flow */
 
-import FlatButton from "material-ui/FlatButton";
+import Link from "found/lib/Link";
 import IconButton from "material-ui/IconButton";
 import IconMenu from "material-ui/IconMenu";
+import { List, ListItem } from "material-ui/List";
 import { MenuItem } from "material-ui/Menu";
 import Paper from "material-ui/Paper";
+import Toggle from "material-ui/Toggle";
 import { Toolbar, ToolbarGroup } from "material-ui/Toolbar";
 import getMuiTheme from "material-ui/styles/getMuiTheme";
 import MoreVertIcon from "material-ui/svg-icons/navigation/more-vert";
@@ -15,33 +17,14 @@ import { createFragmentContainer, graphql } from "react-relay";
 import theme from "../theme";
 import UpdatePieceMutation from "../mutations/UpdatePiece";
 
-import List from "./List";
-import Groupscore from "./Groupscore";
+import TextList from "./List";
+import GroupscoreList from "./GroupscoreList";
+import GroupscoreUpload from "./GroupscoreUpload";
 import PieceForm from "./PieceForm";
+import type PieceOrganization from "./__generated__/Piece_organization.graphql";
 
 type Props = {
-  organization: {
-    isMusicAdmin: boolean,
-    piece: {
-      arrangers: Array<string>,
-      composers: Array<string>,
-      id: string,
-      files: {
-        edges: Array<{
-          node: {
-            id: string,
-            filename: string,
-            path: string,
-          },
-        }>,
-      },
-      groupscores: Array<{
-        id: string,
-      }>,
-      subtitle: string,
-      title: string,
-    },
-  },
+  organization: PieceOrganization,
   relay: {
     environment: {},
   },
@@ -54,6 +37,7 @@ type Props = {
 
 type State = {
   editPiece: boolean,
+  showAdmin: boolean,
 };
 
 class Piece extends React.Component<Props, State> {
@@ -68,6 +52,7 @@ class Piece extends React.Component<Props, State> {
 
   state = {
     editPiece: false,
+    showAdmin: true,
   };
 
   getChildContext() {
@@ -78,6 +63,12 @@ class Piece extends React.Component<Props, State> {
 
   handleCloseEditPiece = () => {
     this.setState({ editPiece: false });
+  };
+
+  handleToggle = () => {
+    this.setState((state) => {
+      return { showAdmin: !state.showAdmin };
+    });
   };
 
   savePiece = (piece) => {
@@ -96,6 +87,7 @@ class Piece extends React.Component<Props, State> {
   render() {
     const { organization, router } = this.props;
     const { piece, isMusicAdmin } = organization;
+    const { showAdmin } = this.state;
     return (
       <Paper className="row">
         <div style={{ display: "flex", justifyContent: "space-between" }}>
@@ -136,24 +128,36 @@ class Piece extends React.Component<Props, State> {
           </Toolbar>
         </div>
         <h2>
-          <List items={piece.composers} />{" "}
+          <TextList items={piece.composers} />{" "}
           <small>
-            <List items={piece.arrangers} />
+            <TextList items={piece.arrangers} />
           </small>
         </h2>
-        {piece.files.edges.map((edge) => {
-          return (
-            <div key={edge.node.id}>
-              <FlatButton href={edge.node.path} label={edge.node.filename} />
-            </div>
-          );
-        })}
+        <List>
+          {piece.files.edges.map((edge) => {
+            return (
+              <ListItem
+                disabled
+                primaryText={
+                  <Link to={edge.node.path}>{edge.node.filename}</Link>
+                }
+              />
+            );
+          })}
+        </List>
+        <h3>Alle stemmer</h3>
         {isMusicAdmin ? (
+          <Toggle
+            label="Admin"
+            toggled={showAdmin}
+            onToggle={this.handleToggle}
+          />
+        ) : null}
+        {isMusicAdmin && showAdmin ? (
           <div>
-            <h2>Admin</h2>
             {piece.groupscores.map((groupscore) => {
               return (
-                <Groupscore
+                <GroupscoreUpload
                   key={groupscore.id}
                   groupscore={groupscore}
                   piece={piece}
@@ -161,7 +165,13 @@ class Piece extends React.Component<Props, State> {
               );
             })}
           </div>
-        ) : null}
+        ) : (
+          <div>
+            {piece.groupscores.map((groupscore) => {
+              return <GroupscoreList groupscore={groupscore} />;
+            })}
+          </div>
+        )}
       </Paper>
     );
   }
@@ -191,7 +201,8 @@ export default createFragmentContainer(Piece, {
         }
         groupscores {
           id
-          ...Groupscore_groupscore
+          ...GroupscoreUpload_groupscore
+          ...GroupscoreList_groupscore
         }
       }
     }

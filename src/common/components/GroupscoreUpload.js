@@ -32,7 +32,7 @@ type Props = {
   },
 };
 
-class Groupscore extends React.Component<Props> {
+class GroupscoreUpload extends React.Component<Props> {
   onDrop = (files) => {
     this.uploadScores(files, this.props.groupscore);
   };
@@ -92,9 +92,9 @@ class Groupscore extends React.Component<Props> {
   }
 }
 
-export default createFragmentContainer(Groupscore, {
+export default createFragmentContainer(GroupscoreUpload, {
   groupscore: graphql`
-    fragment Groupscore_groupscore on Groupscore {
+    fragment GroupscoreUpload_groupscore on Groupscore {
       id
       name
       files {

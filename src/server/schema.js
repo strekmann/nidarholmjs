@@ -731,8 +731,8 @@ pieceType = new GraphQLObjectType({
       groupscores: {
         type: new GraphQLList(groupScoreType),
         resolve: (piece, args, { organization, viewer }) => {
-          if (!isMusicAdmin(organization, viewer)) {
-            // throw new Error('Not music admin. Can not see group scores.');
+          if (!isMember(organization, viewer)) {
+            // throw new Error('Not a member.');
             return null;
           }
           return organization.instrument_groups.map((groupId) => {
