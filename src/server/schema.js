@@ -164,21 +164,6 @@ function isAdmin(organization, user) {
   return !!admin(organization, user);
 }
 
-// people having permissions to organization music
-function isMusicAdmin(organization, user) {
-  if (user) {
-    return Group.findById(organization.musicscoreadmin_group)
-      .exec()
-      .then((group) => {
-        const groupUsers = group.members.map((_member) => {
-          return _member.user;
-        });
-        return groupUsers.includes(user.id);
-      });
-  }
-  return false;
-}
-
 function authenticate(query, viewer, options = {}) {
   if (viewer) {
     query.or([
@@ -251,6 +236,8 @@ userType = new GraphQLObjectType({
         },
       },
       isAdmin: { type: GraphQLBoolean },
+      isMember: { type: GraphQLBoolean },
+      isMusicAdmin: { type: GraphQLBoolean },
       created: { type: GraphQLDate },
       facebookId: {
         type: GraphQLString,
@@ -660,14 +647,47 @@ const groupScoreType = new GraphQLObjectType({
       },
       files: {
         type: fileConnection.connectionType,
-        resolve: (group, args) => {
-          return connectionFromMongooseQuery(
-            File.find({ "permissions.groups": group.id })
-              .where("_id")
-              .in(group.scores)
-              .sort("filename"),
-            args,
-          );
+        resolve: (group, args, { viewer }) => {
+          return Project.find()
+            .where({
+              end: {
+                $gte: moment().subtract(1, "week"),
+                $lte: moment().add(6, "months"),
+              },
+            })
+            .then((activeProjects) => {
+              const pieces = new Set();
+              activeProjects.forEach((project) => {
+                project.music.forEach((music) => {
+                  pieces.add(music.piece);
+                });
+              });
+
+              const scores = new Set();
+              return Piece.find()
+                .where("_id")
+                .in(Array.from(pieces))
+                .then((activePieces) => {
+                  activePieces.forEach((activePiece) => {
+                    activePiece.scores.forEach((activeScore) => {
+                      scores.add(activeScore);
+                    });
+                  });
+
+                  const filteredScores = group.scores.filter((score) => {
+                    return viewer.isMusicAdmin || scores.has(score);
+                  });
+
+                  const query = File.find({ "permissions.groups": group.id })
+                    .where("_id")
+                    .in(group.scores)
+                    .sort("filename");
+                  if (filteredScores.length < group.scores.length) {
+                    query.select("filename");
+                  }
+                  return connectionFromMongooseQuery(query, args);
+                });
+            });
         },
       },
       organization: {
@@ -731,7 +751,7 @@ pieceType = new GraphQLObjectType({
       groupscores: {
         type: new GraphQLList(groupScoreType),
         resolve: (piece, args, { organization, viewer }) => {
-          if (!isMember(organization, viewer)) {
+          if (!viewer.isMember) {
             // throw new Error('Not a member.');
             return null;
           }
@@ -1108,20 +1128,20 @@ organizationType = new GraphQLObjectType({
     },
     isMember: {
       type: GraphQLBoolean,
-      resolve: (_, args, { organization, viewer }) => {
-        return isMember(organization, viewer);
+      resolve: (_, args, { viewer }) => {
+        return viewer.isMember;
       },
     },
     isAdmin: {
       type: GraphQLBoolean,
-      resolve: (_, args, { organization, viewer }) => {
-        return isAdmin(organization, viewer);
+      resolve: (_, args, { viewer }) => {
+        return viewer.isAdmin;
       },
     },
     isMusicAdmin: {
       type: GraphQLBoolean,
-      resolve: (_, args, { organization, viewer }) => {
-        return isMusicAdmin(organization, viewer);
+      resolve: (_, args, { viewer }) => {
+        return viewer.isMusicAdmin;
       },
     },
     instrumentGroups: {
@@ -2875,8 +2895,8 @@ const mutationAddPiece = mutationWithClientMutationId({
       },
     },
   },
-  mutateAndGetPayload: ({ projectId, pieceId }, { organization, viewer }) => {
-    if (!isMusicAdmin(organization, viewer)) {
+  mutateAndGetPayload: ({ projectId, pieceId }, { viewer }) => {
+    if (!viewer.isMusicAdmin) {
       return null;
     }
     const prId = fromGlobalId(projectId).id;
@@ -2905,8 +2925,8 @@ const mutationRemovePiece = mutationWithClientMutationId({
       },
     },
   },
-  mutateAndGetPayload: ({ projectId, pieceId }, { organization, viewer }) => {
-    if (!isMusicAdmin(organization, viewer)) {
+  mutateAndGetPayload: ({ projectId, pieceId }, { viewer }) => {
+    if (!viewer.isMusicAdmin) {
       return null;
     }
     const prId = fromGlobalId(projectId).id;

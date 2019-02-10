@@ -22,9 +22,11 @@ import GroupscoreList from "./GroupscoreList";
 import GroupscoreUpload from "./GroupscoreUpload";
 import PieceForm from "./PieceForm";
 import type PieceOrganization from "./__generated__/Piece_organization.graphql";
+import type PieceViewer from "./__generated__/Piece_viewer.graphql";
 
 type Props = {
   organization: PieceOrganization,
+  viewer: PieceViewer,
   relay: {
     environment: {},
   },
@@ -85,8 +87,9 @@ class Piece extends React.Component<Props, State> {
   };
 
   render() {
-    const { organization, router } = this.props;
-    const { piece, isMusicAdmin } = organization;
+    const { organization, viewer, router } = this.props;
+    const { piece } = organization;
+    const { isMusicAdmin } = viewer;
     const { showAdmin } = this.state;
     return (
       <Paper className="row">
@@ -138,6 +141,7 @@ class Piece extends React.Component<Props, State> {
             return (
               <ListItem
                 disabled
+                key={edge.node.id}
                 primaryText={
                   <Link to={edge.node.path}>{edge.node.filename}</Link>
                 }
@@ -145,33 +149,42 @@ class Piece extends React.Component<Props, State> {
             );
           })}
         </List>
-        <h3>Alle stemmer</h3>
-        {isMusicAdmin ? (
-          <Toggle
-            label="Admin"
-            toggled={showAdmin}
-            onToggle={this.handleToggle}
-          />
+        {piece.groupscores ? (
+          <div>
+            <h3>Alle stemmer</h3>
+            {viewer.isMusicAdmin ? (
+              <Toggle
+                label="Admin"
+                toggled={showAdmin}
+                onToggle={this.handleToggle}
+              />
+            ) : null}
+            {isMusicAdmin && showAdmin ? (
+              <div>
+                {piece.groupscores.map((groupscore) => {
+                  return (
+                    <GroupscoreUpload
+                      key={groupscore.id}
+                      groupscore={groupscore}
+                      piece={piece}
+                    />
+                  );
+                })}
+              </div>
+            ) : (
+              <div>
+                {piece.groupscores.map((groupscore) => {
+                  return (
+                    <GroupscoreList
+                      groupscore={groupscore}
+                      key={groupscore.id}
+                    />
+                  );
+                })}
+              </div>
+            )}
+          </div>
         ) : null}
-        {isMusicAdmin && showAdmin ? (
-          <div>
-            {piece.groupscores.map((groupscore) => {
-              return (
-                <GroupscoreUpload
-                  key={groupscore.id}
-                  groupscore={groupscore}
-                  piece={piece}
-                />
-              );
-            })}
-          </div>
-        ) : (
-          <div>
-            {piece.groupscores.map((groupscore) => {
-              return <GroupscoreList groupscore={groupscore} />;
-            })}
-          </div>
-        )}
       </Paper>
     );
   }
@@ -182,8 +195,6 @@ export default createFragmentContainer(Piece, {
     fragment Piece_organization on Organization {
       id
       name
-      isMember
-      isMusicAdmin
       piece(pieceId: $pieceId) {
         id
         title
@@ -205,6 +216,13 @@ export default createFragmentContainer(Piece, {
           ...GroupscoreList_groupscore
         }
       }
+    }
+  `,
+  viewer: graphql`
+    fragment Piece_viewer on User {
+      id
+      isMember
+      isMusicAdmin
     }
   `,
 });

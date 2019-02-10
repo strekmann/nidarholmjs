@@ -197,12 +197,22 @@ app.use((req, res, next) => {
   Organization.findById(organizationId)
     .populate("member_group")
     .populate("administration_group")
+    .populate("musicscoreadmin_group")
     .exec((err, organization) => {
       if (err) {
         return next(err);
       }
       req.organization = organization.toObject();
       if (req.user) {
+        req.user.isMember = req.user.groups.includes(
+          req.organization.member_group.id,
+        );
+        req.user.isAdmin = req.user.groups.includes(
+          req.organization.administration_group.id,
+        );
+        req.user.isMusicAdmin = req.user.groups.includes(
+          req.organization.musicscoreadmin_group.id,
+        );
         req.organization.user = req.user.toObject();
       }
       return next();

@@ -22,10 +22,15 @@ class GroupscoreList extends React.Component<Props> {
           return (
             <ListItem
               disabled
+              key={file.id}
               primaryText={
-                <a download href={file.path}>
-                  {file.filename}
-                </a>
+                file.path ? (
+                  <a download href={file.path}>
+                    {file.filename}
+                  </a>
+                ) : (
+                  file.filename
+                )
               }
             />
           );
@@ -38,7 +43,6 @@ class GroupscoreList extends React.Component<Props> {
 export default createFragmentContainer(GroupscoreList, {
   groupscore: graphql`
     fragment GroupscoreList_groupscore on Groupscore {
-      id
       name
       files {
         edges {

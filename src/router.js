@@ -219,6 +219,9 @@ const routes = (
           organization {
             ...Piece_organization
           }
+          viewer {
+            ...Piece_viewer
+          }
         }
       `}
     />
