@@ -41,14 +41,14 @@
             name: apt-transport-https
             state: present
 
-      - name: Setup nodesource repository
-        apt_repository:
-            repo: "deb http://deb.nodesource.com/node_6.x {{ debian_version }} main"
-            state: present
-
       - name: Add nodesource key
         apt_key:
             url: https://deb.nodesource.com/gpgkey/nodesource.gpg.key
+            state: present
+
+      - name: Setup nodesource repository
+        apt_repository:
+            repo: "deb https://deb.nodesource.com/node_6.x {{ debian_version }} main"
             state: present
 
       - name: Setup Yarn repository
