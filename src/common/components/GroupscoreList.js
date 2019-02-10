@@ -1,6 +1,5 @@
 // @flow
 
-import Link from "found/lib/Link";
 import { List, ListItem } from "material-ui/List";
 import Subheader from "material-ui/Subheader";
 import * as React from "react";
@@ -23,7 +22,11 @@ class GroupscoreList extends React.Component<Props> {
           return (
             <ListItem
               disabled
-              primaryText={<Link to={file.path}>{file.filename}</Link>}
+              primaryText={
+                <a download href={file.path}>
+                  {file.filename}
+                </a>
+              }
             />
           );
         })}
