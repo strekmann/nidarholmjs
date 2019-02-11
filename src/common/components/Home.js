@@ -122,6 +122,7 @@ class Home extends React.Component<Props, State> {
               ? [
                   <Card
                     id="next-projects"
+                    key="next-projects"
                     className="item"
                     style={{
                       display: "flex",
@@ -179,6 +180,7 @@ class Home extends React.Component<Props, State> {
                   </Card>,
                   <Card
                     id="next-events"
+                    key="next-events"
                     className="item"
                     style={{
                       display: "flex",
