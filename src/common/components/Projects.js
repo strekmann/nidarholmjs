@@ -73,7 +73,7 @@ class Projects extends React.Component<Props, State> {
             save={this.addProject}
             toggle={this.toggleAddProject}
             viewer={this.props.viewer}
-            organization={null}
+            organization={this.props.organization}
           />
         ) : null}
         <div style={{ display: "flex", justifyContent: "flex-end" }}>
@@ -138,6 +138,7 @@ export default createFragmentContainer(Projects, {
       isMember
       ...ProjectListPrevious_organization
       ...ProjectListUpcoming_organization
+      ...ProjectForm_organization
     }
   `,
   viewer: graphql`

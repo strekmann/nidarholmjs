@@ -2324,6 +2324,7 @@ const mutationAddProject = mutationWithClientMutationId({
     { title, tag, privateMdtext, publicMdtext, start, end, permissions },
     { viewer },
   ) => {
+    console.log("Add project", title, tag, start, end, permissions, viewer._id);
     if (!viewer) {
       throw new Error("Nobody!");
     }

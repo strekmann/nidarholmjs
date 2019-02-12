@@ -14,7 +14,8 @@ import type { PermissionObject, PermissionArray } from "../types";
 
 import UserField from "./UserField";
 import PermissionField from "./PermissionField";
-import type ProjectFormViewer from "./__generated__/ProjectForm_organization.graphql";
+import type ProjectFormOrganization from "./__generated__/ProjectForm_organization.graphql";
+import type ProjectFormViewer from "./__generated__/ProjectForm_viewer.graphql";
 
 let DateTimeFormat;
 if (areIntlLocalesSupported(["nb"])) {
@@ -42,7 +43,7 @@ type Props = {
   ) => void,
   toggle: () => void,
   viewer: ProjectFormViewer,
-  organization: {},
+  organization: ProjectFormOrganization,
   id: string,
   title: string,
   tag: string,
@@ -191,12 +192,15 @@ class ProjectForm extends React.Component<Props, State> {
             });
           }
         },
+        onFailure: (transaction: any) => {
+          console.error(transaction);
+        },
       },
     );
   };
 
   render() {
-    const { viewer } = this.props;
+    const { organization, viewer } = this.props;
     const permissions = [];
     if (viewer) {
       permissions.push({ value: "p", text: "Verden" });
@@ -278,7 +282,7 @@ class ProjectForm extends React.Component<Props, State> {
         <div>
           <UserField
             users={this.state.conductors}
-            organization={this.props.organization}
+            organization={organization}
             onChange={this.onChangeConductors}
             title="Dirigent(er)"
           />
@@ -286,7 +290,7 @@ class ProjectForm extends React.Component<Props, State> {
         <div>
           <UserField
             users={this.state.managers}
-            organization={this.props.organization}
+            organization={organization}
             onChange={this.onChangeManagers}
             title="Prosjektleder(e)"
           />

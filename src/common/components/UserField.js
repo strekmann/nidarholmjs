@@ -1,17 +1,25 @@
+// @flow
+
 import AutoComplete from "material-ui/AutoComplete";
 import Chip from "material-ui/Chip";
-import PropTypes from "prop-types";
 import React from "react";
 import { createFragmentContainer, graphql } from "react-relay";
 
-class UserField extends React.Component {
-  static propTypes = {
-    organization: PropTypes.object.isRequired,
-    users: PropTypes.array.isRequired,
-    onChange: PropTypes.func.isRequired,
-    title: PropTypes.string.isRequired,
-  };
+import UserFieldOrganization from "./__generated__/UserField_organization.graphql";
 
+type Props = {
+  organization: UserFieldOrganization,
+  users: Array<{ id: string, name: string }>,
+  onChange: any,
+  title: string,
+};
+
+type State = {
+  user: string,
+  users: Array<{ id: string, name: string }>,
+};
+
+class UserField extends React.Component<Props, State> {
   state = {
     user: "",
     users: this.props.users || [],
@@ -55,6 +63,8 @@ class UserField extends React.Component {
           searchText={this.state.user}
           onNewRequest={this.addUser}
           onUpdateInput={this.onUserChange}
+          hintText="Personer må allerede finnes i databasen"
+          fullWidth
         />
         {this.state.users.map((user) => {
           return (
