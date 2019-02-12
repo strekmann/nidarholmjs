@@ -1210,7 +1210,7 @@ organizationType = new GraphQLObjectType({
             $gte: moment()
               .startOf("day")
               .toDate(),
-            $lte: moment().add(1, "year"),
+            // $lte: moment().add(1, "year"),
           },
         });
         if (!isMember(organization, viewer)) {

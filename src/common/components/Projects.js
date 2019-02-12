@@ -1,3 +1,5 @@
+// @flow
+
 import IconButton from "material-ui/IconButton";
 import IconMenu from "material-ui/IconMenu";
 import MenuItem from "material-ui/MenuItem";
@@ -6,6 +8,7 @@ import MoreVertIcon from "material-ui/svg-icons/navigation/more-vert";
 import PropTypes from "prop-types";
 import React from "react";
 import { createFragmentContainer, graphql } from "react-relay";
+import type { RelayProp } from "react-relay";
 
 import theme from "../theme";
 import AddProjectMutation from "../mutations/AddProject";
@@ -13,14 +16,20 @@ import AddProjectMutation from "../mutations/AddProject";
 import ProjectListPrevious from "./ProjectListPrevious";
 import ProjectListUpcoming from "./ProjectListUpcoming";
 import ProjectForm from "./ProjectForm";
+import ProjectsOrganization from "./__generated__/Projects_organization.graphql";
+import ProjectsViewer from "./__generated__/Projects_viewer.graphql";
 
-class Projects extends React.Component {
-  static propTypes = {
-    organization: PropTypes.object,
-    viewer: PropTypes.object,
-    relay: PropTypes.object.isRequired,
-  };
+type Props = {
+  organization: ProjectsOrganization,
+  viewer: ProjectsViewer,
+  relay: RelayProp,
+};
 
+type State = {
+  addProject: boolean,
+};
+
+class Projects extends React.Component<Props, State> {
   static childContextTypes = {
     muiTheme: PropTypes.object.isRequired,
   };
@@ -37,6 +46,8 @@ class Projects extends React.Component {
   getChildContext() {
     return { muiTheme: this.muiTheme };
   }
+
+  muiTheme: {};
 
   toggleAddProject = () => {
     this.setState({ addProject: !this.state.addProject });

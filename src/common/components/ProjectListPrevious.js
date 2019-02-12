@@ -1,19 +1,22 @@
+// @flow
+
+import type { RelayRefetchProp } from "react-relay";
 import RaisedButton from "material-ui/RaisedButton";
-import PropTypes from "prop-types";
 import React from "react";
 import { createRefetchContainer, graphql } from "react-relay";
 
 import ProjectItem from "./ProjectItem";
+import ProjectListPreviousOrganization from "./__generated__/ProjectListPrevious_organization.graphql";
 
 const PROJECTS_PER_PAGE = 10;
 
-class ProjectListPrevious extends React.Component {
-  static propTypes = {
-    title: PropTypes.string,
-    organization: PropTypes.object.isRequired,
-    relay: PropTypes.object.isRequired,
-  };
+type Props = {
+  title: string,
+  organization: ProjectListPreviousOrganization,
+  relay: RelayRefetchProp,
+};
 
+class ProjectListPrevious extends React.Component<Props> {
   loadMore = () => {
     const { previousProjects } = this.props.organization;
     this.props.relay.refetch(() => {

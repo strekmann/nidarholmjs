@@ -1,5 +1,7 @@
 /* global FormData */
+// @flow
 
+import type { RelayRefetchProp } from "react-relay";
 import axios from "axios";
 import MoreVertIcon from "material-ui/svg-icons/navigation/more-vert";
 import Dialog from "material-ui/Dialog";
@@ -12,7 +14,7 @@ import getMuiTheme from "material-ui/styles/getMuiTheme";
 import PropTypes from "prop-types";
 import React from "react";
 import Helmet from "react-helmet";
-import { createFragmentContainer, graphql } from "react-relay";
+import { createRefetchContainer, graphql } from "react-relay";
 
 import AddEventMutation from "../mutations/AddEvent";
 import AddProjectFileMutation from "../mutations/AddProjectFile";
@@ -35,14 +37,25 @@ import FileList from "./FileList";
 import FileUpload from "./FileUpload";
 import MusicList from "./MusicList";
 import PermissionChips from "./PermissionChips";
+import type ProjectOrganization from "./__generated__/Project_organization.graphql";
+import type ProjectViewer from "./__generated__/Project_viewer.graphql";
 
-class Project extends React.Component {
-  static propTypes = {
-    organization: PropTypes.object.isRequired,
-    viewer: PropTypes.object,
-    relay: PropTypes.object.isRequired,
-  };
+type Props = {
+  organization: ProjectOrganization,
+  viewer: ProjectViewer,
+  relay: RelayRefetchProp,
+};
 
+type State = {
+  public: boolean,
+  addEvent: boolean,
+  addFile: boolean,
+  addPiece: boolean,
+  editProject: boolean,
+  showEnded: boolean,
+};
+
+class Project extends React.Component<Props, State> {
   static childContextTypes = {
     muiTheme: PropTypes.object.isRequired,
   };
@@ -109,6 +122,8 @@ class Project extends React.Component {
       onSuccess,
     );
   };
+
+  muiTheme: {};
 
   toggleAddPiece = () => {
     this.setState({ addPiece: !this.state.addPiece });
@@ -429,7 +444,7 @@ class Project extends React.Component {
   }
 }
 
-export default createFragmentContainer(Project, {
+export default createRefetchContainer(Project, {
   organization: graphql`
     fragment Project_organization on Organization {
       name

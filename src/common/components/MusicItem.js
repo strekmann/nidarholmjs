@@ -17,7 +17,7 @@ type Props = {
   },
   isMember: boolean,
   isMusicAdmin: boolean,
-  remove: ({}) => void,
+  remove: ({ id: string }) => void,
 };
 
 export default class MusicItem extends React.Component<Props> {
