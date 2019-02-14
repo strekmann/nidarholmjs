@@ -1,16 +1,25 @@
+// @flow
+
 import AutoComplete from "material-ui/AutoComplete";
 import Chip from "material-ui/Chip";
-import PropTypes from "prop-types";
 import React from "react";
 import { createFragmentContainer, graphql } from "react-relay";
 
-class ProjectField extends React.Component {
-  static propTypes = {
-    organization: PropTypes.object,
-    projects: PropTypes.array,
-    onChange: PropTypes.func.isRequired,
-  };
+import ProjectFieldOrganization from "./__generated__/ProjectField_organization.graphql";
+import Project from "./Project";
 
+type Props = {
+  organization: ProjectFieldOrganization,
+  projects: Project[],
+  onChange: any,
+};
+
+type State = {
+  project: string,
+  projects: Project[],
+};
+
+class ProjectField extends React.Component<Props, State> {
   state = {
     project: "",
     projects: this.props.projects || [],
@@ -21,8 +30,9 @@ class ProjectField extends React.Component {
   };
 
   addProject = (value) => {
-    const { projects } = this.state;
-    projects.push(value.project);
+    const projects = this.state.projects.slice(); // copy
+    const { project } = value; // copy
+    projects.push(project);
     this.setState({
       projects,
       project: "",

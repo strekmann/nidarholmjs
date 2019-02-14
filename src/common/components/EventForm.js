@@ -17,7 +17,6 @@ import type { PermissionArray, PermissionObject } from "../types";
 
 import type EventFormOrganization from "./__generated__/EventForm_organization.graphql";
 import type EventFormViewer from "./__generated__/EventForm_viewer.graphql";
-
 import PermissionField from "./PermissionField";
 import ProjectField from "./ProjectField";
 

@@ -17,9 +17,9 @@ import type { RelayRefetchProp } from "react-relay";
 import theme from "../theme";
 import EditEventMutation from "../mutations/EditEvent";
 import DeleteEventMutation from "../mutations/DeleteEvent";
+
 import type { Event_viewer as EventViewer } from "./__generated__/Event_viewer.graphql";
 import type { Event_organization as EventOrganization } from "./__generated__/Event_organization.graphql";
-
 import Daterange from "./Daterange";
 import Text from "./Text";
 import EventForm from "./EventForm";
