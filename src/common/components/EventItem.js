@@ -40,6 +40,7 @@ type Props = {
     mdtext: string,
     isEnded: boolean,
     highlighted: boolean,
+    tags: string[],
   },
 };
 
@@ -68,6 +69,7 @@ class EventItem extends React.Component<Props, State> {
       mdtext,
       isEnded,
       highlighted,
+      tags,
     } = this.props.event;
     const { desktopGutterMini } = theme.spacing;
     return (
@@ -94,7 +96,26 @@ class EventItem extends React.Component<Props, State> {
         <div className="meta">
           <Daterange start={start} end={end} /> {location}
         </div>
-        {this.state.expanded ? <Text text={mdtext} /> : null}
+        {this.state.expanded ? (
+          <div>
+            <Text text={mdtext} />
+            <div>
+              {tags.map((tag) => {
+                return (
+                  <span
+                    key={tag}
+                    style={{
+                      color: theme.palette.disabledColor,
+                      marginRight: 10,
+                    }}
+                  >
+                    {tag}
+                  </span>
+                );
+              })}
+            </div>
+          </div>
+        ) : null}
       </div>
     );
   }
@@ -110,6 +131,7 @@ export default createFragmentContainer(EventItem, {
       end
       isEnded
       highlighted
+      tags
       permissions {
         public
         groups {
