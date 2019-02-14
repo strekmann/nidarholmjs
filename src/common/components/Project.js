@@ -191,7 +191,6 @@ class Project extends React.Component<Props, State> {
     });
   };
 
-  // TODO: Not working
   saveProject = (project, callbacks) => {
     const { relay } = this.props;
     SaveProjectMutation.commit(relay.environment, project, () => {

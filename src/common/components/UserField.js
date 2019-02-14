@@ -30,7 +30,7 @@ class UserField extends React.Component<Props, State> {
   };
 
   addUser = (user) => {
-    const { users } = this.state;
+    const users = this.state.users.slice();
     users.push(user);
     this.setState({
       users,

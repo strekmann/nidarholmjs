@@ -11,6 +11,14 @@ const mutation = graphql`
         year
         publicMdtext
         privateMdtext
+        conductors {
+          id
+          name
+        }
+        managers {
+          id
+          name
+        }
         permissions {
           public
           groups {
