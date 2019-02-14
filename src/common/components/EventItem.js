@@ -39,6 +39,7 @@ type Props = {
     end: any,
     mdtext: string,
     isEnded: boolean,
+    highlighted: boolean,
   },
 };
 
@@ -66,6 +67,7 @@ class EventItem extends React.Component<Props, State> {
       end,
       mdtext,
       isEnded,
+      highlighted,
     } = this.props.event;
     const { desktopGutterMini } = theme.spacing;
     return (
@@ -82,7 +84,12 @@ class EventItem extends React.Component<Props, State> {
           </IconButton>
         </div>
         <h3 style={{ marginBottom: 0 }}>
-          <Link to={`/events/${id}`}>{title}</Link>
+          <Link
+            to={`/events/${id}`}
+            style={{ fontWeight: highlighted ? "bold" : "normal" }}
+          >
+            {title}
+          </Link>
         </h3>
         <div className="meta">
           <Daterange start={start} end={end} /> {location}
@@ -102,6 +109,7 @@ export default createFragmentContainer(EventItem, {
       start
       end
       isEnded
+      highlighted
       permissions {
         public
         groups {
