@@ -19,3 +19,18 @@ export function flattenPermissions(
   }
   return permissionArray;
 }
+
+/**
+ * Urlifys a string.
+ *
+ * This is a simpler function than those trying to replace unicode characters.
+ * We allow norwegian letters and hyphens, and replace everything else with
+ * hyphens, then compacts hyphens.
+ */
+export function urlify(text: string) {
+  return text
+    .toLowerCase()
+    .replace(/(?:[^\wæøå-]|_)+/g, "-")
+    .replace(/-+/g, "-")
+    .replace(/^-+|-+$/g, "");
+}

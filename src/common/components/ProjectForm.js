@@ -9,7 +9,7 @@ import moment from "moment";
 import React from "react";
 import { createFragmentContainer, graphql } from "react-relay";
 
-import { flattenPermissions } from "../utils";
+import { flattenPermissions, urlify } from "../utils";
 import type { PermissionObject, PermissionArray } from "../types";
 
 import UserField from "./UserField";
@@ -98,7 +98,11 @@ class ProjectForm extends React.Component<Props, State> {
   };
 
   onChangeTitle = (event, title) => {
-    this.setState({ title });
+    let { tag } = this.state;
+    if (!this.props.id) {
+      tag = urlify(title);
+    }
+    this.setState({ title, tag });
   };
 
   onChangeTag = (event, tag) => {
@@ -193,6 +197,7 @@ class ProjectForm extends React.Component<Props, State> {
           }
         },
         onFailure: (transaction: any) => {
+          // eslint-disable-next-line no-console
           console.error(transaction);
         },
       },
