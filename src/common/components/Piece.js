@@ -142,9 +142,7 @@ class Piece extends React.Component<Props, State> {
               <ListItem
                 disabled
                 key={edge.node.id}
-                primaryText={
-                  <Link to={edge.node.path}>{edge.node.filename}</Link>
-                }
+                primaryText={<a href={edge.node.path}>{edge.node.filename}</a>}
               />
             );
           })}
