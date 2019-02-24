@@ -3,11 +3,14 @@
 import update from "immutability-helper";
 import Paper from "material-ui/Paper";
 import RaisedButton from "material-ui/RaisedButton";
+import { Tab, Tabs } from "material-ui/Tabs";
+import TextField from "material-ui/TextField";
 import getMuiTheme from "material-ui/styles/getMuiTheme";
 import PropTypes from "prop-types";
 import * as React from "react";
 import { createFragmentContainer, graphql } from "react-relay";
 
+import AddOrganizationEventPersonResponsibilityMutation from "../mutations/AddOrganizationEventPersonResponsibility";
 import SaveOrganizationMutation from "../mutations/SaveOrganization";
 import theme from "../theme";
 
@@ -31,6 +34,7 @@ type Props = {
       slug: string,
       title: string,
     }>,
+    organizationEventPersonResponsibilities: string[],
   },
   relay: {
     environment: {},
@@ -43,6 +47,8 @@ type State = {
     slug: string,
     title: string,
   }>,
+  tab: string,
+  eventPersonResponsibilityName: string,
 };
 
 class Organization extends React.Component<Props, State> {
@@ -57,6 +63,8 @@ class Organization extends React.Component<Props, State> {
 
   state = {
     summaries: this.props.organization.summaries,
+    tab: "frontpage",
+    eventPersonResponsibilityName: "",
   };
 
   getChildContext() {
@@ -65,6 +73,14 @@ class Organization extends React.Component<Props, State> {
 
   onChange = (summaries) => {
     this.setState({ summaries });
+  };
+
+  onChangeTab = (tab: string) => {
+    this.setState({ tab });
+  };
+
+  onChangePersonResponsibility = (event, eventPersonResponsibilityName) => {
+    this.setState({ eventPersonResponsibilityName });
   };
 
   onAdd = (page) => {
@@ -88,20 +104,63 @@ class Organization extends React.Component<Props, State> {
     });
   };
 
+  addEventPersonResponsibility = (event) => {
+    event.preventDefault();
+    AddOrganizationEventPersonResponsibilityMutation.commit(
+      this.props.relay.environment,
+      {
+        name: this.state.eventPersonResponsibilityName,
+      },
+      () => {
+        this.setState({ eventPersonResponsibilityName: "" });
+      },
+    );
+  };
+
   render() {
     const org = this.props.organization;
+    const personResponsibilities = org.organizationEventPersonResponsibilities;
     return (
       <Paper className="row">
         <h1>Innstillinger</h1>
-        <form onSubmit={this.saveOrganization}>
-          <FrontpageSummaries
-            pages={org.pages}
-            summaries={this.state.summaries}
-            onChange={this.onChange}
-            onAdd={this.onAdd}
-          />
-          <RaisedButton type="submit" label="Lagre" />
-        </form>
+        <Tabs value={this.state.tab} onChange={this.onChangeTab}>
+          <Tab label="Forside" value="frontpage">
+            <form onSubmit={this.saveOrganization}>
+              <FrontpageSummaries
+                pages={org.pages}
+                summaries={this.state.summaries}
+                onChange={this.onChange}
+                onAdd={this.onAdd}
+              />
+              <RaisedButton type="submit" label="Lagre" />
+            </form>
+          </Tab>
+          <Tab label="Ansvarslister" value="responsibilities">
+            <h2>Aktivitetsansvarlige - personer</h2>
+            <p>
+              Her defineres ansvarsroller som kan tilordnes aktiviteter i
+              lister. For eksempel kakeansvar.
+            </p>
+            <ul>
+              {personResponsibilities.map((responsibility) => {
+                return <li key="responsibility">{responsibility}</li>;
+              })}
+            </ul>
+            <form onSubmit={this.addEventPersonResponsibility}>
+              <TextField
+                floatingLabelText="Navn"
+                value={this.state.eventPersonResponsibilityName}
+                onChange={this.onChangePersonResponsibility}
+              />
+              <RaisedButton label="Lagre" type="submit" />
+            </form>
+            <h2>Aktivitetsansvarlige - grupper</h2>
+            <p>
+              Her defineres gruppeansvar som kan tilordnes aktiviteter i lister.
+              For eksempel sjauing.
+            </p>
+          </Tab>
+        </Tabs>
       </Paper>
     );
   }
@@ -116,6 +175,7 @@ export default createFragmentContainer(Organization, {
         title
         slug
       }
+      organizationEventPersonResponsibilities
       pages(first: 100) {
         edges {
           cursor

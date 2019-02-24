@@ -13,6 +13,7 @@ import Login from "./common/components/Login";
 import Contact from "./common/components/Contact";
 import Reset from "./common/components/Reset";
 import Event from "./common/components/Event";
+import EventPersonResponsibilities from "./common/components/EventPersonResponsibilities";
 import Events from "./common/components/Events";
 import Files from "./common/components/Files";
 import Group from "./common/components/Group";
@@ -92,6 +93,17 @@ const routes = (
         query router_Organization_Query {
           organization {
             ...Organization_organization
+          }
+        }
+      `}
+    />
+    <Route
+      path="org/responsibilities"
+      Component={EventPersonResponsibilities}
+      query={graphql`
+        query router_EventPersonResponsibilities_Query {
+          organization {
+            ...EventPersonResponsibilities_organization
           }
         }
       `}

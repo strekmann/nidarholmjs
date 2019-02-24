@@ -33,6 +33,7 @@ import Event from "./models/Event";
 import File from "./models/File";
 import Group from "./models/Group";
 import Organization from "./models/Organization";
+import OrganizationEventPersonResponsibility from "./models/OrganizationEventPersonResponsibility";
 import Page from "./models/Page";
 import PasswordCode from "./models/PasswordCode";
 import Piece from "./models/Piece";
@@ -582,6 +583,18 @@ const scoreConnection = connectionDefinitions({
 });
 */
 
+const contributorType = new GraphQLObjectType({
+  name: "Contributor",
+  fields: () => {
+    return {
+      id: globalIdField("Contributor"),
+      user: { type: userType },
+      role: { type: GraphQLString },
+    };
+  },
+  interfaces: [nodeInterface],
+});
+
 eventType = new GraphQLObjectType({
   name: "Event",
   fields: () => {
@@ -624,6 +637,16 @@ eventType = new GraphQLObjectType({
       },
       highlighted: {
         type: GraphQLBoolean,
+      },
+      contributors: {
+        type: new GraphQLList(contributorType),
+        /*
+        resolve: (event) => {
+          return event.populate("contributors.user").then((populatedEvent) => {
+            return populatedEvent;
+          });
+        },
+        */
       },
     };
   },
@@ -1519,6 +1542,20 @@ organizationType = new GraphQLObjectType({
         );
       },
     },
+    organizationEventPersonResponsibilities: {
+      type: new GraphQLList(GraphQLString),
+      resolve: (_, args, { organization, viewer }) => {
+        if (!isMember(organization, viewer)) {
+          throw new Error("Noboby");
+        }
+        return OrganizationEventPersonResponsibility.find()
+          .sort("name")
+          .exec()
+          .map((responsibility) => {
+            return responsibility.name;
+          });
+      },
+    },
   },
   interfaces: [nodeInterface],
 });
@@ -2112,6 +2149,74 @@ const mutationSaveOrganization = mutationWithClientMutationId({
       { summaries: pageIds },
       { new: true },
     );
+  },
+});
+
+const mutationAddOrganizationEventPersonResponsibility = mutationWithClientMutationId(
+  {
+    name: "AddOrganizationEventPersonResponsibility",
+    inputFields: {
+      name: {
+        type: GraphQLString,
+      },
+    },
+    outputFields: {
+      organization: {
+        type: organizationType,
+        resolve: (payload) => {
+          return payload;
+        },
+      },
+    },
+    mutateAndGetPayload: ({ name }, { viewer, organization }) => {
+      if (!admin(organization, viewer)) {
+        return null;
+      }
+      OrganizationEventPersonResponsibility.create({
+        name,
+        organization: organization.id,
+      });
+      return Organization.findById(organization.id);
+    },
+  },
+);
+
+const mutationAddEventPersonResponsibility = mutationWithClientMutationId({
+  name: "AddEventPersonResponsibility",
+  inputFields: {
+    eventId: {
+      type: GraphQLID,
+    },
+    userId: {
+      type: GraphQLID,
+    },
+    responsibility: {
+      type: GraphQLString,
+    },
+  },
+  outputFields: {
+    event: {
+      type: eventType,
+      resolve: (payload) => {
+        return payload;
+      },
+    },
+  },
+  mutateAndGetPayload: (
+    { eventId, userId, responsibility },
+    { viewer, organization },
+  ) => {
+    if (!admin(organization, viewer)) {
+      return null;
+    }
+    const eId = fromGlobalId(eventId).id;
+    const uId = fromGlobalId(userId).id;
+    return Event.findById(eId).then((event) => {
+      event.contributors.addToSet({ user: uId, role: responsibility });
+      return event.save().then((savedEvent) => {
+        return savedEvent;
+      });
+    });
   },
 });
 
@@ -3107,6 +3212,8 @@ const mutationType = new GraphQLObjectType({
       removeScore: mutationRemoveScore,
       saveFilePermissions: mutationSaveFilePermissions,
       saveOrganization: mutationSaveOrganization,
+      addOrganizationEventPersonResponsibility: mutationAddOrganizationEventPersonResponsibility,
+      addEventPersonResponsibility: mutationAddEventPersonResponsibility,
       saveContactRoles: mutationSaveContactRoles,
       setProjectPoster: mutationSetProjectPoster,
       addProject: mutationAddProject,

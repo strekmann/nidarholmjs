@@ -36,7 +36,7 @@ const EventSchema = new mongoose.Schema({
   ],
   contributors: [
     {
-      name: { type: String },
+      user: { type: String, ref: "User" },
       role: { type: String },
     },
   ],

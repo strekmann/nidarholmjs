@@ -1,5 +1,6 @@
 /* @flow */
 
+import type { RelayRefetchProp } from "react-relay";
 import Link from "found/lib/Link";
 import AutoComplete from "material-ui/AutoComplete";
 import Checkbox from "material-ui/Checkbox";
@@ -20,28 +21,15 @@ import { createFragmentContainer, graphql } from "react-relay";
 import AddUserMutation from "../mutations/AddUser";
 import theme from "../theme";
 
+import type MembersOrganization from "./__generated__/Members_organization.graphql";
 import GroupItem from "./GroupItem";
 
 type Props = {
-  relay: {
-    environment: {},
-  },
+  relay: RelayRefetchProp,
   router: {
     push: ({}) => void,
   },
-  organization: {
-    instrumentGroups: Array<{
-      id: string,
-      name: string,
-    }>,
-    isAdmin: boolean,
-    isMember: boolean,
-    users: Array<{
-      id: string,
-      name: string,
-      username: string,
-    }>,
-  },
+  organization: MembersOrganization,
 };
 
 type State = {
