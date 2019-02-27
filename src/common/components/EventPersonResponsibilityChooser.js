@@ -3,19 +3,19 @@
 import type { RelayRefetchProp } from "react-relay";
 import Dialog from "material-ui/Dialog";
 import Divider from "material-ui/Divider";
-import IconButton from "material-ui/IconButton";
 import { List, ListItem } from "material-ui/List";
 import Menu from "material-ui/Menu";
 import MenuItem from "material-ui/MenuItem";
-import ActionDelete from "material-ui/svg-icons/action/delete";
 import * as React from "react";
 import { createFragmentContainer, graphql } from "react-relay";
 
 import AddEventPersonResponsibilityMutation from "../mutations/AddEventPersonResponsibility";
+import RemoveEventPersonResponsibilityMutation from "../mutations/RemoveEventPersonResponsibility";
 
 import type Event from "./__generated__/EventPersonResponsibilityChooser_event.graphql";
 import type OrganizationEventPersonResponsibility from "./__generated__/EventPersonResponsibilityChooser_organizationEventPersonResponsibility.graphql";
 import EventPersonResponsibilityChooserItem from "./EventPersonResponsibilityChooserItem";
+import RemoveIconButton from "./RemoveIconButton";
 
 type Props = {
   event: Event,
@@ -66,6 +66,14 @@ class EventPersonResponsibilityChooser extends React.Component<Props, State> {
     this.toggleChooser();
   };
 
+  onRemoveContributor = (contributorId) => {
+    const { relay, event } = this.props;
+    RemoveEventPersonResponsibilityMutation.commit(relay.environment, {
+      eventId: event.id,
+      contributorId,
+    });
+  };
+
   toggleChooser = () => {
     this.setState((oldState) => {
       return {
@@ -100,9 +108,10 @@ class EventPersonResponsibilityChooser extends React.Component<Props, State> {
           key={contributor.id}
           disabled
           rightIconButton={
-            <IconButton>
-              <ActionDelete />
-            </IconButton>
+            <RemoveIconButton
+              item={contributor.id}
+              onRemove={this.onRemoveContributor}
+            />
           }
         >
           {contributor.user.name}

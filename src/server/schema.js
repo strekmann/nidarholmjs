@@ -2239,7 +2239,6 @@ const mutationAddEventPersonResponsibility = mutationWithClientMutationId({
     const eId = fromGlobalId(eventId).id;
     const uId = fromGlobalId(userId).id;
     const rId = fromGlobalId(responsibilityId).id;
-    console.log(eId, rId, rId);
     return Event.findById(eId).then((event) => {
       event.contributors.addToSet({ user: uId, role: rId });
       return event.save().then((savedEvent) => {
@@ -2253,6 +2252,32 @@ const mutationAddEventPersonResponsibility = mutationWithClientMutationId({
         return savedEvent;
       });
     });
+  },
+});
+
+const mutationRemoveEventPersonResponsibility = mutationWithClientMutationId({
+  name: "RemoveEventPersonResponsibility",
+  inputFields: {
+    eventId: { type: GraphQLID },
+    contributorId: { type: GraphQLID },
+  },
+  outputFields: {
+    event: {
+      type: eventType,
+      resolve: (payload) => {
+        return payload;
+      },
+    },
+  },
+  mutateAndGetPayload: ({ eventId, contributorId }) => {
+    // TODO: Add permission check
+    const eId = fromGlobalId(eventId).id;
+    const cId = fromGlobalId(contributorId).id;
+    return Event.findByIdAndUpdate(
+      eId,
+      { $pull: { contributors: { _id: ObjectId(cId) } } },
+      { new: true },
+    ).exec();
   },
 });
 
@@ -3250,6 +3275,7 @@ const mutationType = new GraphQLObjectType({
       saveOrganization: mutationSaveOrganization,
       addOrganizationEventPersonResponsibility: mutationAddOrganizationEventPersonResponsibility,
       addEventPersonResponsibility: mutationAddEventPersonResponsibility,
+      removeEventPersonResponsibility: mutationRemoveEventPersonResponsibility,
       saveContactRoles: mutationSaveContactRoles,
       setProjectPoster: mutationSetProjectPoster,
       addProject: mutationAddProject,
