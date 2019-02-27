@@ -85,6 +85,7 @@ class EventPersonResponsibilities extends React.Component<Props, State> {
                   (responsibility) => {
                     return (
                       <TableRowColumn
+                        style={{ verticalAlign: "top" }}
                         key={`${edge.node.id}-${responsibility.id}`}
                       >
                         <EventPersonResponsibilityChooser

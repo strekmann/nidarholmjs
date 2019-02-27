@@ -2,8 +2,12 @@
 
 import type { RelayRefetchProp } from "react-relay";
 import Dialog from "material-ui/Dialog";
-import RaisedButton from "material-ui/RaisedButton";
+import Divider from "material-ui/Divider";
+import IconButton from "material-ui/IconButton";
+import { List, ListItem } from "material-ui/List";
 import Menu from "material-ui/Menu";
+import MenuItem from "material-ui/MenuItem";
+import ActionDelete from "material-ui/svg-icons/action/delete";
 import * as React from "react";
 import { createFragmentContainer, graphql } from "react-relay";
 
@@ -92,12 +96,22 @@ class EventPersonResponsibilityChooser extends React.Component<Props, State> {
     const matchingContributorsList = contributors.map((contributor) => {
       return contributor.role.id ===
         organizationEventPersonResponsibility.id ? (
-        <li key={contributor.id}>{contributor.user.name}</li>
+        <ListItem
+          key={contributor.id}
+          disabled
+          rightIconButton={
+            <IconButton>
+              <ActionDelete />
+            </IconButton>
+          }
+        >
+          {contributor.user.name}
+        </ListItem>
       ) : null;
     });
     const nextButton = users.length ? (
-      <RaisedButton
-        label={`Legg til ${users[0].name}`}
+      <MenuItem
+        primaryText={`Legg til ${users[0].name}`}
         onTouchTap={this.onChooseNext}
       />
     ) : null;
@@ -114,9 +128,12 @@ class EventPersonResponsibilityChooser extends React.Component<Props, State> {
     });
     return (
       <div>
-        <ul>{matchingContributorsList}</ul>
-        {nextButton}
-        <RaisedButton label="Legg til …" onTouchTap={this.toggleChooser} />
+        <List>{matchingContributorsList}</List>
+        <Divider />
+        <Menu>
+          {nextButton}
+          <MenuItem primaryText="Legg til …" onTouchTap={this.toggleChooser} />
+        </Menu>
         <Dialog
           title="Velg ansvarlig"
           open={this.state.chooserOpen}
