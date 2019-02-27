@@ -8,11 +8,14 @@ import { createFragmentContainer, graphql } from "react-relay";
 import AddEventPersonResponsibilityMutation from "../mutations/AddEventPersonResponsibility";
 
 import type Event from "./__generated__/EventPersonResponsibilityChooserItem_event.graphql";
+import type OrganizationEventPersonResponsibility from "./__generated__/EventPersonResponsibilityChooser_organizationEventPersonResponsibility.graphql";
 
 type Props = {
-  userId: string,
-  userName: string,
-  responsibility: string,
+  user: {
+    id: string,
+    name: string,
+  },
+  responsibility: OrganizationEventPersonResponsibility,
   relay: RelayRefetchProp,
   event: Event,
   onSelect: () => {},
@@ -24,18 +27,19 @@ class EventPersonResponsibilityChooserItem extends React.Component<
   State,
 > {
   onChoose = () => {
-    const { userId, event, responsibility, relay, onSelect } = this.props;
+    const { user, event, responsibility, relay, onSelect } = this.props;
     onSelect();
     AddEventPersonResponsibilityMutation.commit(relay.environment, {
-      userId,
+      userId: user.id,
       eventId: event.id,
-      responsibility,
+      responsibilityId: responsibility.id,
     });
   };
 
   render() {
-    const { userName } = this.props;
-    return <MenuItem primaryText={userName} onClick={this.onChoose} />;
+    const { user } = this.props;
+    console.log(this.props, "o");
+    return <MenuItem primaryText={user.name} onClick={this.onChoose} />;
   }
 }
 

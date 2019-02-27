@@ -1,5 +1,6 @@
 // @flow
 
+import { fromGlobalId } from "graphql-relay";
 import Dialog from "material-ui/Dialog";
 import RaisedButton from "material-ui/RaisedButton";
 import Menu from "material-ui/Menu";
@@ -8,10 +9,11 @@ import { createFragmentContainer, graphql } from "react-relay";
 
 import EventPersonResponsibilityChooserItem from "./EventPersonResponsibilityChooserItem";
 import type Event from "./__generated__/EventPersonResponsibilityChooser_event.graphql";
+import type OrganizationEventPersonResponsibility from "./__generated__/EventPersonResponsibilityChooser_organizationEventPersonResponsibility.graphql";
 
 type Props = {
   event: Event,
-  responsibility: string,
+  organizationEventPersonResponsibility: OrganizationEventPersonResponsibility,
   users: Array<{ id: string, name: string }>,
 };
 
@@ -33,10 +35,19 @@ class EventPersonResponsibilityChooser extends React.Component<Props, State> {
   };
 
   render() {
-    const { responsibility, users, event } = this.props;
+    const { organizationEventPersonResponsibility, users, event } = this.props;
+    const { contributors } = event;
     return (
       <div>
-        {responsibility}
+        {organizationEventPersonResponsibility.name}
+        <ul>
+          {contributors.map((contributor) => {
+            return contributor.role ===
+              fromGlobalId(organizationEventPersonResponsibility.id).id ? (
+              <li key={contributor.id}>{contributor.user.name}</li>
+            ) : null;
+          })}
+        </ul>
         <RaisedButton label="Legg til" onTouchTap={this.toggleChooser} />
         <Dialog
           title="Velg ansvarlig"
@@ -49,9 +60,8 @@ class EventPersonResponsibilityChooser extends React.Component<Props, State> {
               return (
                 <EventPersonResponsibilityChooserItem
                   key={user.id}
-                  userId={user.id}
-                  userName={user.name}
-                  responsibility={responsibility}
+                  user={user}
+                  responsibility={organizationEventPersonResponsibility}
                   event={event}
                   onSelect={this.toggleChooser}
                 />
@@ -69,11 +79,19 @@ export default createFragmentContainer(EventPersonResponsibilityChooser, {
     fragment EventPersonResponsibilityChooser_event on Event {
       id
       contributors {
+        id
         user {
           name
         }
+        role
       }
       ...EventPersonResponsibilityChooserItem_event
+    }
+  `,
+  organizationEventPersonResponsibility: graphql`
+    fragment EventPersonResponsibilityChooser_organizationEventPersonResponsibility on OrganizationEventPersonResponsibility {
+      id
+      name
     }
   `,
 });

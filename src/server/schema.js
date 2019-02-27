@@ -52,6 +52,7 @@ let fileType;
 let pageType;
 let pieceType;
 let roleType;
+let organizationEventPersonResponsibilityType;
 
 const { nodeInterface, nodeField } = nodeDefinitions(
   // FIXME: Add permission checks
@@ -87,6 +88,9 @@ const { nodeInterface, nodeField } = nodeDefinitions(
     if (type === "Role") {
       return Role.findById(id).exec();
     }
+    if (type === "OrganizationEventPersonResponsibility") {
+      return OrganizationEventPersonResponsibility.findById(id).exec();
+    }
     return null;
   },
   (obj) => {
@@ -116,6 +120,9 @@ const { nodeInterface, nodeField } = nodeDefinitions(
     }
     if (obj._type === "Role") {
       return roleType;
+    }
+    if (obj._type === "OrganizationEventPersonResponsibility") {
+      return organizationEventPersonResponsibilityType;
     }
     return null;
   },
@@ -640,13 +647,14 @@ eventType = new GraphQLObjectType({
       },
       contributors: {
         type: new GraphQLList(contributorType),
-        /*
         resolve: (event) => {
-          return event.populate("contributors.user").then((populatedEvent) => {
-            return populatedEvent;
-          });
+          return event
+            .populate("contributors.user")
+            .execPopulate()
+            .then((populatedEvent) => {
+              return populatedEvent.contributors;
+            });
         },
-        */
       },
     };
   },
@@ -960,6 +968,19 @@ pageType = new GraphQLObjectType({
 const pageConnection = connectionDefinitions({
   name: "Page",
   nodeType: pageType,
+});
+
+organizationEventPersonResponsibilityType = new GraphQLObjectType({
+  name: "OrganizationEventPersonResponsibility",
+  fields: () => {
+    return {
+      id: globalIdField("OrganizationEventPersonResponsibility"),
+      name: { type: GraphQLString },
+      last: { type: userType },
+      organization: { type: organizationType },
+    };
+  },
+  interfaces: [nodeInterface],
 });
 
 organizationType = new GraphQLObjectType({
@@ -1543,17 +1564,14 @@ organizationType = new GraphQLObjectType({
       },
     },
     organizationEventPersonResponsibilities: {
-      type: new GraphQLList(GraphQLString),
+      type: new GraphQLList(organizationEventPersonResponsibilityType),
       resolve: (_, args, { organization, viewer }) => {
         if (!isMember(organization, viewer)) {
           throw new Error("Noboby");
         }
-        return OrganizationEventPersonResponsibility.find()
-          .sort("name")
-          .exec()
-          .map((responsibility) => {
-            return responsibility.name;
-          });
+        return OrganizationEventPersonResponsibility.find({
+          organization: organization.id,
+        }).sort("name");
       },
     },
   },
@@ -2190,8 +2208,8 @@ const mutationAddEventPersonResponsibility = mutationWithClientMutationId({
     userId: {
       type: GraphQLID,
     },
-    responsibility: {
-      type: GraphQLString,
+    responsibilityId: {
+      type: GraphQLID,
     },
   },
   outputFields: {
@@ -2203,7 +2221,7 @@ const mutationAddEventPersonResponsibility = mutationWithClientMutationId({
     },
   },
   mutateAndGetPayload: (
-    { eventId, userId, responsibility },
+    { eventId, userId, responsibilityId },
     { viewer, organization },
   ) => {
     if (!admin(organization, viewer)) {
@@ -2211,8 +2229,9 @@ const mutationAddEventPersonResponsibility = mutationWithClientMutationId({
     }
     const eId = fromGlobalId(eventId).id;
     const uId = fromGlobalId(userId).id;
+    const rId = fromGlobalId(responsibilityId).id;
     return Event.findById(eId).then((event) => {
-      event.contributors.addToSet({ user: uId, role: responsibility });
+      event.contributors.addToSet({ user: uId, role: rId });
       return event.save().then((savedEvent) => {
         return savedEvent;
       });

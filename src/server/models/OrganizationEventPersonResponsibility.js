@@ -1,20 +1,27 @@
 // @flow
 
 import mongoose from "mongoose";
+import uuid from "node-uuid";
 
 import schemaOptions from "./schemaOptions";
 
-const OrganizationEventPersonResponsibility = new mongoose.Schema({
+const OrganizationEventPersonResponsibilitySchema = new mongoose.Schema({
+  _id: {
+    type: String,
+    required: true,
+    default: uuid.v4,
+  },
   name: { type: String, trim: true, required: true },
+  last: { type: String, ref: "User" },
   organization: { type: String, ref: "Organization", index: true },
 });
 
-OrganizationEventPersonResponsibility.set("toObject", schemaOptions);
-OrganizationEventPersonResponsibility.set("toJSON", schemaOptions);
-OrganizationEventPersonResponsibility.virtual("_type").get(() => {
+OrganizationEventPersonResponsibilitySchema.set("toObject", schemaOptions);
+OrganizationEventPersonResponsibilitySchema.set("toJSON", schemaOptions);
+OrganizationEventPersonResponsibilitySchema.virtual("_type").get(() => {
   return "OrganizationEventPersonResponsibility";
 });
 export default mongoose.model(
   "OrganizationEventPersonResponsibility",
-  OrganizationEventPersonResponsibility,
+  OrganizationEventPersonResponsibilitySchema,
 );

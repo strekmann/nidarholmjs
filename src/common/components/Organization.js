@@ -14,6 +14,7 @@ import AddOrganizationEventPersonResponsibilityMutation from "../mutations/AddOr
 import SaveOrganizationMutation from "../mutations/SaveOrganization";
 import theme from "../theme";
 
+import type EventPersonResponsibilitiesOrganization from "./__generated__/EventPersonResponsibilities_organization.graphql";
 import FrontpageSummaries from "./FrontpageSummaries";
 
 type Props = {
@@ -34,7 +35,7 @@ type Props = {
       slug: string,
       title: string,
     }>,
-    organizationEventPersonResponsibilities: string[],
+    organizationEventPersonResponsibilities: EventPersonResponsibilitiesOrganization,
   },
   relay: {
     environment: {},
@@ -143,7 +144,7 @@ class Organization extends React.Component<Props, State> {
             </p>
             <ul>
               {personResponsibilities.map((responsibility) => {
-                return <li key="responsibility">{responsibility}</li>;
+                return <li key="responsibility">{responsibility.name}</li>;
               })}
             </ul>
             <form onSubmit={this.addEventPersonResponsibility}>
@@ -175,7 +176,10 @@ export default createFragmentContainer(Organization, {
         title
         slug
       }
-      organizationEventPersonResponsibilities
+      organizationEventPersonResponsibilities {
+        id
+        name
+      }
       pages(first: 100) {
         edges {
           cursor

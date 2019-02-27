@@ -10,10 +10,7 @@ type Props = {
   organization: EventPersonResponsibilitiesOrganization,
 };
 
-type State = {
-  selectedEvent: ?string,
-  selectedResponsibility: ?string,
-};
+type State = {};
 
 class EventPersonResponsibilities extends React.Component<Props, State> {
   flattenMemberList = (groups) => {
@@ -49,7 +46,7 @@ class EventPersonResponsibilities extends React.Component<Props, State> {
             <tr>
               <th />
               {organizationEventPersonResponsibilities.map((responsibility) => {
-                return <th key={responsibility}>{responsibility}</th>;
+                return <th key={responsibility.id}>{responsibility.name}</th>;
               })}
             </tr>
           </thead>
@@ -61,10 +58,11 @@ class EventPersonResponsibilities extends React.Component<Props, State> {
                   {organizationEventPersonResponsibilities.map(
                     (responsibility) => {
                       return (
-                        <td key={`${edge.node.id}-${responsibility}`}>
+                        <td key={`${edge.node.id}-${responsibility.id}`}>
                           <EventPersonResponsibilityChooser
-                            responsibility={responsibility}
-                            eventId={edge.node.id}
+                            organizationEventPersonResponsibility={
+                              responsibility
+                            }
                             users={users}
                             event={edge.node}
                           />
@@ -86,7 +84,14 @@ export default createFragmentContainer(EventPersonResponsibilities, {
   organization: graphql`
     fragment EventPersonResponsibilities_organization on Organization
       @argumentDefinitions(showItems: { type: "Int", defaultValue: 20 }) {
-      organizationEventPersonResponsibilities
+      organizationEventPersonResponsibilities {
+        id
+        name
+        last {
+          name
+        }
+        ...EventPersonResponsibilityChooser_organizationEventPersonResponsibility
+      }
       instrumentGroups {
         members {
           user(active: true) {
@@ -98,8 +103,9 @@ export default createFragmentContainer(EventPersonResponsibilities, {
       events(first: $showItems) {
         edges {
           node {
-            ...EventPersonResponsibilityChooser_event
+            id
             title
+            ...EventPersonResponsibilityChooser_event
           }
         }
         pageInfo {
