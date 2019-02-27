@@ -596,7 +596,7 @@ const contributorType = new GraphQLObjectType({
     return {
       id: globalIdField("Contributor"),
       user: { type: userType },
-      role: { type: GraphQLString },
+      role: { type: organizationEventPersonResponsibilityType },
     };
   },
   interfaces: [nodeInterface],
@@ -650,6 +650,10 @@ eventType = new GraphQLObjectType({
         resolve: (event) => {
           return event
             .populate("contributors.user")
+            .populate({
+              path: "contributors.role",
+              model: "OrganizationEventPersonResponsibility",
+            })
             .execPopulate()
             .then((populatedEvent) => {
               return populatedEvent.contributors;
@@ -976,7 +980,12 @@ organizationEventPersonResponsibilityType = new GraphQLObjectType({
     return {
       id: globalIdField("OrganizationEventPersonResponsibility"),
       name: { type: GraphQLString },
-      last: { type: userType },
+      last: {
+        type: userType,
+        resolve: (oepr) => {
+          return User.findById(oepr.last).exec();
+        },
+      },
       organization: { type: organizationType },
     };
   },
@@ -2230,9 +2239,17 @@ const mutationAddEventPersonResponsibility = mutationWithClientMutationId({
     const eId = fromGlobalId(eventId).id;
     const uId = fromGlobalId(userId).id;
     const rId = fromGlobalId(responsibilityId).id;
+    console.log(eId, rId, rId);
     return Event.findById(eId).then((event) => {
       event.contributors.addToSet({ user: uId, role: rId });
       return event.save().then((savedEvent) => {
+        OrganizationEventPersonResponsibility.findById(rId)
+          .exec()
+          .then((organizationEventPersonResponsibility) => {
+            console.log("SS", organizationEventPersonResponsibility);
+            organizationEventPersonResponsibility.last = uId;
+            organizationEventPersonResponsibility.save(); // Don't care about save status
+          });
         return savedEvent;
       });
     });

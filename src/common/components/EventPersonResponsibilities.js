@@ -1,5 +1,14 @@
 // @flow
 
+import { List, ListItem } from "material-ui/List";
+import {
+  Table,
+  TableBody,
+  TableHeader,
+  TableHeaderColumn,
+  TableRow,
+  TableRowColumn,
+} from "material-ui/Table";
 import * as React from "react";
 import { createFragmentContainer, graphql } from "react-relay";
 
@@ -40,42 +49,58 @@ class EventPersonResponsibilities extends React.Component<Props, State> {
     } = this.props.organization;
     const users = this.flattenMemberList(instrumentGroups);
     return (
-      <div>
-        <table>
-          <thead>
-            <tr>
-              <th />
-              {organizationEventPersonResponsibilities.map((responsibility) => {
-                return <th key={responsibility.id}>{responsibility.name}</th>;
-              })}
-            </tr>
-          </thead>
-          <tbody>
-            {events.edges.map((edge) => {
+      <Table>
+        <TableHeader displaySelectAll={false}>
+          <TableRow>
+            <TableHeaderColumn />
+            {organizationEventPersonResponsibilities.map((responsibility) => {
               return (
-                <tr key={edge.node.id}>
-                  <th>{edge.node.title}</th>
-                  {organizationEventPersonResponsibilities.map(
-                    (responsibility) => {
-                      return (
-                        <td key={`${edge.node.id}-${responsibility.id}`}>
-                          <EventPersonResponsibilityChooser
-                            organizationEventPersonResponsibility={
-                              responsibility
-                            }
-                            users={users}
-                            event={edge.node}
-                          />
-                        </td>
-                      );
-                    },
-                  )}
-                </tr>
+                <TableHeaderColumn key={responsibility.id}>
+                  {responsibility.name}
+                </TableHeaderColumn>
               );
             })}
-          </tbody>
-        </table>
-      </div>
+          </TableRow>
+        </TableHeader>
+        <TableBody displayRowCheckbox={false}>
+          {events.edges.map((edge) => {
+            return (
+              <TableRow key={edge.node.id} selectable={false}>
+                <TableRowColumn>
+                  <h2>{edge.node.title}</h2>
+                  <List>
+                    {edge.node.contributors.map((contributor) => {
+                      return (
+                        <ListItem
+                          disabled
+                          key={`${contributor.user.id}-${contributor.role.id}`}
+                          primaryText={contributor.user.name}
+                          secondaryText={contributor.role.name}
+                        />
+                      );
+                    })}
+                  </List>
+                </TableRowColumn>
+                {organizationEventPersonResponsibilities.map(
+                  (responsibility) => {
+                    return (
+                      <TableRowColumn
+                        key={`${edge.node.id}-${responsibility.id}`}
+                      >
+                        <EventPersonResponsibilityChooser
+                          organizationEventPersonResponsibility={responsibility}
+                          users={users}
+                          event={edge.node}
+                        />
+                      </TableRowColumn>
+                    );
+                  },
+                )}
+              </TableRow>
+            );
+          })}
+        </TableBody>
+      </Table>
     );
   }
 }
@@ -88,6 +113,7 @@ export default createFragmentContainer(EventPersonResponsibilities, {
         id
         name
         last {
+          id
           name
         }
         ...EventPersonResponsibilityChooser_organizationEventPersonResponsibility
@@ -105,6 +131,16 @@ export default createFragmentContainer(EventPersonResponsibilities, {
           node {
             id
             title
+            contributors {
+              user {
+                id
+                name
+              }
+              role {
+                id
+                name
+              }
+            }
             ...EventPersonResponsibilityChooser_event
           }
         }

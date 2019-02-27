@@ -10,7 +10,9 @@ const mutation = graphql`
           user {
             name
           }
-          role
+          role {
+            name
+          }
         }
       }
     }
