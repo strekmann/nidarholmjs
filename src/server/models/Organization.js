@@ -9,7 +9,6 @@ const OrganizationSchema = new mongoose.Schema({
     lowercase: true,
     trim: true,
     required: true,
-    unique: true,
   },
   name: { type: String },
   webdomain: { type: String, trim: true },

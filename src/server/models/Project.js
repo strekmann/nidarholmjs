@@ -3,7 +3,7 @@ import mongoose from "mongoose";
 import schemaOptions from "./schemaOptions";
 
 const ProjectSchema = new mongoose.Schema({
-  // _id: {type: String, lowercase: true, required: true, unique: true, trim: true},
+  // _id: {type: String, lowercase: true, required: true, : true},
   tag: { type: String, trim: true, required: true },
   title: { type: String, required: true },
   public_mdtext: { type: String },

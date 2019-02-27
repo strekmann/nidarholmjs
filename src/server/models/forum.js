@@ -19,7 +19,7 @@ const ForumReplySchema = new mongoose.Schema({
 });
 
 const ForumPostSchema = new mongoose.Schema({
-  _id: { type: String, required: true, unique: true },
+  _id: { type: String, required: true },
   title: { type: String, trim: true, required: true },
   created: { type: Date, default: Date.now },
   creator: { type: String, ref: "User" },
