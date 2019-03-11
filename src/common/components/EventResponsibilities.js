@@ -12,16 +12,17 @@ import {
 import * as React from "react";
 import { createFragmentContainer, graphql } from "react-relay";
 
+import EventGroupResponsibilityChooser from "./EventGroupResponsibilityChooser";
 import EventPersonResponsibilityChooser from "./EventPersonResponsibilityChooser";
-import EventPersonResponsibilitiesOrganization from "./__generated__/EventPersonResponsibilities_organization.graphql";
+import Organization from "./__generated__/EventResponsibilities_organization.graphql";
 
 type Props = {
-  organization: EventPersonResponsibilitiesOrganization,
+  organization: Organization,
 };
 
 type State = {};
 
-class EventPersonResponsibilities extends React.Component<Props, State> {
+class EventResponsibilities extends React.Component<Props, State> {
   flattenMemberList = (groups) => {
     let users = [];
     groups.forEach((group) => {
@@ -46,14 +47,22 @@ class EventPersonResponsibilities extends React.Component<Props, State> {
       events,
       instrumentGroups,
       organizationEventPersonResponsibilities,
+      organizationEventGroupResponsibilities,
     } = this.props.organization;
     const users = this.flattenMemberList(instrumentGroups);
     return (
       <Table>
-        <TableHeader displaySelectAll={false}>
+        <TableHeader displaySelectAll={false} adjustForCheckbox={false}>
           <TableRow>
             <TableHeaderColumn />
             {organizationEventPersonResponsibilities.map((responsibility) => {
+              return (
+                <TableHeaderColumn key={responsibility.id}>
+                  {responsibility.name}
+                </TableHeaderColumn>
+              );
+            })}
+            {organizationEventGroupResponsibilities.map((responsibility) => {
               return (
                 <TableHeaderColumn key={responsibility.id}>
                   {responsibility.name}
@@ -97,6 +106,22 @@ class EventPersonResponsibilities extends React.Component<Props, State> {
                     );
                   },
                 )}
+                {organizationEventGroupResponsibilities.map(
+                  (responsibility) => {
+                    return (
+                      <TableRowColumn
+                        style={{ verticalAlign: "top" }}
+                        key={`${edge.node.id}-${responsibility.id}`}
+                      >
+                        <EventGroupResponsibilityChooser
+                          organizationEventGroupResponsibility={responsibility}
+                          groups={instrumentGroups}
+                          event={edge.node}
+                        />
+                      </TableRowColumn>
+                    );
+                  },
+                )}
               </TableRow>
             );
           })}
@@ -106,10 +131,19 @@ class EventPersonResponsibilities extends React.Component<Props, State> {
   }
 }
 
-export default createFragmentContainer(EventPersonResponsibilities, {
+export default createFragmentContainer(EventResponsibilities, {
   organization: graphql`
-    fragment EventPersonResponsibilities_organization on Organization
+    fragment EventResponsibilities_organization on Organization
       @argumentDefinitions(showItems: { type: "Int", defaultValue: 20 }) {
+      organizationEventGroupResponsibilities {
+        id
+        name
+        last {
+          id
+          name
+        }
+        ...EventGroupResponsibilityChooser_organizationEventGroupResponsibility
+      }
       organizationEventPersonResponsibilities {
         id
         name
@@ -120,6 +154,8 @@ export default createFragmentContainer(EventPersonResponsibilities, {
         ...EventPersonResponsibilityChooser_organizationEventPersonResponsibility
       }
       instrumentGroups {
+        id
+        name
         members {
           user(active: true) {
             id
@@ -143,6 +179,7 @@ export default createFragmentContainer(EventPersonResponsibilities, {
               }
             }
             ...EventPersonResponsibilityChooser_event
+            ...EventGroupResponsibilityChooser_event
           }
         }
         pageInfo {

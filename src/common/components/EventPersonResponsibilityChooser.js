@@ -14,7 +14,7 @@ import RemoveEventPersonResponsibilityMutation from "../mutations/RemoveEventPer
 
 import type Event from "./__generated__/EventPersonResponsibilityChooser_event.graphql";
 import type OrganizationEventPersonResponsibility from "./__generated__/EventPersonResponsibilityChooser_organizationEventPersonResponsibility.graphql";
-import EventPersonResponsibilityChooserItem from "./EventPersonResponsibilityChooserItem";
+import ChooserItem from "./ChooserItem";
 import RemoveIconButton from "./RemoveIconButton";
 
 type Props = {
@@ -126,9 +126,9 @@ class EventPersonResponsibilityChooser extends React.Component<Props, State> {
     ) : null;
     const chooserItems = users.map((user) => {
       return (
-        <EventPersonResponsibilityChooserItem
+        <ChooserItem
           key={user.id}
-          user={user}
+          item={user}
           responsibility={organizationEventPersonResponsibility}
           event={event}
           onChoose={this.onChoose}

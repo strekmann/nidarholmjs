@@ -11,10 +11,12 @@ import * as React from "react";
 import { createFragmentContainer, graphql } from "react-relay";
 
 import AddOrganizationEventPersonResponsibilityMutation from "../mutations/AddOrganizationEventPersonResponsibility";
+import AddOrganizationEventGroupResponsibilityMutation from "../mutations/AddOrganizationEventGroupResponsibility";
 import SaveOrganizationMutation from "../mutations/SaveOrganization";
 import theme from "../theme";
 
 import type EventPersonResponsibilitiesOrganization from "./__generated__/EventPersonResponsibilities_organization.graphql";
+import type EventGroupResponsibilitiesOrganization from "./__generated__/EventGroupResponsibilities_organization.graphql";
 import FrontpageSummaries from "./FrontpageSummaries";
 
 type Props = {
@@ -36,6 +38,7 @@ type Props = {
       title: string,
     }>,
     organizationEventPersonResponsibilities: EventPersonResponsibilitiesOrganization,
+    organizationEventGroupResponsibilities: EventGroupResponsibilitiesOrganization,
   },
   relay: {
     environment: {},
@@ -50,6 +53,7 @@ type State = {
   }>,
   tab: string,
   eventPersonResponsibilityName: string,
+  eventGroupResponsibilityName: string,
 };
 
 class Organization extends React.Component<Props, State> {
@@ -66,6 +70,7 @@ class Organization extends React.Component<Props, State> {
     summaries: this.props.organization.summaries,
     tab: "frontpage",
     eventPersonResponsibilityName: "",
+    eventGroupResponsibilityName: "",
   };
 
   getChildContext() {
@@ -82,6 +87,10 @@ class Organization extends React.Component<Props, State> {
 
   onChangePersonResponsibility = (event, eventPersonResponsibilityName) => {
     this.setState({ eventPersonResponsibilityName });
+  };
+
+  onChangeGroupResponsibility = (event, eventGroupResponsibilityName) => {
+    this.setState({ eventGroupResponsibilityName });
   };
 
   onAdd = (page) => {
@@ -118,9 +127,23 @@ class Organization extends React.Component<Props, State> {
     );
   };
 
+  addEventGroupResponsibility = (event) => {
+    event.preventDefault();
+    AddOrganizationEventGroupResponsibilityMutation.commit(
+      this.props.relay.environment,
+      {
+        name: this.state.eventGroupResponsibilityName,
+      },
+      () => {
+        this.setState({ eventGroupResponsibilityName: "" });
+      },
+    );
+  };
+
   render() {
     const org = this.props.organization;
     const personResponsibilities = org.organizationEventPersonResponsibilities;
+    const groupResponsibilities = org.organizationEventGroupResponsibilities;
     return (
       <Paper className="row">
         <h1>Innstillinger</h1>
@@ -144,7 +167,7 @@ class Organization extends React.Component<Props, State> {
             </p>
             <ul>
               {personResponsibilities.map((responsibility) => {
-                return <li key="responsibility">{responsibility.name}</li>;
+                return <li key={responsibility.id}>{responsibility.name}</li>;
               })}
             </ul>
             <form onSubmit={this.addEventPersonResponsibility}>
@@ -160,6 +183,19 @@ class Organization extends React.Component<Props, State> {
               Her defineres gruppeansvar som kan tilordnes aktiviteter i lister.
               For eksempel sjauing.
             </p>
+            <ul>
+              {groupResponsibilities.map((responsibility) => {
+                return <li key={responsibility.id}>{responsibility.name}</li>;
+              })}
+            </ul>
+            <form onSubmit={this.addEventGroupResponsibility}>
+              <TextField
+                floatingLabelText="Navn"
+                value={this.state.eventGroupResponsibilityName}
+                onChange={this.onChangeGroupResponsibility}
+              />
+              <RaisedButton label="Lagre" type="submit" />
+            </form>
           </Tab>
         </Tabs>
       </Paper>
@@ -177,6 +213,10 @@ export default createFragmentContainer(Organization, {
         slug
       }
       organizationEventPersonResponsibilities {
+        id
+        name
+      }
+      organizationEventGroupResponsibilities {
         id
         name
       }

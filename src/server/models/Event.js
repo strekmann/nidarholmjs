@@ -40,6 +40,12 @@ const EventSchema = new mongoose.Schema({
       role: { type: String },
     },
   ],
+  contributorGroups: [
+    {
+      group: { type: String, ref: "Group" },
+      role: { type: String },
+    },
+  ],
   mdtext: { type: String },
   highlighted: { type: Boolean }, // no better name for concert/public event/competition
 });
