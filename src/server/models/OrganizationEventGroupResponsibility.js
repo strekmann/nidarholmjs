@@ -13,6 +13,9 @@ const OrganizationEventGroupResponsibilitySchema = new mongoose.Schema({
   },
   name: { type: String, trim: true, required: true },
   last: { type: String, ref: "Group" },
+  reminderDaysBefore: { type: Number },
+  reminderAtHour: { type: Number },
+  reminderText: { type: String },
   organization: { type: String, ref: "Organization", index: true },
 });
 

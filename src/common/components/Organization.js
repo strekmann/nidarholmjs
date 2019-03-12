@@ -15,8 +15,6 @@ import AddOrganizationEventGroupResponsibilityMutation from "../mutations/AddOrg
 import SaveOrganizationMutation from "../mutations/SaveOrganization";
 import theme from "../theme";
 
-import type EventPersonResponsibilitiesOrganization from "./__generated__/EventPersonResponsibilities_organization.graphql";
-import type EventGroupResponsibilitiesOrganization from "./__generated__/EventGroupResponsibilities_organization.graphql";
 import FrontpageSummaries from "./FrontpageSummaries";
 
 type Props = {
@@ -37,8 +35,20 @@ type Props = {
       slug: string,
       title: string,
     }>,
-    organizationEventPersonResponsibilities: EventPersonResponsibilitiesOrganization,
-    organizationEventGroupResponsibilities: EventGroupResponsibilitiesOrganization,
+    organizationEventPersonResponsibilities: Array<{
+      id: string,
+      name: string,
+      reminderDaysBefore: number,
+      reminderAtHour: number,
+      reminderText: string,
+    }>,
+    organizationEventGroupResponsibilities: Array<{
+      id: string,
+      name: string,
+      reminderDaysBefore: number,
+      reminderAtHour: number,
+      reminderText: string,
+    }>,
   },
   relay: {
     environment: {},
@@ -53,7 +63,13 @@ type State = {
   }>,
   tab: string,
   eventPersonResponsibilityName: string,
+  eventPersonResponsibilityReminderText: string,
+  eventPersonResponsibilityReminderDaysBefore: number,
+  eventPersonResponsibilityReminderAtHour: number,
   eventGroupResponsibilityName: string,
+  eventGroupResponsibilityReminderText: string,
+  eventGroupResponsibilityReminderDaysBefore: number,
+  eventGroupResponsibilityReminderAtHour: number,
 };
 
 class Organization extends React.Component<Props, State> {
@@ -70,7 +86,13 @@ class Organization extends React.Component<Props, State> {
     summaries: this.props.organization.summaries,
     tab: "frontpage",
     eventPersonResponsibilityName: "",
+    eventPersonResponsibilityReminderText: "",
+    eventPersonResponsibilityReminderDaysBefore: 0,
+    eventPersonResponsibilityReminderAtHour: 0,
     eventGroupResponsibilityName: "",
+    eventGroupResponsibilityReminderText: "",
+    eventGroupResponsibilityReminderDaysBefore: 0,
+    eventGroupResponsibilityReminderAtHour: 0,
   };
 
   getChildContext() {
@@ -85,12 +107,54 @@ class Organization extends React.Component<Props, State> {
     this.setState({ tab });
   };
 
-  onChangePersonResponsibility = (event, eventPersonResponsibilityName) => {
+  onChangePersonResponsibilityName = (event, eventPersonResponsibilityName) => {
     this.setState({ eventPersonResponsibilityName });
   };
 
-  onChangeGroupResponsibility = (event, eventGroupResponsibilityName) => {
+  onChangePersonResponsibilityReminderText = (
+    event,
+    eventPersonResponsibilityReminderText,
+  ) => {
+    this.setState({ eventPersonResponsibilityReminderText });
+  };
+
+  onChangePersonResponsibilityReminderAtHour = (
+    event,
+    eventPersonResponsibilityReminderAtHour,
+  ) => {
+    this.setState({ eventPersonResponsibilityReminderAtHour });
+  };
+
+  onChangePersonResponsibilityReminderDaysBefore = (
+    event,
+    eventPersonResponsibilityReminderDaysBefore,
+  ) => {
+    this.setState({ eventPersonResponsibilityReminderDaysBefore });
+  };
+
+  onChangeGroupResponsibilityName = (event, eventGroupResponsibilityName) => {
     this.setState({ eventGroupResponsibilityName });
+  };
+
+  onChangeGroupResponsibilityReminderText = (
+    event,
+    eventGroupResponsibilityReminderText,
+  ) => {
+    this.setState({ eventGroupResponsibilityReminderText });
+  };
+
+  onChangeGroupResponsibilityReminderAtHour = (
+    event,
+    eventGroupResponsibilityReminderAtHour,
+  ) => {
+    this.setState({ eventGroupResponsibilityReminderAtHour });
+  };
+
+  onChangeGroupResponsibilityReminderDaysBefore = (
+    event,
+    eventGroupResponsibilityReminderDaysBefore,
+  ) => {
+    this.setState({ eventGroupResponsibilityReminderDaysBefore });
   };
 
   onAdd = (page) => {
@@ -120,9 +184,18 @@ class Organization extends React.Component<Props, State> {
       this.props.relay.environment,
       {
         name: this.state.eventPersonResponsibilityName,
+        reminderText: this.state.eventPersonResponsibilityReminderText,
+        reminderAtHour: this.state.eventPersonResponsibilityReminderAtHour,
+        reminderDaysBefore: this.state
+          .eventPersonResponsibilityReminderDaysBefore,
       },
       () => {
-        this.setState({ eventPersonResponsibilityName: "" });
+        this.setState({
+          eventPersonResponsibilityName: "",
+          eventPersonResponsibilityReminderText: "",
+          eventPersonResponsibilityReminderAtHour: 0,
+          eventPersonResponsibilityReminderDaysBefore: 0,
+        });
       },
     );
   };
@@ -133,9 +206,18 @@ class Organization extends React.Component<Props, State> {
       this.props.relay.environment,
       {
         name: this.state.eventGroupResponsibilityName,
+        reminderText: this.state.eventGroupResponsibilityReminderText,
+        reminderAtHour: this.state.eventGroupResponsibilityReminderAtHour,
+        reminderDaysBefore: this.state
+          .eventGroupResponsibilityReminderDaysBefore,
       },
       () => {
-        this.setState({ eventGroupResponsibilityName: "" });
+        this.setState({
+          eventGroupResponsibilityName: "",
+          eventGroupResponsibilityReminderText: "",
+          eventGroupResponsibilityReminderAtHour: 0,
+          eventGroupResponsibilityReminderDaysBefore: 0,
+        });
       },
     );
   };
@@ -174,7 +256,22 @@ class Organization extends React.Component<Props, State> {
               <TextField
                 floatingLabelText="Navn"
                 value={this.state.eventPersonResponsibilityName}
-                onChange={this.onChangePersonResponsibility}
+                onChange={this.onChangePersonResponsibilityName}
+              />
+              <TextField
+                floatingLabelText="Epostinnhold"
+                value={this.state.eventPersonResponsibilityReminderText}
+                onChange={this.onChangePersonResponsibilityReminderText}
+              />
+              <TextField
+                floatingLabelText="Sendes klokka"
+                value={this.state.eventPersonResponsibilityReminderAtHour}
+                onChange={this.onChangePersonResponsibilityReminderAtHour}
+              />
+              <TextField
+                floatingLabelText="Dager i forveien"
+                value={this.state.eventPersonResponsibilityReminderDaysBefore}
+                onChange={this.onChangePersonResponsibilityReminderDaysBefore}
               />
               <RaisedButton label="Lagre" type="submit" />
             </form>
@@ -192,7 +289,22 @@ class Organization extends React.Component<Props, State> {
               <TextField
                 floatingLabelText="Navn"
                 value={this.state.eventGroupResponsibilityName}
-                onChange={this.onChangeGroupResponsibility}
+                onChange={this.onChangeGroupResponsibilityName}
+              />
+              <TextField
+                floatingLabelText="Epostinnhold"
+                value={this.state.eventGroupResponsibilityReminderText}
+                onChange={this.onChangeGroupResponsibilityReminderText}
+              />
+              <TextField
+                floatingLabelText="Sendes klokka"
+                value={this.state.eventGroupResponsibilityReminderAtHour}
+                onChange={this.onChangeGroupResponsibilityReminderAtHour}
+              />
+              <TextField
+                floatingLabelText="Dager i forveien"
+                value={this.state.eventGroupResponsibilityReminderDaysBefore}
+                onChange={this.onChangeGroupResponsibilityReminderDaysBefore}
               />
               <RaisedButton label="Lagre" type="submit" />
             </form>
@@ -215,10 +327,16 @@ export default createFragmentContainer(Organization, {
       organizationEventPersonResponsibilities {
         id
         name
+        reminderDaysBefore
+        reminderAtHour
+        reminderText
       }
       organizationEventGroupResponsibilities {
         id
         name
+        reminderDaysBefore
+        reminderAtHour
+        reminderText
       }
       pages(first: 100) {
         edges {

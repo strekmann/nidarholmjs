@@ -1,5 +1,3 @@
-/* eslint "no-console": 0 */
-
 import config from "config";
 import {
   GraphQLBoolean,
@@ -23,7 +21,6 @@ import {
   // toGlobalId,
 } from "graphql-relay";
 import moment from "moment";
-import nodemailer from "nodemailer";
 import uuid from "node-uuid";
 import ObjectId from "mongoose/lib/types/objectid";
 
@@ -36,13 +33,13 @@ import Organization from "./models/Organization";
 import OrganizationEventPersonResponsibility from "./models/OrganizationEventPersonResponsibility";
 import OrganizationEventGroupResponsibility from "./models/OrganizationEventGroupResponsibility";
 import Page from "./models/Page";
-import PasswordCode from "./models/PasswordCode";
 import Piece from "./models/Piece";
 import Project from "./models/Project";
 import Role from "./models/Role";
 import User from "./models/User";
 import insertFile from "./lib/insertFile";
 import { buildPermissionObject } from "./lib/permissions";
+import { sendContactEmail, sendPasswordEmail } from "./emailTasks";
 
 let userType;
 let groupType;
@@ -205,35 +202,6 @@ function authenticate(query, viewer, options = {}) {
     query.select(select);
   }
   return query;
-}
-
-function sendContactEmail({ name, email, text, organization }) {
-  if (config && config.auth && config.auth.smtp && config.auth.smtp.host) {
-    const transporter = nodemailer.createTransport(config.auth.smtp);
-    const data = {
-      from: `${name} <${email}>`,
-      to: organization.email,
-      subject: `Melding fra ${name} via nidarholm.no`,
-      text: text.replace("\n", "\r\n"),
-    };
-    transporter.sendMail(data, (emailErr, emailInfo) => {
-      console.info("EMAIL", emailErr, emailInfo, data);
-      if (!emailErr) {
-        const receipt = {
-          from: organization.email,
-          to: `${name} <${email}>`,
-          subject: "Melding sendt",
-          text:
-            "Takk!\r\n\r\nMeldingen du sendte til styret via nidarholm.no har blitt mottatt.",
-        };
-        transporter.sendMail(receipt, (receiptErr, receiptInfo) => {
-          console.info("RECEIPT:", receiptErr, receiptInfo, receipt);
-        });
-      }
-    });
-  } else {
-    console.info("EMAIL", name, email, text);
-  }
 }
 
 userType = new GraphQLObjectType({
@@ -1014,6 +982,9 @@ organizationEventPersonResponsibilityType = new GraphQLObjectType({
     return {
       id: globalIdField("OrganizationEventPersonResponsibility"),
       name: { type: GraphQLString },
+      reminderText: { type: GraphQLString },
+      reminderDaysBefore: { type: GraphQLInt },
+      reminderAtHour: { type: GraphQLInt },
       last: {
         type: userType,
         resolve: (oepr) => {
@@ -1032,6 +1003,9 @@ organizationEventGroupResponsibilityType = new GraphQLObjectType({
     return {
       id: globalIdField("OrganizationEventGroupResponsibility"),
       name: { type: GraphQLString },
+      reminderText: { type: GraphQLString },
+      reminderDaysBefore: { type: GraphQLInt },
+      reminderAtHour: { type: GraphQLInt },
       last: {
         type: groupType,
         resolve: (oegr) => {
@@ -2249,6 +2223,15 @@ const mutationAddOrganizationEventPersonResponsibility = mutationWithClientMutat
       name: {
         type: GraphQLString,
       },
+      reminderText: {
+        type: GraphQLString,
+      },
+      reminderAtHour: {
+        type: GraphQLInt,
+      },
+      reminderDaysBefore: {
+        type: GraphQLInt,
+      },
     },
     outputFields: {
       organization: {
@@ -2258,12 +2241,18 @@ const mutationAddOrganizationEventPersonResponsibility = mutationWithClientMutat
         },
       },
     },
-    mutateAndGetPayload: ({ name }, { viewer, organization }) => {
+    mutateAndGetPayload: (
+      { name, reminderText, reminderAtHour, reminderDaysBefore },
+      { viewer, organization },
+    ) => {
       if (!admin(organization, viewer)) {
         return null;
       }
       OrganizationEventPersonResponsibility.create({
         name,
+        reminderText,
+        reminderAtHour,
+        reminderDaysBefore,
         organization: organization.id,
       });
       return Organization.findById(organization.id);
@@ -2278,6 +2267,15 @@ const mutationAddOrganizationEventGroupResponsibility = mutationWithClientMutati
       name: {
         type: GraphQLString,
       },
+      reminderText: {
+        type: GraphQLString,
+      },
+      reminderAtHour: {
+        type: GraphQLInt,
+      },
+      reminderDaysBefore: {
+        type: GraphQLInt,
+      },
     },
     outputFields: {
       organization: {
@@ -2287,12 +2285,18 @@ const mutationAddOrganizationEventGroupResponsibility = mutationWithClientMutati
         },
       },
     },
-    mutateAndGetPayload: ({ name }, { viewer, organization }) => {
+    mutateAndGetPayload: (
+      { name, reminderText, reminderAtHour, reminderDaysBefore },
+      { viewer, organization },
+    ) => {
       if (!admin(organization, viewer)) {
         return null;
       }
       OrganizationEventGroupResponsibility.create({
         name,
+        reminderText,
+        reminderAtHour,
+        reminderDaysBefore,
         organization: organization.id,
       });
       return Organization.findById(organization.id);
@@ -2337,7 +2341,6 @@ const mutationAddEventPersonResponsibility = mutationWithClientMutationId({
         OrganizationEventPersonResponsibility.findById(rId)
           .exec()
           .then((organizationEventPersonResponsibility) => {
-            console.log("SS", organizationEventPersonResponsibility);
             organizationEventPersonResponsibility.last = uId;
             organizationEventPersonResponsibility.save(); // Don't care about save status
           });
@@ -2654,7 +2657,6 @@ const mutationAddProject = mutationWithClientMutationId({
     { title, tag, privateMdtext, publicMdtext, start, end, permissions },
     { viewer },
   ) => {
-    console.log("Add project", title, tag, start, end, permissions, viewer._id);
     if (!viewer) {
       throw new Error("Nobody!");
     }
@@ -2804,33 +2806,7 @@ const mutationSendReset = mutationWithClientMutationId({
       .exec()
       .then((user) => {
         if (user) {
-          const code = new PasswordCode();
-          code.user = user._id;
-          return code.save().then((newCode) => {
-            const message = `Hei ${
-              user.name
-            }\r\n\r\nDet kan se ut som du holder på å sette nytt passord. Hvis du ikke prøver på dette, ber vi deg se bort fra denne eposten. For å sette nytt passord, må du gå til lenka:\r\n${
-              config.site.protocol
-            }://${config.site.domain}/login/reset/${newCode._id}`;
-            if (config.auth && config.auth.smtp && config.auth.smtp.host) {
-              const transporter = nodemailer.createTransport(config.auth.smtp);
-              const mailOptions = {
-                from: config.auth.smtp.noreplyAddress,
-                to: `${user.name} <${user.email}>`,
-                subject: "Nytt passord",
-                text: message,
-              };
-              return transporter.sendMail(mailOptions).then((info) => {
-                console.info("Email info:", info);
-                return organization;
-              });
-            }
-            console.info(
-              "No email config, this was the intended message:\n",
-              message,
-            );
-            return organization;
-          });
+          sendPasswordEmail(organization, user);
         }
         return organization;
       });
