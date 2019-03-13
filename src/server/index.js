@@ -529,7 +529,7 @@ process.on("uncaughtException", (err) => {
 setInterval(() => {
   console.debug("Email reminder running", moment().format());
   sendReminderEmails();
-}, 60 * 100);
+}, 60 * 60 * 1000);
 
 httpServer.listen(port, () => {
   log.info("port %s, env=%s", port, config.util.getEnv("NODE_ENV"));
