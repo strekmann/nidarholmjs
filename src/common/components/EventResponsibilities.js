@@ -1,6 +1,5 @@
 // @flow
 
-import { List, ListItem } from "material-ui/List";
 import {
   Table,
   TableBody,
@@ -14,6 +13,7 @@ import { createFragmentContainer, graphql } from "react-relay";
 
 import EventGroupResponsibilityChooser from "./EventGroupResponsibilityChooser";
 import EventPersonResponsibilityChooser from "./EventPersonResponsibilityChooser";
+import Daterange from "./Daterange";
 import Organization from "./__generated__/EventResponsibilities_organization.graphql";
 
 type Props = {
@@ -75,20 +75,13 @@ class EventResponsibilities extends React.Component<Props, State> {
           {events.edges.map((edge) => {
             return (
               <TableRow key={edge.node.id} selectable={false}>
-                <TableRowColumn>
+                <TableRowColumn style={{ verticalAlign: "top" }}>
                   <h2>{edge.node.title}</h2>
-                  <List>
-                    {edge.node.contributors.map((contributor) => {
-                      return (
-                        <ListItem
-                          disabled
-                          key={`${contributor.user.id}-${contributor.role.id}`}
-                          primaryText={contributor.user.name}
-                          secondaryText={contributor.role.name}
-                        />
-                      );
-                    })}
-                  </List>
+                  <div className="meta">
+                    <Daterange start={edge.node.start} end={edge.node.end} />{" "}
+                    {edge.node.location}
+                  </div>
+                  <div>{edge.node.text}</div>
                 </TableRowColumn>
                 {organizationEventPersonResponsibilities.map(
                   (responsibility) => {
@@ -168,6 +161,10 @@ export default createFragmentContainer(EventResponsibilities, {
           node {
             id
             title
+            text
+            location
+            start
+            end
             contributors {
               user {
                 id

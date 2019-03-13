@@ -3,7 +3,6 @@
 import type { RelayRefetchProp } from "react-relay";
 import Dialog from "material-ui/Dialog";
 import Divider from "material-ui/Divider";
-import { List, ListItem } from "material-ui/List";
 import Menu from "material-ui/Menu";
 import MenuItem from "material-ui/MenuItem";
 import * as React from "react";
@@ -104,18 +103,15 @@ class EventPersonResponsibilityChooser extends React.Component<Props, State> {
     const matchingContributorsList = contributors.map((contributor) => {
       return contributor.role.id ===
         organizationEventPersonResponsibility.id ? (
-        <ListItem
-          key={contributor.id}
-          disabled
-          rightIconButton={
+        <div key={contributor.id}>
+          {contributor.user.name}
+          <div>
             <RemoveIconButton
               item={contributor.id}
               onRemove={this.onRemoveContributor}
             />
-          }
-        >
-          {contributor.user.name}
-        </ListItem>
+          </div>
+        </div>
       ) : null;
     });
     const nextButton = users.length ? (
@@ -137,7 +133,7 @@ class EventPersonResponsibilityChooser extends React.Component<Props, State> {
     });
     return (
       <div>
-        <List>{matchingContributorsList}</List>
+        <div>{matchingContributorsList}</div>
         <Divider />
         <Menu>
           {nextButton}

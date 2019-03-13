@@ -20,6 +20,7 @@ import {
   nodeDefinitions,
   // toGlobalId,
 } from "graphql-relay";
+import marked from "marked";
 import moment from "moment";
 import uuid from "node-uuid";
 import ObjectId from "mongoose/lib/types/objectid";
@@ -600,6 +601,12 @@ eventType = new GraphQLObjectType({
       end: { type: GraphQLDate },
       tags: { type: new GraphQLList(GraphQLString) },
       mdtext: { type: GraphQLString },
+      text: {
+        type: GraphQLString,
+        resolve: (event) => {
+          return marked(event.mdtext);
+        },
+      },
       permissions: { type: permissionsType },
       isEnded: {
         type: GraphQLBoolean,

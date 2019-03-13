@@ -1,7 +1,7 @@
 // @flow
 
 import IconButton from "material-ui/IconButton";
-import ActionDelete from "material-ui/svg-icons/action/delete";
+import ActionDelete from "material-ui/svg-icons/content/clear";
 import * as React from "react";
 
 type Props = {
