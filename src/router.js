@@ -87,23 +87,12 @@ const routes = (
       />
     </Route>
     <Route
-      path="org"
+      path="admin"
       Component={Organization}
       query={graphql`
         query router_Organization_Query {
           organization {
             ...Organization_organization
-          }
-        }
-      `}
-    />
-    <Route
-      path="org/responsibilities"
-      Component={EventResponsibilities}
-      query={graphql`
-        query router_EventResponsibilities_Query {
-          organization {
-            ...EventResponsibilities_organization
           }
         }
       `}
@@ -258,6 +247,17 @@ const routes = (
         query router_Events_Query {
           organization {
             ...Events_organization
+          }
+        }
+      `}
+    />
+    <Route
+      path="events/responsibilities"
+      Component={EventResponsibilities}
+      query={graphql`
+        query router_EventResponsibilities_Query {
+          organization {
+            ...EventResponsibilities_organization
           }
         }
       `}
