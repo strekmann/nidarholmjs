@@ -2267,6 +2267,60 @@ const mutationAddOrganizationEventPersonResponsibility = mutationWithClientMutat
   },
 );
 
+const mutationSaveOrganizationEventPersonResponsibility = mutationWithClientMutationId(
+  {
+    name: "SaveOrganizationEventPersonResponsibility",
+    inputFields: {
+      id: {
+        type: GraphQLID,
+      },
+      name: {
+        type: GraphQLString,
+      },
+      reminderText: {
+        type: GraphQLString,
+      },
+      reminderAtHour: {
+        type: GraphQLInt,
+      },
+      reminderDaysBefore: {
+        type: GraphQLInt,
+      },
+    },
+    outputFields: {
+      organizationEventPersonResponsibility: {
+        type: organizationEventPersonResponsibilityType,
+        resolve: (payload) => {
+          return payload;
+        },
+      },
+    },
+    mutateAndGetPayload: (
+      { id, name, reminderText, reminderAtHour, reminderDaysBefore },
+      { viewer, organization },
+    ) => {
+      if (!admin(organization, viewer)) {
+        return null;
+      }
+      const realId = fromGlobalId(id).id;
+      return OrganizationEventPersonResponsibility.findOneAndUpdate(
+        { _id: realId },
+        {
+          $set: {
+            name,
+            reminderText,
+            reminderAtHour,
+            reminderDaysBefore,
+          },
+        },
+        { new: true },
+      ).then((updated) => {
+        return updated;
+      });
+    },
+  },
+);
+
 const mutationAddOrganizationEventGroupResponsibility = mutationWithClientMutationId(
   {
     name: "AddOrganizationEventGroupResponsibility",
@@ -2307,6 +2361,60 @@ const mutationAddOrganizationEventGroupResponsibility = mutationWithClientMutati
         organization: organization.id,
       });
       return Organization.findById(organization.id);
+    },
+  },
+);
+
+const mutationSaveOrganizationEventGroupResponsibility = mutationWithClientMutationId(
+  {
+    name: "SaveOrganizationEventGroupResponsibility",
+    inputFields: {
+      id: {
+        type: GraphQLID,
+      },
+      name: {
+        type: GraphQLString,
+      },
+      reminderText: {
+        type: GraphQLString,
+      },
+      reminderAtHour: {
+        type: GraphQLInt,
+      },
+      reminderDaysBefore: {
+        type: GraphQLInt,
+      },
+    },
+    outputFields: {
+      organizationEventGroupResponsibility: {
+        type: organizationEventGroupResponsibilityType,
+        resolve: (payload) => {
+          return payload;
+        },
+      },
+    },
+    mutateAndGetPayload: (
+      { id, name, reminderText, reminderAtHour, reminderDaysBefore },
+      { viewer, organization },
+    ) => {
+      if (!admin(organization, viewer)) {
+        return null;
+      }
+      const realId = fromGlobalId(id).id;
+      return OrganizationEventGroupResponsibility.findOneAndUpdate(
+        { _id: realId },
+        {
+          $set: {
+            name,
+            reminderText,
+            reminderAtHour,
+            reminderDaysBefore,
+          },
+        },
+        { new: true },
+      ).then((updated) => {
+        return updated;
+      });
     },
   },
 );
@@ -3421,9 +3529,11 @@ const mutationType = new GraphQLObjectType({
       saveFilePermissions: mutationSaveFilePermissions,
       saveOrganization: mutationSaveOrganization,
       addOrganizationEventPersonResponsibility: mutationAddOrganizationEventPersonResponsibility,
+      saveOrganizationEventPersonResponsibility: mutationSaveOrganizationEventPersonResponsibility,
       addEventPersonResponsibility: mutationAddEventPersonResponsibility,
       removeEventPersonResponsibility: mutationRemoveEventPersonResponsibility,
       addOrganizationEventGroupResponsibility: mutationAddOrganizationEventGroupResponsibility,
+      saveOrganizationEventGroupResponsibility: mutationSaveOrganizationEventGroupResponsibility,
       addEventGroupResponsibility: mutationAddEventGroupResponsibility,
       removeEventGroupResponsibility: mutationRemoveEventGroupResponsibility,
       saveContactRoles: mutationSaveContactRoles,

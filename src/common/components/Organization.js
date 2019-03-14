@@ -1,6 +1,7 @@
 /* @flow */
 
 import update from "immutability-helper";
+import { List } from "material-ui/List";
 import Paper from "material-ui/Paper";
 import RaisedButton from "material-ui/RaisedButton";
 import { Tab, Tabs } from "material-ui/Tabs";
@@ -12,9 +13,12 @@ import { createFragmentContainer, graphql } from "react-relay";
 
 import AddOrganizationEventPersonResponsibilityMutation from "../mutations/AddOrganizationEventPersonResponsibility";
 import AddOrganizationEventGroupResponsibilityMutation from "../mutations/AddOrganizationEventGroupResponsibility";
+import SaveOrganizationEventPersonResponsibilityMutation from "../mutations/SaveOrganizationEventPersonResponsibility";
+import SaveOrganizationEventGroupResponsibilityMutation from "../mutations/SaveOrganizationEventGroupResponsibility";
 import SaveOrganizationMutation from "../mutations/SaveOrganization";
 import theme from "../theme";
 
+import OrganizationResponsibilityItem from "./OrganizationResponsibilityItem";
 import FrontpageSummaries from "./FrontpageSummaries";
 
 type Props = {
@@ -107,50 +111,56 @@ class Organization extends React.Component<Props, State> {
     this.setState({ tab });
   };
 
-  onChangePersonResponsibilityName = (event, eventPersonResponsibilityName) => {
+  onChangeEventPersonResponsibilityName = (
+    event,
+    eventPersonResponsibilityName,
+  ) => {
     this.setState({ eventPersonResponsibilityName });
   };
 
-  onChangePersonResponsibilityReminderText = (
+  onChangeEventPersonResponsibilityReminderText = (
     event,
     eventPersonResponsibilityReminderText,
   ) => {
     this.setState({ eventPersonResponsibilityReminderText });
   };
 
-  onChangePersonResponsibilityReminderAtHour = (
+  onChangeEventPersonResponsibilityReminderAtHour = (
     event,
     eventPersonResponsibilityReminderAtHour,
   ) => {
     this.setState({ eventPersonResponsibilityReminderAtHour });
   };
 
-  onChangePersonResponsibilityReminderDaysBefore = (
+  onChangeEventPersonResponsibilityReminderDaysBefore = (
     event,
     eventPersonResponsibilityReminderDaysBefore,
   ) => {
     this.setState({ eventPersonResponsibilityReminderDaysBefore });
   };
 
-  onChangeGroupResponsibilityName = (event, eventGroupResponsibilityName) => {
+  onChangeEventGroupResponsibilityName = (
+    event,
+    eventGroupResponsibilityName,
+  ) => {
     this.setState({ eventGroupResponsibilityName });
   };
 
-  onChangeGroupResponsibilityReminderText = (
+  onChangeEventGroupResponsibilityReminderText = (
     event,
     eventGroupResponsibilityReminderText,
   ) => {
     this.setState({ eventGroupResponsibilityReminderText });
   };
 
-  onChangeGroupResponsibilityReminderAtHour = (
+  onChangeEventGroupResponsibilityReminderAtHour = (
     event,
     eventGroupResponsibilityReminderAtHour,
   ) => {
     this.setState({ eventGroupResponsibilityReminderAtHour });
   };
 
-  onChangeGroupResponsibilityReminderDaysBefore = (
+  onChangeEventGroupResponsibilityReminderDaysBefore = (
     event,
     eventGroupResponsibilityReminderDaysBefore,
   ) => {
@@ -222,6 +232,44 @@ class Organization extends React.Component<Props, State> {
     );
   };
 
+  savePersonResponsibility = (
+    id,
+    name,
+    reminderText,
+    reminderAtHour,
+    reminderDaysBefore,
+  ) => {
+    SaveOrganizationEventPersonResponsibilityMutation.commit(
+      this.props.relay.environment,
+      {
+        id,
+        name,
+        reminderText,
+        reminderAtHour,
+        reminderDaysBefore,
+      },
+    );
+  };
+
+  saveGroupResponsibility = (
+    id,
+    name,
+    reminderText,
+    reminderAtHour,
+    reminderDaysBefore,
+  ) => {
+    SaveOrganizationEventGroupResponsibilityMutation.commit(
+      this.props.relay.environment,
+      {
+        id,
+        name,
+        reminderText,
+        reminderAtHour,
+        reminderDaysBefore,
+      },
+    );
+  };
+
   render() {
     const org = this.props.organization;
     const personResponsibilities = org.organizationEventPersonResponsibilities;
@@ -247,66 +295,114 @@ class Organization extends React.Component<Props, State> {
               Her defineres ansvarsroller som kan tilordnes aktiviteter i
               lister. For eksempel kakeansvar.
             </p>
-            <ul>
+            <List>
               {personResponsibilities.map((responsibility) => {
-                return <li key={responsibility.id}>{responsibility.name}</li>;
+                return (
+                  <OrganizationResponsibilityItem
+                    key={responsibility.id}
+                    item={responsibility}
+                    onSave={this.savePersonResponsibility}
+                  />
+                );
               })}
-            </ul>
+            </List>
             <form onSubmit={this.addEventPersonResponsibility}>
-              <TextField
-                floatingLabelText="Navn"
-                value={this.state.eventPersonResponsibilityName}
-                onChange={this.onChangePersonResponsibilityName}
-              />
-              <TextField
-                floatingLabelText="Epostinnhold"
-                value={this.state.eventPersonResponsibilityReminderText}
-                onChange={this.onChangePersonResponsibilityReminderText}
-              />
-              <TextField
-                floatingLabelText="Sendes klokka"
-                value={this.state.eventPersonResponsibilityReminderAtHour}
-                onChange={this.onChangePersonResponsibilityReminderAtHour}
-              />
-              <TextField
-                floatingLabelText="Dager i forveien"
-                value={this.state.eventPersonResponsibilityReminderDaysBefore}
-                onChange={this.onChangePersonResponsibilityReminderDaysBefore}
-              />
-              <RaisedButton label="Lagre" type="submit" />
+              <h3>Nytt personansvar</h3>
+              <div>
+                <TextField
+                  floatingLabelText="Navn"
+                  value={this.state.eventPersonResponsibilityName}
+                  onChange={this.onChangeEventPersonResponsibilityName}
+                />
+              </div>
+              <div>
+                <TextField
+                  floatingLabelText="Epostinnhold"
+                  fullWidth
+                  multiLine
+                  value={this.state.eventPersonResponsibilityReminderText}
+                  onChange={this.onChangeEventPersonResponsibilityReminderText}
+                />
+              </div>
+              <div>
+                <TextField
+                  floatingLabelText="Sendes klokka"
+                  type="number"
+                  value={this.state.eventPersonResponsibilityReminderAtHour}
+                  onChange={
+                    this.onChangeEventPersonResponsibilityReminderAtHour
+                  }
+                />
+              </div>
+              <div>
+                <TextField
+                  floatingLabelText="Dager i forveien"
+                  type="number"
+                  value={this.state.eventPersonResponsibilityReminderDaysBefore}
+                  onChange={
+                    this.onChangeEventPersonResponsibilityReminderDaysBefore
+                  }
+                />
+              </div>
+              <div>
+                <RaisedButton label="Lagre" type="submit" />
+              </div>
             </form>
             <h2>Aktivitetsansvarlige - grupper</h2>
             <p>
               Her defineres gruppeansvar som kan tilordnes aktiviteter i lister.
               For eksempel sjauing.
             </p>
-            <ul>
+            <List>
               {groupResponsibilities.map((responsibility) => {
-                return <li key={responsibility.id}>{responsibility.name}</li>;
+                return (
+                  <OrganizationResponsibilityItem
+                    key={responsibility.id}
+                    item={responsibility}
+                    onSave={this.saveGroupResponsibility}
+                  />
+                );
               })}
-            </ul>
+            </List>
             <form onSubmit={this.addEventGroupResponsibility}>
-              <TextField
-                floatingLabelText="Navn"
-                value={this.state.eventGroupResponsibilityName}
-                onChange={this.onChangeGroupResponsibilityName}
-              />
-              <TextField
-                floatingLabelText="Epostinnhold"
-                value={this.state.eventGroupResponsibilityReminderText}
-                onChange={this.onChangeGroupResponsibilityReminderText}
-              />
-              <TextField
-                floatingLabelText="Sendes klokka"
-                value={this.state.eventGroupResponsibilityReminderAtHour}
-                onChange={this.onChangeGroupResponsibilityReminderAtHour}
-              />
-              <TextField
-                floatingLabelText="Dager i forveien"
-                value={this.state.eventGroupResponsibilityReminderDaysBefore}
-                onChange={this.onChangeGroupResponsibilityReminderDaysBefore}
-              />
-              <RaisedButton label="Lagre" type="submit" />
+              <h3>Nytt gruppeansvar</h3>
+              <div>
+                <TextField
+                  floatingLabelText="Navn"
+                  value={this.state.eventGroupResponsibilityName}
+                  onChange={this.onChangeEventGroupResponsibilityName}
+                />
+              </div>
+              <div>
+                <TextField
+                  floatingLabelText="Epostinnhold"
+                  fullWidth
+                  multiLine
+                  value={this.state.eventGroupResponsibilityReminderText}
+                  onChange={this.onChangeEventGroupResponsibilityReminderText}
+                />
+              </div>
+              <div>
+                <TextField
+                  floatingLabelText="Sendes klokka"
+                  type="number"
+                  value={this.state.eventGroupResponsibilityReminderAtHour}
+                  onChange={this.onChangeEventGroupResponsibilityReminderAtHour}
+                />
+              </div>
+              <div>
+                <TextField
+                  floatingLabelText="Dager i forveien"
+                  type="number"
+                  value={this.state.eventGroupResponsibilityReminderDaysBefore}
+                  onChange={
+                    this.onChangeEventGroupResponsibilityReminderDaysBefore
+                  }
+                />
+              </div>
+              <div>
+                <RaisedButton label="Lagre" type="submit" />
+              </div>
             </form>
           </Tab>
         </Tabs>

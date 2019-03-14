@@ -527,7 +527,7 @@ process.on("uncaughtException", (err) => {
 });
 
 setInterval(() => {
-  console.debug("Email reminder running", moment().format());
+  log.info("Email reminder running", moment().format());
   sendReminderEmails();
 }, 60 * 60 * 1000);
 
