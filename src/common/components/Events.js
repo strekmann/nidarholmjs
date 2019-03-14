@@ -1,12 +1,17 @@
 /* @flow */
 
+import type { RelayRefetchProp } from "react-relay";
+import Link from "found/lib/Link";
 import FlatButton from "material-ui/FlatButton";
 import IconButton from "material-ui/IconButton";
+import IconMenu from "material-ui/IconMenu";
+import MenuItem from "material-ui/MenuItem";
 import Paper from "material-ui/Paper";
 import RaisedButton from "material-ui/RaisedButton";
 import { Toolbar, ToolbarGroup } from "material-ui/Toolbar";
 import getMuiTheme from "material-ui/styles/getMuiTheme";
 import ActionHelp from "material-ui/svg-icons/action/help";
+import MoreVertIcon from "material-ui/svg-icons/navigation/more-vert";
 import PropTypes from "prop-types";
 import * as React from "react";
 import { createRefetchContainer, graphql } from "react-relay";
@@ -30,11 +35,9 @@ type Props = {
       },
     },
     webdomain: string,
+    isAdmin: boolean,
   },
-  relay: {
-    environment: {},
-    refetch: (variables: {}) => {},
-  },
+  relay: RelayRefetchProp,
 };
 
 class Events extends React.Component<Props> {
@@ -63,7 +66,7 @@ class Events extends React.Component<Props> {
 
   render() {
     const { organization } = this.props;
-    const { events } = organization;
+    const { events, isAdmin } = organization;
     return (
       <Paper className="row">
         <div style={{ display: "flex", justifyContent: "space-between" }}>
@@ -77,6 +80,22 @@ class Events extends React.Component<Props> {
               <IconButton href="/hjelp-om-aktiviteter">
                 <ActionHelp />
               </IconButton>
+              {isAdmin ? (
+                <IconMenu
+                  iconButtonElement={
+                    <IconButton>
+                      <MoreVertIcon />
+                    </IconButton>
+                  }
+                  anchorOrigin={{ vertical: "top", horizontal: "right" }}
+                  targetOrigin={{ vertical: "top", horizontal: "right" }}
+                >
+                  <MenuItem
+                    primaryText="Aktiviteter og ansvar"
+                    containerElement={<Link to="/events/responsibilities" />}
+                  />
+                </IconMenu>
+              ) : null}
             </ToolbarGroup>
           </Toolbar>
         </div>
@@ -103,6 +122,7 @@ export default createRefetchContainer(
         memberGroup {
           id
         }
+        isAdmin
         webdomain
         events(first: $showItems) {
           edges {

@@ -1,5 +1,3 @@
-/* eslint "no-console": 0 */
-
 import config from "config";
 import {
   GraphQLBoolean,
@@ -22,8 +20,8 @@ import {
   nodeDefinitions,
   // toGlobalId,
 } from "graphql-relay";
+import marked from "marked";
 import moment from "moment";
-import nodemailer from "nodemailer";
 import uuid from "node-uuid";
 import ObjectId from "mongoose/lib/types/objectid";
 
@@ -33,14 +31,16 @@ import Event from "./models/Event";
 import File from "./models/File";
 import Group from "./models/Group";
 import Organization from "./models/Organization";
+import OrganizationEventPersonResponsibility from "./models/OrganizationEventPersonResponsibility";
+import OrganizationEventGroupResponsibility from "./models/OrganizationEventGroupResponsibility";
 import Page from "./models/Page";
-import PasswordCode from "./models/PasswordCode";
 import Piece from "./models/Piece";
 import Project from "./models/Project";
 import Role from "./models/Role";
 import User from "./models/User";
 import insertFile from "./lib/insertFile";
 import { buildPermissionObject } from "./lib/permissions";
+import { sendContactEmail, sendPasswordEmail } from "./emailTasks";
 
 let userType;
 let groupType;
@@ -51,6 +51,8 @@ let fileType;
 let pageType;
 let pieceType;
 let roleType;
+let organizationEventPersonResponsibilityType;
+let organizationEventGroupResponsibilityType;
 
 const { nodeInterface, nodeField } = nodeDefinitions(
   // FIXME: Add permission checks
@@ -86,6 +88,12 @@ const { nodeInterface, nodeField } = nodeDefinitions(
     if (type === "Role") {
       return Role.findById(id).exec();
     }
+    if (type === "OrganizationEventPersonResponsibility") {
+      return OrganizationEventPersonResponsibility.findById(id).exec();
+    }
+    if (type === "OrganizationEventGroupResponsibility") {
+      return OrganizationEventGroupResponsibility.findById(id).exec();
+    }
     return null;
   },
   (obj) => {
@@ -115,6 +123,12 @@ const { nodeInterface, nodeField } = nodeDefinitions(
     }
     if (obj._type === "Role") {
       return roleType;
+    }
+    if (obj._type === "OrganizationEventPersonResponsibility") {
+      return organizationEventPersonResponsibilityType;
+    }
+    if (obj._type === "OrganizationEventGroupResponsibility") {
+      return organizationEventGroupResponsibilityType;
     }
     return null;
   },
@@ -189,35 +203,6 @@ function authenticate(query, viewer, options = {}) {
     query.select(select);
   }
   return query;
-}
-
-function sendContactEmail({ name, email, text, organization }) {
-  if (config && config.auth && config.auth.smtp && config.auth.smtp.host) {
-    const transporter = nodemailer.createTransport(config.auth.smtp);
-    const data = {
-      from: `${name} <${email}>`,
-      to: organization.email,
-      subject: `Melding fra ${name} via nidarholm.no`,
-      text: text.replace("\n", "\r\n"),
-    };
-    transporter.sendMail(data, (emailErr, emailInfo) => {
-      console.info("EMAIL", emailErr, emailInfo, data);
-      if (!emailErr) {
-        const receipt = {
-          from: organization.email,
-          to: `${name} <${email}>`,
-          subject: "Melding sendt",
-          text:
-            "Takk!\r\n\r\nMeldingen du sendte til styret via nidarholm.no har blitt mottatt.",
-        };
-        transporter.sendMail(receipt, (receiptErr, receiptInfo) => {
-          console.info("RECEIPT:", receiptErr, receiptInfo, receipt);
-        });
-      }
-    });
-  } else {
-    console.info("EMAIL", name, email, text);
-  }
 }
 
 userType = new GraphQLObjectType({
@@ -582,6 +567,29 @@ const scoreConnection = connectionDefinitions({
 });
 */
 
+const contributorType = new GraphQLObjectType({
+  name: "Contributor",
+  fields: () => {
+    return {
+      id: globalIdField("Contributor"),
+      user: { type: userType },
+      role: { type: organizationEventPersonResponsibilityType },
+    };
+  },
+  interfaces: [nodeInterface],
+});
+const contributorGroupType = new GraphQLObjectType({
+  name: "ContributorGroup",
+  fields: () => {
+    return {
+      id: globalIdField("ContributorGroup"),
+      group: { type: groupType },
+      role: { type: organizationEventGroupResponsibilityType },
+    };
+  },
+  interfaces: [nodeInterface],
+});
+
 eventType = new GraphQLObjectType({
   name: "Event",
   fields: () => {
@@ -593,6 +601,12 @@ eventType = new GraphQLObjectType({
       end: { type: GraphQLDate },
       tags: { type: new GraphQLList(GraphQLString) },
       mdtext: { type: GraphQLString },
+      text: {
+        type: GraphQLString,
+        resolve: (event) => {
+          return marked(event.mdtext);
+        },
+      },
       permissions: { type: permissionsType },
       isEnded: {
         type: GraphQLBoolean,
@@ -624,6 +638,36 @@ eventType = new GraphQLObjectType({
       },
       highlighted: {
         type: GraphQLBoolean,
+      },
+      contributors: {
+        type: new GraphQLList(contributorType),
+        resolve: (event) => {
+          return event
+            .populate("contributors.user")
+            .populate({
+              path: "contributors.role",
+              model: "OrganizationEventPersonResponsibility",
+            })
+            .execPopulate()
+            .then((populatedEvent) => {
+              return populatedEvent.contributors;
+            });
+        },
+      },
+      contributorGroups: {
+        type: new GraphQLList(contributorGroupType),
+        resolve: (event) => {
+          return event
+            .populate("contributorGroups.group")
+            .populate({
+              path: "contributorGroups.role",
+              model: "OrganizationEventGroupResponsibility",
+            })
+            .execPopulate()
+            .then((populatedEvent) => {
+              return populatedEvent.contributorGroups;
+            });
+        },
       },
     };
   },
@@ -937,6 +981,48 @@ pageType = new GraphQLObjectType({
 const pageConnection = connectionDefinitions({
   name: "Page",
   nodeType: pageType,
+});
+
+organizationEventPersonResponsibilityType = new GraphQLObjectType({
+  name: "OrganizationEventPersonResponsibility",
+  fields: () => {
+    return {
+      id: globalIdField("OrganizationEventPersonResponsibility"),
+      name: { type: GraphQLString },
+      reminderText: { type: GraphQLString },
+      reminderDaysBefore: { type: GraphQLInt },
+      reminderAtHour: { type: GraphQLInt },
+      last: {
+        type: userType,
+        resolve: (oepr) => {
+          return User.findById(oepr.last).exec();
+        },
+      },
+      organization: { type: organizationType },
+    };
+  },
+  interfaces: [nodeInterface],
+});
+
+organizationEventGroupResponsibilityType = new GraphQLObjectType({
+  name: "OrganizationEventGroupResponsibility",
+  fields: () => {
+    return {
+      id: globalIdField("OrganizationEventGroupResponsibility"),
+      name: { type: GraphQLString },
+      reminderText: { type: GraphQLString },
+      reminderDaysBefore: { type: GraphQLInt },
+      reminderAtHour: { type: GraphQLInt },
+      last: {
+        type: groupType,
+        resolve: (oegr) => {
+          return Group.findById(oegr.last).exec();
+        },
+      },
+      organization: { type: organizationType },
+    };
+  },
+  interfaces: [nodeInterface],
 });
 
 organizationType = new GraphQLObjectType({
@@ -1517,6 +1603,28 @@ organizationType = new GraphQLObjectType({
           Role.find({ organization: organization.id }),
           args,
         );
+      },
+    },
+    organizationEventPersonResponsibilities: {
+      type: new GraphQLList(organizationEventPersonResponsibilityType),
+      resolve: (_, args, { organization, viewer }) => {
+        if (!isMember(organization, viewer)) {
+          throw new Error("Noboby");
+        }
+        return OrganizationEventPersonResponsibility.find({
+          organization: organization.id,
+        }).sort("name");
+      },
+    },
+    organizationEventGroupResponsibilities: {
+      type: new GraphQLList(organizationEventGroupResponsibilityType),
+      resolve: (_, args, { organization, viewer }) => {
+        if (!isMember(organization, viewer)) {
+          throw new Error("Noboby");
+        }
+        return OrganizationEventGroupResponsibility.find({
+          organization: organization.id,
+        }).sort("name");
       },
     },
   },
@@ -2115,6 +2223,346 @@ const mutationSaveOrganization = mutationWithClientMutationId({
   },
 });
 
+const mutationAddOrganizationEventPersonResponsibility = mutationWithClientMutationId(
+  {
+    name: "AddOrganizationEventPersonResponsibility",
+    inputFields: {
+      name: {
+        type: GraphQLString,
+      },
+      reminderText: {
+        type: GraphQLString,
+      },
+      reminderAtHour: {
+        type: GraphQLInt,
+      },
+      reminderDaysBefore: {
+        type: GraphQLInt,
+      },
+    },
+    outputFields: {
+      organization: {
+        type: organizationType,
+        resolve: (payload) => {
+          return payload;
+        },
+      },
+    },
+    mutateAndGetPayload: (
+      { name, reminderText, reminderAtHour, reminderDaysBefore },
+      { viewer, organization },
+    ) => {
+      if (!admin(organization, viewer)) {
+        return null;
+      }
+      OrganizationEventPersonResponsibility.create({
+        name,
+        reminderText,
+        reminderAtHour,
+        reminderDaysBefore,
+        organization: organization.id,
+      });
+      return Organization.findById(organization.id);
+    },
+  },
+);
+
+const mutationSaveOrganizationEventPersonResponsibility = mutationWithClientMutationId(
+  {
+    name: "SaveOrganizationEventPersonResponsibility",
+    inputFields: {
+      id: {
+        type: GraphQLID,
+      },
+      name: {
+        type: GraphQLString,
+      },
+      reminderText: {
+        type: GraphQLString,
+      },
+      reminderAtHour: {
+        type: GraphQLInt,
+      },
+      reminderDaysBefore: {
+        type: GraphQLInt,
+      },
+    },
+    outputFields: {
+      organizationEventPersonResponsibility: {
+        type: organizationEventPersonResponsibilityType,
+        resolve: (payload) => {
+          return payload;
+        },
+      },
+    },
+    mutateAndGetPayload: (
+      { id, name, reminderText, reminderAtHour, reminderDaysBefore },
+      { viewer, organization },
+    ) => {
+      if (!admin(organization, viewer)) {
+        return null;
+      }
+      const realId = fromGlobalId(id).id;
+      return OrganizationEventPersonResponsibility.findOneAndUpdate(
+        { _id: realId },
+        {
+          $set: {
+            name,
+            reminderText,
+            reminderAtHour,
+            reminderDaysBefore,
+          },
+        },
+        { new: true },
+      ).then((updated) => {
+        return updated;
+      });
+    },
+  },
+);
+
+const mutationAddOrganizationEventGroupResponsibility = mutationWithClientMutationId(
+  {
+    name: "AddOrganizationEventGroupResponsibility",
+    inputFields: {
+      name: {
+        type: GraphQLString,
+      },
+      reminderText: {
+        type: GraphQLString,
+      },
+      reminderAtHour: {
+        type: GraphQLInt,
+      },
+      reminderDaysBefore: {
+        type: GraphQLInt,
+      },
+    },
+    outputFields: {
+      organization: {
+        type: organizationType,
+        resolve: (payload) => {
+          return payload;
+        },
+      },
+    },
+    mutateAndGetPayload: (
+      { name, reminderText, reminderAtHour, reminderDaysBefore },
+      { viewer, organization },
+    ) => {
+      if (!admin(organization, viewer)) {
+        return null;
+      }
+      OrganizationEventGroupResponsibility.create({
+        name,
+        reminderText,
+        reminderAtHour,
+        reminderDaysBefore,
+        organization: organization.id,
+      });
+      return Organization.findById(organization.id);
+    },
+  },
+);
+
+const mutationSaveOrganizationEventGroupResponsibility = mutationWithClientMutationId(
+  {
+    name: "SaveOrganizationEventGroupResponsibility",
+    inputFields: {
+      id: {
+        type: GraphQLID,
+      },
+      name: {
+        type: GraphQLString,
+      },
+      reminderText: {
+        type: GraphQLString,
+      },
+      reminderAtHour: {
+        type: GraphQLInt,
+      },
+      reminderDaysBefore: {
+        type: GraphQLInt,
+      },
+    },
+    outputFields: {
+      organizationEventGroupResponsibility: {
+        type: organizationEventGroupResponsibilityType,
+        resolve: (payload) => {
+          return payload;
+        },
+      },
+    },
+    mutateAndGetPayload: (
+      { id, name, reminderText, reminderAtHour, reminderDaysBefore },
+      { viewer, organization },
+    ) => {
+      if (!admin(organization, viewer)) {
+        return null;
+      }
+      const realId = fromGlobalId(id).id;
+      return OrganizationEventGroupResponsibility.findOneAndUpdate(
+        { _id: realId },
+        {
+          $set: {
+            name,
+            reminderText,
+            reminderAtHour,
+            reminderDaysBefore,
+          },
+        },
+        { new: true },
+      ).then((updated) => {
+        return updated;
+      });
+    },
+  },
+);
+
+const mutationAddEventPersonResponsibility = mutationWithClientMutationId({
+  name: "AddEventPersonResponsibility",
+  inputFields: {
+    eventId: {
+      type: GraphQLID,
+    },
+    userId: {
+      type: GraphQLID,
+    },
+    responsibilityId: {
+      type: GraphQLID,
+    },
+  },
+  outputFields: {
+    event: {
+      type: eventType,
+      resolve: (payload) => {
+        return payload;
+      },
+    },
+  },
+  mutateAndGetPayload: (
+    { eventId, userId, responsibilityId },
+    { viewer, organization },
+  ) => {
+    if (!admin(organization, viewer)) {
+      return null;
+    }
+    const eId = fromGlobalId(eventId).id;
+    const uId = fromGlobalId(userId).id;
+    const rId = fromGlobalId(responsibilityId).id;
+    return Event.findById(eId).then((event) => {
+      event.contributors.addToSet({ user: uId, role: rId });
+      return event.save().then((savedEvent) => {
+        OrganizationEventPersonResponsibility.findById(rId)
+          .exec()
+          .then((organizationEventPersonResponsibility) => {
+            organizationEventPersonResponsibility.last = uId;
+            organizationEventPersonResponsibility.save(); // Don't care about save status
+          });
+        return savedEvent;
+      });
+    });
+  },
+});
+
+const mutationRemoveEventPersonResponsibility = mutationWithClientMutationId({
+  name: "RemoveEventPersonResponsibility",
+  inputFields: {
+    eventId: { type: GraphQLID },
+    contributorId: { type: GraphQLID },
+  },
+  outputFields: {
+    event: {
+      type: eventType,
+      resolve: (payload) => {
+        return payload;
+      },
+    },
+  },
+  mutateAndGetPayload: ({ eventId, contributorId }) => {
+    // TODO: Add permission check
+    const eId = fromGlobalId(eventId).id;
+    const cId = fromGlobalId(contributorId).id;
+    return Event.findByIdAndUpdate(
+      eId,
+      { $pull: { contributors: { _id: ObjectId(cId) } } },
+      { new: true },
+    ).exec();
+  },
+});
+
+const mutationAddEventGroupResponsibility = mutationWithClientMutationId({
+  name: "AddEventGroupResponsibility",
+  inputFields: {
+    eventId: {
+      type: GraphQLID,
+    },
+    groupId: {
+      type: GraphQLID,
+    },
+    responsibilityId: {
+      type: GraphQLID,
+    },
+  },
+  outputFields: {
+    event: {
+      type: eventType,
+      resolve: (payload) => {
+        return payload;
+      },
+    },
+  },
+  mutateAndGetPayload: (
+    { eventId, groupId, responsibilityId },
+    { viewer, organization },
+  ) => {
+    if (!admin(organization, viewer)) {
+      return null;
+    }
+    const eId = fromGlobalId(eventId).id;
+    const gId = fromGlobalId(groupId).id;
+    const rId = fromGlobalId(responsibilityId).id;
+    return Event.findById(eId).then((event) => {
+      event.contributorGroups.addToSet({ group: gId, role: rId });
+      return event.save().then((savedEvent) => {
+        OrganizationEventGroupResponsibility.findById(rId)
+          .exec()
+          .then((organizationEventGroupResponsibility) => {
+            organizationEventGroupResponsibility.last = gId;
+            organizationEventGroupResponsibility.save(); // Don't care about save status
+          });
+        return savedEvent;
+      });
+    });
+  },
+});
+
+const mutationRemoveEventGroupResponsibility = mutationWithClientMutationId({
+  name: "RemoveEventGroupResponsibility",
+  inputFields: {
+    eventId: { type: GraphQLID },
+    contributorGroupId: { type: GraphQLID },
+  },
+  outputFields: {
+    event: {
+      type: eventType,
+      resolve: (payload) => {
+        return payload;
+      },
+    },
+  },
+  mutateAndGetPayload: ({ eventId, contributorGroupId }) => {
+    // TODO: Add permission check
+    const eId = fromGlobalId(eventId).id;
+    const cId = fromGlobalId(contributorGroupId).id;
+    return Event.findByIdAndUpdate(
+      eId,
+      { $pull: { contributorGroups: { _id: ObjectId(cId) } } },
+      { new: true },
+    ).exec();
+  },
+});
+
 const mutationAddFile = mutationWithClientMutationId({
   name: "AddFile",
   inputFields: {
@@ -2324,7 +2772,6 @@ const mutationAddProject = mutationWithClientMutationId({
     { title, tag, privateMdtext, publicMdtext, start, end, permissions },
     { viewer },
   ) => {
-    console.log("Add project", title, tag, start, end, permissions, viewer._id);
     if (!viewer) {
       throw new Error("Nobody!");
     }
@@ -2474,33 +2921,7 @@ const mutationSendReset = mutationWithClientMutationId({
       .exec()
       .then((user) => {
         if (user) {
-          const code = new PasswordCode();
-          code.user = user._id;
-          return code.save().then((newCode) => {
-            const message = `Hei ${
-              user.name
-            }\r\n\r\nDet kan se ut som du holder på å sette nytt passord. Hvis du ikke prøver på dette, ber vi deg se bort fra denne eposten. For å sette nytt passord, må du gå til lenka:\r\n${
-              config.site.protocol
-            }://${config.site.domain}/login/reset/${newCode._id}`;
-            if (config.auth && config.auth.smtp && config.auth.smtp.host) {
-              const transporter = nodemailer.createTransport(config.auth.smtp);
-              const mailOptions = {
-                from: config.auth.smtp.noreplyAddress,
-                to: `${user.name} <${user.email}>`,
-                subject: "Nytt passord",
-                text: message,
-              };
-              return transporter.sendMail(mailOptions).then((info) => {
-                console.info("Email info:", info);
-                return organization;
-              });
-            }
-            console.info(
-              "No email config, this was the intended message:\n",
-              message,
-            );
-            return organization;
-          });
+          sendPasswordEmail(organization, user);
         }
         return organization;
       });
@@ -3107,6 +3528,14 @@ const mutationType = new GraphQLObjectType({
       removeScore: mutationRemoveScore,
       saveFilePermissions: mutationSaveFilePermissions,
       saveOrganization: mutationSaveOrganization,
+      addOrganizationEventPersonResponsibility: mutationAddOrganizationEventPersonResponsibility,
+      saveOrganizationEventPersonResponsibility: mutationSaveOrganizationEventPersonResponsibility,
+      addEventPersonResponsibility: mutationAddEventPersonResponsibility,
+      removeEventPersonResponsibility: mutationRemoveEventPersonResponsibility,
+      addOrganizationEventGroupResponsibility: mutationAddOrganizationEventGroupResponsibility,
+      saveOrganizationEventGroupResponsibility: mutationSaveOrganizationEventGroupResponsibility,
+      addEventGroupResponsibility: mutationAddEventGroupResponsibility,
+      removeEventGroupResponsibility: mutationRemoveEventGroupResponsibility,
       saveContactRoles: mutationSaveContactRoles,
       setProjectPoster: mutationSetProjectPoster,
       addProject: mutationAddProject,

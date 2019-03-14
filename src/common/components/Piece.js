@@ -1,6 +1,5 @@
 /* @flow */
 
-import Link from "found/lib/Link";
 import IconButton from "material-ui/IconButton";
 import IconMenu from "material-ui/IconMenu";
 import { List, ListItem } from "material-ui/List";

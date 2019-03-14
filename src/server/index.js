@@ -47,6 +47,7 @@ import saveFile from "./lib/saveFile";
 import findFilePath from "./lib/findFilePath";
 import persistentLogin from "./lib/persistentLoginMiddleware";
 import { groupEmailApiRoute, roleEmailApiRoute } from "./lib/emailApi";
+import { sendReminderEmails } from "./emailTasks";
 import schema from "./schema";
 
 // import * as profileAPI from './server/api/profile';
@@ -524,6 +525,11 @@ process.on("uncaughtException", (err) => {
   log.fatal(err);
   process.exit(1);
 });
+
+setInterval(() => {
+  log.info("Email reminder running", moment().format());
+  sendReminderEmails();
+}, 60 * 60 * 1000);
 
 httpServer.listen(port, () => {
   log.info("port %s, env=%s", port, config.util.getEnv("NODE_ENV"));

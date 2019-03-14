@@ -4,7 +4,6 @@ import uuid from "node-uuid";
 const PasswordCodeSchema = new mongoose.Schema({
   _id: {
     type: String,
-    unique: true,
     required: true,
     default: uuid.v4,
   },
