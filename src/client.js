@@ -1,6 +1,6 @@
 /* global window, document */
 
-import "babel-polyfill";
+import "@babel/polyfill";
 import BrowserProtocol from "farce/lib/BrowserProtocol";
 import createInitialFarceRouter from "found/lib/createInitialFarceRouter";
 import React from "react";
@@ -8,7 +8,6 @@ import ReactDOM from "react-dom";
 import injectTapEventPlugin from "react-tap-event-plugin";
 import moment from "moment";
 import "moment/locale/nb";
-import "font-awesome/css/font-awesome.css";
 import "./static/scss/styles.scss";
 
 import { ClientFetcher } from "./fetcher";

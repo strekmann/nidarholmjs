@@ -55,7 +55,15 @@ class Footer extends React.Component<Props, State> {
     const { organization } = this.props;
     return (
       <footer>
-        <div style={{ textAlign: "center", marginTop: 50, marginBottom: 80 }}>
+        <div
+          className="header"
+          style={{
+            fontSize: "1.0rem",
+            textAlign: "center",
+            marginTop: 50,
+            marginBottom: 80,
+          }}
+        >
           <ContactForm
             open={this.state.contactDialogOpen}
             close={this.closeEmailDialog}
@@ -63,18 +71,15 @@ class Footer extends React.Component<Props, State> {
             organization={organization}
           />
           <a onTouchTap={this.openEmailDialog} style={{ cursor: "pointer" }}>
-            <i className="fa fa-fw fa-envelope fa-3x" />
-          </a>
-          <a href={`https://facebook.com/${organization.facebook}`}>
-            <i className="fa fa-fw fa-facebook fa-3x" />
-          </a>
-
+            Kontaktskjema
+          </a>{" "}
+          ·{" "}
+          <a href={`https://facebook.com/${organization.facebook}`}>Facebook</a>{" "}
+          ·{" "}
           <a href={`https://www.instagram.com/${organization.instagram}/`}>
-            <i className="fa fa-fw fa-instagram fa-3x" />
-          </a>
-          <a href={`https://twitter.com/${organization.twitter}`}>
-            <i className="fa fa-fw fa-twitter fa-3x" />
-          </a>
+            Instagram
+          </a>{" "}
+          · <a href={`https://twitter.com/${organization.twitter}`}>Twitter</a>
           <div
             className="header"
             style={{

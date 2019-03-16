@@ -1,13 +1,8 @@
 {
-    "passPerPreset": true,
-    "plugins": [
-        ["relay", {"compat": true, "schema": "./src/server/schema.graphql"}],
-        "transform-decorators-legacy"
-    ],
-    "presets": [
-        "react",
-        "es2015",
-        "stage-0",
-        "flow"
-    ]
+  "plugins": [
+    "relay",
+    ["@babel/plugin-proposal-decorators", { "legacy": true }],
+    "@babel/plugin-proposal-class-properties"
+  ],
+  "presets": ["@babel/env", "@babel/react", "@babel/flow"]
 }
