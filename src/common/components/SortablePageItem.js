@@ -1,7 +1,8 @@
+// @flow
+
 import IconButton from "material-ui/IconButton";
 import RemoveCircle from "material-ui/svg-icons/content/remove-circle";
 import DragHandle from "material-ui/svg-icons/editor/drag-handle";
-import PropTypes from "prop-types";
 import React from "react";
 import { DragSource, DropTarget } from "react-dnd";
 
@@ -34,6 +35,15 @@ const pageTarget = {
   },
 };
 
+type Props = {
+  // connectDragSource: (any) => void,
+  // connectDropTarget: (any) => void,
+  // isDragging: boolean,
+  slug: string,
+  title: string,
+  onRemoveSummary: (Props) => void,
+};
+
 @DropTarget(Types.PAGE, pageTarget, (connect) => {
   return {
     connectDropTarget: connect.dropTarget(),
@@ -45,18 +55,10 @@ const pageTarget = {
     isDragging: monitor.isDragging(),
   };
 })
-export default class SortablePageItem extends React.Component {
-  static propTypes = {
-    connectDragSource: PropTypes.func.isRequired,
-    connectDropTarget: PropTypes.func.isRequired,
-    isDragging: PropTypes.bool.isRequired,
-    slug: PropTypes.string.isRequired,
-    title: PropTypes.string.isRequired,
-    onRemoveSummary: PropTypes.func,
-  };
-
+export default class SortablePageItem extends React.Component<Props> {
   removeSummary = () => {
-    this.props.onRemoveSummary(this.props);
+    const { onRemoveSummary } = this.props;
+    onRemoveSummary(this.props);
   };
 
   render() {

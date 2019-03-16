@@ -1,25 +1,27 @@
 /* eslint "max-len": 0 */
+// @flow
 
+import type { RelayProp } from "react-relay";
 import Paper from "material-ui/Paper";
 import RaisedButton from "material-ui/RaisedButton";
 import TextField from "material-ui/TextField";
 import getMuiTheme from "material-ui/styles/getMuiTheme";
-import PropTypes from "prop-types";
 import React from "react";
 import { createFragmentContainer, graphql } from "react-relay";
 
 import theme from "../theme";
 import SendResetMutation from "../mutations/SendReset";
 
-class Reset extends React.Component {
-  static childContextTypes = {
-    muiTheme: PropTypes.object.isRequired,
-  };
+type Props = {
+  relay: RelayProp,
+};
 
-  static propTypes = {
-    relay: PropTypes.object.isRequired,
-  };
+type State = {
+  email: string,
+  sent: boolean,
+};
 
+class Reset extends React.Component<Props, State> {
   constructor(props) {
     super(props);
     this.muiTheme = getMuiTheme(theme);
@@ -40,13 +42,18 @@ class Reset extends React.Component {
 
   sendReset = (event) => {
     event.preventDefault();
+    const { relay } = this.props;
+    const { email } = this.state;
     this.setState({ sent: true });
-    SendResetMutation.commit(this.props.relay.environment, {
-      email: this.state.email,
+    SendResetMutation.commit(relay.environment, {
+      email,
     });
   };
 
+  muiTheme: {};
+
   render() {
+    const { email, sent } = this.state;
     const { desktopGutterLess } = theme.spacing;
     const sentMessage =
       "Hvis du er registrert i systemet vil du snart motta en epost med en lenke til hvor du kan endre passordet.";
@@ -56,7 +63,7 @@ class Reset extends React.Component {
       <section>
         <Paper style={{ padding: desktopGutterLess }}>
           <h1>Nytt passord</h1>
-          {this.state.sent ? (
+          {sent ? (
             <div>
               <p>{sentMessage}</p>
             </div>
@@ -71,7 +78,7 @@ class Reset extends React.Component {
                     onChange={this.onChangeEmail}
                     required
                     type="email"
-                    value={this.state.email}
+                    value={email}
                   />
                 </div>
                 <div>

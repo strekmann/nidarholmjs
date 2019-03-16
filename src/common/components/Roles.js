@@ -1,3 +1,6 @@
+// @flow
+
+import type { RelayProp } from "react-relay";
 import Dialog from "material-ui/Dialog";
 import IconButton from "material-ui/IconButton";
 import IconMenu from "material-ui/IconMenu";
@@ -9,7 +12,6 @@ import TextField from "material-ui/TextField";
 import getMuiTheme from "material-ui/styles/getMuiTheme";
 import MoreVertIcon from "material-ui/svg-icons/navigation/more-vert";
 import Delete from "material-ui/svg-icons/action/delete";
-import PropTypes from "prop-types";
 import React from "react";
 import { createFragmentContainer, graphql } from "react-relay";
 
@@ -17,16 +19,20 @@ import CreateRoleMutation from "../mutations/CreateRole";
 import DeleteRoleMutation from "../mutations/DeleteRole";
 import theme from "../theme";
 
-class Roles extends React.Component {
-  static childContextTypes = {
-    muiTheme: PropTypes.object.isRequired,
-  };
+import RolesOrganization from "./__generated__/Roles_organization.graphql";
 
-  static propTypes = {
-    organization: PropTypes.object,
-    relay: PropTypes.object.isRequired,
-  };
+type Props = {
+  organization: RolesOrganization,
+  relay: RelayProp,
+};
 
+type State = {
+  creating: boolean,
+  name: string,
+  email: string,
+};
+
+class Roles extends React.Component<Props, State> {
   constructor(props) {
     super(props);
     this.muiTheme = getMuiTheme(theme);
@@ -48,7 +54,8 @@ class Roles extends React.Component {
 
   onDelete = (event, id) => {
     event.preventDefault();
-    DeleteRoleMutation.commit(this.props.relay.environment, {
+    const { relay } = this.props;
+    DeleteRoleMutation.commit(relay.environment, {
       id,
     });
   };
@@ -56,9 +63,10 @@ class Roles extends React.Component {
   onSave = (event) => {
     event.preventDefault();
     this.setState({ creating: false });
+    const { relay } = this.props;
     const { name, email } = this.state;
     CreateRoleMutation.commit(
-      this.props.relay.environment,
+      relay.environment,
       {
         name,
         email,
@@ -72,9 +80,12 @@ class Roles extends React.Component {
     );
   };
 
+  muiTheme: {};
+
   render() {
     const { organization } = this.props;
     const { isAdmin } = organization;
+    const { creating, name, email } = this.state;
     const actions = [
       <RaisedButton label="Avbryt" onTouchTap={this.onClose} />,
       <RaisedButton label="Lagre" onTouchTap={this.onSave} primary />,
@@ -103,7 +114,7 @@ class Roles extends React.Component {
           ) : null}
         </div>
         <Dialog
-          open={this.state.creating}
+          open={creating}
           title="Legg til ny rolle"
           onRequestClose={this.onClose}
           actions={actions}
@@ -114,7 +125,7 @@ class Roles extends React.Component {
               onChange={(_, name) => {
                 this.setState({ name });
               }}
-              value={this.state.name}
+              value={name}
               required
             />
           </div>
@@ -124,7 +135,7 @@ class Roles extends React.Component {
               onChange={(_, email) => {
                 this.setState({ email });
               }}
-              value={this.state.email}
+              value={email}
             />
           </div>
         </Dialog>

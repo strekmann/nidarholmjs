@@ -1,12 +1,13 @@
 /* eslint "max-len": 0 */
 /* eslint "react/no-multi-comp": 0 */
+
 // @flow
 
+import type { RelayProp } from "react-relay";
 import IconButton from "material-ui/IconButton";
 import RaisedButton from "material-ui/RaisedButton";
 import AddCircle from "material-ui/svg-icons/content/add-circle";
 import getMuiTheme from "material-ui/styles/getMuiTheme";
-import PropTypes from "prop-types";
 import * as React from "react";
 import { createFragmentContainer, graphql } from "react-relay";
 
@@ -15,6 +16,7 @@ import theme from "../theme";
 
 import SortableRoleList from "./SortableRoleList";
 import type { ContactRoles_organization as OrganizationType } from "./__generated__/ContactRoles_organization.graphql";
+import type { Role } from "./SortableRoleList";
 
 type ItemProps = {
   // id: string,
@@ -24,10 +26,12 @@ type ItemProps = {
 
 class RoleItem extends React.Component<ItemProps> {
   addRole = () => {
-    this.props.onAddRole(this.props);
+    const { onAddRole } = this.props;
+    onAddRole(this.props);
   };
 
   render() {
+    const { name } = this.props;
     const addIcon = (
       <IconButton onClick={this.addRole}>
         <AddCircle />
@@ -35,7 +39,7 @@ class RoleItem extends React.Component<ItemProps> {
     );
     return (
       <div style={{ display: "flex", alignItems: "center" }}>
-        <div style={{ flexGrow: 1 }}>{this.props.name}</div>
+        <div style={{ flexGrow: 1 }}>{name}</div>
         <div>{addIcon}</div>
       </div>
     );
@@ -44,28 +48,16 @@ class RoleItem extends React.Component<ItemProps> {
 
 type Props = {
   organization: OrganizationType,
-  relay: {
-    environment: {},
-  },
+  relay: RelayProp,
   saveHook: () => void,
 };
 
 type State = {
-  activeRoles: Array<{
-    id: string,
-    name: string,
-  }>,
-  contactRoles: Array<{
-    id: string,
-    name: string,
-  }>,
+  activeRoles: Array<Role>,
+  contactRoles: Array<Role>,
 };
 
 class ContactRoles extends React.Component<Props, State> {
-  static childContextTypes = {
-    muiTheme: PropTypes.object.isRequired,
-  };
-
   constructor(props) {
     super(props);
     const { activeRoles, contactRoles } = props.organization;
@@ -92,16 +84,17 @@ class ContactRoles extends React.Component<Props, State> {
 
   saveContactRoles = (event) => {
     event.preventDefault();
-    const { relay } = this.props;
+    const { relay, saveHook } = this.props;
+    const { contactRoles } = this.state;
     SaveContactRolesMutation.commit(
       relay.environment,
       {
-        contactRoles: this.state.contactRoles.map((role) => {
+        contactRoles: contactRoles.map((role) => {
           return role.id;
         }),
       },
       () => {
-        this.props.saveHook();
+        saveHook();
       },
     );
   };
@@ -109,7 +102,8 @@ class ContactRoles extends React.Component<Props, State> {
   muiTheme: {};
 
   render() {
-    const roleIds = this.state.contactRoles.map((role) => {
+    const { activeRoles, contactRoles } = this.state;
+    const roleIds = contactRoles.map((role) => {
       return role.id;
     });
     return (
@@ -123,17 +117,14 @@ class ContactRoles extends React.Component<Props, State> {
           <div style={{ display: "flex" }}>
             <div>
               <h3>Valgte</h3>
-              <SortableRoleList
-                roles={this.state.contactRoles}
-                onChange={this.onChange}
-              />
+              <SortableRoleList roles={contactRoles} onChange={this.onChange} />
             </div>
             <div>
               <h3>Mulige</h3>
               <div
                 style={{ height: 400, overflow: "scroll", overflowX: "hidden" }}
               >
-                {this.state.activeRoles
+                {activeRoles
                   .filter((role) => {
                     return !roleIds.includes(role.id);
                   })

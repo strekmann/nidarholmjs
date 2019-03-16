@@ -1,4 +1,5 @@
-import PropTypes from "prop-types";
+// @flow
+
 import React from "react";
 import { DragDropContext } from "react-dnd";
 import HTML5Backend from "react-dnd-html5-backend";
@@ -6,30 +7,47 @@ import update from "immutability-helper";
 
 import SortablePageItem from "./SortablePageItem";
 
+type Page = {
+  id: string,
+  slug: string,
+  title: string,
+};
+
+type Props = {
+  summaries: Array<Page>,
+  onChange: (Array<Page>) => void,
+};
+
+type State = {
+  summaries: Array<Page>,
+};
+
 @DragDropContext(HTML5Backend)
-export default class SortablePageList extends React.Component {
-  static propTypes = {
-    summaries: PropTypes.array.isRequired,
-    onChange: PropTypes.func.isRequired,
-  };
+export default class SortablePageList extends React.Component<Props, State> {
+  constructor(props: Props) {
+    super(props);
+    const { summaries } = this.props;
+    this.state = {
+      summaries: [...summaries],
+    };
+  }
 
-  state = {
-    summaries: this.props.summaries,
-  };
-
-  componentWillReceiveProps(nextProps) {
+  componentWillReceiveProps(nextProps: Props) {
     this.state.summaries = nextProps.summaries;
   }
 
-  onRemoveSummary = (page) => {
+  onRemoveSummary = (page: Page) => {
+    const { onChange } = this.props;
     const summaries = [...this.state.summaries];
     summaries.splice(page.index, 1);
     this.setState({ summaries });
-    this.props.onChange(summaries);
+    onChange(summaries);
   };
 
-  movePage = (dragIndex, hoverIndex) => {
-    const dragPage = this.state.summaries[dragIndex];
+  movePage = (dragIndex: number, hoverIndex: number) => {
+    const { onChange } = this.props;
+    const { summaries } = this.state;
+    const dragPage = summaries[dragIndex];
     this.setState(
       update(this.state, {
         summaries: {
@@ -37,7 +55,7 @@ export default class SortablePageList extends React.Component {
         },
       }),
     );
-    this.props.onChange(this.state.summaries);
+    onChange(summaries);
   };
 
   render() {
@@ -45,13 +63,13 @@ export default class SortablePageList extends React.Component {
     return (
       <div>
         {summaries.map((page, index) => {
+          const { id, slug, title } = page;
           return (
             <SortablePageItem
-              key={page.id}
-              id={page.id}
+              key={id}
               index={index}
-              slug={page.slug}
-              title={page.title}
+              slug={slug}
+              title={title}
               movePage={this.movePage}
               onRemoveSummary={this.onRemoveSummary}
             />

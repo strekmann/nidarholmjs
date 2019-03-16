@@ -1,22 +1,36 @@
 /* eslint "max-len": 0 */
 /* eslint "react/no-danger": 0 */
+// @flow
 
 import Dialog from "material-ui/Dialog";
 import RaisedButton from "material-ui/RaisedButton";
 import TextField from "material-ui/TextField";
-import PropTypes from "prop-types";
 import React from "react";
 import { createFragmentContainer, graphql } from "react-relay";
 
-class ContactForm extends React.Component {
-  static propTypes = {
-    open: PropTypes.bool,
-    save: PropTypes.func,
-    close: PropTypes.func,
-    encodedEmail: PropTypes.string,
-    organization: PropTypes.object,
-  };
+import ContactFormOrganization from "./__generated__/ContactForm_organization.graphql";
 
+type SaveParams = {
+  name: string,
+  email: string,
+  text: string,
+};
+
+type Props = {
+  open: boolean,
+  save: (SaveParams) => void,
+  close: () => void,
+  organization: ContactFormOrganization,
+};
+
+type State = {
+  name: string,
+  email: string,
+  text: string,
+  sent: boolean,
+};
+
+class ContactForm extends React.Component<Props, State> {
   state = {
     name: "",
     email: "",
@@ -37,31 +51,34 @@ class ContactForm extends React.Component {
   };
 
   close = () => {
-    this.props.close();
+    const { close } = this.props;
+    close();
   };
 
   sendEmail = (event) => {
     event.preventDefault();
+    const { save } = this.props;
+    const { name, email, text } = this.state;
     this.setState({ sent: true });
-    this.props.save({
-      name: this.state.name,
-      email: this.state.email,
-      text: this.state.text,
+    save({
+      name,
+      email,
+      text,
     });
   };
 
   render() {
-    const { encodedEmail } = this.props.organization;
+    const { organization, open } = this.props;
+    const { encodedEmail } = organization;
+    const { sent, name, email, text } = this.state;
     return (
       <Dialog
-        title={
-          this.state.sent ? "Meldingen er sendt!" : "Send melding til Nidarholm"
-        }
-        open={this.props.open}
+        title={sent ? "Meldingen er sendt!" : "Send melding til Nidarholm"}
+        open={open}
         onRequestClose={this.close}
         autoScrollBodyContent
       >
-        {this.state.sent ? (
+        {sent ? (
           <div>
             <p>Du vil få en bekreftelse på epost også</p>
             <div>
@@ -80,7 +97,7 @@ class ContactForm extends React.Component {
               <TextField
                 floatingLabelText="Ditt navn"
                 onChange={this.onChangeName}
-                value={this.state.name}
+                value={name}
                 required
               />
             </div>
@@ -88,7 +105,7 @@ class ContactForm extends React.Component {
               <TextField
                 floatingLabelText="Din e-postadresse"
                 onChange={this.onChangeEmail}
-                value={this.state.email}
+                value={email}
                 required
               />
             </div>
@@ -96,7 +113,7 @@ class ContactForm extends React.Component {
               <TextField
                 floatingLabelText="Melding"
                 onChange={this.onChangeText}
-                value={this.state.text}
+                value={text}
                 multiLine
                 fullWidth
               />

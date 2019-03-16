@@ -1,33 +1,39 @@
+// @flow
+
 import AutoComplete from "material-ui/AutoComplete";
 import Dialog from "material-ui/Dialog";
-import PropTypes from "prop-types";
 import React from "react";
 import { createRefetchContainer, graphql } from "react-relay";
+import type { RelayProp } from "react-relay";
 
-class ProjectPieceForm extends React.Component {
-  static propTypes = {
-    open: PropTypes.bool,
-    organization: PropTypes.object.isRequired,
-    relay: PropTypes.object.isRequired,
-    save: PropTypes.func,
-    toggle: PropTypes.func,
-  };
+import ProjectPieceFormOrganization from "./__generated__/ProjectPieceForm_organization.graphql";
 
+type Props = {
+  open: boolean,
+  organization: ProjectPieceFormOrganization,
+  relay: RelayProp,
+  save: (string) => void,
+  toggle: () => void,
+};
+
+class ProjectPieceForm extends React.Component<Props> {
   searchPiece = (term) => {
-    this.props.relay.refetch((variables) => {
+    const { relay } = this.props;
+    relay.refetch((variables) => {
       variables.term = term;
       return variables;
     });
   };
 
   render() {
-    const { pieces } = this.props.organization;
+    const { organization, save, open, toggle } = this.props;
+    const { pieces } = organization;
     return (
       <Dialog
-        title="Legg til reperotar"
-        open={this.props.open}
-        save={this.props.save}
-        toggle={this.props.toggle}
+        title="Legg til repertoar"
+        open={open}
+        save={save}
+        toggle={toggle}
         autoScrollBodyContent
       >
         <AutoComplete
@@ -42,7 +48,7 @@ class ProjectPieceForm extends React.Component {
             };
           })}
           onNewRequest={(chosen) => {
-            this.props.save(chosen.value);
+            save(chosen.value);
           }}
           onUpdateInput={(searchTerm) => {
             this.searchPiece(searchTerm);

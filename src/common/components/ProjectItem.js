@@ -1,6 +1,7 @@
+// @flow
+
 import Paper from "material-ui/Paper";
 import moment from "moment";
-import PropTypes from "prop-types";
 import React from "react";
 import { createFragmentContainer, graphql } from "react-relay";
 import Link from "found/lib/Link";
@@ -11,6 +12,7 @@ import Date from "./Date";
 import Daterange from "./Daterange";
 import List from "./List";
 import Text from "./Text";
+import ProjectItemProject from "./__generated__/ProjectItem_project.graphql";
 
 const renderPublicEvents = (edges) => {
   return (
@@ -26,13 +28,14 @@ const renderPublicEvents = (edges) => {
   );
 };
 
-class ProjectItem extends React.Component {
-  static propTypes = {
-    project: PropTypes.object.isRequired,
-    showText: PropTypes.bool,
-  };
+type Props = {
+  project: ProjectItemProject,
+  showText: boolean,
+};
 
+class ProjectItem extends React.Component<Props> {
   render() {
+    const { project, showText } = this.props;
     const { desktopGutterLess, desktopGutterMini } = theme.spacing;
     const {
       title,
@@ -44,8 +47,7 @@ class ProjectItem extends React.Component {
       events,
       poster,
       conductors,
-    } = this.props.project;
-    const { showText } = this.props;
+    } = project;
     const widePoster = moment(end).isAfter(moment([2016, 7, 1]));
     if (widePoster) {
       return (
