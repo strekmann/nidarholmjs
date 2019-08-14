@@ -65,7 +65,7 @@ class ContactForm extends React.Component {
           <div>
             <p>Du vil få en bekreftelse på epost også</p>
             <div>
-              <RaisedButton label="Lukk" onTouchTap={this.close} />
+              <RaisedButton label="Lukk" onClick={this.close} />
             </div>
           </div>
         ) : (
@@ -103,11 +103,7 @@ class ContactForm extends React.Component {
             </div>
             <div>
               <RaisedButton type="submit" label="Send" primary />
-              <RaisedButton
-                type="reset"
-                label="Avbryt"
-                onTouchTap={this.close}
-              />
+              <RaisedButton type="reset" label="Avbryt" onClick={this.close} />
             </div>
           </form>
         )}

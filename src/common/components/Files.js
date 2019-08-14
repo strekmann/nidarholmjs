@@ -193,7 +193,7 @@ class Files extends React.Component<Props, State> {
                 />
                 <RaisedButton
                   label="Last opp filer"
-                  onTouchTap={this.toggleAddFile}
+                  onClick={this.toggleAddFile}
                 />
                 <Dialog
                   title="Last opp filer"
@@ -211,7 +211,7 @@ class Files extends React.Component<Props, State> {
                   <RaisedButton
                     label="Ferdig"
                     primary
-                    onTouchTap={this.closeAddFile}
+                    onClick={this.closeAddFile}
                   />
                 </Dialog>
               </ToolbarGroup>
@@ -231,7 +231,7 @@ class Files extends React.Component<Props, State> {
             organization={this.props.organization}
           />
           {organization.files.pageInfo.hasNextPage ? (
-            <RaisedButton onTouchTap={this.fetchMore} label="Mer" primary />
+            <RaisedButton onClick={this.fetchMore} label="Mer" primary />
           ) : null}
         </div>
       </div>

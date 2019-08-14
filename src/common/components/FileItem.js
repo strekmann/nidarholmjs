@@ -119,12 +119,12 @@ class FileItem extends React.Component<Props, State> {
             >
               <MenuItem
                 primaryText="Rediger filegenskaper"
-                onTouchTap={this.toggleEditPermissions}
+                onClick={this.toggleEditPermissions}
               />
               {this.props.onSetProjectPoster ? (
                 <MenuItem
                   primaryText="Bruk som prosjektplakat"
-                  onTouchTap={this.setProjectPoster}
+                  onClick={this.setProjectPoster}
                 />
               ) : null}
             </IconMenu>
@@ -161,7 +161,7 @@ class FileItem extends React.Component<Props, State> {
               return (
                 <Chip
                   key={tag}
-                  onTouchTap={() => {
+                  onClick={() => {
                     this.searchTag(tag);
                   }}
                 >

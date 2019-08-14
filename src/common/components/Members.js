@@ -154,7 +154,7 @@ class Members extends React.Component<Props, State> {
             >
               <MenuItem
                 primaryText="Finn / legg til medlem"
-                onTouchTap={this.toggleAddUser}
+                onClick={this.toggleAddUser}
               />
               <MenuItem
                 primaryText="Grupper"
@@ -235,7 +235,7 @@ class Members extends React.Component<Props, State> {
                   <RaisedButton
                     type="reset"
                     label="Avbryt"
-                    onTouchTap={this.closeAddUser}
+                    onClick={this.closeAddUser}
                   />
                 </div>
               </form>
@@ -244,7 +244,7 @@ class Members extends React.Component<Props, State> {
                 <RaisedButton
                   type="reset"
                   label="Avbryt"
-                  onTouchTap={this.closeAddUser}
+                  onClick={this.closeAddUser}
                 />
               </div>
             )}

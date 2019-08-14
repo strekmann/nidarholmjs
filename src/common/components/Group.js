@@ -197,7 +197,7 @@ class Group extends React.Component<Props, State> {
               onRequestClose={this.closeJoinGroup}
               autoScrollBodyContent
               actions={
-                <FlatButton label="Avbryt" onTouchTap={this.closeJoinGroup} />
+                <FlatButton label="Avbryt" onClick={this.closeJoinGroup} />
               }
             >
               <AutoComplete
@@ -219,8 +219,8 @@ class Group extends React.Component<Props, State> {
               onRequestClose={this.closeEditing}
               autoScrollBodyContent
               actions={[
-                <FlatButton label="Avbryt" onTouchTap={this.closeEditing} />,
-                <FlatButton label="Lagre" primary onTouchTap={this.onSave} />,
+                <FlatButton label="Avbryt" onClick={this.closeEditing} />,
+                <FlatButton label="Lagre" primary onClick={this.onSave} />,
               ]}
             >
               <div>
@@ -262,13 +262,13 @@ class Group extends React.Component<Props, State> {
                 >
                   <MenuItem
                     primaryText="Legg til gruppemedlem"
-                    onTouchTap={() => {
+                    onClick={() => {
                       this.setState({ joinGroup: !this.state.joinGroup });
                     }}
                   />
                   <MenuItem
                     primaryText="Epostinnstillinger"
-                    onTouchTap={() => {
+                    onClick={() => {
                       this.setState({ editing: true });
                     }}
                   />

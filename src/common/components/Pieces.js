@@ -206,7 +206,7 @@ class Pieces extends React.Component<Props, State> {
                 {isMusicAdmin ? (
                   <MenuItem
                     primaryText="Nytt stykke"
-                    onTouchTap={() => {
+                    onClick={() => {
                       this.setState({ addPiece: !this.state.addPiece });
                     }}
                   />

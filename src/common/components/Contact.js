@@ -162,13 +162,13 @@ class Contact extends React.Component<Props, State> {
             >
               <MenuItem
                 primaryText="Rediger kontaktpersoner"
-                onTouchTap={() => {
+                onClick={() => {
                   this.setState({ editContacts: !this.state.editContacts });
                 }}
               />
               <MenuItem
                 primaryText="Rediger kontaktinfo"
-                onTouchTap={() => {
+                onClick={() => {
                   this.setState({ editInfo: !this.state.editInfo });
                 }}
               />
@@ -342,7 +342,7 @@ class Contact extends React.Component<Props, State> {
             <RaisedButton
               type="cancel"
               label="Avbryt"
-              onTouchTap={() => {
+              onClick={() => {
                 this.setState({ editInfo: false });
               }}
             />

@@ -221,8 +221,8 @@ class ProjectForm extends React.Component<Props, State> {
         onRequestClose={this.toggle}
         autoScrollBodyContent
         actions={[
-          <FlatButton onTouchTap={this.toggle} label="Avbryt" />,
-          <FlatButton onTouchTap={this.saveProject} label="Lagre" primary />,
+          <FlatButton onClick={this.toggle} label="Avbryt" />,
+          <FlatButton onClick={this.saveProject} label="Lagre" primary />,
         ]}
       >
         <div>

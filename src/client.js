@@ -5,7 +5,6 @@ import BrowserProtocol from "farce/lib/BrowserProtocol";
 import createInitialFarceRouter from "found/lib/createInitialFarceRouter";
 import React from "react";
 import ReactDOM from "react-dom";
-import injectTapEventPlugin from "react-tap-event-plugin";
 import moment from "moment";
 import "moment/locale/nb";
 import "./static/scss/styles.scss";
@@ -19,7 +18,6 @@ import {
 } from "./router";
 
 moment.locale("nb");
-injectTapEventPlugin();
 
 (async () => {
   const fetcher = new ClientFetcher("/graphql", window.__INITIAL_STATE__);

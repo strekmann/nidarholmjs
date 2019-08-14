@@ -143,8 +143,8 @@ class Event extends React.Component<Props, State> {
               anchorOrigin={{ vertical: "top", horizontal: "right" }}
               targetOrigin={{ vertical: "top", horizontal: "right" }}
             >
-              <MenuItem primaryText="Rediger" onTouchTap={this.toggleEdit} />
-              <MenuItem primaryText="Slett" onTouchTap={this.toggleDelete} />
+              <MenuItem primaryText="Rediger" onClick={this.toggleEdit} />
+              <MenuItem primaryText="Slett" onClick={this.toggleDelete} />
             </IconMenu>
           ) : null}
         </div>
@@ -160,7 +160,7 @@ class Event extends React.Component<Props, State> {
             return (
               <Chip
                 key={project.id}
-                onTouchTap={() => {
+                onClick={() => {
                   this.goTo(project);
                 }}
               >
@@ -185,12 +185,8 @@ class Event extends React.Component<Props, State> {
               onRequestClose={this.closeDelete}
               autoScrollBodyContent
               actions={[
-                <FlatButton onTouchTap={this.closeDelete} label="Avbryt" />,
-                <FlatButton
-                  primary
-                  onTouchTap={this.deleteEvent}
-                  label="Slett"
-                />,
+                <FlatButton onClick={this.closeDelete} label="Avbryt" />,
+                <FlatButton primary onClick={this.deleteEvent} label="Slett" />,
               ]}
             >
               <p>{event.title}</p>

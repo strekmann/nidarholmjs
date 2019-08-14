@@ -123,7 +123,7 @@ class EventGroupResponsibilityChooser extends React.Component<Props, State> {
     const nextButton = groups.length ? (
       <MenuItem
         primaryText={`Legg til ${groups[0].name}`}
-        onTouchTap={this.onChooseNext}
+        onClick={this.onChooseNext}
       />
     ) : null;
     const chooserItems = groups.map((group) => {
@@ -143,7 +143,7 @@ class EventGroupResponsibilityChooser extends React.Component<Props, State> {
         <Divider />
         <Menu>
           {nextButton}
-          <MenuItem primaryText="Legg til …" onTouchTap={this.toggleChooser} />
+          <MenuItem primaryText="Legg til …" onClick={this.toggleChooser} />
         </Menu>
         <Dialog
           title="Velg ansvarlig"
