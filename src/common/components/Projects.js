@@ -89,7 +89,7 @@ class Projects extends React.Component<Props, State> {
             >
               <MenuItem
                 primaryText="Nytt prosjekt"
-                onTouchTap={this.toggleAddProject}
+                onClick={this.toggleAddProject}
               />
             </IconMenu>
           ) : null}

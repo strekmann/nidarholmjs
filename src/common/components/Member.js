@@ -464,7 +464,7 @@ class Member extends React.Component<Props, State> {
               onRequestClose={this.closeJoinGroup}
               autoScrollBodyContent
               actions={
-                <FlatButton label="Avbryt" onTouchTap={this.closeJoinGroup} />
+                <FlatButton label="Avbryt" onClick={this.closeJoinGroup} />
               }
             >
               <AutoComplete
@@ -488,10 +488,7 @@ class Member extends React.Component<Props, State> {
               onRequestClose={this.closeAddingRole}
               autoScrollBodyContent
               actions={
-                <RaisedButton
-                  label="Avbryt"
-                  onTouchTap={this.closeAddingRole}
-                />
+                <RaisedButton label="Avbryt" onClick={this.closeAddingRole} />
               }
             >
               <List>
@@ -501,7 +498,7 @@ class Member extends React.Component<Props, State> {
                       <ListItem
                         key={edge.node.id}
                         primaryText={edge.node.name}
-                        onTouchTap={() => {
+                        onClick={() => {
                           if (edge && edge.node) {
                             this.addRole(edge.node.id);
                           }
@@ -528,10 +525,7 @@ class Member extends React.Component<Props, State> {
                 anchorOrigin={{ vertical: "top", horizontal: "right" }}
                 targetOrigin={{ vertical: "top", horizontal: "right" }}
               >
-                <MenuItem
-                  primaryText="Rediger"
-                  onTouchTap={this.openEditMember}
-                />
+                <MenuItem primaryText="Rediger" onClick={this.openEditMember} />
                 {this.props.viewer.id === user.id ? (
                   <MenuItem
                     primaryText="Bytt passord"
@@ -553,7 +547,7 @@ class Member extends React.Component<Props, State> {
                 {isAdmin ? (
                   <MenuItem
                     primaryText="Legg til i gruppe"
-                    onTouchTap={() => {
+                    onClick={() => {
                       this.setState({ joinGroup: !this.state.joinGroup });
                     }}
                   />
@@ -561,7 +555,7 @@ class Member extends React.Component<Props, State> {
                 {isAdmin ? (
                   <MenuItem
                     primaryText="Legg til verv/rolle"
-                    onTouchTap={() => {
+                    onClick={() => {
                       this.setState({ addingRole: !this.state.addingRole });
                     }}
                   />

@@ -283,26 +283,26 @@ class Project extends React.Component<Props, State> {
               {hasEndedActivities ? (
                 <MenuItem
                   primaryText="Vis tidligere aktiviteter"
-                  onTouchTap={this.showEnded}
+                  onClick={this.showEnded}
                 />
               ) : null}
               <MenuItem
                 primaryText="Rediger prosjektinfo"
-                onTouchTap={this.toggleEditProject}
+                onClick={this.toggleEditProject}
               />
               <MenuItem
                 primaryText="Legg til aktivitet"
-                onTouchTap={this.toggleAddEvent}
+                onClick={this.toggleAddEvent}
               />
               {isMusicAdmin ? (
                 <MenuItem
                   primaryText="Legg til repertoar"
-                  onTouchTap={this.toggleAddPiece}
+                  onClick={this.toggleAddPiece}
                 />
               ) : null}
               <MenuItem
                 primaryText="Last opp filer"
-                onTouchTap={this.toggleAddFile}
+                onClick={this.toggleAddFile}
               />
             </IconMenu>
           ) : null}
@@ -427,7 +427,7 @@ class Project extends React.Component<Props, State> {
               <RaisedButton
                 label="Ferdig"
                 primary
-                onTouchTap={this.closeAddFile}
+                onClick={this.closeAddFile}
               />
             </Dialog>
             <ProjectPieceForm

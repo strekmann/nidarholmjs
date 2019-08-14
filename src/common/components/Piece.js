@@ -120,7 +120,7 @@ class Piece extends React.Component<Props, State> {
                 {isMusicAdmin ? (
                   <MenuItem
                     primaryText="Rediger info om stykke"
-                    onTouchTap={() => {
+                    onClick={() => {
                       this.setState({ editPiece: !this.state.editPiece });
                     }}
                   />

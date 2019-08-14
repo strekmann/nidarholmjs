@@ -117,7 +117,7 @@ class EventPersonResponsibilityChooser extends React.Component<Props, State> {
     const nextButton = users.length ? (
       <MenuItem
         primaryText={`Legg til ${users[0].name}`}
-        onTouchTap={this.onChooseNext}
+        onClick={this.onChooseNext}
       />
     ) : null;
     const chooserItems = users.map((user) => {
@@ -137,7 +137,7 @@ class EventPersonResponsibilityChooser extends React.Component<Props, State> {
         <Divider />
         <Menu>
           {nextButton}
-          <MenuItem primaryText="Legg til …" onTouchTap={this.toggleChooser} />
+          <MenuItem primaryText="Legg til …" onClick={this.toggleChooser} />
         </Menu>
         <Dialog
           title="Velg ansvarlig"

@@ -4,9 +4,6 @@ import serialize from "serialize-javascript";
 import "cookie-parser";
 import moment from "moment";
 import Helmet from "react-helmet";
-import injectTapEventPlugin from "react-tap-event-plugin";
-
-injectTapEventPlugin();
 
 export default function renderPage(element, fetcher, userAgent) {
   const elementRendered = ReactDOMServer.renderToString(element);

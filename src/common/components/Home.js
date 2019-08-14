@@ -306,7 +306,7 @@ class Home extends React.Component<Props, State> {
                   }}
                 >
                   <h3>E-post</h3>
-                  <a onTouchTap={this.openEmailDialog}>
+                  <a onClick={this.openEmailDialog}>
                     <span
                       dangerouslySetInnerHTML={{
                         __html: organization.encodedEmail,

@@ -122,22 +122,18 @@ class PieceForm extends React.Component<Props, State> {
         actions={
           this.state.searching
             ? [
-                <FlatButton label="Avbryt" onTouchTap={this.props.cancel} />,
+                <FlatButton label="Avbryt" onClick={this.props.cancel} />,
                 <FlatButton
                   label="Nytt stykke"
-                  onTouchTap={() => {
+                  onClick={() => {
                     this.setState({ searching: false });
                   }}
                   primary
                 />,
               ]
             : [
-                <FlatButton label="Avbryt" onTouchTap={this.props.cancel} />,
-                <FlatButton
-                  label="Lagre"
-                  onTouchTap={this.savePiece}
-                  primary
-                />,
+                <FlatButton label="Avbryt" onClick={this.props.cancel} />,
+                <FlatButton label="Lagre" onClick={this.savePiece} primary />,
               ]
         }
       >

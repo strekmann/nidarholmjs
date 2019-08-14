@@ -80,8 +80,8 @@ class EventForm extends React.Component<Props, State> {
         ? flattenPermissions(this.props.event.permissions)
         : []
       : this.props.projectPermissions
-        ? flattenPermissions(this.props.projectPermissions)
-        : [],
+      ? flattenPermissions(this.props.projectPermissions)
+      : [],
     projects: this.props.event ? this.props.event.projects : [],
     highlighted: !!(this.props.event && this.props.event.highlighted),
     tags: [],
@@ -191,8 +191,8 @@ class EventForm extends React.Component<Props, State> {
         onRequestClose={this.props.cancel}
         autoScrollBodyContent
         actions={[
-          <FlatButton onTouchTap={this.props.cancel} label="Avbryt" />,
-          <FlatButton onTouchTap={this.save} label="Lagre" primary />,
+          <FlatButton onClick={this.props.cancel} label="Avbryt" />,
+          <FlatButton onClick={this.save} label="Lagre" primary />,
         ]}
       >
         <div>

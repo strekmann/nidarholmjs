@@ -81,6 +81,7 @@ class Navigation extends React.Component<Props, State> {
 
   render() {
     const { organization, viewer } = this.props;
+    const { open, anchorEl } = this.state;
     const { isMember } = organization;
     const logo = (
       <Link
@@ -92,7 +93,7 @@ class Navigation extends React.Component<Props, State> {
       >
         <img
           src="/img/logo.wh.svg"
-          alt="Nidarholm-logo"
+          alt="Forsida"
           style={{
             height: 75,
             width: 196,
@@ -184,7 +185,7 @@ class Navigation extends React.Component<Props, State> {
         <div className="flex-menu-mobile">
           <div style={{ flexGrow: 1 }}>{logo}</div>
           <div>
-            {this.props.viewer ? (
+            {viewer ? (
               <Link to={`/users/${viewer.id}`}>{this.renderAvatar()}</Link>
             ) : (
               <Link to="/login">
@@ -198,14 +199,14 @@ class Navigation extends React.Component<Props, State> {
           <div>
             <IconButton
               className="flex-menu-handler"
-              onTouchTap={this.handleOpen}
+              onClick={this.handleOpen}
               touch
             >
               <NavigationMenu color={fullWhite} />
             </IconButton>
             <Popover
-              open={this.state.open}
-              anchorEl={this.state.anchorEl}
+              open={open}
+              anchorEl={anchorEl}
               anchorOrigin={{ horizontal: "right", vertical: "bottom" }}
               targetOrigin={{ horizontal: "right", vertical: "top" }}
               onRequestClose={this.handleClose}

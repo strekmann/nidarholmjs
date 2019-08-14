@@ -76,8 +76,8 @@ class Roles extends React.Component {
     const { organization } = this.props;
     const { isAdmin } = organization;
     const actions = [
-      <RaisedButton label="Avbryt" onTouchTap={this.onClose} />,
-      <RaisedButton label="Lagre" onTouchTap={this.onSave} primary />,
+      <RaisedButton label="Avbryt" onClick={this.onClose} />,
+      <RaisedButton label="Lagre" onClick={this.onSave} primary />,
     ];
     return (
       <Paper className="row">
@@ -95,7 +95,7 @@ class Roles extends React.Component {
             >
               <MenuItem
                 primaryText="Legg til ny rolle"
-                onTouchTap={() => {
+                onClick={() => {
                   this.setState({ creating: true });
                 }}
               />
@@ -142,7 +142,7 @@ class Roles extends React.Component {
                 initiallyOpen
                 rightIconButton={
                   <IconButton
-                    onTouchTap={(event) => {
+                    onClick={(event) => {
                       this.onDelete(event, id);
                     }}
                   >

@@ -112,7 +112,7 @@ class Pages extends React.Component<Props, State> {
               >
                 <MenuItem
                   primaryText="Legg til side"
-                  onTouchTap={this.toggleAddPage}
+                  onClick={this.toggleAddPage}
                 />
               </IconMenu>
             </div>

@@ -122,7 +122,7 @@ class Page extends React.Component<Props, State> {
               anchorOrigin={{ vertical: "top", horizontal: "right" }}
               targetOrigin={{ vertical: "top", horizontal: "right" }}
             >
-              <MenuItem primaryText="Rediger" onTouchTap={this.toggleEdit} />
+              <MenuItem primaryText="Rediger" onClick={this.toggleEdit} />
             </IconMenu>
           </div>
         ) : null}

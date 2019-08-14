@@ -70,7 +70,7 @@ class Footer extends React.Component<Props, State> {
             save={this.sendEmail}
             organization={organization}
           />
-          <a onTouchTap={this.openEmailDialog} style={{ cursor: "pointer" }}>
+          <a onClick={this.openEmailDialog} style={{ cursor: "pointer" }}>
             Kontaktskjema
           </a>{" "}
           ·{" "}

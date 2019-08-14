@@ -40,11 +40,7 @@ class PieceSearch extends React.Component<Props, State> {
           onChange={this.onSearchChange}
         />
         <RaisedButton label="Søk" type="submit" primary />
-        <RaisedButton
-          label="Tøm"
-          type="reset"
-          onTouchTap={this.props.onClear}
-        />
+        <RaisedButton label="Tøm" type="reset" onClick={this.props.onClear} />
       </form>
     );
   }
