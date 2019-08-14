@@ -63,7 +63,6 @@ jpg`;
             },
             { property: "fb:app_id", content: organization.facebookAppid },
           ]}
-          link={[{ rel: "stylesheet", href: "/styles.css" }]}
         />
         <Navigation viewer={this.props.viewer} organization={organization} />
         {this.props.children}
