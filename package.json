@@ -40,6 +40,19 @@
     "arrowParens": "always",
     "trailingComma": "all"
   },
+  "nodemonConfig": {
+    "ignore": [
+      "client/",
+      "convert/",
+      "dist/",
+      "public/",
+      "setup/",
+      "test/",
+      "tmp/",
+      "uploaded_files/",
+      "files/*"
+    ]
+  },
   "dependencies": {
     "@babel/polyfill": "^7.2.5",
     "@babel/register": "^7.0.0",
