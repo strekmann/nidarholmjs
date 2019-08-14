@@ -21,7 +21,10 @@ export default function renderPage(element, fetcher, userAgent) {
     <head>
         <meta charset="utf-8" />
         <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-        <link rel="manifest" href="/manifest.json">
+        <link rel="manifest" href="/manifest.json" />
+        <link rel="icon" sizes="192x192" href="/img/logo.blue.transparent.192.png" />
+        <link rel="apple-touch-icon" href="/img/logo.blue.white.192.png">
+        <meta name="theme-color" content="#1a237e" />
         ${helmet.title.toString()}
         ${helmet.meta.toString()}
         ${link}
