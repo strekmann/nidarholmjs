@@ -21,6 +21,7 @@ type Props = {
   organizationEventPersonResponsibility: OrganizationEventPersonResponsibility,
   users: Array<{ id: string, name: string }>,
   relay: RelayRefetchProp,
+  selectUser: (user: { id: string, name: string }) => void,
 };
 
 type State = {
@@ -34,34 +35,45 @@ class EventPersonResponsibilityChooser extends React.Component<Props, State> {
     users: [],
   };
 
-  componentWillMount = () => {
-    this.setState({
-      users: this.orderUsers(
-        this.props.users,
-        this.props.organizationEventPersonResponsibility.last,
-      ),
-    });
-  };
+  static getDerivedStateFromProps(props, state) {
+    if (props.users !== state.users) {
+      return {
+        users: props.users,
+      };
+    }
+    return null;
+  }
 
   onChooseNext = () => {
-    const { relay, event, organizationEventPersonResponsibility } = this.props;
-    const user = this.state.users[0];
+    const {
+      relay,
+      event,
+      organizationEventPersonResponsibility,
+      selectUser,
+    } = this.props;
+    const { users } = this.state;
+    const user = users[0];
     AddEventPersonResponsibilityMutation.commit(relay.environment, {
       userId: user.id,
       eventId: event.id,
       responsibilityId: organizationEventPersonResponsibility.id,
     });
-    this.setState({ users: this.orderUsers(this.state.users, user) });
+    selectUser(user);
   };
 
   onChoose = (user) => {
-    const { relay, event, organizationEventPersonResponsibility } = this.props;
+    const {
+      relay,
+      event,
+      organizationEventPersonResponsibility,
+      selectUser,
+    } = this.props;
     AddEventPersonResponsibilityMutation.commit(relay.environment, {
       userId: user.id,
       eventId: event.id,
       responsibilityId: organizationEventPersonResponsibility.id,
     });
-    this.setState({ users: this.orderUsers(this.state.users, user) });
+    selectUser(user);
     this.toggleChooser();
   };
 
@@ -79,21 +91,6 @@ class EventPersonResponsibilityChooser extends React.Component<Props, State> {
         chooserOpen: !oldState.chooserOpen,
       };
     });
-  };
-
-  orderUsers = (users, lastUser) => {
-    if (!lastUser) {
-      return users;
-    }
-    const lastIndex = users.findIndex((user) => {
-      return user.id === lastUser.id;
-    });
-    if (lastIndex < 0) {
-      return users;
-    }
-    return users
-      .slice(lastIndex + 1, users.length)
-      .concat(users.slice(0, lastIndex + 1));
   };
 
   render() {
@@ -143,7 +140,6 @@ class EventPersonResponsibilityChooser extends React.Component<Props, State> {
           title="Velg ansvarlig"
           open={this.state.chooserOpen}
           onRequestClose={this.toggleChooser}
-          autoScrollBodyContent
         >
           <Menu>{chooserItems}</Menu>
         </Dialog>
@@ -172,9 +168,6 @@ export default createFragmentContainer(EventPersonResponsibilityChooser, {
     fragment EventPersonResponsibilityChooser_organizationEventPersonResponsibility on OrganizationEventPersonResponsibility {
       id
       name
-      last {
-        id
-      }
     }
   `,
 });
