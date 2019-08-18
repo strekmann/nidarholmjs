@@ -146,6 +146,7 @@ class EventGroupResponsibilityChooser extends React.Component<Props, State> {
           title="Velg ansvarlig"
           open={chooserOpen}
           onRequestClose={this.toggleChooser}
+          autoScrollBodyContent={true}
         >
           <Menu>{chooserItems}</Menu>
         </Dialog>

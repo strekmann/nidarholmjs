@@ -140,6 +140,7 @@ class EventPersonResponsibilityChooser extends React.Component<Props, State> {
           title="Velg ansvarlig"
           open={this.state.chooserOpen}
           onRequestClose={this.toggleChooser}
+          autoScrollBodyContent={true}
         >
           <Menu>{chooserItems}</Menu>
         </Dialog>
