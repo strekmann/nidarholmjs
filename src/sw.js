@@ -3,7 +3,7 @@
 // eslint-disable-next-line no-restricted-globals
 self.addEventListener("install", (event) => {
   event.waitUntil(
-    caches.open("v1").then((cache) => {
+    caches.open("v2").then((cache) => {
       return cache.addAll([
         "/img/logo.blue.transparent.192.png",
         "/img/logo.blue.white.192.png",
@@ -17,6 +17,7 @@ self.addEventListener("install", (event) => {
 
 // eslint-disable-next-line no-restricted-globals
 self.addEventListener("fetch", (event) => {
+  console.debug("E", event);
   event.respondWith(
     caches.match(event.request).then((result) => {
       return (
@@ -30,4 +31,28 @@ self.addEventListener("fetch", (event) => {
       );
     }),
   );
+});
+
+// eslint-disable-next-line no-restricted-globals
+self.addEventListener("activate", (event) => {
+  const cacheKeeplist = ["v2"];
+
+  event.waitUntil(
+    caches.keys().then((keyList) => {
+      return Promise.all(
+        keyList.map((key) => {
+          if (cacheKeeplist.indexOf(key) === -1) {
+            return caches.delete(key);
+          }
+          return caches[key];
+        }),
+      );
+    }),
+  );
+});
+
+// eslint-disable-next-line no-restricted-globals
+self.addEventListener("activate", (event) => {
+  // eslint-disable-next-line no-restricted-globals
+  event.waitUntil(self.clients.claim());
 });

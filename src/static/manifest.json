@@ -1,6 +1,7 @@
 {
   "name": "Musikkforeningen Nidarholm",
   "short_name": "Nidarholm",
+  "start_url": "/",
   "icons": [
     {
       "src": "/img/logo.blue.transparent.192.png",
