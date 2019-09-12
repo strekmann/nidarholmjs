@@ -23,6 +23,9 @@ self.addEventListener("fetch", (event) => {
       return (
         result ||
         fetch(event.request).then((response) => {
+          if (event.request.method !== "GET") {
+            return response;
+          }
           return caches.open("v1").then((cache) => {
             cache.put(event.request, response.clone());
             return response;

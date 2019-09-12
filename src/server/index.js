@@ -39,6 +39,7 @@ import renderPage from "./renderPage";
 import passport from "./lib/passport";
 import { icalEvents } from "./icalRoutes";
 import { downloadArchive } from "./musicRoutes";
+import File from "./models/File";
 import Organization from "./models/Organization";
 import PasswordCode from "./models/PasswordCode";
 import User from "./models/User";
@@ -318,7 +319,11 @@ app.get("/files/o/:path/:filename", (req, res) => {
 
   fs.exists(fullpath, (exists) => {
     if (exists) {
-      res.sendFile(fullpath);
+      File.findOne({ hash: filepath }).then((file) => {
+        res.sendFile(fullpath, {
+          headers: { "Content-Type": file.mimetype },
+        });
+      });
     } else {
       res.sendStatus(404);
     }
