@@ -205,7 +205,7 @@ export function sendReminderEmails() {
                 text: responsibility.reminderText.replace("\n", "\r\n"),
               };
               transporter.sendMail(data, (emailErr, emailInfo) => {
-                console.info("SENT:", emailErr, emailInfo);
+                console.info("SENT:", data, emailErr, emailInfo);
               });
             } else {
               console.info(
