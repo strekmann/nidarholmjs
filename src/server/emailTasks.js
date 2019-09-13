@@ -176,7 +176,7 @@ export function sendReminderEmails() {
                 (group) => {
                   return {
                     name: group.name,
-                    groupEmail: group.email,
+                    email: group.group_email,
                   };
                 },
               );
@@ -188,7 +188,7 @@ export function sendReminderEmails() {
             const recipients = resolvedGroups.map((group) => {
               return {
                 name: group.name,
-                address: group.groupEmail,
+                address: group.email,
               };
             });
             if (
