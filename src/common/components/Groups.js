@@ -16,7 +16,9 @@ type Props = {
     groups: Array<{
       id: string,
       name: string,
+      email: string,
       externallyHidden: boolean,
+      members: Array<any>,
     }>,
   },
 };
@@ -25,6 +27,8 @@ class Groups extends React.Component<Props> {
   static childContextTypes = {
     muiTheme: PropTypes.object.isRequired,
   };
+
+  muiTheme: {};
 
   constructor(props) {
     super(props);
@@ -35,10 +39,9 @@ class Groups extends React.Component<Props> {
     return { muiTheme: this.muiTheme };
   }
 
-  muiTheme: {};
-
   render() {
-    const { groups } = this.props.organization;
+    const { organization } = this.props;
+    const { groups } = organization;
     return (
       <section>
         <Paper className="row">
@@ -53,6 +56,7 @@ class Groups extends React.Component<Props> {
                   primaryText={
                     <Link to={`/group/${group.id}`}>{group.name}</Link>
                   }
+                  secondaryText={`${group.members.length} ${group.email || ""}`}
                 />
               );
             })}
@@ -70,6 +74,10 @@ export default createFragmentContainer(Groups, {
         id
         name
         externallyHidden
+        members {
+          id
+        }
+        email
       }
     }
   `,
