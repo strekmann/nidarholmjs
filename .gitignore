@@ -17,3 +17,11 @@
 /scripts/settings.json
 /ansible/.keycache
 __generated__
+
+
+#Added by cargo
+#
+#already existing elements are commented out
+
+/target
+**/*.rs.bk
