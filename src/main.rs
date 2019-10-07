@@ -36,7 +36,7 @@ struct MemberList {
 struct Subscription {
   list_id: String,
   subscriber: String,
-  // display_name: String,
+  role: String,
   pre_verified: bool,
   pre_confirmed: bool,
   pre_approved: bool,
@@ -57,11 +57,12 @@ impl MemberList {
 }
 
 impl Api {
-  fn get_members(&self, group_email: &str) -> HashSet<String> {
+  fn get_members(&self, group_email: &str, role: &str) -> HashSet<String> {
     let url = format!(
-      "{}/lists/{}/roster/member",
+      "{}/lists/{}/roster/{}",
       self.base_url,
-      str::replace(group_email, "@", ".")
+      str::replace(group_email, "@", "."),
+      role,
     );
     let mut response = self
       .client
@@ -86,10 +87,11 @@ impl Api {
     member_set
   }
 
-  fn subscribe(&self, group_email: &str, group_member: &str) {
+  fn subscribe(&self, group_email: &str, group_member: &str, role: &str) {
     let subscription = Subscription {
       list_id: str::replace(group_email, "@", ".").to_string(),
       subscriber: group_member.to_string(),
+      role: role.to_string(),
       pre_verified: true,
       pre_confirmed: true,
       pre_approved: true,
@@ -102,32 +104,32 @@ impl Api {
       .send()
       .expect("Error in adding user")
       .error_for_status()
-      .unwrap_or_else(|_| {
+      .unwrap_or_else(|err| {
         panic!(
-          "Add did not work for {} to {}",
-          subscription.subscriber, subscription.list_id
+          "Add did not work for {} to {}: {}",
+          subscription.subscriber, subscription.list_id, err
         )
       });
   }
 
-  fn unsubscribe(&self, group_email: &str, emails: Vec<String>) {
+  fn unsubscribe(&self, group_email: &str, emails: Vec<String>, role: &str) {
     let mut email_tuples: Vec<(String, String)> = Vec::new();
     for email in emails {
       email_tuples.push(("emails".to_string(), email));
     }
     let delete_url: String = format!(
-      "{}/lists/{}/roster/member",
+      "{}/lists/{}/roster/{}",
       self.base_url,
-      str::replace(group_email, "@", ".")
+      str::replace(group_email, "@", "."),
+      role,
     );
-    //.as_str();
     self
       .client
       .delete(&delete_url)
       .basic_auth(self.user.to_owned(), self.password.to_owned())
       .form(&email_tuples)
       .send()
-      .expect("")
+      .expect("Delete query failed")
       .error_for_status()
       .unwrap_or_else(|_| {
         panic!(
@@ -136,18 +138,18 @@ impl Api {
         )
       });
   }
-  fn update_members(&self, group_email: &str, members: Vec<&str>) {
-    let mut member_set = self.get_members(group_email);
+  fn update_members(&self, group_email: &str, members: Vec<&str>, role: &str) {
+    let mut member_set = self.get_members(group_email, role);
     for group_member in members {
       if !member_set.contains(group_member) {
-        self.subscribe(group_email, group_member);
+        self.subscribe(group_email, group_member, role);
       } else {
         member_set.remove(group_member);
       }
     }
     if !member_set.is_empty() {
       let emails = member_set.into_iter().collect::<Vec<String>>();
-      self.unsubscribe(group_email, emails);
+      self.unsubscribe(group_email, emails, role);
     }
   }
 }
@@ -190,14 +192,10 @@ fn main() {
   let members = g
     .get_array(String::from("members").as_str())
     .expect("Could not get members");
-  //dbg!(members);
 
   for m in members {
-    //dbg!(m);
     let mm = m.as_document().expect("Could not get document from member");
-    //dbg!(mm);
     let user_id = mm.get_str("user").expect("Could not get user id");
-    //dbg!(user_id);
     let users = client.db(&database).collection("users");
     let user_query = doc! {"_id" => user_id};
     let user = users
@@ -209,7 +207,6 @@ fn main() {
         let no_email = u.get_bool("no_email").unwrap_or(false);
         let email = u.get_str("email").unwrap_or("");
         let user_groups = u.get_array("groups").expect("Could not get user_groups");
-        //dbg!(user_groups.clone());
         let is_member = user_groups.iter().fold(false, |value, group_bson| {
           let group_id = group_bson.as_str().expect("No group id"); //.get_str("_id").expect("No _id field in group");
           value || member_group_id == group_id
@@ -244,8 +241,39 @@ fn main() {
       }
     }
   }
-  //dbg!(role_users_map);
-  //dbg!(role_map);
+
+  // Find moderators to use for all lists
+  let moderator_group_query = doc!("name" => "Listemoderatorer");
+  let moderator_group_bson = groups
+    .find_one(Some(moderator_group_query), None)
+    .expect("Could not query list moderator group");
+  let moderator_group = moderator_group_bson.unwrap();
+  let members_bson = moderator_group
+    .get_array("members")
+    .expect("Could not get members of moderator group");
+
+  let mut moderator_emails: Vec<&str> = Vec::new();
+  for mod_member in members_bson {
+    let moderator_doc = mod_member
+      .as_document()
+      .expect("Could not convert moderator from bson");
+
+    let user_id = moderator_doc
+      .get_str("user")
+      .expect("Could not get user from moderator document");
+    let moderator_user = user_map
+      .get(user_id)
+      .unwrap_or_else(|| panic!("Could not get moderator from user map {}", user_id));
+    let moderator_email = moderator_user
+      .get_str("email")
+      .expect("No email field in user object for moderator");
+    if !moderator_email.is_empty() {
+      moderator_emails.push(moderator_email);
+    }
+  }
+  dbg!(&moderator_emails);
+  // TODO: Do not override when things have stabilized
+  let moderator_emails: Vec<&str> = vec!["sigurdga@sigurdga.no"];
 
   // VERV-ADRESSER
   for (role_id, user_ids) in &role_users_map {
@@ -269,13 +297,13 @@ fn main() {
         emails.push(user_email);
       }
     }
-    api.update_members(role_email, emails);
+    api.update_members(role_email, emails, "member");
+    api.update_members(role_email, moderator_emails.to_owned(), "moderator");
   }
 
   let all_groups = groups.find(None, None).expect("All groups query failed");
   for group_bson in all_groups {
     let group = group_bson.unwrap();
-    // let group_id = group.get_str("_id").expect("Could not find _id for group");
     let group_email = group.get_str("group_email").unwrap_or("");
 
     let empty: Vec<bson::Bson> = Vec::new();
@@ -310,13 +338,15 @@ fn main() {
       let group_leader_email = group.get_str("group_leader_email").unwrap_or_else(|_| "");
       if !group_leader_email.is_empty() {
         // Gruppe med gruppeledere
-        api.update_members(group_leader_email, group_leaders);
-        api.update_members(group_email, group_members);
+        api.update_members(group_leader_email, group_leaders, "member");
+        api.update_members(group_email, group_members, "member");
+        api.update_members(group_leader_email, moderator_emails.to_owned(), "moderator");
+        api.update_members(group_email, moderator_emails.to_owned(), "moderator");
       } else {
         // Gruppe uten gruppeledere
-        api.update_members(group_email, group_members);
+        api.update_members(group_email, group_members, "member");
+        api.update_members(group_email, moderator_emails.to_owned(), "moderator");
       }
     }
   }
-  //dbg!(all_groups);
 }
