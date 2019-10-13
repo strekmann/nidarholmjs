@@ -1,13 +1,14 @@
+use log::{debug, info, warn};
 use mongodb::db::ThreadedDatabase;
 use mongodb::{doc, Client, ThreadedClient};
 use reqwest;
 use serde::{Deserialize, Serialize};
 use std::collections::{HashMap, HashSet};
 use std::env;
-use std::vec;
 
 #[macro_use]
 extern crate bson;
+extern crate log;
 
 #[derive(Clone, Debug, Deserialize)]
 struct Member {
@@ -19,7 +20,7 @@ struct Member {
   member_id: u128,
   self_link: String,
   display_name: String,
-  user: String,
+  user: Option<String>,
   http_etag: String,
 }
 
@@ -40,6 +41,11 @@ struct Subscription {
   pre_verified: bool,
   pre_confirmed: bool,
   pre_approved: bool,
+}
+
+#[derive(Clone, Debug, Serialize)]
+struct ModerationAction {
+  moderation_action: String,
 }
 
 struct Api {
@@ -82,7 +88,10 @@ impl Api {
     });
     let mut member_set: HashSet<String> = HashSet::new();
     for member in json.entries {
-      member_set.insert(member.email.clone());
+      match member.user {
+        Some(_) => member_set.insert(member.email.clone()),
+        None => false, // A nonmember on the list not registered by us (normal case for post etc)
+      };
     }
     member_set
   }
@@ -96,6 +105,7 @@ impl Api {
       pre_confirmed: true,
       pre_approved: true,
     };
+    info!("{} + {} as {}", group_email, group_member, role);
     self
       .client
       .post(format!("{}/members", self.base_url).as_str())
@@ -114,8 +124,8 @@ impl Api {
 
   fn unsubscribe(&self, group_email: &str, emails: Vec<String>, role: &str) {
     let mut email_tuples: Vec<(String, String)> = Vec::new();
-    for email in emails {
-      email_tuples.push(("emails".to_string(), email));
+    for email in &emails {
+      email_tuples.push((String::from("emails"), email.to_owned()));
     }
     let delete_url: String = format!(
       "{}/lists/{}/roster/{}",
@@ -123,6 +133,7 @@ impl Api {
       str::replace(group_email, "@", "."),
       role,
     );
+    info!("{} - {} as {}", group_email, emails.join(", "), role);
     self
       .client
       .delete(&delete_url)
@@ -138,11 +149,35 @@ impl Api {
         )
       });
   }
-  fn update_members(&self, group_email: &str, members: Vec<&str>, role: &str) {
+  fn set_moderation_action(&self, action: &str, role: &str, group_email: &str, email: &str) {
+    let patch_url: String = format!("{}/lists/{}/{}/{}", self.base_url, group_email, role, email,);
+    let moderation_action = ModerationAction {
+      moderation_action: action.to_string(),
+    };
+    self
+      .client
+      .patch(&patch_url)
+      .basic_auth(self.user.to_owned(), self.password.to_owned())
+      .form(&moderation_action)
+      .send()
+      .expect("Setting moderation action failed")
+      .error_for_status()
+      .unwrap_or_else(|_| {
+        panic!(
+          "Patching moderation_action {:#?} did not work for {} in {}",
+          moderation_action, email, group_email
+        )
+      });
+  }
+  fn update_members(&self, group_email: &str, members: HashSet<&str>, role: &str) {
+    debug!("Updating {}, {}", group_email, role);
     let mut member_set = self.get_members(group_email, role);
     for group_member in members {
       if !member_set.contains(group_member) {
         self.subscribe(group_email, group_member, role);
+        if role == "nonmember" {
+          self.set_moderation_action("accept", role, group_email, group_member);
+        }
       } else {
         member_set.remove(group_member);
       }
@@ -155,6 +190,7 @@ impl Api {
 }
 
 fn main() {
+  env_logger::init();
   let database = env::var("DATABASE").expect("Database env var not present");
 
   let api = Api {
@@ -205,7 +241,7 @@ fn main() {
       Some(u) => {
         let in_list = u.get_bool("in_list").unwrap_or(false);
         let no_email = u.get_bool("no_email").unwrap_or(false);
-        let email = u.get_str("email").unwrap_or("");
+        let email = u.get_str("email").unwrap_or("Could not get email");
         let user_groups = u.get_array("groups").expect("Could not get user_groups");
         let is_member = user_groups.iter().fold(false, |value, group_bson| {
           let group_id = group_bson.as_str().expect("No group id"); //.get_str("_id").expect("No _id field in group");
@@ -216,14 +252,13 @@ fn main() {
         }
       }
       None => {
-        dbg!("User id not found", user_id, mm);
+        warn!("User id not found {}: {}", user_id, mm);
       }
     }
 
     let roles = client.db(&database).collection("roles");
     if mm.contains_key("roles") {
       let role_ids = mm.get_array("roles").expect("Could not get roles");
-      //dbg!(role_ids);
       for role_bson in role_ids {
         let role_id = role_bson.as_str().unwrap();
         let role_query = doc! {"_id" => role_id};
@@ -242,6 +277,17 @@ fn main() {
     }
   }
 
+  // Set of all members
+  // TODO: Should be possible to get the email value twice where we get it
+  // from the memberlist above
+  let all_members: HashSet<&str> = user_map
+    .values()
+    .map(|v| {
+      v.get_str("email")
+        .unwrap_or("Could not get email the second time")
+    })
+    .collect();
+
   // Find moderators to use for all lists
   let moderator_group_query = doc!("name" => "Listemoderatorer");
   let moderator_group_bson = groups
@@ -252,7 +298,7 @@ fn main() {
     .get_array("members")
     .expect("Could not get members of moderator group");
 
-  let mut moderator_emails: Vec<&str> = Vec::new();
+  let mut moderator_emails: HashSet<&str> = HashSet::new();
   for mod_member in members_bson {
     let moderator_doc = mod_member
       .as_document()
@@ -268,12 +314,12 @@ fn main() {
       .get_str("email")
       .expect("No email field in user object for moderator");
     if !moderator_email.is_empty() {
-      moderator_emails.push(moderator_email);
+      moderator_emails.insert(moderator_email);
     }
   }
-  dbg!(&moderator_emails);
   // TODO: Do not override when things have stabilized
-  let moderator_emails: Vec<&str> = vec!["sigurdga@sigurdga.no"];
+  let mut moderator_emails: HashSet<&str> = HashSet::new();
+  moderator_emails.insert("sigurdga@sigurdga.no");
 
   // VERV-ADRESSER
   for (role_id, user_ids) in &role_users_map {
@@ -285,7 +331,7 @@ fn main() {
       continue;
     }
 
-    let mut emails: Vec<&str> = Vec::new();
+    let mut emails: HashSet<&str> = HashSet::new();
 
     for user_id in user_ids {
       let user = user_map
@@ -294,12 +340,15 @@ fn main() {
       let user_email = user.get_str("email").expect("No email field in user");
 
       if role_email != "" && user_email != "" {
-        emails.push(user_email);
+        emails.insert(user_email);
       }
     }
     api.update_members(role_email, emails, "member");
     api.update_members(role_email, moderator_emails.to_owned(), "moderator");
   }
+
+  // Used for special group "gruppeledere"
+  let mut all_group_leaders: HashSet<&str> = HashSet::new();
 
   let all_groups = groups.find(None, None).expect("All groups query failed");
   for group_bson in all_groups {
@@ -309,8 +358,8 @@ fn main() {
     let empty: Vec<bson::Bson> = Vec::new();
     let members = group.get_array("members").unwrap_or_else(|_| &empty);
 
-    let mut group_members: Vec<&str> = vec![];
-    let mut group_leaders: Vec<&str> = vec![];
+    let mut group_members: HashSet<&str> = HashSet::new();
+    let mut group_leaders: HashSet<&str> = HashSet::new();
     for _member in members {
       let member = _member
         .as_document()
@@ -321,13 +370,14 @@ fn main() {
       if let Some(u) = user_map.get(user_id) {
         let user_email = u.get_str("email").unwrap_or("");
         if !user_email.is_empty() {
-          group_members.push(user_email);
+          group_members.insert(user_email);
 
           let group_leader_email = group.get_str("group_leader_email").unwrap_or_else(|_| "");
           if !group_leader_email.is_empty() {
             let role_ids = member.get_array("roles").unwrap_or(&empty);
             if !role_ids.is_empty() {
-              group_leaders.push(user_email);
+              group_leaders.insert(user_email);
+              all_group_leaders.insert(user_email);
             }
           }
         }
@@ -338,15 +388,54 @@ fn main() {
       let group_leader_email = group.get_str("group_leader_email").unwrap_or_else(|_| "");
       if !group_leader_email.is_empty() {
         // Gruppe med gruppeledere
-        api.update_members(group_leader_email, group_leaders, "member");
-        api.update_members(group_email, group_members, "member");
+        api.update_members(group_leader_email, group_leaders.to_owned(), "member");
+        api.update_members(group_email, group_members.to_owned(), "member");
         api.update_members(group_leader_email, moderator_emails.to_owned(), "moderator");
         api.update_members(group_email, moderator_emails.to_owned(), "moderator");
+        api.update_members(
+          group_leader_email,
+          all_members
+            .difference(&group_leaders)
+            .map(|s| &**s)
+            .collect(),
+          "nonmember",
+        );
+        api.update_members(
+          group_email,
+          all_members
+            .difference(&group_members)
+            .map(|s| &**s)
+            .collect(),
+          "nonmember",
+        );
       } else {
         // Gruppe uten gruppeledere
-        api.update_members(group_email, group_members, "member");
+        api.update_members(group_email, group_members.to_owned(), "member");
         api.update_members(group_email, moderator_emails.to_owned(), "moderator");
+        api.update_members(
+          group_email,
+          all_members
+            .difference(&group_members)
+            .map(|s| &**s)
+            .collect(),
+          "nonmember",
+        );
       }
     }
   }
+
+  api.update_members(
+    "gruppeledere@nidarholm.no",
+    all_group_leaders.to_owned(),
+    "member",
+  );
+  api.update_members("gruppeledere@nidarholm.no", moderator_emails, "moderator");
+  api.update_members(
+    "gruppeledere@nidarholm.no",
+    all_members
+      .difference(&all_group_leaders)
+      .map(|s| &**s)
+      .collect(),
+    "nonmember",
+  );
 }
