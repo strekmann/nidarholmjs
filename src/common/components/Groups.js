@@ -8,19 +8,12 @@ import GridOff from "material-ui/svg-icons/image/grid-off";
 import PropTypes from "prop-types";
 import * as React from "react";
 import { createFragmentContainer, graphql } from "react-relay";
+import type Organization from "./__generated__/Groups_organization.graphql";
 
 import theme from "../theme";
 
 type Props = {
-  organization: {
-    groups: Array<{
-      id: string,
-      name: string,
-      email: string,
-      externallyHidden: boolean,
-      members: Array<any>,
-    }>,
-  },
+  organization: Organization,
 };
 
 class Groups extends React.Component<Props> {
@@ -54,9 +47,13 @@ class Groups extends React.Component<Props> {
                   key={group.id}
                   rightIcon={group.externallyHidden ? <GridOff /> : null}
                   primaryText={
-                    <Link to={`/group/${group.id}`}>{group.name}</Link>
+                    <span>
+                      <Link to={`/group/${group.id}`}>{group.name}</Link> (
+                      {group.members.length})
+                    </span>
                   }
-                  secondaryText={`${group.members.length} ${group.email || ""}`}
+                  secondaryText={`${group.email ||
+                    ""} ${group.groupLeaderEmail || ""}`}
                 />
               );
             })}
@@ -78,6 +75,7 @@ export default createFragmentContainer(Groups, {
           id
         }
         email
+        groupLeaderEmail
       }
     }
   `,
