@@ -11,7 +11,6 @@ self.addEventListener("install", (event) => {
         "/img/logo.blue.white.192.png",
         "/img/logo.wh.svg",
         "/img/musikkforeningen-nidarholm.jpg",
-        "/javascript.js",
       ]);
     }),
   );

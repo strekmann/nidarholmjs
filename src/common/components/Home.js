@@ -107,9 +107,7 @@ class Home extends React.Component<Props, State> {
               paddingLeft: desktopGutterLess,
               color: theme.palette.accent3Color,
             }}
-          >
-            Foto: Vilde Marie Steen Angell
-          </div>
+          ></div>
         </div>
         <div
           style={{
