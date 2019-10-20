@@ -1,6 +1,6 @@
 /* globals self, caches, fetch */
 
-const activeCacheName = "v5";
+const activeCacheName = "v7";
 
 // eslint-disable-next-line no-restricted-globals
 self.addEventListener("install", (event) => {
@@ -19,19 +19,19 @@ self.addEventListener("install", (event) => {
 // eslint-disable-next-line no-restricted-globals
 self.addEventListener("fetch", (event) => {
   event.respondWith(
-    caches.match(event.request).then((result) => {
-      return (
-        result ||
-        fetch(event.request).then((response) => {
-          if (event.request.method !== "GET") {
-            return response;
-          }
-          return caches.open(activeCacheName).then((cache) => {
-            cache.put(event.request, response.clone());
-            return response;
-          });
-        })
-      );
+    new Promise((fulfill, reject) => {
+      const timeoutId = setTimeout(reject, 400);
+      fetch(event.request).then((response) => {
+        clearTimeout(timeoutId);
+        fulfill(response);
+      }, reject);
+    }).catch(() => {
+      return caches.open(activeCacheName).then((cache) => {
+        return cache.match(event.request).then((result) => {
+          // cache.put(event.request, response.clone());
+          return result || Promise.reject(new Error("no-match"));
+        });
+      });
     }),
   );
 });
