@@ -37,7 +37,7 @@ class App extends React.Component<Props> {
 
   render() {
     const { children, organization, viewer } = this.props;
-    const imageUrl = `${organization.baseurl}/img/Musikkforeningen-Nidarholm-dir-Trond-Madsen-1.jpg`;
+    const imageUrl = `${organization.baseurl}/img/musikkforeningen-nidarholm.jpg`;
     return (
       <div>
         <Helmet

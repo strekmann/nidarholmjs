@@ -6,7 +6,7 @@ import React from "react";
 import { createFragmentContainer, graphql } from "react-relay";
 
 import ProjectFieldOrganization from "./__generated__/ProjectField_organization.graphql";
-import Project from "./Project";
+import type Project from "./Project";
 
 type Props = {
   organization: ProjectFieldOrganization,
@@ -20,43 +20,52 @@ type State = {
 };
 
 class ProjectField extends React.Component<Props, State> {
-  state = {
-    project: "",
-    projects: this.props.projects || [],
-  };
+  constructor(props) {
+    super(props);
+    const { projects } = this.props;
+    this.state = {
+      project: "",
+      projects: projects || [],
+    };
+  }
 
   onProjectChange = (project) => {
     this.setState({ project });
   };
 
   addProject = (value) => {
-    const projects = this.state.projects.slice(); // copy
+    const { onChange } = this.props;
+    const { projects: stateProjects } = this.state;
+    const projects = stateProjects.slice(); // copy
     const { project } = value; // copy
     projects.push(project);
     this.setState({
       projects,
       project: "",
     });
-    this.props.onChange(projects);
+    onChange(projects);
   };
 
   removeProject = (project) => {
-    const projects = this.state.projects.filter((p) => {
+    const { onChange } = this.props;
+    const { projects: stateProjects } = this.state;
+    const projects = stateProjects.filter((p) => {
       return p.id !== project.id;
     });
     this.setState({ projects });
-    this.props.onChange(projects);
+    onChange(projects);
   };
 
   render() {
     const { organization } = this.props;
+    const { projects: stateProjects, project } = this.state;
     if (!organization) {
       return null;
     }
-    const projects = organization.projectTags.map((project) => {
+    const projects = organization.projectTags.map((_project) => {
       return {
-        title: `${project.title} (${project.year})`,
-        project,
+        title: `${_project.title} (${_project.year})`,
+        _project,
       };
     });
     return (
@@ -68,19 +77,19 @@ class ProjectField extends React.Component<Props, State> {
           dataSource={projects}
           dataSourceConfig={{ text: "title", value: "project" }}
           maxSearchResults={20}
-          searchText={this.state.project}
+          searchText={project}
           onNewRequest={this.addProject}
           onUpdateInput={this.onProjectChange}
         />
-        {this.state.projects.map((project) => {
+        {stateProjects.map((_project) => {
           return (
             <Chip
-              key={project.id}
+              key={_project.id}
               onRequestDelete={() => {
-                this.removeProject(project);
+                this.removeProject(_project);
               }}
             >
-              {project.title}
+              {_project.title}
             </Chip>
           );
         })}

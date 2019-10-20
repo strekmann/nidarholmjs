@@ -60,6 +60,8 @@ class Project extends React.Component<Props, State> {
     muiTheme: PropTypes.object.isRequired,
   };
 
+  muiTheme: {};
+
   constructor(props) {
     super(props);
     this.muiTheme = getMuiTheme(theme);
@@ -79,14 +81,14 @@ class Project extends React.Component<Props, State> {
   }
 
   onDrop = (files, permissions, tags) => {
-    const { relay } = this.props;
+    const { organization, relay } = this.props;
 
     files.forEach((file) => {
       const data = new FormData();
       data.append("file", file);
 
       axios.post("/upload", data).then((response) => {
-        tags.push(this.props.organization.project.tag);
+        tags.push(organization.project.tag);
         AddProjectFileMutation.commit(relay.environment, {
           hex: response.data.hex,
           permissions: permissions.map((permission) => {
@@ -94,7 +96,7 @@ class Project extends React.Component<Props, State> {
           }),
           tags,
           filename: file.name,
-          projectTag: this.props.organization.project.tag,
+          projectTag: organization.project.tag,
         });
       });
     });
@@ -123,10 +125,9 @@ class Project extends React.Component<Props, State> {
     );
   };
 
-  muiTheme: {};
-
   toggleAddPiece = () => {
-    this.setState({ addPiece: !this.state.addPiece });
+    const { addPiece } = this.state;
+    this.setState({ addPiece: !addPiece });
   };
 
   closeAddPiece = () => {
@@ -134,15 +135,18 @@ class Project extends React.Component<Props, State> {
   };
 
   togglePublic = () => {
-    this.setState({ public: !this.state.public });
+    const { public: pub } = this.state;
+    this.setState({ public: !pub });
   };
 
   toggleAddEvent = () => {
-    this.setState({ addEvent: !this.state.addEvent });
+    const { addEvent } = this.state;
+    this.setState({ addEvent: !addEvent });
   };
 
   toggleEditProject = () => {
-    this.setState({ editProject: !this.state.editProject });
+    const { editProject } = this.state;
+    this.setState({ editProject: !editProject });
   };
 
   closeAddEvent = () => {
@@ -150,7 +154,8 @@ class Project extends React.Component<Props, State> {
   };
 
   toggleAddFile = () => {
-    this.setState({ addFile: !this.state.addFile });
+    const { addFile } = this.state;
+    this.setState({ addFile: !addFile });
   };
 
   closeAddFile = () => {
@@ -177,14 +182,14 @@ class Project extends React.Component<Props, State> {
   };
 
   addEvent = (event) => {
-    const { relay } = this.props;
+    const { organization, relay } = this.props;
     this.setState({ addEvent: false });
     AddEventMutation.commit(relay.environment, {
       title: event.title,
       location: event.location,
       start: event.start,
       end: event.end,
-      tags: [this.props.organization.project.tag],
+      tags: [organization.project.tag],
       mdtext: event.mdtext,
       permissions: event.permissions,
       highlighted: event.highlighted,
@@ -205,7 +210,8 @@ class Project extends React.Component<Props, State> {
   };
 
   searchPiece = (searchTerm) => {
-    this.props.relay.refetch((variables) => {
+    const { relay } = this.props;
+    relay.refetch((variables) => {
       variables.searchTerm = searchTerm;
       return variables;
     });
@@ -220,9 +226,14 @@ class Project extends React.Component<Props, State> {
       memberGroup,
       baseurl,
     } = organization;
-    const hasEndedActivities = project.events.edges.filter((edge) => {
-      return edge.node.isEnded;
-    }).length;
+    const { addEvent, addFile, addPiece, showEnded, editProject } = this.state;
+    let hasEndedActivities = false;
+    if (project && project.events.length) {
+      hasEndedActivities =
+        project.events.edges.filter((edge) => {
+          return edge.node.isEnded;
+        }).length > 0;
+    }
     const { desktopGutterLess } = theme.spacing;
     return (
       <Paper className="row">
@@ -361,8 +372,8 @@ class Project extends React.Component<Props, State> {
                   marginRight: -desktopGutterLess,
                 }}
                 title="Prosjektfiler"
-                viewer={this.props.viewer}
-                organization={this.props.organization}
+                viewer={viewer}
+                organization={organization}
               />
             ) : null}
           </div>
@@ -384,7 +395,7 @@ class Project extends React.Component<Props, State> {
               <div id="eventList">
                 {project.events.edges
                   .filter((edge) => {
-                    return this.state.showEnded || !edge.node.isEnded;
+                    return showEnded || !edge.node.isEnded;
                   })
                   .map((edge) => {
                     return <EventItem key={edge.node.id} event={edge.node} />;
@@ -396,25 +407,25 @@ class Project extends React.Component<Props, State> {
         {isMember ? (
           <div>
             <ProjectForm
-              open={this.state.editProject}
+              open={editProject}
               save={this.saveProject}
               toggle={this.toggleEditProject}
-              viewer={this.props.viewer}
-              organization={this.props.organization}
+              viewer={viewer}
+              organization={organization}
               {...project}
             />
             <EventForm
               title="Legg til aktivitet"
-              isOpen={this.state.addEvent}
+              isOpen={addEvent}
               save={this.addEvent}
               cancel={this.closeAddEvent}
               projectPermissions={{ public: true, groups: [], users: [] }}
-              viewer={this.props.viewer}
+              viewer={viewer}
               organization={null}
             />
             <Dialog
               title="Last opp filer"
-              open={this.state.addFile}
+              open={addFile}
               onRequestClose={this.closeAddFile}
               autoScrollBodyContent
             >
@@ -431,8 +442,8 @@ class Project extends React.Component<Props, State> {
               />
             </Dialog>
             <ProjectPieceForm
-              open={this.state.addPiece}
-              organization={this.props.organization}
+              open={addPiece}
+              organization={organization}
               toggle={this.closeAddPiece}
               save={this.addPiece}
             />

@@ -1,14 +1,16 @@
 /* globals self, caches, fetch */
 
+const activeCacheName = "v5";
+
 // eslint-disable-next-line no-restricted-globals
 self.addEventListener("install", (event) => {
   event.waitUntil(
-    caches.open("v4").then((cache) => {
+    caches.open(activeCacheName).then((cache) => {
       return cache.addAll([
         "/img/logo.blue.transparent.192.png",
         "/img/logo.blue.white.192.png",
         "/img/logo.wh.svg",
-        "/img/Musikkforeningen-Nidarholm-dir-Trond-Madsen-1.jpg",
+        "/img/musikkforeningen-nidarholm.jpg",
         "/javascript.js",
       ]);
     }),
@@ -25,7 +27,7 @@ self.addEventListener("fetch", (event) => {
           if (event.request.method !== "GET") {
             return response;
           }
-          return caches.open("v1").then((cache) => {
+          return caches.open(activeCacheName).then((cache) => {
             cache.put(event.request, response.clone());
             return response;
           });
@@ -37,7 +39,7 @@ self.addEventListener("fetch", (event) => {
 
 // eslint-disable-next-line no-restricted-globals
 self.addEventListener("activate", (event) => {
-  const cacheKeeplist = ["v4"];
+  const cacheKeeplist = [activeCacheName];
 
   event.waitUntil(
     caches.keys().then((keyList) => {
