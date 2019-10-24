@@ -1,6 +1,6 @@
 /* globals self, caches, fetch */
 
-const activeCacheName = "v8";
+const activeCacheName = "v9";
 
 /**
  * Cache static elements
@@ -12,7 +12,21 @@ function precache() {
       "/img/logo.blue.white.192.png",
       "/img/logo.wh.svg",
       "/img/musikkforeningen-nidarholm.jpg",
+      "/manifest.json",
+      "/robots.txt",
+      "/favicon.ico",
     ]);
+  });
+}
+
+/**
+ * Fetch from network and update cache
+ */
+function update(request) {
+  return caches.open(activeCacheName).then((cache) => {
+    return fetch(request).then((response) => {
+      return cache.put(request, response);
+    });
   });
 }
 
@@ -22,16 +36,8 @@ function precache() {
 function fromCache(request) {
   return caches.open(activeCacheName).then((cache) => {
     return cache.match(request).then((response) => {
-      // cache.put(event.request, response.clone());
-      return response || Promise.reject(new Error("no-match"));
-    });
-  });
-}
-
-function update(request) {
-  return caches.open(activeCacheName).then((cache) => {
-    return fetch(request).then((response) => {
-      return cache.put(request, response);
+      // return response or fetch over network
+      return response || fetch(request);
     });
   });
 }

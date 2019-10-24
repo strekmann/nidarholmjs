@@ -67,10 +67,8 @@ module.exports = {
       /moment[\\\/]locale$/,
       /^\.\/(en|nb|nn|zh-cn)$/,
     ),
-    /*
     new ServiceWorkerWebpackPlugin({
       entry: path.join(__dirname, "src", "sw.js"),
     }),
-    */
   ],
 };
