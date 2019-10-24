@@ -1,39 +1,50 @@
 /* globals self, caches, fetch */
 
-const activeCacheName = "v7";
+const activeCacheName = "v8";
+
+/**
+ * Cache static elements
+ */
+function precache() {
+  return caches.open(activeCacheName).then((cache) => {
+    return cache.addAll([
+      "/img/logo.blue.transparent.192.png",
+      "/img/logo.blue.white.192.png",
+      "/img/logo.wh.svg",
+      "/img/musikkforeningen-nidarholm.jpg",
+    ]);
+  });
+}
+
+/**
+ * Return data from cache
+ */
+function fromCache(request) {
+  return caches.open(activeCacheName).then((cache) => {
+    return cache.match(request).then((response) => {
+      // cache.put(event.request, response.clone());
+      return response || Promise.reject(new Error("no-match"));
+    });
+  });
+}
+
+function update(request) {
+  return caches.open(activeCacheName).then((cache) => {
+    return fetch(request).then((response) => {
+      return cache.put(request, response);
+    });
+  });
+}
 
 // eslint-disable-next-line no-restricted-globals
 self.addEventListener("install", (event) => {
-  event.waitUntil(
-    caches.open(activeCacheName).then((cache) => {
-      return cache.addAll([
-        "/img/logo.blue.transparent.192.png",
-        "/img/logo.blue.white.192.png",
-        "/img/logo.wh.svg",
-        "/img/musikkforeningen-nidarholm.jpg",
-      ]);
-    }),
-  );
+  event.waitUntil(precache());
 });
 
 // eslint-disable-next-line no-restricted-globals
 self.addEventListener("fetch", (event) => {
-  event.respondWith(
-    new Promise((fulfill, reject) => {
-      const timeoutId = setTimeout(reject, 400);
-      fetch(event.request).then((response) => {
-        clearTimeout(timeoutId);
-        fulfill(response);
-      }, reject);
-    }).catch(() => {
-      return caches.open(activeCacheName).then((cache) => {
-        return cache.match(event.request).then((result) => {
-          // cache.put(event.request, response.clone());
-          return result || Promise.reject(new Error("no-match"));
-        });
-      });
-    }),
-  );
+  event.respondWith(fromCache(event.request));
+  event.waitUntil(update(event.request));
 });
 
 // eslint-disable-next-line no-restricted-globals
