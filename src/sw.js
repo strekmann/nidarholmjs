@@ -1,6 +1,6 @@
 /* globals self, caches, fetch */
 
-const activeCacheName = "v9";
+const activeCacheName = "v10";
 
 /**
  * Cache static elements
