@@ -8,13 +8,19 @@ const activeCacheName = "v9";
 function precache() {
   return caches.open(activeCacheName).then((cache) => {
     return cache.addAll([
+      "/manifest.json",
+      "/robots.txt",
+      "/favicon.ico",
       "/img/logo.blue.transparent.192.png",
       "/img/logo.blue.white.192.png",
       "/img/logo.wh.svg",
       "/img/musikkforeningen-nidarholm.jpg",
-      "/manifest.json",
-      "/robots.txt",
-      "/favicon.ico",
+      "/fonts/Roboto-Italic.ttf",
+      "/fonts/Montserrat-Regular.ttf",
+      "/fonts/Roboto-Regular.ttf",
+      "/fonts/Montserrat-Bold.ttf",
+      "/fonts/Montserrat-Italic.ttf",
+      "/fonts/Roboto-Bold.ttf",
     ]);
   });
 }
