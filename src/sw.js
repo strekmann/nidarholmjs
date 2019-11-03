@@ -1,6 +1,6 @@
 /* globals self, caches, fetch */
 
-const activeCacheName = "v10";
+const activeCacheName = "v11";
 
 /**
  * Cache static elements
@@ -39,7 +39,7 @@ function update(request) {
 /**
  * Return data from cache
  */
-function fromCache(request) {
+function fromCacheOrFetch(request) {
   return caches.open(activeCacheName).then((cache) => {
     return cache.match(request).then((response) => {
       // return response or fetch over network
@@ -55,8 +55,8 @@ self.addEventListener("install", (event) => {
 
 // eslint-disable-next-line no-restricted-globals
 self.addEventListener("fetch", (event) => {
-  event.respondWith(fromCache(event.request));
-  event.waitUntil(update(event.request));
+  event.respondWith(fromCacheOrFetch(event.request));
+  // event.waitUntil(update(event.request));
 });
 
 // eslint-disable-next-line no-restricted-globals
