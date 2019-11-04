@@ -17,6 +17,7 @@ import getMuiTheme from "material-ui/styles/getMuiTheme";
 import PropTypes from "prop-types";
 import * as React from "react";
 import { createFragmentContainer, graphql } from "react-relay";
+import type { RelayRefetchProp } from "react-relay";
 
 import theme from "../theme";
 import AddRoleMutation from "../mutations/AddRole";
@@ -25,56 +26,11 @@ import LeaveGroupMutation from "../mutations/LeaveGroup";
 import RemoveRoleMutation from "../mutations/RemoveRole";
 import SaveGroupMutation from "../mutations/SaveGroup";
 
+import GroupOrganization from "./__generated__/Group_organization.graphql";
+
 type Props = {
-  organization: {
-    group: {
-      id: string,
-      email: string,
-      members: [
-        {
-          id: string,
-          roles: [
-            {
-              id: string,
-              name: string,
-            },
-          ],
-          user: {
-            id: string,
-            name: string,
-          },
-        },
-      ],
-      name: string,
-      groupLeaderEmail: string,
-    },
-    instrumentGroups: [
-      {
-        id: string,
-      },
-    ],
-    isAdmin: boolean,
-    roles: {
-      edges: [
-        {
-          node: {
-            id: string,
-            name: string,
-          },
-        },
-      ],
-    },
-    users: [
-      {
-        id: string,
-        name: string,
-        username: string,
-      },
-    ],
-  },
-  relay: {
-    environment: {},
-  },
+  organization: GroupOrganization,
+  relay: RelayRefetchProp,
 };
 
 type State = {
@@ -95,15 +51,15 @@ class Group extends React.Component<Props, State> {
   constructor(props) {
     super(props);
     this.muiTheme = getMuiTheme(theme);
+    const { organization } = this.props;
+    this.state = {
+      joinGroup: false,
+      addingGroupLeader: null,
+      editing: false,
+      email: organization.group.email || "",
+      groupLeaderEmail: organization.group.groupLeaderEmail || "",
+    };
   }
-
-  state = {
-    joinGroup: false,
-    addingGroupLeader: null,
-    editing: false,
-    email: this.props.organization.group.email || "",
-    groupLeaderEmail: this.props.organization.group.groupLeaderEmail || "",
-  };
 
   getChildContext() {
     return { muiTheme: this.muiTheme };
@@ -112,18 +68,22 @@ class Group extends React.Component<Props, State> {
   onSave = (event) => {
     event.preventDefault();
     this.setState({ editing: false });
-    SaveGroupMutation.commit(this.props.relay.environment, {
-      groupId: this.props.organization.group.id,
-      email: this.state.email,
-      groupLeaderEmail: this.state.groupLeaderEmail,
+    const { relay, organization } = this.props;
+    const { email, groupLeaderEmail } = this.state;
+    SaveGroupMutation.commit(relay.environment, {
+      groupId: organization.group.id,
+      email,
+      groupLeaderEmail,
     });
   };
 
   setGroupLeader = (role) => {
-    if (this.state.addingGroupLeader) {
-      AddRoleMutation.commit(this.props.relay.environment, {
+    const { addingGroupLeader } = this.state;
+    const { relay } = this.props;
+    if (addingGroupLeader) {
+      AddRoleMutation.commit(relay.environment, {
         roleId: role.value,
-        memberId: this.state.addingGroupLeader.id,
+        memberId: addingGroupLeader.id,
       });
     }
     this.setState({ addingGroupLeader: null });
@@ -133,14 +93,16 @@ class Group extends React.Component<Props, State> {
 
   joinGroup = (selection) => {
     this.setState({ joinGroup: false });
-    JoinGroupMutation.commit(this.props.relay.environment, {
-      groupId: this.props.organization.group.id,
+    const { organization, relay } = this.props;
+    JoinGroupMutation.commit(relay.environment, {
+      groupId: organization.group.id,
       userId: selection.value.id,
     });
   };
 
   leaveGroup = (user, group) => {
-    LeaveGroupMutation.commit(this.props.relay.environment, {
+    const { relay } = this.props;
+    LeaveGroupMutation.commit(relay.environment, {
       groupId: group.id,
       userId: user.id,
     });
@@ -151,13 +113,14 @@ class Group extends React.Component<Props, State> {
   };
 
   toggleGroupLeader = (member, isGroupLeader) => {
+    const { relay } = this.props;
     if (isGroupLeader) {
       // remove group leader status
       // FIXME: We assume the first role for this group is a group leader
       // role. We also assume that there is a role set when we get
       // isGroupLeader.
       const role = member.roles[0];
-      RemoveRoleMutation.commit(this.props.relay.environment, {
+      RemoveRoleMutation.commit(relay.environment, {
         roleId: role.id,
         memberId: member.id,
       });
@@ -178,6 +141,13 @@ class Group extends React.Component<Props, State> {
   render() {
     const { organization } = this.props;
     const { group, isAdmin, roles, instrumentGroups } = organization;
+    const {
+      joinGroup,
+      editing,
+      email,
+      groupLeaderEmail,
+      addingGroupLeader,
+    } = this.state;
     const members = group.members.filter((member) => {
       return member.user;
     });
@@ -193,7 +163,7 @@ class Group extends React.Component<Props, State> {
           <Paper className="row">
             <Dialog
               title="Legg til gruppemedlem"
-              open={this.state.joinGroup}
+              open={joinGroup}
               onRequestClose={this.closeJoinGroup}
               autoScrollBodyContent
               actions={
@@ -215,7 +185,7 @@ class Group extends React.Component<Props, State> {
             </Dialog>
             <Dialog
               title="Epostinnstillinger"
-              open={this.state.editing}
+              open={editing}
               onRequestClose={this.closeEditing}
               autoScrollBodyContent
               actions={[
@@ -226,10 +196,10 @@ class Group extends React.Component<Props, State> {
               <div>
                 <TextField
                   floatingLabelText="Epost til liste"
-                  onChange={(event, email) => {
-                    this.setState({ email });
+                  onChange={(event, _email) => {
+                    this.setState({ email: _email });
                   }}
-                  value={this.state.email}
+                  value={email}
                 />
               </div>
               {instrumentGroups.some((g) => {
@@ -238,10 +208,10 @@ class Group extends React.Component<Props, State> {
                 <div>
                   <TextField
                     floatingLabelText="Epostalias til gruppeleder"
-                    onChange={(event, groupLeaderEmail) => {
-                      this.setState({ groupLeaderEmail });
+                    onChange={(event, _groupLeaderEmail) => {
+                      this.setState({ groupLeaderEmail: _groupLeaderEmail });
                     }}
-                    value={this.state.groupLeaderEmail}
+                    value={groupLeaderEmail}
                   />
                 </div>
               ) : null}
@@ -263,7 +233,7 @@ class Group extends React.Component<Props, State> {
                   <MenuItem
                     primaryText="Legg til gruppemedlem"
                     onClick={() => {
-                      this.setState({ joinGroup: !this.state.joinGroup });
+                      this.setState({ joinGroup: !joinGroup });
                     }}
                   />
                   <MenuItem
@@ -301,7 +271,7 @@ class Group extends React.Component<Props, State> {
                     <div key={member.id}>
                       <Dialog
                         title="Sett som gruppeleder"
-                        open={!!this.state.addingGroupLeader}
+                        open={!!addingGroupLeader}
                         onRequestClose={this.closeAddingGroupLeader}
                       >
                         <p>Velg en rolle fra lista under</p>
@@ -317,6 +287,10 @@ class Group extends React.Component<Props, State> {
                           openOnFocus
                           filter={AutoComplete.fuzzyFilter}
                           fullWidth
+                          menuStyle={{
+                            maxHeight: "40vh",
+                            overflowY: "auto",
+                          }}
                         />
                       </Dialog>
                       <ListItem
