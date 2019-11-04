@@ -1,9 +1,8 @@
-/* global window, document, navigator */
+/* global window, document */
 
 import "@babel/polyfill";
 import BrowserProtocol from "farce/lib/BrowserProtocol";
 import createInitialFarceRouter from "found/lib/createInitialFarceRouter";
-import runtime from "serviceworker-webpack-plugin/lib/runtime";
 import React from "react";
 import ReactDOM from "react-dom";
 import moment from "moment";
@@ -19,21 +18,6 @@ import {
 } from "./router";
 
 moment.locale("nb");
-
-if ("serviceWorker" in navigator) {
-  runtime
-    .register()
-    .then((reg) => {
-      // registration OK
-      // eslint-disable-next-line no-console
-      console.debug("Registration OK. Scope is: ", reg.scope);
-    })
-    .catch((error) => {
-      // registration failed
-      // eslint-disable-next-line no-console
-      console.error("Registration failed with error: ", error);
-    });
-}
 
 (async () => {
   const fetcher = new ClientFetcher("/graphql", window.__INITIAL_STATE__);
