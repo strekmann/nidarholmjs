@@ -1,6 +1,6 @@
-var webpack = require("webpack");
-var path = require("path");
-var CopyWebpackPlugin = require("copy-webpack-plugin");
+const webpack = require("webpack");
+const path = require("path");
+const CopyWebpackPlugin = require("copy-webpack-plugin");
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 
 const devMode = process.env.NODE_ENV !== "production";
@@ -62,7 +62,7 @@ module.exports = {
     new CopyWebpackPlugin(
       [
         {
-          from: __dirname + "/src/static",
+          from: path.join(__dirname, "src", "static"),
         },
       ],
       {

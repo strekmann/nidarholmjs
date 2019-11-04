@@ -36,11 +36,8 @@ class App extends React.Component<Props> {
   muiTheme: {};
 
   render() {
-    const { organization } = this.props;
-    const imageUrl = `${
-      organization.baseurl
-    }/img/Musikkforeningen-Nidarholm-dir-Trond-Madsen-1.
-jpg`;
+    const { children, organization, viewer } = this.props;
+    const imageUrl = `${organization.baseurl}/img/musikkforeningen-nidarholm.jpg`;
     return (
       <div>
         <Helmet
@@ -63,11 +60,10 @@ jpg`;
             },
             { property: "fb:app_id", content: organization.facebookAppid },
           ]}
-          link={[{ rel: "stylesheet", href: "/styles.css" }]}
         />
-        <Navigation viewer={this.props.viewer} organization={organization} />
-        {this.props.children}
-        <Footer viewer={this.props.viewer} organization={organization} />
+        <Navigation viewer={viewer} organization={organization} />
+        {children}
+        <Footer viewer={viewer} organization={organization} />
       </div>
     );
   }

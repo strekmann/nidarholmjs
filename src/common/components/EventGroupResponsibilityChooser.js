@@ -22,6 +22,7 @@ type Props = {
   organizationEventGroupResponsibility: OrganizationEventGroupResponsibility,
   groups: Array<{ id: string, name: string }>,
   relay: RelayRefetchProp,
+  selectGroup: (group: { id: string, name: string }) => void,
 };
 
 type State = {
@@ -35,34 +36,45 @@ class EventGroupResponsibilityChooser extends React.Component<Props, State> {
     groups: [],
   };
 
-  componentWillMount = () => {
-    this.setState({
-      groups: this.orderGroups(
-        this.props.groups,
-        this.props.organizationEventGroupResponsibility.last,
-      ),
-    });
-  };
+  static getDerivedStateFromProps(props, state) {
+    if (props.groups !== state.groups) {
+      return {
+        groups: props.groups,
+      };
+    }
+    return null;
+  }
 
   onChooseNext = () => {
-    const { relay, event, organizationEventGroupResponsibility } = this.props;
-    const group = this.state.groups[0];
+    const {
+      relay,
+      event,
+      organizationEventGroupResponsibility,
+      selectGroup,
+    } = this.props;
+    const { groups } = this.state;
+    const group = groups[0];
     AddEventGroupResponsibilityMutation.commit(relay.environment, {
       groupId: group.id,
       eventId: event.id,
       responsibilityId: organizationEventGroupResponsibility.id,
     });
-    this.setState({ groups: this.orderGroups(this.state.groups, group) });
+    selectGroup(group);
   };
 
   onChoose = (group) => {
-    const { relay, event, organizationEventGroupResponsibility } = this.props;
+    const {
+      relay,
+      event,
+      organizationEventGroupResponsibility,
+      selectGroup,
+    } = this.props;
     AddEventGroupResponsibilityMutation.commit(relay.environment, {
       groupId: group.id,
       eventId: event.id,
       responsibilityId: organizationEventGroupResponsibility.id,
     });
-    this.setState({ groups: this.orderGroups(this.state.groups, group) });
+    selectGroup(group);
     this.toggleChooser();
   };
 
@@ -82,24 +94,9 @@ class EventGroupResponsibilityChooser extends React.Component<Props, State> {
     });
   };
 
-  orderGroups = (groups, lastGroup) => {
-    if (!lastGroup) {
-      return groups;
-    }
-    const lastIndex = groups.findIndex((group) => {
-      return group.id === lastGroup.id;
-    });
-    if (lastIndex < 0) {
-      return groups;
-    }
-    return groups
-      .slice(lastIndex + 1, groups.length)
-      .concat(groups.slice(0, lastIndex + 1));
-  };
-
   render() {
     const { organizationEventGroupResponsibility, event } = this.props;
-    const { groups } = this.state;
+    const { groups, chooserOpen } = this.state;
     const { contributorGroups } = event;
     const matchingContributorsList = contributorGroups.map(
       (contributorGroup) => {
@@ -147,9 +144,9 @@ class EventGroupResponsibilityChooser extends React.Component<Props, State> {
         </Menu>
         <Dialog
           title="Velg ansvarlig"
-          open={this.state.chooserOpen}
+          open={chooserOpen}
           onRequestClose={this.toggleChooser}
-          autoScrollBodyContent
+          autoScrollBodyContent={true}
         >
           <Menu>{chooserItems}</Menu>
         </Dialog>
@@ -178,9 +175,6 @@ export default createFragmentContainer(EventGroupResponsibilityChooser, {
     fragment EventGroupResponsibilityChooser_organizationEventGroupResponsibility on OrganizationEventGroupResponsibility {
       id
       name
-      last {
-        id
-      }
     }
   `,
 });

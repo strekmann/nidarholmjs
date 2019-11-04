@@ -1,10 +1,17 @@
 {
-  "name": "Nidarholm",
+  "name": "Musikkforeningen Nidarholm",
+  "short_name": "Nidarholm",
+  "start_url": "/",
   "icons": [
     {
-      "src": "/static/img/logo.blue.transparent.png",
+      "src": "/img/logo.blue.transparent.192.png",
       "type": "image/png",
-      "sizes": "292x292"
+      "sizes": "192x192"
+    },
+    {
+      "src": "/img/logo.blue.transparent.512.png",
+      "type": "image/png",
+      "sizes": "512x512"
     }
   ],
   "background_color": "#f5f5f5",

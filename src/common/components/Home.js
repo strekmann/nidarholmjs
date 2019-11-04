@@ -42,6 +42,8 @@ class Home extends React.Component<Props, State> {
     muiTheme: PropTypes.object.isRequired,
   };
 
+  muiTheme: {};
+
   constructor(props) {
     super(props);
     this.muiTheme = getMuiTheme(theme);
@@ -54,8 +56,6 @@ class Home extends React.Component<Props, State> {
   getChildContext() {
     return { muiTheme: this.muiTheme };
   }
-
-  muiTheme: {};
 
   sendEmail = (form) => {
     const { organization, relay } = this.props;
@@ -72,14 +72,14 @@ class Home extends React.Component<Props, State> {
 
   render() {
     const { organization } = this.props;
+    const { contactDialogOpen } = this.state;
     const { nextProject } = organization;
     const { desktopGutterLess } = theme.spacing;
     return (
       <div id="home">
         <div
           style={{
-            backgroundImage:
-              "url(/img/Musikkforeningen-Nidarholm-dir-Trond-Madsen-1.jpg)",
+            backgroundImage: "url(/img/musikkforeningen-nidarholm.jpg)",
             backgroundPosition: "top center",
             backgroundSize: "cover",
             height: "30vw",
@@ -107,9 +107,7 @@ class Home extends React.Component<Props, State> {
               paddingLeft: desktopGutterLess,
               color: theme.palette.accent3Color,
             }}
-          >
-            Foto: Vilde Marie Steen Angell
-          </div>
+          ></div>
         </div>
         <div
           style={{
@@ -267,10 +265,10 @@ class Home extends React.Component<Props, State> {
               }}
             >
               <ContactForm
-                open={this.state.contactDialogOpen}
+                open={contactDialogOpen}
                 close={this.closeEmailDialog}
                 save={this.sendEmail}
-                organization={this.props.organization}
+                organization={organization}
               />
               <h2 style={{ display: "inline-block" }}>
                 <Link to="/contact">Kontakt</Link>

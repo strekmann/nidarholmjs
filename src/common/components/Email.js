@@ -17,25 +17,29 @@ export default class Email extends React.Component<Props> {
   };
 
   render() {
-    if (!this.props.email) {
+    const { children, email } = this.props;
+    if (!email) {
       return null;
     }
-    if (this.props.children) {
+    if (children) {
       const inlineLexer = new marked.InlineLexer([]);
-      const email = inlineLexer.mangle(`mailto:${this.props.email}`);
+      const mangledEmail = inlineLexer.mangle(`mailto:${email}`);
       return (
         <span
           dangerouslySetInnerHTML={{
-            __html: `<a href=${email} className="noMargins">${renderToString(
-              this.props.children,
+            __html: `<a href=${mangledEmail} className="noMargins">${renderToString(
+              children,
             )}</a>`,
           }}
         />
       );
     }
-    const email = marked(`<${this.props.email}>`);
+    const mangledEmail = marked(`<${email}>`);
     return (
-      <span dangerouslySetInnerHTML={{ __html: email }} className="noMargins" />
+      <span
+        dangerouslySetInnerHTML={{ __html: mangledEmail }}
+        className="noMargins"
+      />
     );
   }
 }

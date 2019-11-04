@@ -8,23 +8,20 @@ import GridOff from "material-ui/svg-icons/image/grid-off";
 import PropTypes from "prop-types";
 import * as React from "react";
 import { createFragmentContainer, graphql } from "react-relay";
+import type Organization from "./__generated__/Groups_organization.graphql";
 
 import theme from "../theme";
 
 type Props = {
-  organization: {
-    groups: Array<{
-      id: string,
-      name: string,
-      externallyHidden: boolean,
-    }>,
-  },
+  organization: Organization,
 };
 
 class Groups extends React.Component<Props> {
   static childContextTypes = {
     muiTheme: PropTypes.object.isRequired,
   };
+
+  muiTheme: {};
 
   constructor(props) {
     super(props);
@@ -35,10 +32,9 @@ class Groups extends React.Component<Props> {
     return { muiTheme: this.muiTheme };
   }
 
-  muiTheme: {};
-
   render() {
-    const { groups } = this.props.organization;
+    const { organization } = this.props;
+    const { groups } = organization;
     return (
       <section>
         <Paper className="row">
@@ -51,8 +47,13 @@ class Groups extends React.Component<Props> {
                   key={group.id}
                   rightIcon={group.externallyHidden ? <GridOff /> : null}
                   primaryText={
-                    <Link to={`/group/${group.id}`}>{group.name}</Link>
+                    <span>
+                      <Link to={`/group/${group.id}`}>{group.name}</Link> (
+                      {group.members.length})
+                    </span>
                   }
+                  secondaryText={`${group.email ||
+                    ""} ${group.groupLeaderEmail || ""}`}
                 />
               );
             })}
@@ -70,6 +71,11 @@ export default createFragmentContainer(Groups, {
         id
         name
         externallyHidden
+        members {
+          id
+        }
+        email
+        groupLeaderEmail
       }
     }
   `,

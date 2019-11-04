@@ -28,6 +28,10 @@ server {
     server_name {{ server_name }};
     root {{ deploy_helper.current_path }}/static;
 
+    gzip on;
+    gtip_types text/html text/plain text/css application/xml application/json application/javascript;
+    gzip_min_length 1000;
+
     ssl_certificate /etc/letsencrypt/live/{{ server_name }}/fullchain.pem;
     ssl_certificate_key /etc/letsencrypt/live/{{ server_name }}/privkey.pem;
 

@@ -48,17 +48,17 @@
 
       - name: Setup nodesource repository
         apt_repository:
-            repo: "deb https://deb.nodesource.com/node_6.x {{ debian_version }} main"
-            state: present
-
-      - name: Setup Yarn repository
-        apt_repository:
-            repo: "deb https://dl.yarnpkg.com/debian/ stable main"
+            repo: "deb https://deb.nodesource.com/node_8.x {{ debian_version }} main"
             state: present
 
       - name: Add Yarn key
         apt_key:
             url: https://dl.yarnpkg.com/debian/pubkey.gpg
+            state: present
+
+      - name: Setup Yarn repository
+        apt_repository:
+            repo: "deb https://dl.yarnpkg.com/debian/ stable main"
             state: present
 
       - name: Install dependencies
