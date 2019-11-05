@@ -184,7 +184,9 @@ impl Api {
     }
     if !member_set.is_empty() {
       let emails = member_set.into_iter().collect::<Vec<String>>();
-      self.unsubscribe(group_email, emails, role);
+      if role != "nonmember" {
+        self.unsubscribe(group_email, emails, role);
+      }
     }
   }
 }
