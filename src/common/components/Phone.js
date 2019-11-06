@@ -8,10 +8,11 @@ type Props = {
 
 export default class Phone extends React.Component<Props> {
   render() {
-    if (!this.props.phone) {
+    const { phone } = this.props;
+    if (!phone) {
       return <span />;
     }
-    const cl = this.props.phone.replace(" ", ""); // cleaned
+    const cl = phone.replace(/ /g, ""); // cleaned
     let pretty = cl;
     let full = cl;
     if (cl.length === 8) {
