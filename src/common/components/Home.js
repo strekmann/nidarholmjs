@@ -80,7 +80,7 @@ class Home extends React.Component<Props, State> {
         <div
           style={{
             backgroundImage: "url(/img/musikkforeningen-nidarholm.jpg)",
-            backgroundPosition: "top center",
+            backgroundPosition: "25% 10%",
             backgroundSize: "cover",
             height: "30vw",
             position: "relative",
