@@ -2,6 +2,7 @@ const webpack = require("webpack");
 const path = require("path");
 const CopyWebpackPlugin = require("copy-webpack-plugin");
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
+const ServiceWorkerWebpackPlugin = require("serviceworker-webpack-plugin");
 
 const devMode = process.env.NODE_ENV !== "production";
 
@@ -58,6 +59,9 @@ module.exports = {
       // both options are optional
       filename: devMode ? "[name].css" : "[name].[hash].css",
       chunkFilename: devMode ? "[id].css" : "[id].[hash].css",
+    }),
+    new ServiceWorkerWebpackPlugin({
+      entry: path.join(__dirname, "src", "sw.js"),
     }),
     new CopyWebpackPlugin(
       [
