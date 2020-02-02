@@ -6,7 +6,6 @@ import FlatButton from "material-ui/FlatButton";
 import IconButton from "material-ui/IconButton";
 import IconMenu from "material-ui/IconMenu";
 import MenuItem from "material-ui/MenuItem";
-import Paper from "material-ui/Paper";
 import RaisedButton from "material-ui/RaisedButton";
 import { Toolbar, ToolbarGroup } from "material-ui/Toolbar";
 import getMuiTheme from "material-ui/styles/getMuiTheme";
@@ -41,6 +40,8 @@ type Props = {
 };
 
 class Events extends React.Component<Props> {
+  muiTheme: {};
+
   static childContextTypes = {
     muiTheme: PropTypes.object.isRequired,
   };
@@ -54,10 +55,9 @@ class Events extends React.Component<Props> {
     return { muiTheme: this.muiTheme };
   }
 
-  muiTheme: {};
-
   loadMoreEvents = () => {
-    this.props.relay.refetch((variables) => {
+    const { relay } = this.props;
+    relay.refetch((variables) => {
       return {
         showItems: variables.showItems + ITEMS_PER_PAGE,
       };
@@ -68,7 +68,7 @@ class Events extends React.Component<Props> {
     const { organization } = this.props;
     const { events, isAdmin } = organization;
     return (
-      <Paper className="row">
+      <div className="row">
         <div style={{ display: "flex", justifyContent: "space-between" }}>
           <h1>Aktiviteter</h1>
           <Toolbar style={{ backgroundColor: theme.palette.fullWhite }}>
@@ -107,7 +107,7 @@ class Events extends React.Component<Props> {
         {events.pageInfo.hasNextPage ? (
           <RaisedButton primary onClick={this.loadMoreEvents} label="Mer" />
         ) : null}
-      </Paper>
+      </div>
     );
   }
 }

@@ -1295,7 +1295,7 @@ organizationType = new GraphQLObjectType({
           end: {
             $gte: moment()
               .startOf("day")
-              .add(1, "day") // Implicit time and timezones make this complicated
+              .subtract(1, "day") // Implicit time and timezones make this complicated
               .toDate(),
           },
         });

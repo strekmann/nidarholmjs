@@ -23,7 +23,7 @@
     "deploy": "ansible-playbook -i ansible/inventory --ask-vault-pass ansible/deploy.yml",
     "setup": "ansible-playbook -i ansible/inventory --ask-vault-pass ansible/setup.yml",
     "dev": "babel-node ./node_modules/.bin/webpack-dev-server --mode development --progress --port 3001 --hot",
-    "lint": "eslint --ignore-pattern \"src/server/lib/middleware.js\" --ignore-pattern \"src/server/lib/util.js\" --ignore-pattern \"src/server/routes/*\" --ignore-pattern \"src/client/**/*.js\" src/client \"src/**/*.js\"",
+    "lint": "eslint --ignore-pattern \"src/server/lib/middleware.js\" --ignore-pattern \"src/server/lib/util.js\" --ignore-pattern \"src/server/routes/*\" \"src/**/*.js\"",
     "nodemon": "nodemon src/dev.js | bunyan -o short",
     "relay": "relay-compiler --src ./src --schema ./src/server/schema.graphql",
     "retire": "retire",

@@ -3,6 +3,7 @@
 import { createFragmentContainer, graphql } from "react-relay";
 import Link from "found/lib/Link";
 import IconButton from "material-ui/IconButton";
+import Paper from "material-ui/Paper";
 import ExpandLess from "material-ui/svg-icons/navigation/expand-less";
 import ExpandMore from "material-ui/svg-icons/navigation/expand-more";
 import moment from "moment";
@@ -49,17 +50,23 @@ type State = {
 };
 
 class EventItem extends React.Component<Props, State> {
-  state = {
-    expanded: isSoon(this.props.event.start),
-  };
+  constructor(props) {
+    super(props);
+    const { event } = this.props;
+    this.state = {
+      expanded: isSoon(event.start),
+    };
+  }
 
   expandEvent = () => {
+    const { expanded } = this.state;
     this.setState({
-      expanded: !this.state.expanded,
+      expanded: !expanded,
     });
   };
 
   render() {
+    const { event } = this.props;
     const {
       id,
       title,
@@ -70,53 +77,58 @@ class EventItem extends React.Component<Props, State> {
       isEnded,
       highlighted,
       tags,
-    } = this.props.event;
-    const { desktopGutterMini } = theme.spacing;
+    } = event;
+    const { expanded } = this.state;
+    const { desktopGutterLess, desktopGutterMini } = theme.spacing;
     return (
-      <div
-        style={{ marginBottom: desktopGutterMini }}
+      <Paper
+        style={{ marginBottom: desktopGutterLess }}
         className={isEnded ? "shade" : ""}
       >
-        <div style={{ float: "right" }}>
-          <IconButton
-            style={{ padding: 0, height: "inherit", width: "inherit" }}
-            onClick={this.expandEvent}
-          >
-            {this.state.expanded ? <ExpandMore /> : <ExpandLess />}
-          </IconButton>
-        </div>
-        <h3 style={{ marginBottom: 0 }}>
-          <Link
-            to={`/events/${id}`}
-            style={{ fontWeight: highlighted ? "bold" : "normal" }}
-          >
-            {title}
-          </Link>
-        </h3>
-        <div className="meta">
-          <Daterange start={start} end={end} /> {location}
-        </div>
-        {this.state.expanded ? (
-          <div>
-            <Text text={mdtext} />
-            <div>
-              {tags.map((tag) => {
-                return (
-                  <span
-                    key={tag}
-                    style={{
-                      color: theme.palette.disabledColor,
-                      marginRight: 10,
-                    }}
-                  >
-                    {tag}
-                  </span>
-                );
-              })}
-            </div>
+        <div style={{ padding: desktopGutterLess }}>
+          <div style={{ float: "right" }}>
+            <IconButton
+              style={{ padding: 0, height: "inherit", width: "inherit" }}
+              onClick={this.expandEvent}
+            >
+              {expanded ? <ExpandMore /> : <ExpandLess />}
+            </IconButton>
           </div>
-        ) : null}
-      </div>
+          <h2 style={{ marginTop: desktopGutterMini }}>
+            <Link
+              to={`/events/${id}`}
+              style={{ fontWeight: highlighted ? "bold" : "normal" }}
+            >
+              {title}
+            </Link>
+          </h2>
+          <div className="meta">
+            <Daterange start={start} end={end} />
+            {", "}
+            {location}
+          </div>
+          {expanded ? (
+            <div>
+              <Text text={mdtext} />
+              <div>
+                {tags.map((tag) => {
+                  return (
+                    <span
+                      key={tag}
+                      style={{
+                        color: theme.palette.disabledColor,
+                        marginRight: 10,
+                      }}
+                    >
+                      {tag}
+                    </span>
+                  );
+                })}
+              </div>
+            </div>
+          ) : null}
+        </div>
+      </Paper>
     );
   }
 }

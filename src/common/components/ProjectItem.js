@@ -18,7 +18,9 @@ const renderPublicEvents = (edges) => {
       {edges.map((edge) => {
         return (
           <p key={edge.node.id}>
-            {edge.node.location} <Date date={edge.node.start} format="llll" />
+            {edge.node.location}
+            {", "}
+            <Date date={edge.node.start} format="llll" />
           </p>
         );
       })}
@@ -34,6 +36,7 @@ class ProjectItem extends React.Component {
 
   render() {
     const { desktopGutterLess, desktopGutterMini } = theme.spacing;
+    const { project, showText } = this.props;
     const {
       title,
       start,
@@ -44,8 +47,7 @@ class ProjectItem extends React.Component {
       events,
       poster,
       conductors,
-    } = this.props.project;
-    const { showText } = this.props;
+    } = project;
     const widePoster = moment(end).isAfter(moment([2016, 7, 1]));
     if (widePoster) {
       return (
@@ -69,7 +71,8 @@ class ProjectItem extends React.Component {
             {renderPublicEvents(events.edges)}
             {conductors.length ? (
               <p>
-                Dirigent:{" "}
+                Dirigent:
+                {" "}
                 <List
                   items={conductors.map((conductor) => {
                     return conductor.name;
@@ -96,7 +99,8 @@ class ProjectItem extends React.Component {
           {renderPublicEvents(events.edges)}
           {conductors.length ? (
             <p>
-              Dirigent:{" "}
+              Dirigent:
+              {" "}
               <List
                 items={conductors.map((conductor) => {
                   return conductor.name;

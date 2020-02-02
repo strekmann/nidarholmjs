@@ -4,14 +4,6 @@
 import * as React from "react";
 import { createFragmentContainer, graphql } from "react-relay";
 import getMuiTheme from "material-ui/styles/getMuiTheme";
-import {
-  Card,
-  CardActions,
-  CardHeader,
-  CardMedia,
-  CardText,
-  CardTitle,
-} from "material-ui/Card";
 import FlatButton from "material-ui/FlatButton";
 import Paper from "material-ui/Paper";
 import PropTypes from "prop-types";
@@ -21,8 +13,8 @@ import theme from "../theme";
 import SendContactEmailMutation from "../mutations/SendContactEmail";
 
 import ContactForm from "./ContactForm";
-import Date from "./Date";
 import EventItem from "./EventItem";
+import ProjectItem from "./ProjectItem";
 import Text from "./Text";
 import type HomeOrganization from "./__generated__/Home_organization.graphql";
 
@@ -38,11 +30,11 @@ type State = {
 };
 
 class Home extends React.Component<Props, State> {
+  muiTheme: {};
+
   static childContextTypes = {
     muiTheme: PropTypes.object.isRequired,
   };
-
-  muiTheme: {};
 
   constructor(props) {
     super(props);
@@ -73,7 +65,7 @@ class Home extends React.Component<Props, State> {
   render() {
     const { organization } = this.props;
     const { contactDialogOpen } = this.state;
-    const { nextProject } = organization;
+    const { nextProjects, nextEvents } = organization;
     const { desktopGutterLess } = theme.spacing;
     return (
       <div id="home">
@@ -107,7 +99,7 @@ class Home extends React.Component<Props, State> {
               paddingLeft: desktopGutterLess,
               color: theme.palette.accent3Color,
             }}
-          ></div>
+          />
         </div>
         <div
           style={{
@@ -116,94 +108,42 @@ class Home extends React.Component<Props, State> {
           }}
         >
           <div className="grid">
-            {nextProject
-              ? [
-                  <Card
-                    id="next-projects"
-                    key="next-projects"
-                    className="item"
-                    style={{
-                      display: "flex",
-                      flexDirection: "column",
-                      justifyContent: "space-between",
-                    }}
-                  >
-                    <CardHeader
-                      title={<h2 style={{ margin: 0 }}>Neste prosjekt</h2>}
-                    />
-                    {nextProject.poster ? (
-                      <CardMedia
-                        overlay={
-                          <Link to={`/${nextProject.year}/${nextProject.tag}`}>
-                            <CardTitle
-                              title={nextProject.title}
-                              titleStyle={{ color: "white" }}
-                            />
-                          </Link>
-                        }
-                      >
-                        <img
-                          alt="Prosjektplakat"
-                          className="responsive"
-                          src={nextProject.poster.normalPath}
-                        />
-                      </CardMedia>
-                    ) : (
-                      <Link to={`/${nextProject.year}/${nextProject.tag}`}>
-                        <CardTitle title={nextProject.title} />
-                      </Link>
-                    )}
-                    <CardText>
-                      {nextProject.events.edges.map((edge) => {
-                        const event = edge.node;
-                        return (
-                          <div className="meta" key={event.id}>
-                            {event.location}{" "}
-                            <Date date={event.start} format="LLL" />
-                          </div>
-                        );
-                      })}
-                      {!nextProject.events.edges.length ? (
-                        <div className="meta" style={{ fontWeight: "bold" }}>
-                          <Date date={nextProject.end} />
-                        </div>
-                      ) : null}
-                      <Text text={nextProject.publicMdtext} />
-                    </CardText>
-                    <CardActions>
-                      <Link to="/projects">
-                        <FlatButton label="Prosjektoversikt" />
-                      </Link>
-                    </CardActions>
-                  </Card>,
-                  <Card
-                    id="next-events"
-                    key="next-events"
-                    className="item"
-                    style={{
-                      display: "flex",
-                      flexDirection: "column",
-                      justifyContent: "flex-start",
-                    }}
-                  >
-                    <CardHeader
-                      title={<h2 style={{ margin: 0 }}>Neste aktiviteter</h2>}
-                    />
-                    <CardText id="eventList">
-                      {organization.nextEvents.edges.map((edge) => {
-                        return (
-                          <EventItem key={edge.node.id} event={edge.node} />
-                        );
-                      })}
-                    </CardText>
-                    <CardActions>
-                      <Link to="/events">
-                        <FlatButton label="Aktivitetskalender" />
-                      </Link>
-                    </CardActions>
-                  </Card>,
-                ]
-              : null}
+            <div
+              id="next-projects"
+              className="item"
+              style={{ display: "flex", flexDirection: "column" }}
+            >
+              <h1>
+                {nextProjects.edges.length > 1
+                  ? "Neste prosjekter"
+                  : "Neste prosjekt"}
+              </h1>
+              {nextProjects.edges.map((edge) => {
+                return (
+                  <ProjectItem
+                    key={edge.node.id}
+                    project={edge.node}
+                    showText
+                  />
+                );
+              })}
+              <Link to="/projects">
+                <FlatButton label="Prosjektoversikt" />
+              </Link>
+            </div>
+            <div
+              id="next-events"
+              className="item"
+              style={{ display: "flex", flexDirection: "column" }}
+            >
+              <h1>Neste aktiviteter</h1>
+              {nextEvents.edges.map((edge) => {
+                return <EventItem key={edge.node.id} event={edge.node} />;
+              })}
+              <Link to="/events">
+                <FlatButton label="Aktivitetskalender" />
+              </Link>
+            </div>
             {organization.summaries.length > 0 ? (
               <Paper
                 id="information"
@@ -304,7 +244,7 @@ class Home extends React.Component<Props, State> {
                   }}
                 >
                   <h3>E-post</h3>
-                  <a onClick={this.openEmailDialog}>
+                  <a onClick={this.openEmailDialog} role="button">
                     <span
                       dangerouslySetInnerHTML={{
                         __html: organization.encodedEmail,
@@ -345,23 +285,30 @@ export default createFragmentContainer(Home, {
         slug
       }
       nextProjects(first: 3) {
-        title
-        start
-        end
-        year
-        tag
-        publicMdtext
-        poster {
-          filename
-          normalPath
-        }
-        events(first: 100, highlighted: true) {
-          edges {
-            node {
-              id
-              highlighted
-              location
-              start
+        edges {
+          node {
+            title
+            start
+            end
+            year
+            tag
+            conductors {
+              name
+            }
+            publicMdtext
+            poster {
+              filename
+              normalPath
+            }
+            events(first: 100, highlighted: true) {
+              edges {
+                node {
+                  id
+                  highlighted
+                  location
+                  start
+                }
+              }
             }
           }
         }
