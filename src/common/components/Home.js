@@ -344,7 +344,7 @@ export default createFragmentContainer(Home, {
         summary
         slug
       }
-      nextProject {
+      nextProjects(first: 3) {
         title
         start
         end

@@ -1295,12 +1295,13 @@ organizationType = new GraphQLObjectType({
           end: {
             $gte: moment()
               .startOf("day")
+              .add(1, "day") // Implicit time and timezones make this complicated
               .toDate(),
-            // $lte: moment().add(1, "year"),
           },
         });
         if (!isMember(organization, viewer)) {
-          query = query.where({ public_mdtext: { $ne: "" } });
+          query = query.where({ public_mdtext: { $ne: "" } })
+                       .select("-private_mdtext");
         }
         return connectionFromMongooseQuery(query.sort({ end: 1 }), args);
       },
