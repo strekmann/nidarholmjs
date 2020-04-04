@@ -1,10 +1,15 @@
 /* @flow */
 
 import areIntlLocalesSupported from "intl-locales-supported";
+// import MomentUtils from "@date-io/moment";
+import Button from "@material-ui/core/Button";
+import Dialog from "@material-ui/core/Dialog";
+import DialogActions from "@material-ui/core/DialogActions";
+import DialogContent from "@material-ui/core/DialogContent";
+import DialogTitle from "@material-ui/core/DialogTitle";
+import TextField from "@material-ui/core/TextField";
+// import { KeyboardDatePicker, MuiPickersUtilsProvider } from "@material-ui/pickers";
 import DatePicker from "material-ui/DatePicker";
-import Dialog from "material-ui/Dialog";
-import FlatButton from "material-ui/FlatButton";
-import TextField from "material-ui/TextField";
 import moment from "moment";
 import React from "react";
 import { createFragmentContainer, graphql } from "react-relay";
@@ -97,24 +102,30 @@ class ProjectForm extends React.Component<Props, State> {
     managers: this.props.managers || [],
   };
 
-  onChangeTitle = (event, title) => {
+  onChangeTitle = (event) => {
     let { tag } = this.state;
     if (!this.props.id) {
-      tag = urlify(title);
+      tag = urlify(event.target.value);
+      if (this.state.end) {
+        tag = `${tag}-${moment(this.state.end).year()}`;
+      }
     }
-    this.setState({ title, tag });
+    this.setState({
+      title: event.target.value,
+      tag,
+    });
   };
 
-  onChangeTag = (event, tag) => {
-    this.setState({ tag });
+  onChangeTag = (event) => {
+    this.setState({ tag: event.target.value });
   };
 
-  onChangePrivateMdtext = (event, privateMdtext) => {
-    this.setState({ privateMdtext });
+  onChangePrivateMdtext = (event) => {
+    this.setState({ privateMdtext: event.target.value });
   };
 
-  onChangePublicMdtext = (event, publicMdtext) => {
-    this.setState({ publicMdtext });
+  onChangePublicMdtext = (event) => {
+    this.setState({ publicMdtext: event.target.value });
   };
 
   onChangeStart = (event, start) => {
@@ -216,98 +227,102 @@ class ProjectForm extends React.Component<Props, State> {
 
     return (
       <Dialog
-        title={this.props.id ? "Rediger prosjekt" : "Nytt prosjekt"}
         open={this.props.open}
-        onRequestClose={this.toggle}
-        autoScrollBodyContent
-        actions={[
-          <FlatButton onClick={this.toggle} label="Avbryt" />,
-          <FlatButton onClick={this.saveProject} label="Lagre" primary />,
-        ]}
+        onClose={this.toggle}
       >
-        <div>
-          <TextField
-            floatingLabelText="Tittel"
-            onChange={this.onChangeTitle}
-            value={this.state.title}
-            required
-          />
-        </div>
-        <div>
-          <TextField
-            floatingLabelText="Identifikator"
-            onChange={this.onChangeTag}
-            value={this.state.tag}
-            required
-          />
-        </div>
-        <div>
-          <TextField
-            floatingLabelText="Intern beskrivelse"
-            onChange={this.onChangePrivateMdtext}
-            value={this.state.privateMdtext}
-            multiLine
-            fullWidth
-          />
-        </div>
-        {this.props.id ? (
-          <div>
-            <TextField
-              floatingLabelText="Ekstern beskrivelse"
-              onChange={this.onChangePublicMdtext}
-              value={this.state.publicMdtext}
-              multiLine
-              fullWidth
-            />
-          </div>
-        ) : null}
-        <div>
-          <DatePicker
-            id="start"
-            floatingLabelText="Prosjektstart"
-            onChange={this.onChangeStart}
-            value={this.state.start}
-            mode="landscape"
-            locale="nb"
-            DateTimeFormat={DateTimeFormat}
-          />
-        </div>
-        <div>
-          <DatePicker
-            id="end"
-            floatingLabelText="Prosjektslutt"
-            onChange={this.onChangeEnd}
-            value={this.state.end}
-            mode="landscape"
-            locale="nb"
-            DateTimeFormat={DateTimeFormat}
-            required
-          />
-        </div>
-        <div>
-          <UserField
-            users={this.state.conductors}
-            organization={organization}
-            onChange={this.onChangeConductors}
-            title="Dirigent(er)"
-          />
-        </div>
-        <div>
-          <UserField
-            users={this.state.managers}
-            organization={organization}
-            onChange={this.onChangeManagers}
-            title="Prosjektleder(e)"
-          />
-        </div>
-        <div>
-          <PermissionField
-            permissions={this.state.permissions}
-            onChange={this.onPermissionChange}
-            groups={this.props.viewer.groups}
-            users={this.props.viewer.friends}
-          />
-        </div>
+        <form onSubmit={this.saveProject}>
+          <DialogTitle id="project-dialog-title">{this.props.id ? "Rediger prosjekt" : "Nytt prosjekt"}</DialogTitle>
+          <DialogContent>
+              <div>
+                <TextField
+                  label="Tittel"
+                  onChange={this.onChangeTitle}
+                  value={this.state.title}
+                  error={!this.state.title}
+                  required
+                />
+              </div>
+              <div>
+                <TextField
+                  label="Identifikator"
+                  onChange={this.onChangeTag}
+                  value={this.state.tag}
+                  error={!this.state.tag}
+                  helperText="Dette feltet bør være unikt per prosjekt"
+                  required
+                />
+              </div>
+              <div>
+                <TextField
+                  label="Intern beskrivelse"
+                  onChange={this.onChangePrivateMdtext}
+                  value={this.state.privateMdtext}
+                  multiline
+                  fullWidth
+                />
+              </div>
+              {this.props.id ? (
+                <div>
+                  <TextField
+                    label="Ekstern beskrivelse"
+                    onChange={this.onChangePublicMdtext}
+                    value={this.state.publicMdtext}
+                    multiline
+                    fullWidth
+                  />
+                </div>
+              ) : null}
+              <div>
+                <DatePicker
+                  id="start"
+                  floatingLabelText="Prosjektstart"
+                  onChange={this.onChangeStart}
+                  value={this.state.start}
+                  locale="nb"
+                  DateTimeFormat={DateTimeFormat}
+                />
+              </div>
+              <div>
+                <DatePicker
+                  id="end"
+                  floatingLabelText="Prosjektslutt"
+                  onChange={this.onChangeEnd}
+                  value={this.state.end}
+                  locale="nb"
+                  DateTimeFormat={DateTimeFormat}
+                  required
+                />
+              </div>
+              <div>
+                <UserField
+                  users={this.state.conductors}
+                  organization={organization}
+                  onChange={this.onChangeConductors}
+                  title="Dirigent(er)"
+                />
+              </div>
+              <div>
+                <UserField
+                  users={this.state.managers}
+                  organization={organization}
+                  onChange={this.onChangeManagers}
+                  title="Prosjektleder(e)"
+                />
+              </div>
+              <div>
+                <PermissionField
+                  permissions={this.state.permissions}
+                  onChange={this.onPermissionChange}
+                  groups={this.props.viewer.groups}
+                  users={this.props.viewer.friends}
+                />
+              </div>
+          </DialogContent>
+          <DialogActions>
+            <Button variant="contained" type="reset" onClick={this.toggle}>Avbryt</Button>
+            <Button variant="contained" onSubmit={this.saveProject} type="submit" color="primary">Lagre</Button>
+          </DialogActions>
+        </form>
       </Dialog>
     );
   }
