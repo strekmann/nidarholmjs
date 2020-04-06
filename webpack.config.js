@@ -16,7 +16,7 @@ module.exports = {
   module: {
     rules: [
       {
-        test: /\.js$/,
+        test: /\.(t|j)sx?$/,
         exclude: /node_modules/,
         use: {
           loader: "babel-loader",
@@ -49,6 +49,13 @@ module.exports = {
         test: /\.(png|jpg|svg|eot|woff|woff2|ttf)$/,
         loader: "file-loader",
       },
+      /*
+      {
+        enforce: "pre",
+        test: /.js$/, exclude: /node_modules/,
+        loader: "source-map-loader",
+      },
+      */
     ],
   },
   output: {
@@ -71,4 +78,7 @@ module.exports = {
       entry: path.join(__dirname, "src", "sw.js"),
     }),
   ],
+  resolve: {
+    extensions: [".js", ".jsx", ".ts", ".tsx"],
+  },
 };

@@ -23,7 +23,7 @@ import connectMongo from "connect-mongo";
 import moment from "moment";
 import multer from "multer";
 import graphqlHTTP from "express-graphql";
-import { getFarceResult } from "found/lib/server";
+import { getFarceResult } from "found/server";
 import jwt from "jsonwebtoken";
 import { ExtractJwt } from "passport-jwt";
 

@@ -1,8 +1,8 @@
 /* global window, document, navigator */
 
 import "@babel/polyfill";
-import BrowserProtocol from "farce/lib/BrowserProtocol";
-import createInitialFarceRouter from "found/lib/createInitialFarceRouter";
+import BrowserProtocol from "farce/BrowserProtocol";
+import createInitialFarceRouter from "found/createInitialFarceRouter";
 import runtime from "serviceworker-webpack-plugin/lib/runtime";
 import React from "react";
 import ReactDOM from "react-dom";
