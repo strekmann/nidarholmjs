@@ -31,6 +31,23 @@
     "vm": "vagrant up",
     "prettier": "prettier --write --ignore-path .gitignore \"src/**/*js\""
   },
+  "babel": {
+    "plugins": [
+      "relay",
+      [
+        "@babel/plugin-proposal-decorators",
+        {
+          "legacy": true
+        }
+      ],
+      "@babel/plugin-proposal-class-properties"
+    ],
+    "presets": [
+      "@babel/env",
+      "@babel/react",
+      "@babel/flow"
+    ]
+  },
   "metadata": {
     "graphql": {
       "schema": "./src/server/schema.json"

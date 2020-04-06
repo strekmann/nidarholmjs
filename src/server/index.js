@@ -170,7 +170,7 @@ app.use(serveStatic(path.join(__dirname, "..", "static")));
 // We have a possibility to override user login during development
 app.use((req, res, next) => {
   if (
-    process.NODE_ENV !== "production" &&
+    process.env.NODE_ENV !== "production" &&
     config.override &&
     config.override.user
   ) {
@@ -338,7 +338,10 @@ app.get("/music/archive.xlsx", downloadArchive);
 /* Socket.io routes */
 // socketRoutes(io);
 
-if (process.env.NODE_ENV !== "production") {
+if (
+  process.env.NODE_ENV !== "production" &&
+  process.env.NODE_ENV !== "docker"
+) {
   const proxy = httpProxy.createProxyServer();
   app.all("/js/*", (req, res) => {
     proxy.web(req, res, {

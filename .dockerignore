@@ -1,0 +1,8 @@
+*log
+.git
+.vagrant
+ansible*
+files
+dump
+node_modules
+target

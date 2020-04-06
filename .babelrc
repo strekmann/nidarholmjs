@@ -1,8 +1,0 @@
-{
-  "plugins": [
-    "relay",
-    ["@babel/plugin-proposal-decorators", { "legacy": true }],
-    "@babel/plugin-proposal-class-properties"
-  ],
-  "presets": ["@babel/env", "@babel/react", "@babel/flow"]
-}
