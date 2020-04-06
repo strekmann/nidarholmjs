@@ -1,5 +1,6 @@
 /* @flow */
 
+import Button from "@material-ui/core/Button";
 import {
   Card,
   CardActions,
@@ -8,7 +9,6 @@ import {
   CardTitle,
 } from "material-ui/Card";
 import { ListItem } from "material-ui/List";
-import FlatButton from "material-ui/FlatButton";
 import React from "react";
 import { createFragmentContainer, graphql } from "react-relay";
 
