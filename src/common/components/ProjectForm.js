@@ -226,101 +226,109 @@ class ProjectForm extends React.Component<Props, State> {
     }
 
     return (
-      <Dialog
-        open={this.props.open}
-        onClose={this.toggle}
-      >
+      <Dialog open={this.props.open} onClose={this.toggle}>
         <form onSubmit={this.saveProject}>
-          <DialogTitle id="project-dialog-title">{this.props.id ? "Rediger prosjekt" : "Nytt prosjekt"}</DialogTitle>
+          <DialogTitle id="project-dialog-title">
+            {this.props.id ? "Rediger prosjekt" : "Nytt prosjekt"}
+          </DialogTitle>
           <DialogContent>
+            <div>
+              <TextField
+                label="Tittel"
+                onChange={this.onChangeTitle}
+                value={this.state.title}
+                error={!this.state.title}
+                required
+              />
+            </div>
+            <div>
+              <TextField
+                label="Identifikator"
+                onChange={this.onChangeTag}
+                value={this.state.tag}
+                error={!this.state.tag}
+                helperText="Dette feltet bør være unikt per prosjekt"
+                required
+              />
+            </div>
+            <div>
+              <TextField
+                label="Intern beskrivelse"
+                onChange={this.onChangePrivateMdtext}
+                value={this.state.privateMdtext}
+                multiline
+                fullWidth
+              />
+            </div>
+            {this.props.id ? (
               <div>
                 <TextField
-                  label="Tittel"
-                  onChange={this.onChangeTitle}
-                  value={this.state.title}
-                  error={!this.state.title}
-                  required
-                />
-              </div>
-              <div>
-                <TextField
-                  label="Identifikator"
-                  onChange={this.onChangeTag}
-                  value={this.state.tag}
-                  error={!this.state.tag}
-                  helperText="Dette feltet bør være unikt per prosjekt"
-                  required
-                />
-              </div>
-              <div>
-                <TextField
-                  label="Intern beskrivelse"
-                  onChange={this.onChangePrivateMdtext}
-                  value={this.state.privateMdtext}
+                  label="Ekstern beskrivelse"
+                  onChange={this.onChangePublicMdtext}
+                  value={this.state.publicMdtext}
                   multiline
                   fullWidth
                 />
               </div>
-              {this.props.id ? (
-                <div>
-                  <TextField
-                    label="Ekstern beskrivelse"
-                    onChange={this.onChangePublicMdtext}
-                    value={this.state.publicMdtext}
-                    multiline
-                    fullWidth
-                  />
-                </div>
-              ) : null}
-              <div>
-                <DatePicker
-                  id="start"
-                  floatingLabelText="Prosjektstart"
-                  onChange={this.onChangeStart}
-                  value={this.state.start}
-                  locale="nb"
-                  DateTimeFormat={DateTimeFormat}
-                />
-              </div>
-              <div>
-                <DatePicker
-                  id="end"
-                  floatingLabelText="Prosjektslutt"
-                  onChange={this.onChangeEnd}
-                  value={this.state.end}
-                  locale="nb"
-                  DateTimeFormat={DateTimeFormat}
-                  required
-                />
-              </div>
-              <div>
-                <UserField
-                  users={this.state.conductors}
-                  organization={organization}
-                  onChange={this.onChangeConductors}
-                  title="Dirigent(er)"
-                />
-              </div>
-              <div>
-                <UserField
-                  users={this.state.managers}
-                  organization={organization}
-                  onChange={this.onChangeManagers}
-                  title="Prosjektleder(e)"
-                />
-              </div>
-              <div>
-                <PermissionField
-                  permissions={this.state.permissions}
-                  onChange={this.onPermissionChange}
-                  groups={this.props.viewer.groups}
-                  users={this.props.viewer.friends}
-                />
-              </div>
+            ) : null}
+            <div>
+              <DatePicker
+                id="start"
+                floatingLabelText="Prosjektstart"
+                onChange={this.onChangeStart}
+                value={this.state.start}
+                locale="nb"
+                DateTimeFormat={DateTimeFormat}
+              />
+            </div>
+            <div>
+              <DatePicker
+                id="end"
+                floatingLabelText="Prosjektslutt"
+                onChange={this.onChangeEnd}
+                value={this.state.end}
+                locale="nb"
+                DateTimeFormat={DateTimeFormat}
+                required
+              />
+            </div>
+            <div>
+              <UserField
+                users={this.state.conductors}
+                organization={organization}
+                onChange={this.onChangeConductors}
+                title="Dirigent(er)"
+              />
+            </div>
+            <div>
+              <UserField
+                users={this.state.managers}
+                organization={organization}
+                onChange={this.onChangeManagers}
+                title="Prosjektleder(e)"
+              />
+            </div>
+            <div>
+              <PermissionField
+                permissions={this.state.permissions}
+                onChange={this.onPermissionChange}
+                groups={this.props.viewer.groups}
+                users={this.props.viewer.friends}
+              />
+            </div>
           </DialogContent>
           <DialogActions>
-            <Button variant="contained" type="reset" onClick={this.toggle}>Avbryt</Button>
-            <Button variant="contained" onSubmit={this.saveProject} type="submit" color="primary">Lagre</Button>
+            <Button variant="contained" type="reset" onClick={this.toggle}>
+              Avbryt
+            </Button>
+            <Button
+              variant="contained"
+              onSubmit={this.saveProject}
+              type="submit"
+              color="primary"
+            >
+              Lagre
+            </Button>
           </DialogActions>
         </form>
       </Dialog>
