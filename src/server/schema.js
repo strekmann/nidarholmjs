@@ -23,7 +23,7 @@ import {
 import marked from "marked";
 import moment from "moment";
 import uuid from "node-uuid";
-import ObjectId from "mongoose/lib/types/objectid";
+import mongoose from "mongoose";
 
 import { connectionFromMongooseQuery, offsetToCursor } from "./connections";
 import Activity from "./models/Activity";
@@ -1300,8 +1300,9 @@ organizationType = new GraphQLObjectType({
           },
         });
         if (!isMember(organization, viewer)) {
-          query = query.where({ public_mdtext: { $ne: "" } })
-                       .select("-private_mdtext");
+          query = query
+            .where({ public_mdtext: { $ne: "" } })
+            .select("-private_mdtext");
         }
         return connectionFromMongooseQuery(query.sort({ end: 1 }), args);
       },
@@ -1372,7 +1373,7 @@ organizationType = new GraphQLObjectType({
       },
       resolve: (_, { eventid }, { viewer }) => {
         let { id } = fromGlobalId(eventid);
-        if (!ObjectId.isValid(id)) {
+        if (!id.match(/^[a-fA-F0-9]{24}$/)) {
           id = eventid;
         }
         const query = Event.findById(id);
@@ -2486,7 +2487,7 @@ const mutationRemoveEventPersonResponsibility = mutationWithClientMutationId({
     const cId = fromGlobalId(contributorId).id;
     return Event.findByIdAndUpdate(
       eId,
-      { $pull: { contributors: { _id: ObjectId(cId) } } },
+      { $pull: { contributors: { _id: mongoose.Types.ObjectId(cId) } } },
       { new: true },
     ).exec();
   },
@@ -2558,7 +2559,7 @@ const mutationRemoveEventGroupResponsibility = mutationWithClientMutationId({
     const cId = fromGlobalId(contributorGroupId).id;
     return Event.findByIdAndUpdate(
       eId,
-      { $pull: { contributorGroups: { _id: ObjectId(cId) } } },
+      { $pull: { contributorGroups: { _id: mongoose.Types.ObjectId(cId) } } },
       { new: true },
     ).exec();
   },
