@@ -19,7 +19,7 @@ export default class PermissionChips extends React.Component<Props> {
   render() {
     let { permissions } = this.props;
     if (!permissions.length) {
-      permissions = [{ name: "Bare meg" }];
+      permissions = [{ id: "__me__", name: "Bare meg" }];
     }
     const chips = permissions.map((permission) => {
       return (
