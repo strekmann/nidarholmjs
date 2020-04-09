@@ -2,7 +2,7 @@ import { RelayProp } from "react-relay";
 import Dialog from "material-ui/Dialog";
 import Divider from "material-ui/Divider";
 import Menu from "material-ui/Menu";
-import MenuItem from "material-ui/MenuItem";
+import MenuItem from "@material-ui/core/MenuItem";
 import * as React from "react";
 import { createFragmentContainer, graphql } from "react-relay";
 
@@ -15,16 +15,16 @@ import ChooserItem from "./ChooserItem";
 import RemoveIconButton from "./RemoveIconButton";
 
 type Props = {
-  event: Event;
-  organizationEventPersonResponsibility: EventPersonResponsibilityChooser_organizationEventPersonResponsibility;
-  users: Array<{ id: string; name: string }>;
-  relay: RelayProp;
-  selectUser: (user: { id: string; name: string }) => void;
+  event: Event,
+  organizationEventPersonResponsibility: EventPersonResponsibilityChooser_organizationEventPersonResponsibility,
+  users: Array<{ id: string, name: string }>,
+  relay: RelayProp,
+  selectUser: (user: { id: string, name: string }) => void,
 };
 
 type State = {
-  chooserOpen: boolean;
-  users: Array<{ id: string; name: string }>;
+  chooserOpen: boolean,
+  users: Array<{ id: string, name: string }>,
 };
 
 class EventPersonResponsibilityChooser extends React.Component<Props, State> {
@@ -111,9 +111,8 @@ class EventPersonResponsibilityChooser extends React.Component<Props, State> {
     });
     const nextButton = users.length ? (
       <MenuItem
-        primaryText={`Legg til ${users[0].name}`}
         onClick={this.onChooseNext}
-      />
+      >{`Legg til ${users[0].name}`}</MenuItem>
     ) : null;
     const chooserItems = users.map((user) => {
       return (
@@ -132,7 +131,7 @@ class EventPersonResponsibilityChooser extends React.Component<Props, State> {
         <Divider />
         <Menu>
           {nextButton}
-          <MenuItem primaryText="Legg til …" onClick={this.toggleChooser} />
+          <MenuItem onClick={this.toggleChooser}>Legg til …</MenuItem>
         </Menu>
         <Dialog
           title="Velg ansvarlig"

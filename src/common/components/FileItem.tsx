@@ -1,11 +1,11 @@
 import { Card, CardTitle, CardMedia, CardActions } from "material-ui/Card";
-import Chip from "material-ui/Chip";
+import Chip from "@material-ui/core/Chip";
 import MoreVertIcon from "material-ui/svg-icons/navigation/more-vert";
 import Dialog from "material-ui/Dialog";
 import Download from "material-ui/svg-icons/file/file-download";
-import IconMenu from "material-ui/IconMenu";
-import IconButton from "material-ui/IconButton";
-import MenuItem from "material-ui/MenuItem";
+import IconButton from "@material-ui/core/IconButton";
+import Menu from "@material-ui/core/Menu";
+import MenuItem from "@material-ui/core/MenuItem";
 import RaisedButton from "material-ui/RaisedButton";
 import { grey400 } from "material-ui/styles/colors";
 import * as React from "react";
@@ -21,32 +21,44 @@ import PermissionField from "./PermissionField";
 import TagField from "./TagField";
 
 type Props = {
-  id: string;
-  filename: string;
-  isImage: boolean;
-  memberGroupId: string;
-  onSavePermissions: any; //(string, PermissionArray, string[], () => void) => {},
-  onSetProjectPoster: (string) => {};
-  organization: FileItem_organization;
-  permissions: PermissionObject;
-  path: string;
-  searchTag: (string) => {};
-  tags: string[];
-  thumbnailPath: string;
-  viewer: any; //FileItem_viewer;
+  id: string,
+  filename: string,
+  isImage: boolean,
+  memberGroupId: string,
+  onSavePermissions: any, //(string, PermissionArray, string[], () => void) => {},
+  onSetProjectPoster: (string) => {},
+  organization: FileItem_organization,
+  permissions: PermissionObject,
+  path: string,
+  searchTag: (string) => {},
+  tags: string[],
+  thumbnailPath: string,
+  viewer: any, //FileItem_viewer;
 };
 
 type State = {
-  editPermissions: boolean;
-  permissions: PermissionArray;
-  tags: string[];
+  editPermissions: boolean,
+  menuIsOpen: null | HTMLElement,
+  permissions: PermissionArray,
+  tags: string[],
 };
 
 class FileItem extends React.Component<Props, State> {
-  state = {
-    editPermissions: false,
-    permissions: flattenPermissions(this.props.permissions),
-    tags: this.props.tags || [],
+  constructor(props: Props) {
+    super(props);
+    this.state = {
+      editPermissions: false,
+      menuIsOpen: null,
+      permissions: flattenPermissions(props.permissions),
+      tags: props.tags || [],
+    };
+  }
+
+  onMenuOpen = (event: React.MouseEvent<HTMLButtonElement>) => {
+    this.setState({ menuIsOpen: event.currentTarget });
+  };
+  onMenuClose = () => {
+    this.setState({ menuIsOpen: null });
   };
 
   onPermissionChange = (permissions) => {
@@ -105,28 +117,28 @@ class FileItem extends React.Component<Props, State> {
       >
         <CardTitle style={{ paddingBottom: 0 }}>
           <div style={{ float: "right" }}>
-            <IconMenu
-              iconButtonElement={
-                <IconButton
-                  style={{ padding: 0, height: "inherit", width: "inherit" }}
-                >
-                  <MoreVertIcon />
-                </IconButton>
-              }
-              anchorOrigin={{ vertical: "top", horizontal: "right" }}
-              targetOrigin={{ vertical: "top", horizontal: "right" }}
+            <IconButton
+              onClick={this.onMenuOpen}
+              style={{ padding: 0, height: "inherit", width: "inherit" }}
             >
-              <MenuItem
-                primaryText="Rediger filegenskaper"
-                onClick={this.toggleEditPermissions}
-              />
+              <MoreVertIcon />
+            </IconButton>
+            <Menu
+              anchorEl={this.state.menuIsOpen}
+              onClose={this.onMenuClose}
+              open={Boolean(this.state.menuIsOpen)}
+              anchorOrigin={{ vertical: "top", horizontal: "right" }}
+              transformOrigin={{ vertical: "top", horizontal: "right" }}
+            >
+              <MenuItem onClick={this.toggleEditPermissions}>
+                Rediger filegenskaper
+              </MenuItem>
               {this.props.onSetProjectPoster ? (
-                <MenuItem
-                  primaryText="Bruk som prosjektplakat"
-                  onClick={this.setProjectPoster}
-                />
+                <MenuItem onClick={this.setProjectPoster}>
+                  Bruk som prosjektplakat
+                </MenuItem>
               ) : null}
-            </IconMenu>
+            </Menu>
           </div>
           <span
             style={{
@@ -163,9 +175,8 @@ class FileItem extends React.Component<Props, State> {
                   onClick={() => {
                     this.searchTag(tag);
                   }}
-                >
-                  {tag}
-                </Chip>
+                  label={tag}
+                />
               );
             })}
         </CardActions>

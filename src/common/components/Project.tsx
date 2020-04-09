@@ -1,19 +1,19 @@
 /* global FormData */
 
-import { RelayRefetchProp } from "react-relay";
+import { RelayProp } from "react-relay";
 import axios from "axios";
 import MoreVertIcon from "material-ui/svg-icons/navigation/more-vert";
 import Dialog from "material-ui/Dialog";
-import IconButton from "material-ui/IconButton";
-import IconMenu from "material-ui/IconMenu";
-import MenuItem from "material-ui/MenuItem";
+import IconButton from "@material-ui/core/IconButton";
+import Menu from "@material-ui/core/Menu";
+import MenuItem from "@material-ui/core/MenuItem";
 import Paper from "material-ui/Paper";
 import RaisedButton from "material-ui/RaisedButton";
 import getMuiTheme from "material-ui/styles/getMuiTheme";
 import PropTypes from "prop-types";
 import React from "react";
 import Helmet from "react-helmet";
-import { createRefetchContainer, graphql } from "react-relay";
+import { createFragmentContainer, graphql } from "react-relay";
 
 import AddEventMutation from "../mutations/AddEvent";
 import AddProjectFileMutation from "../mutations/AddProjectFile";
@@ -40,18 +40,19 @@ import { Project_organization } from "./__generated__/Project_organization.graph
 import { Project_viewer } from "./__generated__/Project_viewer.graphql";
 
 type Props = {
-  organization: Project_organization;
-  viewer: Project_viewer;
-  relay: RelayRefetchProp;
+  organization: Project_organization,
+  viewer: Project_viewer,
+  relay: RelayProp,
 };
 
 type State = {
-  public: boolean;
-  addEvent: boolean;
-  addFile: boolean;
-  addPiece: boolean;
-  editProject: boolean;
-  showEnded: boolean;
+  public: boolean,
+  addEvent: boolean,
+  addFile: boolean,
+  addPiece: boolean,
+  editProject: boolean,
+  menuIsOpen: null | HTMLElement,
+  showEnded: boolean,
 };
 
 export class Project extends React.Component<Props, State> {
@@ -68,6 +69,7 @@ export class Project extends React.Component<Props, State> {
 
   state = {
     public: false,
+    menuIsOpen: null,
     addEvent: false,
     addFile: false,
     addPiece: false,
@@ -79,6 +81,13 @@ export class Project extends React.Component<Props, State> {
     return { muiTheme: this.muiTheme };
   }
 
+  onMenuOpen = (event: React.MouseEvent<HTMLButtonElement>) => {
+    this.setState({ menuIsOpen: event.currentTarget });
+  };
+  onMenuClose = () => {
+    this.setState({ menuIsOpen: null });
+  };
+
   onDrop = (files, permissions, tags) => {
     const { organization, relay } = this.props;
 
@@ -88,25 +97,33 @@ export class Project extends React.Component<Props, State> {
 
       axios.post("/upload", data).then((response) => {
         tags.push(organization.project.tag);
-        AddProjectFileMutation.commit(relay.environment, {
-          hex: response.data.hex,
-          permissions: permissions.map((permission) => {
-            return permission.id;
-          }),
-          tags,
-          filename: file.name,
-          projectTag: organization.project.tag,
-        });
+        AddProjectFileMutation.commit(
+          relay.environment,
+          {
+            hex: response.data.hex,
+            permissions: permissions.map((permission) => {
+              return permission.id;
+            }),
+            tags,
+            filename: file.name,
+            projectTag: organization.project.tag,
+          },
+          undefined,
+        );
       });
     });
   };
 
   onSetProjectPoster = (fileId) => {
     const { organization, relay } = this.props;
-    SetProjectPosterMutation.commit(relay.environment, {
-      fileId,
-      projectId: organization.project.id,
-    });
+    SetProjectPosterMutation.commit(
+      relay.environment,
+      {
+        fileId,
+        projectId: organization.project.id,
+      },
+      undefined,
+    );
   };
 
   onSaveFilePermissions = (file, permissions, tags, onSuccess) => {
@@ -165,34 +182,46 @@ export class Project extends React.Component<Props, State> {
     const { organization, relay } = this.props;
     const { project } = organization;
     this.closeAddPiece();
-    AddPieceMutation.commit(relay.environment, {
-      pieceId: piece.id,
-      projectId: project.id,
-    });
+    AddPieceMutation.commit(
+      relay.environment,
+      {
+        pieceId: piece.id,
+        projectId: project.id,
+      },
+      undefined,
+    );
   };
 
   removePiece = (piece) => {
     const { organization, relay } = this.props;
     const { project } = organization;
-    RemovePieceMutation.commit(relay.environment, {
-      pieceId: piece.id,
-      projectId: project.id,
-    });
+    RemovePieceMutation.commit(
+      relay.environment,
+      {
+        pieceId: piece.id,
+        projectId: project.id,
+      },
+      undefined,
+    );
   };
 
   addEvent = (event) => {
     const { organization, relay } = this.props;
     this.setState({ addEvent: false });
-    AddEventMutation.commit(relay.environment, {
-      title: event.title,
-      location: event.location,
-      start: event.start,
-      end: event.end,
-      tags: [organization.project.tag],
-      mdtext: event.mdtext,
-      permissions: event.permissions,
-      highlighted: event.highlighted,
-    });
+    AddEventMutation.commit(
+      relay.environment,
+      {
+        title: event.title,
+        location: event.location,
+        start: event.start,
+        end: event.end,
+        tags: [organization.project.tag],
+        mdtext: event.mdtext,
+        permissions: event.permissions,
+        highlighted: event.highlighted,
+      },
+      undefined,
+    );
   };
 
   saveProject = (project, callbacks) => {
@@ -281,40 +310,36 @@ export class Project extends React.Component<Props, State> {
             ) : null}
           </div>
           {isMember ? (
-            <IconMenu
-              iconButtonElement={
-                <IconButton>
-                  <MoreVertIcon />
-                </IconButton>
-              }
-              anchorOrigin={{ vertical: "top", horizontal: "right" }}
-              targetOrigin={{ vertical: "top", horizontal: "right" }}
-            >
-              {hasEndedActivities ? (
-                <MenuItem
-                  primaryText="Vis tidligere aktiviteter"
-                  onClick={this.showEnded}
-                />
-              ) : null}
-              <MenuItem
-                primaryText="Rediger prosjektinfo"
-                onClick={this.toggleEditProject}
-              />
-              <MenuItem
-                primaryText="Legg til aktivitet"
-                onClick={this.toggleAddEvent}
-              />
-              {isMusicAdmin ? (
-                <MenuItem
-                  primaryText="Legg til repertoar"
-                  onClick={this.toggleAddPiece}
-                />
-              ) : null}
-              <MenuItem
-                primaryText="Last opp filer"
-                onClick={this.toggleAddFile}
-              />
-            </IconMenu>
+            <div>
+              <IconButton onClick={this.onMenuOpen}>
+                <MoreVertIcon />
+              </IconButton>
+              <Menu
+                anchorEl={this.state.menuIsOpen}
+                onClose={this.onMenuClose}
+                open={Boolean(this.state.menuIsOpen)}
+                anchorOrigin={{ vertical: "top", horizontal: "right" }}
+                transformOrigin={{ vertical: "top", horizontal: "right" }}
+              >
+                {hasEndedActivities ? (
+                  <MenuItem onClick={this.showEnded}>
+                    Vis tidligere aktiviteter
+                  </MenuItem>
+                ) : null}
+                <MenuItem onClick={this.toggleEditProject}>
+                  Rediger prosjektinfo
+                </MenuItem>
+                <MenuItem onClick={this.toggleAddEvent}>
+                  Legg til aktivitet
+                </MenuItem>
+                {isMusicAdmin ? (
+                  <MenuItem onClick={this.toggleAddPiece}>
+                    Legg til repertoar
+                  </MenuItem>
+                ) : null}
+                <MenuItem onClick={this.toggleAddFile}>Last opp filer</MenuItem>
+              </Menu>
+            </div>
           ) : null}
         </div>
         <div
@@ -453,7 +478,7 @@ export class Project extends React.Component<Props, State> {
   }
 }
 
-export default createRefetchContainer(Project, {
+export default createFragmentContainer(Project, {
   organization: graphql`
     fragment Project_organization on Organization {
       name

@@ -1,7 +1,7 @@
 import { RelayRefetchProp } from "react-relay";
-import IconButton from "material-ui/IconButton";
-import IconMenu from "material-ui/IconMenu";
-import { MenuItem } from "material-ui/Menu";
+import IconButton from "@material-ui/core/IconButton";
+import Menu from "@material-ui/core/Menu";
+import MenuItem from "@material-ui/core/MenuItem";
 import Paper from "material-ui/Paper";
 import RaisedButton from "material-ui/RaisedButton";
 import {
@@ -29,21 +29,22 @@ import { Pieces_organization } from "./__generated__/Pieces_organization.graphql
 const itemsPerPage = 50;
 
 type Props = {
-  organization: Pieces_organization;
-  relay: RelayRefetchProp;
+  organization: Pieces_organization,
+  relay: RelayRefetchProp,
   router: {
-    push: any; //({ pathname?: string }) => void,
-  };
+    push: any, //({ pathname?: string }) => void,
+  },
   location: {
     query: {
-      term: string;
-    };
-  };
+      term: string,
+    },
+  },
 };
 
 type State = {
-  addPiece: boolean;
-  term: string;
+  addPiece: boolean,
+  menuIsOpen: null | HTMLElement,
+  term: string,
 };
 
 class Pieces extends React.Component<Props, State> {
@@ -58,6 +59,7 @@ class Pieces extends React.Component<Props, State> {
 
   state = {
     addPiece: false,
+    menuIsOpen: null,
     term: "",
   };
 
@@ -87,6 +89,13 @@ class Pieces extends React.Component<Props, State> {
     }
     return null;
   }
+
+  onMenuOpen = (event: React.MouseEvent<HTMLButtonElement>) => {
+    this.setState({ menuIsOpen: event.currentTarget });
+  };
+  onMenuClose = () => {
+    this.setState({ menuIsOpen: null });
+  };
 
   onClear = () => {
     this.props.router.push({
@@ -176,28 +185,29 @@ class Pieces extends React.Component<Props, State> {
           ) : null}
           <Toolbar style={{ backgroundColor: theme.palette.fullWhite }}>
             <ToolbarGroup lastChild>
-              <IconMenu
-                iconButtonElement={
-                  <IconButton>
-                    <MoreVertIcon />
-                  </IconButton>
-                }
+              <IconButton onClick={this.onMenuOpen}>
+                <MoreVertIcon />
+              </IconButton>
+              <Menu
+                anchorEl={this.state.menuIsOpen}
+                onClose={this.onMenuClose}
+                open={Boolean(this.state.menuIsOpen)}
                 anchorOrigin={{ vertical: "top", horizontal: "right" }}
-                targetOrigin={{ vertical: "top", horizontal: "right" }}
+                transformOrigin={{ vertical: "top", horizontal: "right" }}
               >
                 {isMusicAdmin ? (
                   <MenuItem
-                    primaryText="Nytt stykke"
                     onClick={() => {
                       this.setState({ addPiece: !this.state.addPiece });
                     }}
-                  />
+                  >
+                    Nytt stykke
+                  </MenuItem>
                 ) : null}
-                <MenuItem
-                  primaryText="Last ned regneark"
-                  href="/music/archive.xlsx"
-                />
-              </IconMenu>
+                <MenuItem href="/music/archive.xlsx">
+                  Last ned regneark
+                </MenuItem>
+              </Menu>
             </ToolbarGroup>
           </Toolbar>
         </div>

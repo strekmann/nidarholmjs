@@ -1,10 +1,10 @@
 import { createFragmentContainer, graphql, RelayProp } from "react-relay";
 import getMuiTheme from "material-ui/styles/getMuiTheme";
-import IconMenu from "material-ui/IconMenu";
-import MenuItem from "material-ui/MenuItem";
-import IconButton from "material-ui/IconButton";
+import Menu from "@material-ui/core/Menu";
+import MenuItem from "@material-ui/core/MenuItem";
+import IconButton from "@material-ui/core/IconButton";
 import Paper from "material-ui/Paper";
-import MoreVertIcon from "material-ui/svg-icons/navigation/more-vert";
+import MoreVertIcon from "@material-ui/icons/MoreVert";
 import PropTypes from "prop-types";
 import * as React from "react";
 
@@ -19,17 +19,18 @@ import EditPage from "./EditPage";
 import Text from "./Text";
 
 type Props = {
-  viewer: Page_viewer;
-  organization: Page_organization;
+  viewer: Page_viewer,
+  organization: Page_organization,
   location: {
-    pathname: string;
-  };
-  relay: RelayProp;
+    pathname: string,
+  },
+  relay: RelayProp,
 };
 
 type State = {
-  edit: boolean;
-  permissions: PermissionArray;
+  edit: boolean,
+  menuIsOpen: null | HTMLElement,
+  permissions: PermissionArray,
 };
 
 class Page extends React.Component<Props, State> {
@@ -44,6 +45,7 @@ class Page extends React.Component<Props, State> {
 
   state = {
     edit: false,
+    menuIsOpen: null,
     permissions:
       this.props.organization.page && this.props.organization.page.permissions
         ? flattenPermissions(this.props.organization.page.permissions)
@@ -55,6 +57,13 @@ class Page extends React.Component<Props, State> {
   }
 
   muiTheme: {};
+
+  onMenuOpen = (event: React.MouseEvent<HTMLButtonElement>) => {
+    this.setState({ menuIsOpen: event.currentTarget });
+  };
+  onMenuClose = () => {
+    this.setState({ menuIsOpen: null });
+  };
 
   toggleEdit = () => {
     this.setState({
@@ -109,17 +118,18 @@ class Page extends React.Component<Props, State> {
       <Paper className="row">
         {isMember ? (
           <div style={{ float: "right" }}>
-            <IconMenu
-              iconButtonElement={
-                <IconButton>
-                  <MoreVertIcon />
-                </IconButton>
-              }
+            <IconButton onClick={this.onMenuOpen}>
+              <MoreVertIcon />
+            </IconButton>
+            <Menu
+              anchorEl={this.state.menuIsOpen}
+              onClose={this.onMenuClose}
+              open={Boolean(this.state.menuIsOpen)}
               anchorOrigin={{ vertical: "top", horizontal: "right" }}
-              targetOrigin={{ vertical: "top", horizontal: "right" }}
+              transformOrigin={{ vertical: "top", horizontal: "right" }}
             >
-              <MenuItem primaryText="Rediger" onClick={this.toggleEdit} />
-            </IconMenu>
+              <MenuItem onClick={this.toggleEdit}>Rediger</MenuItem>
+            </Menu>
           </div>
         ) : null}
         <Text text={organization.page.mdtext} />

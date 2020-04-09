@@ -1,16 +1,16 @@
 import getMuiTheme from "material-ui/styles/getMuiTheme";
-import Chip from "material-ui/Chip";
+import Chip from "@material-ui/core/Chip";
 import Dialog from "material-ui/Dialog";
 import FlatButton from "material-ui/FlatButton";
-import IconMenu from "material-ui/IconMenu";
-import MenuItem from "material-ui/MenuItem";
-import IconButton from "material-ui/IconButton";
+import Menu from "@material-ui/core/Menu";
+import MenuItem from "@material-ui/core/MenuItem";
+import IconButton from "@material-ui/core/IconButton";
 import Paper from "material-ui/Paper";
 import MoreVertIcon from "material-ui/svg-icons/navigation/more-vert";
 import PropTypes from "prop-types";
 import * as React from "react";
 import { createFragmentContainer, graphql } from "react-relay";
-import { RelayRefetchProp } from "react-relay";
+import { RelayProp } from "react-relay";
 
 import theme from "../theme";
 import EditEventMutation from "../mutations/EditEvent";
@@ -23,18 +23,19 @@ import Text from "./Text";
 import EventForm from "./EventForm";
 
 type Props = {
-  organization: Event_organization;
-  relay: RelayRefetchProp;
+  organization: Event_organization,
+  relay: RelayProp,
   router: {
-    go: (number) => void;
-    push: ({ pathname: string }) => void;
-  };
-  viewer: Event_viewer;
+    go: (number) => void,
+    push: any, // ({ pathname: string }) => void;
+  },
+  viewer: Event_viewer,
 };
 
 type State = {
-  editing: boolean;
-  deleting: boolean;
+  editing: boolean,
+  deleting: boolean,
+  menuIsOpen: null | HTMLElement,
 };
 
 class Event extends React.Component<Props, State> {
@@ -50,6 +51,7 @@ class Event extends React.Component<Props, State> {
   state = {
     editing: false,
     deleting: false,
+    menuIsOpen: null,
   };
 
   getChildContext() {
@@ -57,6 +59,13 @@ class Event extends React.Component<Props, State> {
   }
 
   muiTheme: {};
+
+  onMenuOpen = (event: React.MouseEvent<HTMLButtonElement>) => {
+    this.setState({ menuIsOpen: event.currentTarget });
+  };
+  onMenuClose = () => {
+    this.setState({ menuIsOpen: null });
+  };
 
   toggleEdit = () => {
     this.setState({
@@ -81,17 +90,21 @@ class Event extends React.Component<Props, State> {
   saveEvent = (event) => {
     const { relay } = this.props;
     this.setState({ editing: false });
-    EditEventMutation.commit(relay.environment, {
-      eventid: event.id,
-      title: event.title,
-      location: event.location,
-      start: event.start,
-      end: event.end,
-      mdtext: event.mdtext,
-      permissions: event.permissions,
-      tags: event.tags,
-      highlighted: event.highlighted,
-    });
+    EditEventMutation.commit(
+      relay.environment,
+      {
+        eventid: event.id,
+        title: event.title,
+        location: event.location,
+        start: event.start,
+        end: event.end,
+        mdtext: event.mdtext,
+        permissions: event.permissions,
+        tags: event.tags,
+        highlighted: event.highlighted,
+      },
+      undefined,
+    );
   };
 
   deleteEvent = () => {
@@ -130,18 +143,21 @@ class Event extends React.Component<Props, State> {
         <div style={{ display: "flex", justifyContent: "space-between" }}>
           <h1>{event.title}</h1>
           {isMember ? (
-            <IconMenu
-              iconButtonElement={
-                <IconButton>
-                  <MoreVertIcon />
-                </IconButton>
-              }
-              anchorOrigin={{ vertical: "top", horizontal: "right" }}
-              targetOrigin={{ vertical: "top", horizontal: "right" }}
-            >
-              <MenuItem primaryText="Rediger" onClick={this.toggleEdit} />
-              <MenuItem primaryText="Slett" onClick={this.toggleDelete} />
-            </IconMenu>
+            <div>
+              <IconButton onClick={this.onMenuOpen}>
+                <MoreVertIcon />
+              </IconButton>
+              <Menu
+                anchorEl={this.state.menuIsOpen}
+                onClose={this.onMenuClose}
+                open={Boolean(this.state.menuIsOpen)}
+                anchorOrigin={{ vertical: "top", horizontal: "right" }}
+                transformOrigin={{ vertical: "top", horizontal: "right" }}
+              >
+                <MenuItem onClick={this.toggleEdit}>Rediger</MenuItem>
+                <MenuItem onClick={this.toggleDelete}>Slett</MenuItem>
+              </Menu>
+            </div>
           ) : null}
         </div>
         <div className="meta">
@@ -159,9 +175,8 @@ class Event extends React.Component<Props, State> {
                 onClick={() => {
                   this.goTo(project);
                 }}
-              >
-                {project.title}
-              </Chip>
+                label={project.title}
+              />
             );
           })}
         {isMember ? (

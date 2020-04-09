@@ -1,12 +1,13 @@
-import IconButton from "material-ui/IconButton";
-import IconMenu from "material-ui/IconMenu";
-import { List, ListItem } from "material-ui/List";
-import { MenuItem } from "material-ui/Menu";
+import IconButton from "@material-ui/core/IconButton";
+import Menu from "@material-ui/core/Menu";
+import List from "@material-ui/core/List";
+import ListItem from "@material-ui/core/ListItem";
+import MenuItem from "@material-ui/core/MenuItem";
 import Paper from "material-ui/Paper";
 import Toggle from "material-ui/Toggle";
 import { Toolbar, ToolbarGroup } from "material-ui/Toolbar";
 import getMuiTheme from "material-ui/styles/getMuiTheme";
-import MoreVertIcon from "material-ui/svg-icons/navigation/more-vert";
+import MoreVertIcon from "@material-ui/icons/MoreVert";
 import PropTypes from "prop-types";
 import * as React from "react";
 import { createFragmentContainer, graphql } from "react-relay";
@@ -22,21 +23,22 @@ import { Piece_organization } from "./__generated__/Piece_organization.graphql";
 import { Piece_viewer } from "./__generated__/Piece_viewer.graphql";
 
 type Props = {
-  organization: Piece_organization;
-  viewer: Piece_viewer;
+  organization: Piece_organization,
+  viewer: Piece_viewer,
   relay: {
-    environment: {};
-  };
+    environment: {},
+  },
   router: any /* {
     push: ({
       pathname?: string,
     }) => void,
-  }*/;
+  }*/,
 };
 
 type State = {
-  editPiece: boolean;
-  showAdmin: boolean;
+  editPiece: boolean,
+  menuIsOpen: null | HTMLElement,
+  showAdmin: boolean,
 };
 
 class Piece extends React.Component<Props, State> {
@@ -51,6 +53,7 @@ class Piece extends React.Component<Props, State> {
 
   state = {
     editPiece: false,
+    menuIsOpen: null,
     showAdmin: true,
   };
 
@@ -59,6 +62,13 @@ class Piece extends React.Component<Props, State> {
   }
 
   muiTheme: {};
+
+  onMenuOpen = (event: React.MouseEvent<HTMLButtonElement>) => {
+    this.setState({ menuIsOpen: event.currentTarget });
+  };
+  onMenuClose = () => {
+    this.setState({ menuIsOpen: null });
+  };
 
   handleCloseEditPiece = () => {
     this.setState({ editPiece: false });
@@ -73,14 +83,18 @@ class Piece extends React.Component<Props, State> {
   savePiece = (piece) => {
     const { organization, relay } = this.props;
     const { composers, arrangers, title, subtitle } = piece;
-    this.setState({ editPiece: false });
-    UpdatePieceMutation.commit(relay.environment, {
-      id: organization.piece.id,
-      composers: composers.split(","),
-      arrangers: arrangers.split(","),
-      title,
-      subtitle,
-    });
+    this.setState({ editPiece: false, menuIsOpen: null });
+    UpdatePieceMutation.commit(
+      relay.environment,
+      {
+        id: organization.piece.id,
+        composers: composers.split(","),
+        arrangers: arrangers.split(","),
+        title,
+        subtitle,
+      },
+      undefined,
+    );
   };
 
   render() {
@@ -106,24 +120,26 @@ class Piece extends React.Component<Props, State> {
           ) : null}
           <Toolbar style={{ backgroundColor: theme.palette.fullWhite }}>
             <ToolbarGroup lastChild>
-              <IconMenu
-                iconButtonElement={
-                  <IconButton>
-                    <MoreVertIcon />
-                  </IconButton>
-                }
+              <IconButton onClick={this.onMenuOpen}>
+                <MoreVertIcon />
+              </IconButton>
+              <Menu
+                anchorEl={this.state.menuIsOpen}
+                onClose={this.onMenuClose}
+                open={Boolean(this.state.menuIsOpen)}
                 anchorOrigin={{ vertical: "top", horizontal: "right" }}
-                targetOrigin={{ vertical: "top", horizontal: "right" }}
+                transformOrigin={{ vertical: "top", horizontal: "right" }}
               >
                 {isMusicAdmin ? (
                   <MenuItem
-                    primaryText="Rediger info om stykke"
                     onClick={() => {
                       this.setState({ editPiece: !this.state.editPiece });
                     }}
-                  />
+                  >
+                    Rediger info om stykke
+                  </MenuItem>
                 ) : null}
-              </IconMenu>
+              </Menu>
             </ToolbarGroup>
           </Toolbar>
         </div>
@@ -136,11 +152,9 @@ class Piece extends React.Component<Props, State> {
         <List>
           {piece.files.edges.map((edge) => {
             return (
-              <ListItem
-                disabled
-                key={edge.node.id}
-                primaryText={<a href={edge.node.path}>{edge.node.filename}</a>}
-              />
+              <ListItem key={edge.node.id}>
+                <a href={edge.node.path}>{edge.node.filename}</a>
+              </ListItem>
             );
           })}
         </List>

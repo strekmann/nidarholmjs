@@ -1,13 +1,13 @@
 /* eslint "max-len": 0 */
 /* eslint "react/no-multi-comp": 0 */
 
-import IconButton from "material-ui/IconButton";
+import IconButton from "@material-ui/core/IconButton";
 import RaisedButton from "material-ui/RaisedButton";
 import AddCircle from "material-ui/svg-icons/content/add-circle";
 import getMuiTheme from "material-ui/styles/getMuiTheme";
 import PropTypes from "prop-types";
 import * as React from "react";
-import { createFragmentContainer, graphql } from "react-relay";
+import { createFragmentContainer, graphql, RelayProp } from "react-relay";
 
 import SaveContactRolesMutation from "../mutations/SaveContactRoles";
 import theme from "../theme";
@@ -18,7 +18,7 @@ import { ContactRoles_organization } from "./__generated__/ContactRoles_organiza
 type ItemProps = {
   // id: string,
   name: string;
-  onAddRole: (any) => void;
+  onAddRole: (_: any) => void;
 };
 
 class RoleItem extends React.Component<ItemProps> {
@@ -41,23 +41,20 @@ class RoleItem extends React.Component<ItemProps> {
   }
 }
 
+type Role = {
+  id: string;
+  name: string;
+}
+
 type Props = {
   organization: ContactRoles_organization;
-  relay: {
-    environment: {};
-  };
+  relay: RelayProp;
   saveHook: () => void;
 };
 
 type State = {
-  activeRoles: Array<{
-    id: string;
-    name: string;
-  }>;
-  contactRoles: Array<{
-    id: string;
-    name: string;
-  }>;
+  activeRoles: Role[];
+  contactRoles: Role[];
 };
 
 class ContactRoles extends React.Component<Props, State> {
@@ -65,12 +62,29 @@ class ContactRoles extends React.Component<Props, State> {
     muiTheme: PropTypes.object.isRequired,
   };
 
-  constructor(props) {
+  constructor(props: Props) {
     super(props);
     const { activeRoles, contactRoles } = props.organization;
     this.state = {
-      activeRoles: [...activeRoles],
-      contactRoles: [...contactRoles],
+      activeRoles: [],
+      contactRoles: [],
+    }
+    // TODO: Should be easier
+    const _activeRoles: Role[] = [];
+    const _contactRoles: Role[] = [];
+    activeRoles?.forEach((role: Role | null) => {
+      if (role && role.id && role.name) {
+      _activeRoles.push(role);
+      }
+    });
+    contactRoles?.forEach((role: {readonly id: string, readonly name: string} | null) => {
+      if (role && role.id && role.name) {
+      _contactRoles.push(role);
+      }
+    });
+    this.state = {
+      activeRoles: _activeRoles,
+      contactRoles: _contactRoles,
     };
     this.muiTheme = getMuiTheme(theme);
   }
@@ -79,7 +93,7 @@ class ContactRoles extends React.Component<Props, State> {
     return { muiTheme: this.muiTheme };
   }
 
-  onChange = (contactRoles) => {
+  onChange = (contactRoles: Role[]) => {
     this.setState({ contactRoles });
   };
 

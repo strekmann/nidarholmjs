@@ -1,19 +1,15 @@
-import IconButton from "material-ui/IconButton";
-import IconMenu from "material-ui/IconMenu";
-import MenuItem from "material-ui/MenuItem";
+import IconButton from "@material-ui/core/IconButton";
+import Menu from "@material-ui/core/Menu";
+import MenuItem from "@material-ui/core/MenuItem";
 import Paper from "material-ui/Paper";
 import RaisedButton from "material-ui/RaisedButton";
-import TextField from "material-ui/TextField";
 import MoreVertIcon from "material-ui/svg-icons/navigation/more-vert";
+import TextField from "material-ui/TextField";
 import * as React from "react";
-import { RelayProp } from "react-relay";
-import { createFragmentContainer, graphql } from "react-relay";
-
+import { createFragmentContainer, graphql, RelayProp } from "react-relay";
 import EditContactInfoMutation from "../mutations/EditContactInfo";
-
-import ContactUser from "./ContactUser";
 import ContactRoles from "./ContactRoles";
-
+import ContactUser from "./ContactUser";
 import { Contact_organization } from "./__generated__/Contact_organization.graphql";
 
 type Props = {
@@ -22,6 +18,7 @@ type Props = {
 };
 
 type State = {
+  menuIsOpen: null | HTMLElement;
   editContacts: boolean;
   editInfo: boolean;
   visitorLocation: string;
@@ -38,6 +35,7 @@ type State = {
 
 class Contact extends React.Component<Props, State> {
   state = {
+    menuIsOpen: null,
     editContacts: false,
     editInfo: false,
     visitorLocation: this.props.organization.visitorLocation || "",
@@ -50,6 +48,13 @@ class Contact extends React.Component<Props, State> {
     contactText: this.props.organization.contactText || "",
     mapText: this.props.organization.mapText || "",
     mapUrl: this.props.organization.mapUrl || "",
+  };
+
+  onMenuOpen = (event: React.MouseEvent<HTMLButtonElement>) => {
+    this.setState({ menuIsOpen: event.currentTarget });
+  };
+  onMenuClose = () => {
+    this.setState({ menuIsOpen: null });
   };
 
   onChangeVisitorLocation = (event, visitorLocation) => {
@@ -133,28 +138,31 @@ class Contact extends React.Component<Props, State> {
       <Paper className="row">
         {organization.isAdmin ? (
           <div style={{ float: "right" }}>
-            <IconMenu
-              iconButtonElement={
-                <IconButton>
-                  <MoreVertIcon />
-                </IconButton>
-              }
+            <IconButton onClick={this.onMenuOpen}>
+              <MoreVertIcon />
+            </IconButton>
+            <Menu
+              anchorEl={this.state.menuIsOpen}
+              onClose={this.onMenuClose}
+              open={Boolean(this.state.menuIsOpen)}
               anchorOrigin={{ vertical: "top", horizontal: "right" }}
-              targetOrigin={{ vertical: "top", horizontal: "right" }}
+              transformOrigin={{ vertical: "top", horizontal: "right" }}
             >
               <MenuItem
-                primaryText="Rediger kontaktpersoner"
                 onClick={() => {
                   this.setState({ editContacts: !this.state.editContacts });
                 }}
-              />
+              >
+                Rediger kontaktpersoner
+              </MenuItem>
               <MenuItem
-                primaryText="Rediger kontaktinfo"
                 onClick={() => {
                   this.setState({ editInfo: !this.state.editInfo });
                 }}
-              />
-            </IconMenu>
+              >
+                Rediger kontaktinfo
+              </MenuItem>
+            </Menu>
           </div>
         ) : null}
         <h1>Kontakt oss</h1>

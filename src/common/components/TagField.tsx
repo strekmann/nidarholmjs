@@ -1,21 +1,21 @@
 import AutoComplete from "material-ui/AutoComplete";
-import Chip from "material-ui/Chip";
+import Chip from "@material-ui/core/Chip";
 import * as React from "react";
 import { RelayRefetchProp } from "react-relay";
 import { createRefetchContainer, graphql } from "react-relay";
 
-import { TagField_organization } from "./__generated__/TagField_organization";
+import { TagField_organization } from "./__generated__/TagField_organization.graphql";
 
 type Props = {
-  autoFocus: boolean;
-  fileTags: string[];
-  onChange: any; // (string[]) => {},
-  organization: TagField_organization;
-  relay: RelayRefetchProp;
+  autoFocus: boolean,
+  fileTags: string[],
+  onChange: any, // (string[]) => {},
+  organization: TagField_organization,
+  relay: RelayRefetchProp,
 };
 
 type State = {
-  tag: string;
+  tag: string,
 };
 
 class TagField extends React.Component<Props, State> {
@@ -76,12 +76,11 @@ class TagField extends React.Component<Props, State> {
             return (
               <Chip
                 key={tag}
-                onRequestDelete={() => {
+                onDelete={() => {
                   this.removeTag(tag);
                 }}
-              >
-                {tag}
-              </Chip>
+                label={tag}
+              />
             );
           })}
         </div>

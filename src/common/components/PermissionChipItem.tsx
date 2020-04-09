@@ -1,19 +1,37 @@
-import Avatar from "material-ui/Avatar";
-import Chip from "material-ui/Chip";
-import { red500, green500, lightBlue500 } from "material-ui/styles/colors";
-import VisibilityOff from "material-ui/svg-icons/action/visibility-off";
-import Group from "material-ui/svg-icons/social/group";
-import Public from "material-ui/svg-icons/social/public";
+import Avatar from "@material-ui/core/Avatar";
+import Chip from "@material-ui/core/Chip";
+import green from "@material-ui/core/colors/green";
+import lightBlue from "@material-ui/core/colors/lightBlue";
+import red from "@material-ui/core/colors/red";
+import Group from "@material-ui/icons/Group";
+import Public from "@material-ui/icons/Public";
+import VisibilityOff from "@material-ui/icons/VisibilityOff";
+import { withStyles } from "@material-ui/core/styles";
 import * as React from "react";
 
-type Props = {
-  id?: string;
-  memberGroupId?: string;
-  removePermission: (id: string) => void;
-  text?: string;
+const useStyles = () => {
+  return {
+    red: {
+      backgroundColor: red[500],
+    },
+    green: {
+      backgroundColor: green[500],
+    },
+    lightBlue: {
+      backgroundColor: lightBlue[500],
+    },
+  };
 };
 
-export default class PermissionChipItem extends React.Component<Props> {
+type Props = {
+  id?: string,
+  memberGroupId?: string,
+  removePermission: (id: string) => void,
+  text?: string,
+  classes: any,
+};
+
+class PermissionChipItem extends React.Component<Props> {
   removePermission = () => {
     if (this.props.id && this.props.removePermission) {
       this.props.removePermission(this.props.id);
@@ -21,25 +39,40 @@ export default class PermissionChipItem extends React.Component<Props> {
   };
   render() {
     let icon;
+    const { classes } = this.props;
     if (!this.props.id) {
-      icon = <Avatar backgroundColor={red500} icon={<VisibilityOff />} />;
+      icon = (
+        <Avatar className={classes.red}>
+          <VisibilityOff />
+        </Avatar>
+      );
     } else if (this.props.id === "p") {
-      icon = <Avatar backgroundColor={green500} icon={<Public />} />;
+      icon = (
+        <Avatar className={classes.green}>
+          <Public />
+        </Avatar>
+      );
     } else if (this.props.id === this.props.memberGroupId) {
-      icon = <Avatar backgroundColor={lightBlue500} icon={<Group />} />;
+      icon = (
+        <Avatar className={classes.lightBlue}>
+          <Group />
+        </Avatar>
+      );
     }
     return (
       <Chip
         key={this.props.id}
-        onRequestDelete={
+        onDelete={
           this.props.id && this.props.removePermission
             ? this.removePermission
-            : null
+            : undefined
         }
+        avatar={icon}
+        label={this.props.text}
         style={{ marginRight: 8 }}
-      >
-        {icon} {this.props.text}
-      </Chip>
+      />
     );
   }
 }
+
+export default withStyles(useStyles)(PermissionChipItem);

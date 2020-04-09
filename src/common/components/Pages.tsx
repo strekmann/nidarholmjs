@@ -1,7 +1,7 @@
-import MoreVertIcon from "material-ui/svg-icons/navigation/more-vert";
-import IconButton from "material-ui/IconButton";
-import IconMenu from "material-ui/IconMenu";
-import MenuItem from "material-ui/MenuItem";
+import MoreVertIcon from "@material-ui/icons/MoreVert";
+import IconButton from "@material-ui/core/IconButton";
+import Menu from "@material-ui/core/Menu";
+import MenuItem from "@material-ui/core/MenuItem";
 import Paper from "material-ui/Paper";
 import RaisedButton from "material-ui/RaisedButton";
 import getMuiTheme from "material-ui/styles/getMuiTheme";
@@ -20,21 +20,22 @@ import EditPage from "./EditPage";
 import PageList from "./PageList";
 
 type Props = {
-  organization: Pages_organization;
-  relay: RelayProp;
-  viewer: Pages_viewer;
+  organization: Pages_organization,
+  relay: RelayProp,
+  viewer: Pages_viewer,
 };
 
 type State = {
-  addPage: boolean;
+  addPage: boolean,
+  menuIsOpen: null | HTMLElement,
   page: {
-    id?: string;
-    slug: string;
-    mdtext: string;
-    title: string;
-    summary: string;
-    permissions: PermissionArray;
-  };
+    id?: string,
+    slug: string,
+    mdtext: string,
+    title: string,
+    summary: string,
+    permissions: PermissionArray,
+  },
 };
 
 class Pages extends React.Component<Props, State> {
@@ -49,8 +50,9 @@ class Pages extends React.Component<Props, State> {
 
   state = {
     addPage: false,
+    menuIsOpen: null,
     page: {
-      id: null,
+      id: undefined,
       slug: "",
       mdtext: "",
       title: "",
@@ -64,6 +66,13 @@ class Pages extends React.Component<Props, State> {
   }
 
   muiTheme: {};
+
+  onMenuOpen = (event: React.MouseEvent<HTMLButtonElement>) => {
+    this.setState({ menuIsOpen: event.currentTarget });
+  };
+  onMenuClose = () => {
+    this.setState({ menuIsOpen: null });
+  };
 
   toggleAddPage = () => {
     this.setState({ addPage: !this.state.addPage });
@@ -99,20 +108,22 @@ class Pages extends React.Component<Props, State> {
               <div>
                 <h1>Sider</h1>
               </div>
-              <IconMenu
-                iconButtonElement={
-                  <IconButton>
-                    <MoreVertIcon />
-                  </IconButton>
-                }
-                anchorOrigin={{ vertical: "top", horizontal: "right" }}
-                targetOrigin={{ vertical: "top", horizontal: "right" }}
-              >
-                <MenuItem
-                  primaryText="Legg til side"
-                  onClick={this.toggleAddPage}
-                />
-              </IconMenu>
+              <div>
+                <IconButton onClick={this.onMenuOpen}>
+                  <MoreVertIcon />
+                </IconButton>
+                <Menu
+                  anchorEl={this.state.menuIsOpen}
+                  onClose={this.onMenuClose}
+                  open={Boolean(this.state.menuIsOpen)}
+                  anchorOrigin={{ vertical: "top", horizontal: "right" }}
+                  transformOrigin={{ vertical: "top", horizontal: "right" }}
+                >
+                  <MenuItem onClick={this.toggleAddPage}>
+                    Legg til side
+                  </MenuItem>
+                </Menu>
+              </div>
             </div>
             <PageList
               pages={org.pages}

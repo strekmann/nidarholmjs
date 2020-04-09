@@ -1,54 +1,55 @@
-/* eslint "max-len": 0 */
-
 import AutoComplete from "material-ui/AutoComplete";
-import Dialog from "material-ui/Dialog";
-import FlatButton from "material-ui/FlatButton";
-import TextField from "material-ui/TextField";
+import Button from "@material-ui/core/Button";
+import Dialog from "@material-ui/core/Dialog";
+import DialogActions from "@material-ui/core/DialogActions";
+import DialogContent from "@material-ui/core/DialogContent";
+import DialogTitle from "@material-ui/core/DialogTitle";
+import TextField from "@material-ui/core/TextField";
 import * as React from "react";
 
 type Props = {
   pieces?: {
     edges: Array<{
       node: {
-        id: string;
-        title: string;
-        subtitle: string;
-        arrangers: Array<string>;
-        composers: Array<string>;
-        scoreCount: number;
-      };
-    }>;
-  };
+        id: string,
+        title: string,
+        subtitle: string,
+        arrangers: Array<string>,
+        composers: Array<string>,
+        scoreCount: number,
+      },
+    }>,
+  },
   piece?: {
-    title: string;
-    subtitle: string;
-    composers: Array<string>;
-    arrangers: Array<string>;
-  };
-  searching?: boolean;
-  isOpen: boolean;
-  title: string;
+    title: string,
+    subtitle: string,
+    composers: Array<string>,
+    arrangers: Array<string>,
+  },
+  searching?: boolean,
+  isOpen: boolean,
+  title: string,
   save: any /*({
     title: string,
     subtitle: string,
     composers: string,
     arrangers: string,
-  }) => void*/;
-  cancel: () => void;
+  }) => void*/,
+  cancel: () => void,
   router: {
     push: any /*({
       pathname?: string,
-    }) => void*/;
-  };
-  search?: (string) => void;
+    }) => void*/,
+  },
+  search?: (string) => void,
 };
 
 type State = {
-  title: string;
-  subtitle: string;
-  composers: string;
-  arrangers: string;
-  searching: boolean;
+  title: string,
+  subtitle: string,
+  composers: string,
+  arrangers: string,
+  searching: boolean,
 };
 
 class PieceForm extends React.Component<Props, State> {
@@ -113,93 +114,96 @@ class PieceForm extends React.Component<Props, State> {
 
   render() {
     return (
-      <Dialog
-        title={this.props.title}
-        open={this.props.isOpen}
-        onRequestClose={this.props.cancel}
-        autoScrollBodyContent
-        actions={
-          this.state.searching
-            ? [
-                <FlatButton label="Avbryt" onClick={this.props.cancel} />,
-                <FlatButton
-                  label="Nytt stykke"
-                  onClick={() => {
-                    this.setState({ searching: false });
-                  }}
-                  primary
-                />,
-              ]
-            : [
-                <FlatButton label="Avbryt" onClick={this.props.cancel} />,
-                <FlatButton label="Lagre" onClick={this.savePiece} primary />,
-              ]
-        }
-      >
-        {this.state.searching && this.props.pieces ? (
-          <div>
-            <p>
-              Søk blant stykkene som allerede er i arkivet, og legg til nytt
-              hvis det ikke finnes
-            </p>
-            <AutoComplete
-              dataSource={this.props.pieces.edges.map((edge) => {
-                const piece = edge.node;
-                return {
-                  text: `${piece.scoreCount}: ${
-                    piece.title
-                  } - ${piece.composers.join(", ")} (${piece.arrangers.join(
-                    ", ",
-                  )})`,
-                  value: piece,
-                };
-              })}
-              floatingLabelText="Tittel"
-              onNewRequest={(selected) => {
-                this.goToPiece(selected.value);
-              }}
-              onUpdateInput={(text) => {
-                this.search(text);
-              }}
-              filter={() => {
-                return true;
-              }}
-              fullWidth
-            />
-          </div>
-        ) : (
-          <div>
+      <Dialog open={this.props.isOpen} onClose={this.props.cancel}>
+        <DialogTitle>{this.props.title}</DialogTitle>
+        <DialogContent>
+          {this.state.searching && this.props.pieces ? (
             <div>
-              <TextField
+              <p>
+                Søk blant stykkene som allerede er i arkivet, og legg til nytt
+                hvis det ikke finnes
+              </p>
+              <AutoComplete
+                dataSource={this.props.pieces.edges.map((edge) => {
+                  const piece = edge.node;
+                  return {
+                    text: `${piece.scoreCount}: ${
+                      piece.title
+                    } - ${piece.composers.join(", ")} (${piece.arrangers.join(
+                      ", ",
+                    )})`,
+                    value: piece,
+                  };
+                })}
                 floatingLabelText="Tittel"
-                onChange={this.handleChangeTitle}
-                value={this.state.title}
+                onNewRequest={(selected) => {
+                  this.goToPiece(selected.value);
+                }}
+                onUpdateInput={(text) => {
+                  this.search(text);
+                }}
+                filter={() => {
+                  return true;
+                }}
+                fullWidth
               />
             </div>
+          ) : (
             <div>
-              <TextField
-                floatingLabelText="Undertittel"
-                onChange={this.handleChangeSubtitle}
-                value={this.state.subtitle}
-              />
+              <div>
+                <TextField
+                  label="Tittel"
+                  onChange={this.handleChangeTitle}
+                  value={this.state.title}
+                />
+              </div>
+              <div>
+                <TextField
+                  label="Undertittel"
+                  onChange={this.handleChangeSubtitle}
+                  value={this.state.subtitle}
+                />
+              </div>
+              <div>
+                <TextField
+                  label="Komponist(er)"
+                  onChange={this.handleChangeComposers}
+                  value={this.state.composers}
+                  hintText="Bruk komma som skilletegn"
+                />
+              </div>
+              <div>
+                <TextField
+                  label="Arrangør(er)"
+                  onChange={this.handleChangeArrangers}
+                  value={this.state.arrangers}
+                  hintText="Bruk komma som skilletegn"
+                />
+              </div>
             </div>
-            <div>
-              <TextField
-                floatingLabelText="Komponist(er)"
-                onChange={this.handleChangeComposers}
-                value={this.state.composers}
-                hintText="Bruk komma som skilletegn"
-              />
-            </div>
-            <div>
-              <TextField
-                floatingLabelText="Arrangør(er)"
-                onChange={this.handleChangeArrangers}
-                value={this.state.arrangers}
-                hintText="Bruk komma som skilletegn"
-              />
-            </div>
-          </div>
+          )}
+        </DialogContent>
+        {this.state.searching ? (
+          <DialogActions>
+            <Button onClick={this.props.cancel}>Avbryt</Button>
+            <Button
+              onClick={() => {
+                this.setState({ searching: false });
+              }}
+              color="primary"
+            >
+              Nytt stykke
+            </Button>
+          </DialogActions>
+        ) : (
+          <DialogActions>
+            <Button variant="text" onClick={this.props.cancel}>
+              Avbryt
+            </Button>
+            <Button variant="text" onClick={this.savePiece} color="primary">
+              Lagre
+            </Button>
+          </DialogActions>
         )}
       </Dialog>
     );

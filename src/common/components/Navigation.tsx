@@ -1,12 +1,12 @@
 /* eslint "react/require-default-props": 0 */
 
+import Avatar from "@material-ui/core/Avatar";
+import IconButton from "@material-ui/core/IconButton";
+import Popover from "@material-ui/core/Popover";
 import Link from "found/Link";
 import ActionLockOpen from "material-ui/svg-icons/action/lock-open";
-import Person from "material-ui/svg-icons/social/person";
-import Avatar from "material-ui/Avatar";
+import Person from "@material-ui/icons/Person";
 import { Menu, MenuItem } from "material-ui/Menu";
-import IconButton from "material-ui/IconButton";
-import Popover from "material-ui/Popover";
 import NavigationMenu from "material-ui/svg-icons/navigation/menu";
 import RaisedButton from "material-ui/RaisedButton";
 import getMuiTheme from "material-ui/styles/getMuiTheme";
@@ -44,7 +44,7 @@ class Navigation extends React.Component<Props, State> {
     return { muiTheme: getMuiTheme(theme) };
   }
 
-  handleOpen = (event: Event) => {
+  handleOpen = (event: React.MouseEvent<HTMLElement>) => {
     // This prevents ghost click.
     event.preventDefault();
 
@@ -65,12 +65,17 @@ class Navigation extends React.Component<Props, State> {
     if (viewer.profilePicture) {
       return (
         <Avatar
-          src={viewer.profilePicture.thumbnailPath}
+          src={viewer.profilePicture.thumbnailPath || undefined}
           style={{ margin: "0 5px" }}
+          alt="Din profil"
         />
       );
     }
-    return <Avatar icon={<Person />} style={{ margin: "0 5px" }} />;
+    return (
+      <Avatar style={{ margin: "0 5px" }} alt="Din profil">
+        <Person />
+      </Avatar>
+    );
   };
 
   render() {
@@ -191,19 +196,15 @@ class Navigation extends React.Component<Props, State> {
             )}
           </div>
           <div>
-            <IconButton
-              className="flex-menu-handler"
-              onClick={this.handleOpen}
-              touch
-            >
+            <IconButton className="flex-menu-handler" onClick={this.handleOpen}>
               <NavigationMenu color={fullWhite} />
             </IconButton>
             <Popover
               open={open}
               anchorEl={anchorEl}
               anchorOrigin={{ horizontal: "right", vertical: "bottom" }}
-              targetOrigin={{ horizontal: "right", vertical: "top" }}
-              onRequestClose={this.handleClose}
+              transformOrigin={{ horizontal: "right", vertical: "top" }}
+              onClose={this.handleClose}
             >
               <nav
                 className="flex-menu"

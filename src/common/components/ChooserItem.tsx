@@ -1,12 +1,12 @@
-import MenuItem from "material-ui/MenuItem";
+import MenuItem from "@material-ui/core/MenuItem";
 import * as React from "react";
 
 type Props = {
   item: {
-    id: string;
-    name: string;
-  };
-  onChoose: any;
+    id: string,
+    name: string,
+  },
+  onChoose: any,
 };
 type State = {};
 
@@ -18,6 +18,6 @@ export default class extends React.Component<Props, State> {
 
   render() {
     const { item } = this.props;
-    return <MenuItem primaryText={item.name} onClick={this.onClick} />;
+    return <MenuItem onClick={this.onClick}>{item.name}</MenuItem>;
   }
 }

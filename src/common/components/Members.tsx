@@ -1,11 +1,11 @@
-import { RelayProp } from "react-relay";
 import Link from "found/Link";
+import { RelayProp } from "react-relay";
 import AutoComplete from "material-ui/AutoComplete";
 import Checkbox from "material-ui/Checkbox";
 import Dialog from "material-ui/Dialog";
-import IconButton from "material-ui/IconButton";
-import IconMenu from "material-ui/IconMenu";
-import MenuItem from "material-ui/MenuItem";
+import IconButton from "@material-ui/core/IconButton";
+import Menu from "@material-ui/core/Menu";
+import MenuItem from "@material-ui/core/MenuItem";
 import Paper from "material-ui/Paper";
 import RaisedButton from "material-ui/RaisedButton";
 import SelectField from "material-ui/SelectField";
@@ -29,6 +29,7 @@ type Props = {
 };
 
 type State = {
+  menuIsOpen: null | HTMLElement;
   addUser: boolean;
   name: string;
   email: string;
@@ -43,12 +44,13 @@ class Members extends React.Component<Props, State> {
     muiTheme: PropTypes.object.isRequired,
   };
 
-  constructor(props) {
+  constructor(props: Props) {
     super(props);
     this.muiTheme = getMuiTheme(theme);
   }
 
   state = {
+    menuIsOpen: null,
     addUser: false,
     name: "",
     email: "",
@@ -61,6 +63,13 @@ class Members extends React.Component<Props, State> {
   getChildContext() {
     return { muiTheme: this.muiTheme };
   }
+
+  onMenuOpen = (event: React.MouseEvent<HTMLButtonElement>) => {
+    this.setState({ menuIsOpen: event.currentTarget });
+  };
+  onMenuClose = () => {
+    this.setState({ menuIsOpen: null });
+  };
 
   onAutoCompleteChoose = (element, chosen) => {
     if (chosen > -1) {
@@ -139,28 +148,28 @@ class Members extends React.Component<Props, State> {
             <h1>Medlemmer</h1>
           </div>
           {isAdmin ? (
-            <IconMenu
-              iconButtonElement={
-                <IconButton>
-                  <MoreVertIcon />
-                </IconButton>
-              }
-              anchorOrigin={{ vertical: "top", horizontal: "right" }}
-              targetOrigin={{ vertical: "top", horizontal: "right" }}
-            >
-              <MenuItem
-                primaryText="Finn / legg til medlem"
-                onClick={this.toggleAddUser}
-              />
-              <MenuItem
-                primaryText="Grupper"
-                containerElement={<Link to="/groups" />}
-              />
-              <MenuItem
-                primaryText="Verv og roller"
-                containerElement={<Link to="/members/roles" />}
-              />
-            </IconMenu>
+            <div>
+              <IconButton onClick={this.onMenuOpen}>
+                <MoreVertIcon />
+              </IconButton>
+              <Menu
+                anchorEl={this.state.menuIsOpen}
+                onClose={this.onMenuClose}
+                open={Boolean(this.state.menuIsOpen)}
+                anchorOrigin={{ vertical: "top", horizontal: "right" }}
+                transformOrigin={{ vertical: "top", horizontal: "right" }}
+              >
+                <MenuItem onClick={this.toggleAddUser}>
+                  Finn / legg til medlem
+                </MenuItem>
+                <MenuItem component={Link} to="/groups">
+                  Grupper
+                </MenuItem>
+                <MenuItem component={Link} to="/members/roles">
+                  Verv og roller
+                </MenuItem>
+              </Menu>
+            </div>
           ) : null}
           <Dialog
             title="Finn / legg til medlem"

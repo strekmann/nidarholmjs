@@ -6,7 +6,7 @@ import FlatButton from "material-ui/FlatButton";
 import TextField from "material-ui/TextField";
 import DatePicker from "material-ui/DatePicker";
 import TimePicker from "material-ui/TimePicker";
-import Chip from "material-ui/Chip";
+import Chip from "@material-ui/core/Chip";
 import moment from "moment";
 import * as React from "react";
 import { createFragmentContainer, graphql } from "react-relay";
@@ -20,44 +20,44 @@ import PermissionField from "./PermissionField";
 import ProjectField from "./ProjectField";
 
 type Props = {
-  title: string;
+  title: string,
   event: {
-    id: string;
-    title: string;
-    location: string;
-    start: any;
-    end: any;
-    mdtext: string;
-    highlighted: boolean;
-    permissions: PermissionObject;
+    id: string,
+    title: string,
+    location: string,
+    start: any,
+    end: any,
+    mdtext: string,
+    highlighted: boolean,
+    permissions: PermissionObject,
     projects: Array<{
-      id: string;
-      tag: string;
-    }>;
-  };
-  viewer: EventForm_viewer;
-  organization: EventForm_organization;
-  isOpen: boolean;
-  save: ({}) => void;
-  cancel: () => void;
-  projectPermissions: {};
-  highlighted: boolean;
+      id: string,
+      tag: string,
+    }>,
+  },
+  viewer: EventForm_viewer,
+  organization: EventForm_organization,
+  isOpen: boolean,
+  save: ({}) => void,
+  cancel: () => void,
+  projectPermissions: {},
+  highlighted: boolean,
 };
 
 type State = {
-  id?: string;
-  title: string;
-  location: string;
-  start: any;
-  end: any;
-  mdtext: string;
-  permissions: PermissionArray;
+  id?: string,
+  title: string,
+  location: string,
+  start: any,
+  end: any,
+  mdtext: string,
+  permissions: PermissionArray,
   projects: Array<{
-    id: string;
-    tag: string;
-  }>;
-  tags: Array<string>;
-  highlighted: boolean;
+    id: string,
+    tag: string,
+  }>,
+  tags: Array<string>,
+  highlighted: boolean,
 };
 
 class EventForm extends React.Component<Props, State> {
@@ -179,7 +179,7 @@ class EventForm extends React.Component<Props, State> {
   };
 
   renderChip = (data, key) => {
-    return <Chip key={key}>{data}</Chip>;
+    return <Chip key={key} label={data} />;
   };
 
   render() {

@@ -4,20 +4,24 @@ import areIntlLocalesSupported from "intl-locales-supported";
 import AutoComplete from "material-ui/AutoComplete";
 import Checkbox from "material-ui/Checkbox";
 import DatePicker from "material-ui/DatePicker";
-import Dialog from "material-ui/Dialog";
-import FlatButton from "material-ui/FlatButton";
-import { List, ListItem } from "material-ui/List";
+import Dialog from "@material-ui/core/Dialog";
+import DialogTitle from "@material-ui/core/DialogTitle";
+import DialogContent from "@material-ui/core/DialogContent";
+import DialogActions from "@material-ui/core/DialogActions";
+import Button from "@material-ui/core/Button";
+import ListItemSecondaryAction from "@material-ui/core/ListItemSecondaryAction";
+import List from "@material-ui/core/List";
+import ListItem from "@material-ui/core/ListItem";
 import { Toolbar, ToolbarGroup } from "material-ui/Toolbar";
 import getMuiTheme from "material-ui/styles/getMuiTheme";
-import IconMenu from "material-ui/IconMenu";
-import MenuItem from "material-ui/MenuItem";
-import IconButton from "material-ui/IconButton";
+import Menu from "@material-ui/core/Menu";
+import MenuItem from "@material-ui/core/MenuItem";
+import IconButton from "@material-ui/core/IconButton";
 import Paper from "material-ui/Paper";
-import RaisedButton from "material-ui/RaisedButton";
 import TextField from "material-ui/TextField";
-import MoreVertIcon from "material-ui/svg-icons/navigation/more-vert";
+import MoreVertIcon from "@material-ui/icons/MoreVert";
 import { lightBlue100 } from "material-ui/styles/colors";
-import Close from "material-ui/svg-icons/navigation/close";
+import Close from "@material-ui/icons/Close";
 import moment from "moment";
 import PropTypes from "prop-types";
 import * as React from "react";
@@ -40,6 +44,7 @@ import ProfilePicture from "./ProfilePicture";
 import Yesno from "./Yesno";
 import { Member_organization } from "./__generated__/Member_organization.graphql";
 import { Member_viewer } from "./__generated__/Member_viewer.graphql";
+import ListItemText from "@material-ui/core/ListItemText";
 
 let DateTimeFormat;
 if (areIntlLocalesSupported(["nb"])) {
@@ -47,31 +52,32 @@ if (areIntlLocalesSupported(["nb"])) {
 }
 
 type Props = {
-  organization: Member_organization;
-  relay: RelayProp;
-  viewer: Member_viewer;
+  organization: Member_organization,
+  relay: RelayProp,
+  viewer: Member_viewer,
 };
 
 type State = {
-  name: string;
-  username: string;
-  phone: string;
-  email: string;
-  instrument: string;
-  born?: string;
-  address: string;
-  postcode: string;
-  city: string;
-  country: string;
-  joined?: string;
-  nmfId: string;
-  membershipHistory: string;
-  inList: boolean;
-  onLeave: boolean;
-  noEmail: boolean;
-  addingRole: boolean;
-  editMember: boolean;
-  joinGroup: boolean;
+  name: string,
+  username: string,
+  phone: string,
+  email: string,
+  instrument: string,
+  born?: string,
+  address: string,
+  postcode: string,
+  city: string,
+  country: string,
+  joined?: string,
+  nmfId: string,
+  membershipHistory: string,
+  inList: boolean,
+  onLeave: boolean,
+  noEmail: boolean,
+  addingRole: boolean,
+  editMember: boolean,
+  joinGroup: boolean,
+  menuIsOpen: null | HTMLElement,
 };
 
 class Member extends React.Component<Props, State> {
@@ -105,6 +111,7 @@ class Member extends React.Component<Props, State> {
       addingRole: false,
       editMember: false,
       joinGroup: false,
+      menuIsOpen: null,
     };
     if (organization) {
       ({ member } = organization);
@@ -149,11 +156,19 @@ class Member extends React.Component<Props, State> {
             addingRole: false,
             editMember: false,
             joinGroup: false,
+            menuIsOpen: null,
           };
         }
       }
     }
   }
+
+  onMenuOpen = (event: React.MouseEvent<HTMLButtonElement>) => {
+    this.setState({ menuIsOpen: event.currentTarget });
+  };
+  onMenuClose = () => {
+    this.setState({ menuIsOpen: null });
+  };
 
   getChildContext() {
     return { muiTheme: this.muiTheme };
@@ -257,37 +272,53 @@ class Member extends React.Component<Props, State> {
     });
   };
   addRole = (roleId) => {
-    this.setState({ addingRole: false });
+    this.setState({ addingRole: false, menuIsOpen: null });
     if (this.props.organization.member) {
-      AddRoleMutation.commit(this.props.relay.environment, {
-        roleId,
-        memberId: this.props.organization.member.id,
-      });
+      AddRoleMutation.commit(
+        this.props.relay.environment,
+        {
+          roleId,
+          memberId: this.props.organization.member.id,
+        },
+        undefined,
+      );
     }
   };
   removeRole = (roleId) => {
     if (this.props.organization.member) {
-      RemoveRoleMutation.commit(this.props.relay.environment, {
-        roleId,
-        memberId: this.props.organization.member.id,
-      });
+      RemoveRoleMutation.commit(
+        this.props.relay.environment,
+        {
+          roleId,
+          memberId: this.props.organization.member.id,
+        },
+        undefined,
+      );
     }
   };
   joinGroup = (selection) => {
-    this.setState({ joinGroup: false });
+    this.setState({ joinGroup: false, menuIsOpen: null });
     if (this.props.organization.member && this.props.organization.member.user) {
-      JoinGroupMutation.commit(this.props.relay.environment, {
-        groupId: selection.value.id,
-        userId: this.props.organization.member.user.id,
-      });
+      JoinGroupMutation.commit(
+        this.props.relay.environment,
+        {
+          groupId: selection.value.id,
+          userId: this.props.organization.member.user.id,
+        },
+        undefined,
+      );
     }
   };
   leaveGroup = (user, group) => {
     if (user && group) {
-      LeaveGroupMutation.commit(this.props.relay.environment, {
-        groupId: group.id,
-        userId: user.id,
-      });
+      LeaveGroupMutation.commit(
+        this.props.relay.environment,
+        {
+          groupId: group.id,
+          userId: user.id,
+        },
+        undefined,
+      );
     }
   };
   closeJoinGroup = () => {
@@ -445,7 +476,9 @@ class Member extends React.Component<Props, State> {
               </div>
             ) : null}
             <div>
-              <RaisedButton type="submit" label="Lagre" primary />
+              <Button variant="contained" type="submit" color="primary">
+                Lagre
+              </Button>
             </div>
           </form>
         </Paper>
@@ -456,109 +489,110 @@ class Member extends React.Component<Props, State> {
         <div style={{ display: "flex", justifyContent: "space-between" }}>
           <h1>{user.name}</h1>
           {isAdmin && groups ? (
-            <Dialog
-              title="Legg til i gruppe"
-              open={this.state.joinGroup}
-              onRequestClose={this.closeJoinGroup}
-              autoScrollBodyContent
-              actions={
-                <FlatButton label="Avbryt" onClick={this.closeJoinGroup} />
-              }
-            >
-              <AutoComplete
-                dataSource={groups.map((group) => {
-                  return {
-                    text: `${group && group.name ? group.name : ""}`,
-                    value: group,
-                  };
-                })}
-                floatingLabelText="Gruppe"
-                onNewRequest={this.joinGroup}
-                filter={AutoComplete.fuzzyFilter}
-                fullWidth
-              />
+            <Dialog open={this.state.joinGroup} onClose={this.closeJoinGroup}>
+              <DialogTitle>Legg til i gruppe</DialogTitle>
+              <DialogContent>
+                <AutoComplete
+                  dataSource={groups.map((group) => {
+                    return {
+                      text: `${group && group.name ? group.name : ""}`,
+                      value: group,
+                    };
+                  })}
+                  floatingLabelText="Gruppe"
+                  onNewRequest={this.joinGroup}
+                  filter={AutoComplete.fuzzyFilter}
+                  fullWidth
+                />
+              </DialogContent>
+              <DialogActions>
+                <Button variant="text" onClick={this.closeJoinGroup}>
+                  Avbryt
+                </Button>
+              </DialogActions>
             </Dialog>
           ) : null}
           {isAdmin && roles && roles.edges ? (
-            <Dialog
-              title="Legg til verv"
-              open={this.state.addingRole}
-              onRequestClose={this.closeAddingRole}
-              autoScrollBodyContent
-              actions={
-                <RaisedButton label="Avbryt" onClick={this.closeAddingRole} />
-              }
-            >
-              <List>
-                {roles.edges.map((edge) => {
-                  if (edge && edge.node) {
-                    return (
-                      <ListItem
-                        key={edge.node.id}
-                        primaryText={edge.node.name}
-                        onClick={() => {
-                          if (edge && edge.node) {
-                            this.addRole(edge.node.id);
-                          }
-                        }}
-                      />
-                    );
-                  }
-                  return null;
-                })}
-              </List>
+            <Dialog open={this.state.addingRole} onClose={this.closeAddingRole}>
+              <DialogTitle>Legg til verv</DialogTitle>
+              <DialogContent>
+                <List>
+                  {roles.edges.map((edge) => {
+                    if (edge && edge.node) {
+                      return (
+                        <ListItem
+                          key={edge.node.id}
+                          onClick={() => {
+                            if (edge && edge.node) {
+                              this.addRole(edge.node.id);
+                            }
+                          }}
+                        >
+                          {edge.node.name}
+                        </ListItem>
+                      );
+                    }
+                    return null;
+                  })}
+                </List>
+              </DialogContent>
+              <DialogActions>
+                <Button variant="text" onClick={this.closeAddingRole}>
+                  Avbryt
+                </Button>
+              </DialogActions>
             </Dialog>
           ) : null}
           <Toolbar style={{ backgroundColor: theme.palette.fullWhite }}>
             <ToolbarGroup lastChild>
               {this.props.viewer.id === user.id ? (
-                <FlatButton label="Logg ut" href="/logout" />
+                <Button variant="text" href="/logout">
+                  Logg ut
+                </Button>
               ) : null}
-              <IconMenu
-                iconButtonElement={
-                  <IconButton>
-                    <MoreVertIcon />
-                  </IconButton>
-                }
+              <IconButton onClick={this.onMenuOpen}>
+                <MoreVertIcon />
+              </IconButton>
+              <Menu
+                anchorEl={this.state.menuIsOpen}
+                onClose={this.onMenuClose}
+                open={Boolean(this.state.menuIsOpen)}
                 anchorOrigin={{ vertical: "top", horizontal: "right" }}
-                targetOrigin={{ vertical: "top", horizontal: "right" }}
+                transformOrigin={{ vertical: "top", horizontal: "right" }}
               >
-                <MenuItem primaryText="Rediger" onClick={this.openEditMember} />
+                <MenuItem onClick={this.openEditMember}>Rediger</MenuItem>
                 {this.props.viewer.id === user.id ? (
-                  <MenuItem
-                    primaryText="Bytt passord"
-                    containerElement={<Link to={`/users/${user.id}/reset`} />}
-                  />
+                  <MenuItem component={Link} to={`/users/${user.id}/reset`}>
+                    Bytt passord
+                  </MenuItem>
                 ) : null}
                 {this.props.viewer.id === user.id ? (
-                  <MenuItem
-                    primaryText="Logg på med Facebook"
-                    href="/login/facebook"
-                  />
+                  <MenuItem href="/login/facebook">
+                    Logg på med Facebook
+                  </MenuItem>
                 ) : null}
                 {this.props.viewer.id === user.id ? (
-                  <MenuItem
-                    primaryText="Logg på med Google"
-                    href="/login/google"
-                  />
+                  <MenuItem href="/login/google">Logg på med Google</MenuItem>
                 ) : null}
                 {isAdmin ? (
                   <MenuItem
-                    primaryText="Legg til i gruppe"
                     onClick={() => {
                       this.setState({ joinGroup: !this.state.joinGroup });
                     }}
-                  />
+                  >
+                    Legg til i gruppe
+                  </MenuItem>
                 ) : null}
                 {isAdmin ? (
                   <MenuItem
-                    primaryText="Legg til verv/rolle"
                     onClick={() => {
                       this.setState({ addingRole: !this.state.addingRole });
                     }}
-                  />
+                  >
+                    Legg til verv/rolle
+                  </MenuItem>
                 ) : null}
-              </IconMenu>
+              </Menu>
             </ToolbarGroup>
           </Toolbar>
         </div>
@@ -600,17 +634,19 @@ class Member extends React.Component<Props, State> {
                   {member.roles.map((role) => {
                     if (role) {
                       return (
-                        <ListItem
-                          key={role.id}
-                          disabled
-                          primaryText={role.name}
-                          secondaryText={
-                            role.email ? (
-                              <a href={`mailto:${role.email}`}>{role.email}</a>
-                            ) : null
-                          }
-                          rightIconButton={
-                            isAdmin ? (
+                        <ListItem key={role.id}>
+                          <ListItemText
+                            primary={role.name}
+                            secondary={
+                              role.email ? (
+                                <a href={`mailto:${role.email}`}>
+                                  {role.email}
+                                </a>
+                              ) : null
+                            }
+                          />
+                          {isAdmin ? (
+                            <ListItemSecondaryAction>
                               <IconButton
                                 onClick={(event) => {
                                   event.preventDefault();
@@ -619,9 +655,9 @@ class Member extends React.Component<Props, State> {
                               >
                                 <Close />
                               </IconButton>
-                            ) : null
-                          }
-                        />
+                            </ListItemSecondaryAction>
+                          ) : null}
+                        </ListItem>
                       );
                     }
                     return null;
@@ -639,12 +675,12 @@ class Member extends React.Component<Props, State> {
                         return (
                           <ListItem
                             key={group.id}
-                            primaryText={group.name}
-                            containerElement={
-                              <Link to={`/group/${group.id}`} />
-                            }
-                            rightIconButton={
-                              isAdmin ? (
+                            component={Link}
+                            to={`/group/${group.id}`}
+                          >
+                            <ListItemText primary={group.name} />
+                            {isAdmin ? (
+                              <ListItemSecondaryAction>
                                 <IconButton
                                   onClick={(event) => {
                                     event.preventDefault();
@@ -653,9 +689,9 @@ class Member extends React.Component<Props, State> {
                                 >
                                   <Close />
                                 </IconButton>
-                              ) : null
-                            }
-                          />
+                              </ListItemSecondaryAction>
+                            ) : null}
+                          </ListItem>
                         );
                       }
                       return null;

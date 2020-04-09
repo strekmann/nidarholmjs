@@ -3,7 +3,7 @@ import Dialog from "material-ui/Dialog";
 import Divider from "material-ui/Divider";
 import { List, ListItem } from "material-ui/List";
 import Menu from "material-ui/Menu";
-import MenuItem from "material-ui/MenuItem";
+import MenuItem from "@material-ui/core/MenuItem";
 import * as React from "react";
 import { createFragmentContainer, graphql } from "react-relay";
 
@@ -16,16 +16,16 @@ import ChooserItem from "./ChooserItem";
 import RemoveIconButton from "./RemoveIconButton";
 
 type Props = {
-  event: Event;
-  organizationEventGroupResponsibility: EventGroupResponsibilityChooser_organizationEventGroupResponsibility;
-  groups: Array<{ id: string; name: string }>;
-  relay: RelayProp;
-  selectGroup: (group: { id: string; name: string }) => void;
+  event: Event,
+  organizationEventGroupResponsibility: EventGroupResponsibilityChooser_organizationEventGroupResponsibility,
+  groups: Array<{ id: string, name: string }>,
+  relay: RelayProp,
+  selectGroup: (group: { id: string, name: string }) => void,
 };
 
 type State = {
-  chooserOpen: boolean;
-  groups: Array<{ id: string; name: string }>;
+  chooserOpen: boolean,
+  groups: Array<{ id: string, name: string }>,
 };
 
 class EventGroupResponsibilityChooser extends React.Component<Props, State> {
@@ -52,11 +52,15 @@ class EventGroupResponsibilityChooser extends React.Component<Props, State> {
     } = this.props;
     const { groups } = this.state;
     const group = groups[0];
-    AddEventGroupResponsibilityMutation.commit(relay.environment, {
-      groupId: group.id,
-      eventId: event.id,
-      responsibilityId: organizationEventGroupResponsibility.id,
-    });
+    AddEventGroupResponsibilityMutation.commit(
+      relay.environment,
+      {
+        groupId: group.id,
+        eventId: event.id,
+        responsibilityId: organizationEventGroupResponsibility.id,
+      },
+      undefined,
+    );
     selectGroup(group);
   };
 
@@ -67,21 +71,29 @@ class EventGroupResponsibilityChooser extends React.Component<Props, State> {
       organizationEventGroupResponsibility,
       selectGroup,
     } = this.props;
-    AddEventGroupResponsibilityMutation.commit(relay.environment, {
-      groupId: group.id,
-      eventId: event.id,
-      responsibilityId: organizationEventGroupResponsibility.id,
-    });
+    AddEventGroupResponsibilityMutation.commit(
+      relay.environment,
+      {
+        groupId: group.id,
+        eventId: event.id,
+        responsibilityId: organizationEventGroupResponsibility.id,
+      },
+      undefined,
+    );
     selectGroup(group);
     this.toggleChooser();
   };
 
   onRemoveContributorGroup = (contributorGroupId) => {
     const { relay, event } = this.props;
-    RemoveEventGroupResponsibilityMutation.commit(relay.environment, {
-      eventId: event.id,
-      contributorGroupId,
-    });
+    RemoveEventGroupResponsibilityMutation.commit(
+      relay.environment,
+      {
+        eventId: event.id,
+        contributorGroupId,
+      },
+      undefined,
+    );
   };
 
   toggleChooser = () => {
@@ -117,9 +129,8 @@ class EventGroupResponsibilityChooser extends React.Component<Props, State> {
       });
     const nextButton = groups.length ? (
       <MenuItem
-        primaryText={`Legg til ${groups[0].name}`}
         onClick={this.onChooseNext}
-      />
+      >{`Legg til ${groups[0].name}`}</MenuItem>
     ) : null;
     const chooserItems = groups.map((group) => {
       return (
@@ -138,7 +149,7 @@ class EventGroupResponsibilityChooser extends React.Component<Props, State> {
         <Divider />
         <Menu>
           {nextButton}
-          <MenuItem primaryText="Legg til …" onClick={this.toggleChooser} />
+          <MenuItem onClick={this.toggleChooser}>Legg til …</MenuItem>
         </Menu>
         <Dialog
           title="Velg ansvarlig"

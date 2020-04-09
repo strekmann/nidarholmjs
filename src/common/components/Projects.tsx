@@ -1,8 +1,8 @@
-import IconButton from "material-ui/IconButton";
-import IconMenu from "material-ui/IconMenu";
-import MenuItem from "material-ui/MenuItem";
+import IconButton from "@material-ui/core/IconButton";
+import Menu from "@material-ui/core/Menu";
+import MenuItem from "@material-ui/core/MenuItem";
 import getMuiTheme from "material-ui/styles/getMuiTheme";
-import MoreVertIcon from "material-ui/svg-icons/navigation/more-vert";
+import MoreVertIcon from "@material-ui/icons/MoreVert";
 import PropTypes from "prop-types";
 import React from "react";
 import { createFragmentContainer, graphql } from "react-relay";
@@ -18,13 +18,14 @@ import { Projects_organization } from "./__generated__/Projects_organization.gra
 import { Projects_viewer } from "./__generated__/Projects_viewer.graphql";
 
 type Props = {
-  organization: Projects_organization;
-  viewer: Projects_viewer;
-  relay: RelayProp;
+  organization: Projects_organization,
+  viewer: Projects_viewer,
+  relay: RelayProp,
 };
 
 type State = {
-  addProject: boolean;
+  addProject: boolean,
+  menuIsOpen: null | HTMLElement,
 };
 
 class Projects extends React.Component<Props, State> {
@@ -39,6 +40,7 @@ class Projects extends React.Component<Props, State> {
 
   state = {
     addProject: false,
+    menuIsOpen: null,
   };
 
   getChildContext() {
@@ -46,6 +48,13 @@ class Projects extends React.Component<Props, State> {
   }
 
   muiTheme: {};
+
+  onMenuOpen = (event: React.MouseEvent<HTMLButtonElement>) => {
+    this.setState({ menuIsOpen: event.currentTarget });
+  };
+  onMenuClose = () => {
+    this.setState({ menuIsOpen: null });
+  };
 
   toggleAddProject = () => {
     this.setState({ addProject: !this.state.addProject });
@@ -76,20 +85,22 @@ class Projects extends React.Component<Props, State> {
         ) : null}
         <div style={{ display: "flex", justifyContent: "flex-end" }}>
           {isMember ? (
-            <IconMenu
-              iconButtonElement={
-                <IconButton>
-                  <MoreVertIcon />
-                </IconButton>
-              }
-              anchorOrigin={{ vertical: "top", horizontal: "right" }}
-              targetOrigin={{ vertical: "top", horizontal: "right" }}
-            >
-              <MenuItem
-                primaryText="Nytt prosjekt"
-                onClick={this.toggleAddProject}
-              />
-            </IconMenu>
+            <div>
+              <IconButton onClick={this.onMenuOpen}>
+                <MoreVertIcon />
+              </IconButton>
+              <Menu
+                anchorEl={this.state.menuIsOpen}
+                onClose={this.onMenuClose}
+                open={Boolean(this.state.menuIsOpen)}
+                anchorOrigin={{ vertical: "top", horizontal: "right" }}
+                transformOrigin={{ vertical: "top", horizontal: "right" }}
+              >
+                <MenuItem onClick={this.toggleAddProject}>
+                  Nytt prosjekt
+                </MenuItem>
+              </Menu>
+            </div>
           ) : null}
         </div>
         <div

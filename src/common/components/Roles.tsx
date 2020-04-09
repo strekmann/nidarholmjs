@@ -1,8 +1,8 @@
 import Dialog from "material-ui/Dialog";
-import IconButton from "material-ui/IconButton";
-import IconMenu from "material-ui/IconMenu";
+import IconButton from "@material-ui/core/IconButton";
+import Menu from "@material-ui/core/Menu";
 import { List, ListItem } from "material-ui/List";
-import MenuItem from "material-ui/MenuItem";
+import MenuItem from "@material-ui/core/MenuItem";
 import Paper from "material-ui/Paper";
 import RaisedButton from "material-ui/RaisedButton";
 import TextField from "material-ui/TextField";
@@ -11,20 +11,28 @@ import MoreVertIcon from "material-ui/svg-icons/navigation/more-vert";
 import Delete from "material-ui/svg-icons/action/delete";
 import PropTypes from "prop-types";
 import React from "react";
-import { createFragmentContainer, graphql } from "react-relay";
+import { createFragmentContainer, graphql, RelayProp } from "react-relay";
 
 import CreateRoleMutation from "../mutations/CreateRole";
 import DeleteRoleMutation from "../mutations/DeleteRole";
 import theme from "../theme";
+import { Roles_organization } from "./__generated__/Roles_organization.graphql";
 
-class Roles extends React.Component {
+type Props = {
+  organization: Roles_organization,
+  relay: RelayProp,
+};
+
+type State = {
+  creating: boolean,
+  name: string,
+  email: string,
+  menuIsOpen: null | HTMLElement,
+};
+
+class Roles extends React.Component<Props, State> {
   static childContextTypes = {
     muiTheme: PropTypes.object.isRequired,
-  };
-
-  static propTypes = {
-    organization: PropTypes.object,
-    relay: PropTypes.object.isRequired,
   };
 
   constructor(props) {
@@ -36,11 +44,19 @@ class Roles extends React.Component {
     creating: false,
     name: "",
     email: "",
+    menuIsOpen: null,
   };
 
   getChildContext() {
     return { muiTheme: this.muiTheme };
   }
+
+  onMenuOpen = (event: React.MouseEvent<HTMLButtonElement>) => {
+    this.setState({ menuIsOpen: event.currentTarget });
+  };
+  onMenuClose = () => {
+    this.setState({ menuIsOpen: null });
+  };
 
   onClose = () => {
     this.setState({ creating: false });
@@ -48,9 +64,13 @@ class Roles extends React.Component {
 
   onDelete = (event, id) => {
     event.preventDefault();
-    DeleteRoleMutation.commit(this.props.relay.environment, {
-      id,
-    });
+    DeleteRoleMutation.commit(
+      this.props.relay.environment,
+      {
+        id,
+      },
+      undefined,
+    );
   };
 
   onSave = (event) => {
@@ -84,22 +104,26 @@ class Roles extends React.Component {
         <div style={{ display: "flex", justifyContent: "space-between" }}>
           <h1>Verv og roller</h1>
           {isAdmin ? (
-            <IconMenu
-              iconButtonElement={
-                <IconButton>
-                  <MoreVertIcon />
-                </IconButton>
-              }
-              anchorOrigin={{ vertical: "top", horizontal: "right" }}
-              targetOrigin={{ vertical: "top", horizontal: "right" }}
-            >
-              <MenuItem
-                primaryText="Legg til ny rolle"
-                onClick={() => {
-                  this.setState({ creating: true });
-                }}
-              />
-            </IconMenu>
+            <div>
+              <IconButton onClick={this.onMenuOpen}>
+                <MoreVertIcon />
+              </IconButton>
+              <Menu
+                anchorEl={this.state.menuIsOpen}
+                onClose={this.onMenuClose}
+                open={Boolean(this.state.menuIsOpen)}
+                anchorOrigin={{ vertical: "top", horizontal: "right" }}
+                transformOrigin={{ vertical: "top", horizontal: "right" }}
+              >
+                <MenuItem
+                  onClick={() => {
+                    this.setState({ creating: true });
+                  }}
+                >
+                  Legg til ny rolle
+                </MenuItem>
+              </Menu>
+            </div>
           ) : null}
         </div>
         <Dialog

@@ -5,9 +5,9 @@ import { PermissionArray } from "../types";
 import PermissionChipItem from "./PermissionChipItem";
 
 type Props = {
-  permissions: PermissionArray;
-  memberGroupId?: string;
-  removePermission?: (id: string) => void;
+  permissions: PermissionArray,
+  memberGroupId?: string,
+  removePermission?: (id: string) => void,
 };
 
 export default class PermissionChips extends React.Component<Props> {
@@ -19,7 +19,7 @@ export default class PermissionChips extends React.Component<Props> {
   render() {
     let { permissions } = this.props;
     if (!permissions.length) {
-      permissions = [{ id: "__me__", name: "Bare meg" }];
+      permissions = [{ name: "Bare meg" }];
     }
     const chips = permissions.map((permission) => {
       return (

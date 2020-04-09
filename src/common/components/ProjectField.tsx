@@ -1,5 +1,5 @@
 import AutoComplete from "material-ui/AutoComplete";
-import Chip from "material-ui/Chip";
+import Chip from "@material-ui/core/Chip";
 import React from "react";
 import { createFragmentContainer, graphql } from "react-relay";
 
@@ -7,14 +7,14 @@ import { ProjectField_organization } from "./__generated__/ProjectField_organiza
 import { Project } from "./Project";
 
 type Props = {
-  organization: ProjectField_organization;
-  projects: Project[];
-  onChange: any;
+  organization: ProjectField_organization,
+  projects: Project[],
+  onChange: any,
 };
 
 type State = {
-  project: string;
-  projects: Project[];
+  project: string,
+  projects: Project[],
 };
 
 class ProjectField extends React.Component<Props, State> {
@@ -83,12 +83,11 @@ class ProjectField extends React.Component<Props, State> {
           return (
             <Chip
               key={_project.id}
-              onRequestDelete={() => {
+              onDelete={() => {
                 this.removeProject(_project);
               }}
-            >
-              {_project.title}
-            </Chip>
+              label={_project.title}
+            />
           );
         })}
       </div>

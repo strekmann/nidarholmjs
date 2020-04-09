@@ -26,7 +26,7 @@ if (areIntlLocalesSupported(["nb"])) {
 }
 
 type Props = {
-  open: boolean;
+  open: boolean,
   save: any /*(
     {
       id: string,
@@ -43,32 +43,32 @@ type Props = {
     {
       onSuccess: any; //() => void,
     },
-  ) => void,*/;
-  toggle: () => void;
-  viewer: ProjectForm_viewer;
-  organization: ProjectForm_organization;
-  id: string;
-  title: string;
-  tag: string;
-  privateMdtext: string;
-  publicMdtext: string;
-  start: string;
-  end: string;
-  permissions: PermissionObject;
-  conductors: any[];
-  managers: any[];
+  ) => void,*/,
+  toggle: () => void,
+  viewer: ProjectForm_viewer,
+  organization: ProjectForm_organization,
+  id: string,
+  title: string,
+  tag: string,
+  privateMdtext: string,
+  publicMdtext: string,
+  start: string,
+  end: string,
+  permissions: PermissionObject,
+  conductors: any[],
+  managers: any[],
 };
 
 type State = {
-  title: string;
-  tag: string;
-  privateMdtext: string;
-  publicMdtext: string;
-  start?: Date;
-  end?: Date;
-  permissions: PermissionArray;
-  conductors: any[];
-  managers: any[];
+  title: string,
+  tag: string,
+  privateMdtext: string,
+  publicMdtext: string,
+  start?: Date,
+  end?: Date,
+  permissions: PermissionArray,
+  conductors: any[],
+  managers: any[],
 };
 
 class ProjectForm extends React.Component<Props, State> {
@@ -197,8 +197,8 @@ class ProjectForm extends React.Component<Props, State> {
               tag: "",
               privateMdtext: "",
               publicMdtext: "",
-              start: null,
-              end: null,
+              start: undefined,
+              end: undefined,
               permissions: [],
               conductors: [],
               managers: [],

@@ -1,9 +1,9 @@
 import { RelayRefetchProp } from "react-relay";
 import Link from "found/Link";
 import FlatButton from "material-ui/FlatButton";
-import IconButton from "material-ui/IconButton";
-import IconMenu from "material-ui/IconMenu";
-import MenuItem from "material-ui/MenuItem";
+import IconButton from "@material-ui/core/IconButton";
+import Menu from "@material-ui/core/Menu";
+import MenuItem from "@material-ui/core/MenuItem";
 import RaisedButton from "material-ui/RaisedButton";
 import { Toolbar, ToolbarGroup } from "material-ui/Toolbar";
 import getMuiTheme from "material-ui/styles/getMuiTheme";
@@ -13,7 +13,7 @@ import PropTypes from "prop-types";
 import * as React from "react";
 import { createRefetchContainer, graphql } from "react-relay";
 
-import { Events_organization } from "./__generated__/Events_organization";
+import { Events_organization } from "./__generated__/Events_organization.graphql";
 
 import theme from "../theme";
 
@@ -26,7 +26,11 @@ type Props = {
   relay: RelayRefetchProp;
 };
 
-class Events extends React.Component<Props> {
+type State = {
+  menuIsOpen: null | HTMLElement;
+};
+
+class Events extends React.Component<Props, State> {
   muiTheme: {};
 
   static childContextTypes = {
@@ -36,6 +40,9 @@ class Events extends React.Component<Props> {
   constructor(props) {
     super(props);
     this.muiTheme = getMuiTheme(theme);
+    this.state = {
+      menuIsOpen: null,
+    };
   }
 
   getChildContext() {
@@ -49,6 +56,13 @@ class Events extends React.Component<Props> {
         showItems: variables.showItems + ITEMS_PER_PAGE,
       };
     });
+  };
+
+  onMenuOpen = (event: React.MouseEvent<HTMLButtonElement>) => {
+    this.setState({ menuIsOpen: event.currentTarget });
+  };
+  onMenuClose = () => {
+    this.setState({ menuIsOpen: null });
   };
 
   render() {
@@ -67,21 +81,24 @@ class Events extends React.Component<Props> {
               <IconButton href="/hjelp-om-aktiviteter">
                 <ActionHelp />
               </IconButton>
+
               {isAdmin ? (
-                <IconMenu
-                  iconButtonElement={
-                    <IconButton>
-                      <MoreVertIcon />
-                    </IconButton>
-                  }
-                  anchorOrigin={{ vertical: "top", horizontal: "right" }}
-                  targetOrigin={{ vertical: "top", horizontal: "right" }}
-                >
-                  <MenuItem
-                    primaryText="Aktiviteter og ansvar"
-                    containerElement={<Link to="/events/responsibilities" />}
-                  />
-                </IconMenu>
+                <div>
+                  <IconButton onClick={this.onMenuOpen}>
+                    <MoreVertIcon />
+                  </IconButton>
+                  <Menu
+                    anchorEl={this.state.menuIsOpen}
+                    onClose={this.onMenuClose}
+                    open={Boolean(this.state.menuIsOpen)}
+                    anchorOrigin={{ vertical: "top", horizontal: "right" }}
+                    transformOrigin={{ vertical: "top", horizontal: "right" }}
+                  >
+                    <MenuItem component={Link} to="/events/responsibilities">
+                      Aktiviteter og ansvar
+                    </MenuItem>
+                  </Menu>
+                </div>
               ) : null}
             </ToolbarGroup>
           </Toolbar>

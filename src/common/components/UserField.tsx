@@ -1,20 +1,20 @@
 import AutoComplete from "material-ui/AutoComplete";
-import Chip from "material-ui/Chip";
+import Chip from "@material-ui/core/Chip";
 import React from "react";
 import { createFragmentContainer, graphql } from "react-relay";
 
 import { UserField_organization } from "./__generated__/UserField_organization.graphql";
 
 type Props = {
-  organization: UserField_organization;
-  users: Array<{ id: string; name: string }>;
-  onChange: any;
-  title: string;
+  organization: UserField_organization,
+  users: Array<{ id: string, name: string }>,
+  onChange: any,
+  title: string,
 };
 
 type State = {
-  user: string;
-  users: Array<{ id: string; name: string }>;
+  user: string,
+  users: Array<{ id: string, name: string }>,
 };
 
 class UserField extends React.Component<Props, State> {
@@ -68,12 +68,11 @@ class UserField extends React.Component<Props, State> {
           return (
             <Chip
               key={user.id}
-              onRequestDelete={() => {
+              onDelete={() => {
                 this.removeUser(user);
               }}
-            >
-              {user.name}
-            </Chip>
+              label={user.name}
+            />
           );
         })}
       </div>
