@@ -1,6 +1,6 @@
 import getMuiTheme from "material-ui/styles/getMuiTheme";
 import Chip from "@material-ui/core/Chip";
-import Dialog from "material-ui/Dialog";
+import Dialog from "@material-ui/core/Dialog";
 import Button from "@material-ui/core/Button";
 import Menu from "@material-ui/core/Menu";
 import MenuItem from "@material-ui/core/MenuItem";

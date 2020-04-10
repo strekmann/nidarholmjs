@@ -1,6 +1,6 @@
 import { RelayProp } from "react-relay";
-import Dialog from "material-ui/Dialog";
-import Divider from "material-ui/Divider";
+import Dialog from "@material-ui/core/Dialog";
+import Divider from "@material-ui/core/Divider";
 import { List, ListItem } from "material-ui/List";
 import Menu from "material-ui/Menu";
 import MenuItem from "@material-ui/core/MenuItem";
@@ -154,8 +154,7 @@ class EventGroupResponsibilityChooser extends React.Component<Props, State> {
         <Dialog
           title="Velg ansvarlig"
           open={chooserOpen}
-          onRequestClose={this.toggleChooser}
-          autoScrollBodyContent={true}
+          onClose={this.toggleChooser}
         >
           <Menu>{chooserItems}</Menu>
         </Dialog>

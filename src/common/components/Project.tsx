@@ -2,8 +2,11 @@
 
 import { RelayProp } from "react-relay";
 import axios from "axios";
-import MoreVertIcon from "material-ui/svg-icons/navigation/more-vert";
-import Dialog from "material-ui/Dialog";
+import MoreVertIcon from "@material-ui/icons/MoreVert";
+import Dialog from "@material-ui/core/Dialog";
+import DialogActions from "@material-ui/core/DialogActions";
+import DialogContent from "@material-ui/core/DialogContent";
+import DialogTitle from "@material-ui/core/DialogTitle";
 import IconButton from "@material-ui/core/IconButton";
 import Menu from "@material-ui/core/Menu";
 import MenuItem from "@material-ui/core/MenuItem";
@@ -141,9 +144,8 @@ export class Project extends React.Component<Props, State> {
     );
   };
 
-  toggleAddPiece = () => {
-    const { addPiece } = this.state;
-    this.setState({ addPiece: !addPiece });
+  openAddPiece = () => {
+    this.setState({ addPiece: true, menuIsOpen: null });
   };
 
   closeAddPiece = () => {
@@ -155,25 +157,28 @@ export class Project extends React.Component<Props, State> {
     this.setState({ public: !pub });
   };
 
-  toggleAddEvent = () => {
-    const { addEvent } = this.state;
-    this.setState({ addEvent: !addEvent });
+  openAddEvent = () => {
+    this.setState({ addEvent: true, menuIsOpen: null });
+  };
+  closeAddEvent = () => {
+    this.setState({ addEvent: false });
   };
 
-  toggleEditProject = () => {
-    const { editProject } = this.state;
-    this.setState({ editProject: !editProject });
+  openEditProject = () => {
+    this.setState({ editProject: true, menuIsOpen: null });
+  };
+
+  closeEditProject = () => {
+    this.setState({ editProject: false });
   };
 
   closeAddEvent = () => {
     this.setState({ addEvent: false });
   };
 
-  toggleAddFile = () => {
-    const { addFile } = this.state;
-    this.setState({ addFile: !addFile });
+  openAddFile = () => {
+    this.setState({ addFile: true, menuIsOpen: null });
   };
-
   closeAddFile = () => {
     this.setState({ addFile: false });
   };
@@ -326,18 +331,18 @@ export class Project extends React.Component<Props, State> {
                     Vis tidligere aktiviteter
                   </MenuItem>
                 ) : null}
-                <MenuItem onClick={this.toggleEditProject}>
+                <MenuItem onClick={this.openEditProject}>
                   Rediger prosjektinfo
                 </MenuItem>
-                <MenuItem onClick={this.toggleAddEvent}>
+                <MenuItem onClick={this.openAddEvent}>
                   Legg til aktivitet
                 </MenuItem>
                 {isMusicAdmin ? (
-                  <MenuItem onClick={this.toggleAddPiece}>
+                  <MenuItem onClick={this.openAddPiece}>
                     Legg til repertoar
                   </MenuItem>
                 ) : null}
-                <MenuItem onClick={this.toggleAddFile}>Last opp filer</MenuItem>
+                <MenuItem onClick={this.openAddFile}>Last opp filer</MenuItem>
               </Menu>
             </div>
           ) : null}
@@ -433,7 +438,7 @@ export class Project extends React.Component<Props, State> {
             <ProjectForm
               open={editProject}
               save={this.saveProject}
-              toggle={this.toggleEditProject}
+              onClose={this.closeEditProject}
               viewer={viewer}
               organization={organization}
               {...project}
@@ -447,30 +452,30 @@ export class Project extends React.Component<Props, State> {
               viewer={viewer}
               organization={null}
             />
-            <Dialog
-              title="Last opp filer"
-              open={addFile}
-              onRequestClose={this.closeAddFile}
-              autoScrollBodyContent
-            >
-              <FileUpload
-                viewer={viewer}
-                organization={organization}
-                onDrop={this.onDrop}
-                permissions={flattenPermissions(project.permissions)}
-              />
-              <Button
-                variant="contained"
-                color="primary"
-                onClick={this.closeAddFile}
-              >
-                Ferdig
-              </Button>
+            <Dialog open={addFile} onClose={this.closeAddFile}>
+              <DialogTitle>Last opp filer</DialogTitle>
+              <DialogContent>
+                <FileUpload
+                  viewer={viewer}
+                  organization={organization}
+                  onDrop={this.onDrop}
+                  permissions={flattenPermissions(project.permissions)}
+                />
+              </DialogContent>
+              <DialogActions>
+                <Button
+                  variant="contained"
+                  color="primary"
+                  onClick={this.closeAddFile}
+                >
+                  Ferdig
+                </Button>
+              </DialogActions>
             </Dialog>
             <ProjectPieceForm
               open={addPiece}
               organization={organization}
-              toggle={this.closeAddPiece}
+              onClose={this.closeAddPiece}
               save={this.addPiece}
             />
           </div>

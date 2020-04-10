@@ -1,8 +1,11 @@
 import { Card, CardTitle, CardMedia, CardActions } from "material-ui/Card";
 import Chip from "@material-ui/core/Chip";
-import MoreVertIcon from "material-ui/svg-icons/navigation/more-vert";
-import Dialog from "material-ui/Dialog";
-import Download from "material-ui/svg-icons/file/file-download";
+import MoreVertIcon from "@material-ui/icons/MoreVert";
+import Dialog from "@material-ui/core/Dialog";
+import DialogActions from "@material-ui/core/DialogActions";
+import DialogTitle from "@material-ui/core/DialogTitle";
+import DialogContent from "@material-ui/core/DialogContent";
+import Download from "@material-ui/icons/PlayForWork";
 import IconButton from "@material-ui/core/IconButton";
 import Menu from "@material-ui/core/Menu";
 import MenuItem from "@material-ui/core/MenuItem";
@@ -182,29 +185,32 @@ class FileItem extends React.Component<Props, State> {
         </CardActions>
         {this.state.editPermissions ? (
           <Dialog
-            title="Rediger rettigheter"
             open={this.state.editPermissions}
-            onRequestClose={this.closeEditPermissions}
-            autoScrollBodyContent
+            onClose={this.closeEditPermissions}
           >
-            <PermissionField
-              permissions={this.state.permissions}
-              onChange={this.onPermissionChange}
-              groups={this.props.viewer.groups}
-              users={[]}
-            />
-            <TagField
-              organization={this.props.organization}
-              onChange={this.onTagChange}
-              fileTags={this.state.tags}
-            />
-            <Button
-              variant="contained"
-              onClick={this.savePermissions}
-              color="primary"
-            >
-              Lagre
-            </Button>
+            <DialogTitle>Rediger rettigheter</DialogTitle>
+            <DialogContent>
+              <PermissionField
+                permissions={this.state.permissions}
+                onChange={this.onPermissionChange}
+                groups={this.props.viewer.groups}
+                users={[]}
+              />
+              <TagField
+                organization={this.props.organization}
+                onChange={this.onTagChange}
+                fileTags={this.state.tags}
+              />
+            </DialogContent>
+            <DialogActions>
+              <Button
+                variant="contained"
+                onClick={this.savePermissions}
+                color="primary"
+              >
+                Lagre
+              </Button>
+            </DialogActions>
           </Dialog>
         ) : null}
       </Card>

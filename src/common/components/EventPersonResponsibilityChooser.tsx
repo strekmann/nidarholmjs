@@ -1,6 +1,6 @@
 import { RelayProp } from "react-relay";
-import Dialog from "material-ui/Dialog";
-import Divider from "material-ui/Divider";
+import Dialog from "@material-ui/core/Dialog";
+import Divider from "@material-ui/core/Divider";
 import Menu from "material-ui/Menu";
 import MenuItem from "@material-ui/core/MenuItem";
 import * as React from "react";
@@ -51,11 +51,15 @@ class EventPersonResponsibilityChooser extends React.Component<Props, State> {
     } = this.props;
     const { users } = this.state;
     const user = users[0];
-    AddEventPersonResponsibilityMutation.commit(relay.environment, {
-      userId: user.id,
-      eventId: event.id,
-      responsibilityId: organizationEventPersonResponsibility.id,
-    });
+    AddEventPersonResponsibilityMutation.commit(
+      relay.environment,
+      {
+        userId: user.id,
+        eventId: event.id,
+        responsibilityId: organizationEventPersonResponsibility.id,
+      },
+      undefined,
+    );
     selectUser(user);
   };
 
@@ -66,21 +70,29 @@ class EventPersonResponsibilityChooser extends React.Component<Props, State> {
       organizationEventPersonResponsibility,
       selectUser,
     } = this.props;
-    AddEventPersonResponsibilityMutation.commit(relay.environment, {
-      userId: user.id,
-      eventId: event.id,
-      responsibilityId: organizationEventPersonResponsibility.id,
-    });
+    AddEventPersonResponsibilityMutation.commit(
+      relay.environment,
+      {
+        userId: user.id,
+        eventId: event.id,
+        responsibilityId: organizationEventPersonResponsibility.id,
+      },
+      undefined,
+    );
     selectUser(user);
     this.toggleChooser();
   };
 
   onRemoveContributor = (contributorId) => {
     const { relay, event } = this.props;
-    RemoveEventPersonResponsibilityMutation.commit(relay.environment, {
-      eventId: event.id,
-      contributorId,
-    });
+    RemoveEventPersonResponsibilityMutation.commit(
+      relay.environment,
+      {
+        eventId: event.id,
+        contributorId,
+      },
+      undefined,
+    );
   };
 
   toggleChooser = () => {
@@ -136,8 +148,7 @@ class EventPersonResponsibilityChooser extends React.Component<Props, State> {
         <Dialog
           title="Velg ansvarlig"
           open={this.state.chooserOpen}
-          onRequestClose={this.toggleChooser}
-          autoScrollBodyContent={true}
+          onClose={this.toggleChooser}
         >
           <Menu>{chooserItems}</Menu>
         </Dialog>

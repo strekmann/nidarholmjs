@@ -6,7 +6,10 @@ import { createRefetchContainer, graphql } from "react-relay";
 import axios from "axios";
 import getMuiTheme from "material-ui/styles/getMuiTheme";
 import Button from "@material-ui/core/Button";
-import Dialog from "material-ui/Dialog";
+import Dialog from "@material-ui/core/Dialog";
+import DialogActions from "@material-ui/core/DialogActions";
+import DialogContent from "@material-ui/core/DialogContent";
+import DialogTitle from "@material-ui/core/DialogTitle";
 import { Toolbar, ToolbarGroup, ToolbarTitle } from "material-ui/Toolbar";
 import PropTypes from "prop-types";
 import * as React from "react";
@@ -197,26 +200,22 @@ class Files extends React.Component<Props, State> {
                 <Button variant="contained" onClick={this.toggleAddFile}>
                   Last opp filer
                 </Button>
-                <Dialog
-                  title="Last opp filer"
-                  open={this.state.addFile}
-                  onRequestClose={this.closeAddFile}
-                  autoScrollBodyContent
-                >
-                  <FileUpload
-                    viewer={this.props.viewer}
-                    organization={this.props.organization}
-                    onDrop={this.onDrop}
-                    memberGroupId={organization.memberGroup.id}
-                    onTagsChange={this.searchTag}
-                  />
-                  <Button
-                    label="Ferdig"
-                    color="primary"
-                    onClick={this.closeAddFile}
-                  >
-                    Ferdig
-                  </Button>
+                <Dialog open={this.state.addFile} onClose={this.closeAddFile}>
+                  <DialogTitle>Last opp filer</DialogTitle>
+                  <DialogContent>
+                    <FileUpload
+                      viewer={this.props.viewer}
+                      organization={this.props.organization}
+                      onDrop={this.onDrop}
+                      memberGroupId={organization.memberGroup.id}
+                      onTagsChange={this.searchTag}
+                    />
+                  </DialogContent>
+                  <DialogActions>
+                    <Button color="primary" onClick={this.closeAddFile}>
+                      Ferdig
+                    </Button>
+                  </DialogActions>
                 </Dialog>
               </ToolbarGroup>
             </Toolbar>

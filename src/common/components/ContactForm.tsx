@@ -1,12 +1,14 @@
 /* eslint "react/no-danger": 0 */
 
-import Dialog from "material-ui/Dialog";
+import Dialog from "@material-ui/core/Dialog";
 import Button from "@material-ui/core/Button";
-import TextField from "material-ui/TextField";
+import TextField from "@material-ui/core/TextField";
 import React from "react";
 import { createFragmentContainer, graphql } from "react-relay";
 
 import { ContactForm_organization } from "./__generated__/ContactForm_organization.graphql";
+import DialogTitle from "@material-ui/core/DialogTitle";
+import { DialogContent, DialogActions } from "@material-ui/core";
 
 type Props = {
   open: boolean,
@@ -23,16 +25,16 @@ class ContactForm extends React.Component<Props> {
     sent: false,
   };
 
-  onChangeName = (event, name) => {
-    this.setState({ name });
+  onChangeName = (event: React.ChangeEvent<HTMLInputElement>) => {
+    this.setState({ name: event.target.value });
   };
 
-  onChangeEmail = (event, email) => {
-    this.setState({ email });
+  onChangeEmail = (event: React.ChangeEvent<HTMLInputElement>) => {
+    this.setState({ email: event.target.value });
   };
 
-  onChangeText = (event, text) => {
-    this.setState({ text });
+  onChangeText = (event: React.ChangeEvent<HTMLInputElement>) => {
+    this.setState({ text: event.target.value });
   };
 
   close = () => {
@@ -52,64 +54,69 @@ class ContactForm extends React.Component<Props> {
   render() {
     const { encodedEmail } = this.props.organization;
     return (
-      <Dialog
-        title={
-          this.state.sent ? "Meldingen er sendt!" : "Send melding til Nidarholm"
-        }
-        open={this.props.open}
-        onRequestClose={this.close}
-        autoScrollBodyContent
-      >
-        {this.state.sent ? (
-          <div>
-            <p>Du vil få en bekreftelse på epost også</p>
-            <div>
-              <Button onClick={this.close}>Lukk</Button>
-            </div>
-          </div>
-        ) : (
-          <form onSubmit={this.sendEmail}>
-            <p>
-              Herfra kan du sende epost til styret i Nidarholm. Du kan også
-              sende vanlig epost til{" "}
-              <span dangerouslySetInnerHTML={{ __html: encodedEmail }} /> om du
-              heller foretrekker det.
-            </p>
-            <div>
-              <TextField
-                floatingLabelText="Ditt navn"
-                onChange={this.onChangeName}
-                value={this.state.name}
-                required
-              />
-            </div>
-            <div>
-              <TextField
-                floatingLabelText="Din e-postadresse"
-                onChange={this.onChangeEmail}
-                value={this.state.email}
-                required
-              />
-            </div>
-            <div>
-              <TextField
-                floatingLabelText="Melding"
-                onChange={this.onChangeText}
-                value={this.state.text}
-                multiLine
-                fullWidth
-              />
-            </div>
-            <div>
-              <Button type="submit" color="primary">
-                Send
+      <Dialog open={this.props.open} onClose={this.close}>
+        <DialogTitle>
+          {this.state.sent
+            ? "Meldingen er sendt!"
+            : "Send melding til Nidarholm"}
+        </DialogTitle>
+        <form onSubmit={this.sendEmail}>
+          {this.state.sent ? (
+            <DialogContent>
+              <p>Du vil få en bekreftelse på epost også</p>
+            </DialogContent>
+          ) : (
+            <DialogContent>
+              <p>
+                Herfra kan du sende epost til styret i Nidarholm. Du kan også
+                sende vanlig epost til{" "}
+                <span dangerouslySetInnerHTML={{ __html: encodedEmail }} /> om
+                du heller foretrekker det.
+              </p>
+              <div>
+                <TextField
+                  label="Ditt navn"
+                  onChange={this.onChangeName}
+                  value={this.state.name}
+                  required
+                />
+              </div>
+              <div>
+                <TextField
+                  label="Din e-postadresse"
+                  onChange={this.onChangeEmail}
+                  value={this.state.email}
+                  required
+                />
+              </div>
+              <div>
+                <TextField
+                  label="Melding"
+                  onChange={this.onChangeText}
+                  value={this.state.text}
+                  multiline
+                  fullWidth
+                />
+              </div>
+            </DialogContent>
+          )}
+          {this.state.sent ? (
+            <DialogActions>
+              <Button variant="contained" onClick={this.close}>
+                Lukk
               </Button>
-              <Button type="reset" onClick={this.close}>
+            </DialogActions>
+          ) : (
+            <DialogActions>
+              <Button variant="contained" type="reset" onClick={this.close}>
                 Avbryt
               </Button>
-            </div>
-          </form>
-        )}
+              <Button variant="contained" type="submit" color="primary">
+                Send
+              </Button>
+            </DialogActions>
+          )}
+        </form>
       </Dialog>
     );
   }

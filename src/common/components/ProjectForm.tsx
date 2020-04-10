@@ -44,7 +44,7 @@ type Props = {
       onSuccess: any; //() => void,
     },
   ) => void,*/,
-  toggle: () => void,
+  onClose: () => void,
   viewer: ProjectForm_viewer,
   organization: ProjectForm_organization,
   id: string,
@@ -163,13 +163,13 @@ class ProjectForm extends React.Component<Props, State> {
     });
   };
 
-  toggle = () => {
-    this.props.toggle();
+  onClose = () => {
+    this.props.onClose();
   };
 
   saveProject = (event) => {
     event.preventDefault();
-    this.props.toggle();
+    this.props.onClose();
     this.props.save(
       {
         id: this.props.id,
@@ -224,7 +224,7 @@ class ProjectForm extends React.Component<Props, State> {
     }
 
     return (
-      <Dialog open={this.props.open} onClose={this.toggle}>
+      <Dialog open={this.props.open} onClose={this.onClose}>
         <form onSubmit={this.saveProject}>
           <DialogTitle id="project-dialog-title">
             {this.props.id ? "Rediger prosjekt" : "Nytt prosjekt"}
@@ -316,7 +316,7 @@ class ProjectForm extends React.Component<Props, State> {
             </div>
           </DialogContent>
           <DialogActions>
-            <Button variant="contained" type="reset" onClick={this.toggle}>
+            <Button variant="contained" type="reset" onClick={this.onClose}>
               Avbryt
             </Button>
             <Button

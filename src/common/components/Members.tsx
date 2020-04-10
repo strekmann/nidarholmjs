@@ -1,15 +1,15 @@
 import Link from "found/Link";
 import { RelayProp } from "react-relay";
 import AutoComplete from "material-ui/AutoComplete";
-import Checkbox from "material-ui/Checkbox";
-import Dialog from "material-ui/Dialog";
+import Checkbox from "@material-ui/core/Checkbox";
+import Dialog from "@material-ui/core/Dialog";
 import IconButton from "@material-ui/core/IconButton";
 import Menu from "@material-ui/core/Menu";
 import MenuItem from "@material-ui/core/MenuItem";
 import Paper from "material-ui/Paper";
 import Button from "@material-ui/core/Button";
 import SelectField from "material-ui/SelectField";
-import TextField from "material-ui/TextField";
+import TextField from "@material-ui/core/TextField";
 import getMuiTheme from "material-ui/styles/getMuiTheme";
 import MoreVertIcon from "material-ui/svg-icons/navigation/more-vert";
 import * as React from "react";
@@ -21,6 +21,11 @@ import theme from "../theme";
 
 import { Members_organization } from "./__generated__/Members_organization.graphql";
 import GroupItem from "./GroupItem";
+import {
+  DialogTitle,
+  DialogContent,
+  FormControlLabel,
+} from "@material-ui/core";
 
 type Props = {
   relay: RelayProp,
@@ -80,19 +85,19 @@ class Members extends React.Component<Props, State> {
     }
   };
 
-  onChangeEmail = (event, email) => {
-    this.setState({ email });
+  onChangeEmail = (event: React.ChangeEvent<HTMLInputElement>) => {
+    this.setState({ email: event.target.value });
   };
 
   onChangeGroup = (event, index, groupId) => {
     this.setState({ groupId });
   };
 
-  onChangeInstrument = (event, instrument) => {
-    this.setState({ instrument });
+  onChangeInstrument = (event: React.ChangeEvent<HTMLInputElement>) => {
+    this.setState({ instrument: event.target.value });
   };
 
-  onChangeUserName = (name) => {
+  onChangeUserName = (event: React.ChangeEvent<HTMLInputElement>) => {
     this.setState({ name });
   };
 
@@ -171,74 +176,86 @@ class Members extends React.Component<Props, State> {
               </Menu>
             </div>
           ) : null}
-          <Dialog
-            title="Finn / legg til medlem"
-            open={this.state.addUser}
-            onRequestClose={this.closeAddUser}
-            autoScrollBodyContent
-          >
-            <p>{searchMessage}</p>
-            <AutoComplete
-              hintText="Navn"
-              dataSource={users.map((user) => {
-                return { text: user.name, value: user.id };
-              })}
-              floatingLabelText="Navn"
-              onUpdateInput={this.onChangeUserName}
-              onNewRequest={this.onAutoCompleteChoose}
-              filter={AutoComplete.fuzzyFilter}
-              fullWidth
-            />
-            {this.state.new ? (
-              <form onSubmit={this.addUser}>
-                <div>
-                  <TextField
-                    id="email"
-                    floatingLabelText="E-post"
-                    type="email"
-                    value={this.state.email}
-                    onChange={this.onChangeEmail}
-                  />
-                </div>
-                <div>
-                  <TextField
-                    id="instrument"
-                    floatingLabelText="Instrument"
-                    value={this.state.instrument}
-                    onChange={this.onChangeInstrument}
-                  />
-                </div>
-                <div>
-                  <Checkbox
-                    id="member"
-                    label="Gi personen medlemsrettigheter"
-                    checked={this.state.member}
-                    onCheck={this.onCheckMember}
-                  />
-                </div>
-                <div>
-                  <SelectField
-                    id="group"
-                    floatingLabelText="Instrumentgruppe"
-                    value={this.state.groupId}
-                    onChange={this.onChangeGroup}
-                  >
-                    <MenuItem primaryText="(Ingen)" />
-                    {instrumentGroups.map((group) => {
-                      return (
-                        <MenuItem
-                          key={group.id}
-                          value={group.id}
-                          primaryText={group.name}
+          <Dialog open={this.state.addUser} onClose={this.closeAddUser}>
+            <DialogTitle>Finn eller legg til medlem</DialogTitle>
+            <DialogContent>
+              <p>{searchMessage}</p>
+              <AutoComplete
+                hintText="Navn"
+                dataSource={users.map((user) => {
+                  return { text: user.name, value: user.id };
+                })}
+                floatingLabelText="Navn"
+                onUpdateInput={this.onChangeUserName}
+                onNewRequest={this.onAutoCompleteChoose}
+                filter={AutoComplete.fuzzyFilter}
+                fullWidth
+              />
+              {this.state.new ? (
+                <form onSubmit={this.addUser}>
+                  <div>
+                    <TextField
+                      id="email"
+                      label="E-post"
+                      type="email"
+                      value={this.state.email}
+                      onChange={this.onChangeEmail}
+                    />
+                  </div>
+                  <div>
+                    <TextField
+                      id="instrument"
+                      label="Instrument"
+                      value={this.state.instrument}
+                      onChange={this.onChangeInstrument}
+                    />
+                  </div>
+                  <div>
+                    <FormControlLabel
+                      control={
+                        <Checkbox
+                          id="member"
+                          name="member"
+                          checked={this.state.member}
+                          onChange={this.onCheckMember}
+                          color="primary"
                         />
-                      );
-                    })}
-                  </SelectField>
-                </div>
+                      }
+                      label="Gi personen medlemsrettigheter"
+                    ></FormControlLabel>
+                  </div>
+                  <div>
+                    <SelectField
+                      id="group"
+                      floatingLabelText="Instrumentgruppe"
+                      value={this.state.groupId}
+                      onChange={this.onChangeGroup}
+                    >
+                      <MenuItem>(Ingen)</MenuItem>
+                      {instrumentGroups.map((group) => {
+                        return (
+                          <MenuItem key={group.id} value={group.id}>
+                            {group.name}
+                          </MenuItem>
+                        );
+                      })}
+                    </SelectField>
+                  </div>
+                  <div>
+                    <Button variant="contained" type="submit" color="primary">
+                      Legg til
+                    </Button>
+                    <Button
+                      variant="contained"
+                      type="reset"
+                      onClick={this.closeAddUser}
+                    >
+                      Avbryt
+                    </Button>
+                  </div>
+                </form>
+              ) : (
                 <div>
-                  <Button variant="contained" type="submit" color="primary">
-                    Legg til
-                  </Button>
                   <Button
                     variant="contained"
                     type="reset"
@@ -247,18 +264,8 @@ class Members extends React.Component<Props, State> {
                     Avbryt
                   </Button>
                 </div>
-              </form>
-            ) : (
-              <div>
-                <Button
-                  variant="contained"
-                  type="reset"
-                  onClick={this.closeAddUser}
-                >
-                  Avbryt
-                </Button>
-              </div>
-            )}
+              )}
+            </DialogContent>
           </Dialog>
         </div>
         {instrumentGroups.map((group) => {

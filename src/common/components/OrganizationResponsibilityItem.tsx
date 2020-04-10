@@ -1,9 +1,11 @@
 import * as React from "react";
-import Dialog from "material-ui/Dialog";
-import { ListItem } from "material-ui/List";
+import Dialog from "@material-ui/core/Dialog";
+import ListItem from "@material-ui/core/ListItem";
 import Button from "@material-ui/core/Button";
-import TextField from "material-ui/TextField";
-import ContentMail from "material-ui/svg-icons/content/mail";
+import TextField from "@material-ui/core/TextField";
+import ContentMail from "@material-ui/icons/Mail";
+import DialogTitle from "@material-ui/core/DialogTitle";
+import { ListItemText, ListItemIcon } from "@material-ui/core";
 
 type Props = {
   item: {
@@ -33,20 +35,20 @@ export default class extends React.Component<Props, State> {
     reminderDaysBefore: this.props.item.reminderDaysBefore,
   };
 
-  onChangeName = (event: string, name: string) => {
-    this.setState({ name });
+  onChangeName = (event: React.ChangeEvent<HTMLInputElement>) => {
+    this.setState({ name: event.target.value });
   };
 
-  onChangeReminderText = (event: any, reminderText: string) => {
-    this.setState({ reminderText });
+  onChangeReminderText = (event: React.ChangeEvent<HTMLInputElement>) => {
+    this.setState({ reminderText: event.target.value });
   };
 
-  onChangeReminderAtHour = (event: any, reminderAtHour: number) => {
-    this.setState({ reminderAtHour });
+  onChangeReminderAtHour = (event: React.ChangeEvent<HTMLInputElement>) => {
+    this.setState({ reminderAtHour: parseInt(event.target.value, 10) });
   };
 
-  onChangeReminderDaysBefore = (event: any, reminderDaysBefore: number) => {
-    this.setState({ reminderDaysBefore });
+  onChangeReminderDaysBefore = (event: React.ChangeEvent<HTMLInputElement>) => {
+    this.setState({ reminderDaysBefore: parseInt(event.target.value, 10) });
   };
 
   onSave = (event: any) => {
@@ -78,68 +80,65 @@ export default class extends React.Component<Props, State> {
 
   render() {
     const responsibility = this.props.item;
-    const rightIcon = responsibility.reminderText ? <ContentMail /> : null;
     const secondaryText = responsibility.reminderText
       ? `Epost sendes ut ${responsibility.reminderDaysBefore} dager før kl. ${responsibility.reminderAtHour}`
       : null;
+    const primaryText = (
+      <div>
+        {responsibility.name}
+        <Dialog open={this.state.open} onClose={this.closeEdit}>
+          <DialogTitle>Rediger ansvar</DialogTitle>
+          <form onSubmit={this.onSave}>
+            <div>
+              <TextField
+                label="Navn"
+                value={this.state.name}
+                onChange={this.onChangeName}
+              />
+            </div>
+            <div>
+              <TextField
+                label="Epostinnhold"
+                fullWidth
+                multiline
+                value={this.state.reminderText}
+                onChange={this.onChangeReminderText}
+              />
+            </div>
+            <div>
+              <TextField
+                label="Sendes klokka"
+                type="number"
+                value={this.state.reminderAtHour}
+                onChange={this.onChangeReminderAtHour}
+              />
+            </div>
+            <div>
+              <TextField
+                label="Dager i forveien"
+                type="number"
+                value={this.state.reminderDaysBefore}
+                onChange={this.onChangeReminderDaysBefore}
+              />
+            </div>
+            <div>
+              <Button variant="contained" type="submit">
+                Lagre
+              </Button>
+            </div>
+          </form>
+        </Dialog>
+      </div>
+    );
     return (
-      <ListItem
-        key={responsibility.id}
-        onClick={this.openEdit}
-        primaryText={
-          <div>
-            {responsibility.name}
-            <Dialog
-              title="Rediger ansvar"
-              open={this.state.open}
-              onRequestClose={this.closeEdit}
-              autoScrollBodyContent
-            >
-              <form onSubmit={this.onSave}>
-                <div>
-                  <TextField
-                    floatingLabelText="Navn"
-                    value={this.state.name}
-                    onChange={this.onChangeName}
-                  />
-                </div>
-                <div>
-                  <TextField
-                    floatingLabelText="Epostinnhold"
-                    fullWidth
-                    multiLine
-                    value={this.state.reminderText}
-                    onChange={this.onChangeReminderText}
-                  />
-                </div>
-                <div>
-                  <TextField
-                    floatingLabelText="Sendes klokka"
-                    type="number"
-                    value={this.state.reminderAtHour}
-                    onChange={this.onChangeReminderAtHour}
-                  />
-                </div>
-                <div>
-                  <TextField
-                    floatingLabelText="Dager i forveien"
-                    type="number"
-                    value={this.state.reminderDaysBefore}
-                    onChange={this.onChangeReminderDaysBefore}
-                  />
-                </div>
-                <div>
-                  <Button variant="contained" type="submit">
-                    Lagre
-                  </Button>
-                </div>
-              </form>
-            </Dialog>
-          </div>
-        }
-        secondaryText={secondaryText}
-        rightIcon={rightIcon}
-      />
+      <ListItem key={responsibility.id} onClick={this.openEdit}>
+        {responsibility.reminderText ? (
+          <ListItemIcon>
+            <ContentMail />
+          </ListItemIcon>
+        ) : null}
+        <ListItemText inset primary={primaryText} secondary={secondaryText} />
+      </ListItem>
     );
   }
 }
