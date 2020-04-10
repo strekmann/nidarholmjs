@@ -2,7 +2,7 @@
 
 import React from "react";
 import Paper from "material-ui/Paper";
-import RaisedButton from "material-ui/RaisedButton";
+import Button from "@material-ui/core/Button";
 import TextField from "material-ui/TextField";
 
 import theme from "../theme";
@@ -11,13 +11,13 @@ import { PermissionArray, Viewer } from "../types";
 import PermissionField from "./PermissionField";
 
 type Props = {
-  viewer: Viewer;
-  id?: string;
-  slug?: string;
-  title?: string;
-  summary?: string;
-  mdtext?: string;
-  permissions: PermissionArray;
+  viewer: Viewer,
+  id?: string,
+  slug?: string,
+  title?: string,
+  summary?: string,
+  mdtext?: string,
+  permissions: PermissionArray,
   savePage: any /*({
     id: ?string,
     slug: ?string,
@@ -25,15 +25,15 @@ type Props = {
     title: ?string,
     summary: ?string,
     permissions: PermissionArray,
-  }) => void,*/;
+  }) => void,*/,
 };
 
 type State = {
-  slug?: string;
-  title?: string;
-  summary?: string;
-  mdtext?: string;
-  permissions: PermissionArray;
+  slug?: string,
+  title?: string,
+  summary?: string,
+  mdtext?: string,
+  permissions: PermissionArray,
 };
 
 export default class EditPage extends React.Component<Props, State> {
@@ -63,8 +63,8 @@ export default class EditPage extends React.Component<Props, State> {
 
   onPermissionChange = (
     permissions: Array<{
-      id: string;
-      name?: string;
+      id: string,
+      name?: string,
     }>,
   ) => {
     this.setState({ permissions });
@@ -137,7 +137,9 @@ export default class EditPage extends React.Component<Props, State> {
             />
           </div>
           <div>
-            <RaisedButton type="submit" label="Lagre" />
+            <Button variant="contained" type="submit">
+              Lagre
+            </Button>
           </div>
         </form>
       </section>

@@ -3,7 +3,7 @@ import IconButton from "@material-ui/core/IconButton";
 import Menu from "@material-ui/core/Menu";
 import MenuItem from "@material-ui/core/MenuItem";
 import Paper from "material-ui/Paper";
-import RaisedButton from "material-ui/RaisedButton";
+import Button from "@material-ui/core/Button";
 import getMuiTheme from "material-ui/styles/getMuiTheme";
 import PropTypes from "prop-types";
 import * as React from "react";
@@ -131,7 +131,9 @@ class Pages extends React.Component<Props, State> {
               memberGroupId={org.memberGroup.id}
             />
             {org.pages.pageInfo.hasNextPage ? (
-              <RaisedButton primary>Mer</RaisedButton>
+              <Button variant="contained" color="primary">
+                Mer
+              </Button>
             ) : null}
           </div>
         )}

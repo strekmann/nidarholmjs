@@ -3,7 +3,7 @@ import IconButton from "@material-ui/core/IconButton";
 import Menu from "@material-ui/core/Menu";
 import MenuItem from "@material-ui/core/MenuItem";
 import Paper from "material-ui/Paper";
-import RaisedButton from "material-ui/RaisedButton";
+import Button from "@material-ui/core/Button";
 import {
   Table,
   TableHeader,
@@ -232,7 +232,9 @@ class Pieces extends React.Component<Props, State> {
           </TableBody>
         </Table>
         {pieces.pageInfo.hasNextPage ? (
-          <RaisedButton primary onClick={this.loadMore} label="Mer" />
+          <Button variant="contained" color="primary" onClick={this.loadMore}>
+            Mer
+          </Button>
         ) : null}
       </Paper>
     );

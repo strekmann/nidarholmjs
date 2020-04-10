@@ -1,8 +1,7 @@
-/* eslint "max-len": 0 */
 /* eslint "react/no-danger": 0 */
 
 import Dialog from "material-ui/Dialog";
-import RaisedButton from "material-ui/RaisedButton";
+import Button from "@material-ui/core/Button";
 import TextField from "material-ui/TextField";
 import React from "react";
 import { createFragmentContainer, graphql } from "react-relay";
@@ -10,10 +9,10 @@ import { createFragmentContainer, graphql } from "react-relay";
 import { ContactForm_organization } from "./__generated__/ContactForm_organization.graphql";
 
 type Props = {
-  open: boolean;
-  save: any;
-  close: any;
-  organization: ContactForm_organization;
+  open: boolean,
+  save: any,
+  close: any,
+  organization: ContactForm_organization,
 };
 
 class ContactForm extends React.Component<Props> {
@@ -65,7 +64,7 @@ class ContactForm extends React.Component<Props> {
           <div>
             <p>Du vil få en bekreftelse på epost også</p>
             <div>
-              <RaisedButton label="Lukk" onClick={this.close} />
+              <Button onClick={this.close}>Lukk</Button>
             </div>
           </div>
         ) : (
@@ -102,8 +101,12 @@ class ContactForm extends React.Component<Props> {
               />
             </div>
             <div>
-              <RaisedButton type="submit" label="Send" primary />
-              <RaisedButton type="reset" label="Avbryt" onClick={this.close} />
+              <Button type="submit" color="primary">
+                Send
+              </Button>
+              <Button type="reset" onClick={this.close}>
+                Avbryt
+              </Button>
             </div>
           </form>
         )}

@@ -1,7 +1,7 @@
 /* eslint "max-len": 0 */
 /* eslint "react/no-multi-comp": 0 */
 
-import IconButton from "material-ui/IconButton";
+import IconButton from "@material-ui/core/Button";
 import AddCircle from "material-ui/svg-icons/content/add-circle";
 import getMuiTheme from "material-ui/styles/getMuiTheme";
 import PropTypes from "prop-types";
@@ -12,9 +12,9 @@ import theme from "../theme";
 import SortablePageList from "./SortablePageList";
 
 type PageSummaryProps = {
-  slug: string;
-  title: string;
-  onAdd: ({}) => void;
+  slug: string,
+  title: string,
+  onAdd: ({}) => void,
 };
 
 class PageSummaryItem extends React.Component<PageSummaryProps> {
@@ -42,30 +42,30 @@ class PageSummaryItem extends React.Component<PageSummaryProps> {
 }
 
 type Props = {
-  onAdd: ({}) => void;
+  onAdd: ({}) => void,
   onChange: any /*(
     Array<{
       id: string,
       slug: string,
       title: string,
     }>,
-  ) => void,*/;
+  ) => void,*/,
   pages: {
     edges: Array<{
       node: {
-        id: string;
-        key: string;
-        slug: string;
-        title: string;
-      };
-      cursor: string;
-    }>;
-  };
+        id: string,
+        key: string,
+        slug: string,
+        title: string,
+      },
+      cursor: string,
+    }>,
+  },
   summaries: Array<{
-    id: string;
-    slug: string;
-    title: string;
-  }>;
+    id: string,
+    slug: string,
+    title: string,
+  }>,
 };
 
 class FrontpageSummaries extends React.Component<Props> {
@@ -84,9 +84,9 @@ class FrontpageSummaries extends React.Component<Props> {
 
   onChange = (
     summaries: Array<{
-      id: string;
-      slug: string;
-      title: string;
+      id: string,
+      slug: string,
+      title: string,
     }>,
   ) => {
     this.props.onChange(summaries);

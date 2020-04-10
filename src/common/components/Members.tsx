@@ -7,7 +7,7 @@ import IconButton from "@material-ui/core/IconButton";
 import Menu from "@material-ui/core/Menu";
 import MenuItem from "@material-ui/core/MenuItem";
 import Paper from "material-ui/Paper";
-import RaisedButton from "material-ui/RaisedButton";
+import Button from "@material-ui/core/Button";
 import SelectField from "material-ui/SelectField";
 import TextField from "material-ui/TextField";
 import getMuiTheme from "material-ui/styles/getMuiTheme";
@@ -23,20 +23,20 @@ import { Members_organization } from "./__generated__/Members_organization.graph
 import GroupItem from "./GroupItem";
 
 type Props = {
-  relay: RelayProp;
-  router: any;
-  organization: Members_organization;
+  relay: RelayProp,
+  router: any,
+  organization: Members_organization,
 };
 
 type State = {
-  menuIsOpen: null | HTMLElement;
-  addUser: boolean;
-  name: string;
-  email: string;
-  instrument: string;
-  new: boolean;
-  groupId?: string;
-  member: boolean;
+  menuIsOpen: null | HTMLElement,
+  addUser: boolean,
+  name: string,
+  email: string,
+  instrument: string,
+  new: boolean,
+  groupId?: string,
+  member: boolean,
 };
 
 class Members extends React.Component<Props, State> {
@@ -236,21 +236,27 @@ class Members extends React.Component<Props, State> {
                   </SelectField>
                 </div>
                 <div>
-                  <RaisedButton type="submit" label="Legg til" primary />
-                  <RaisedButton
+                  <Button variant="contained" type="submit" color="primary">
+                    Legg til
+                  </Button>
+                  <Button
+                    variant="contained"
                     type="reset"
-                    label="Avbryt"
                     onClick={this.closeAddUser}
-                  />
+                  >
+                    Avbryt
+                  </Button>
                 </div>
               </form>
             ) : (
               <div>
-                <RaisedButton
+                <Button
+                  variant="contained"
                   type="reset"
-                  label="Avbryt"
                   onClick={this.closeAddUser}
-                />
+                >
+                  Avbryt
+                </Button>
               </div>
             )}
           </Dialog>

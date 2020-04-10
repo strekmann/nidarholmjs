@@ -1,15 +1,15 @@
-import RaisedButton from "material-ui/RaisedButton";
+import Button from "@material-ui/core/Button";
 import TextField from "material-ui/TextField";
 import * as React from "react";
 
 type Props = {
-  term: string;
-  onSearch: (term: string) => void;
-  onClear: () => void;
+  term: string,
+  onSearch: (term: string) => void,
+  onClear: () => void,
 };
 
 type State = {
-  term: string;
+  term: string,
 };
 
 export default class PieceSearch extends React.Component<Props, State> {
@@ -37,8 +37,12 @@ export default class PieceSearch extends React.Component<Props, State> {
           value={this.state.term}
           onChange={this.onSearchChange}
         />
-        <RaisedButton label="Søk" type="submit" primary />
-        <RaisedButton label="Tøm" type="reset" onClick={this.props.onClear} />
+        <Button variant="contained" type="submit" color="primary">
+          Søk
+        </Button>
+        <Button variant="contained" type="reset" onClick={this.props.onClear}>
+          Tøm
+        </Button>
       </form>
     );
   }

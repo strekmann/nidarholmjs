@@ -3,7 +3,7 @@
 import * as React from "react";
 import { createFragmentContainer, graphql, RelayProp } from "react-relay";
 import getMuiTheme from "material-ui/styles/getMuiTheme";
-import FlatButton from "material-ui/FlatButton";
+import Button from "@material-ui/core/Button";
 import Paper from "material-ui/Paper";
 import PropTypes from "prop-types";
 import Link from "found/Link";
@@ -18,12 +18,12 @@ import Text from "./Text";
 import { Home_organization } from "./__generated__/Home_organization.graphql";
 
 type Props = {
-  organization: Home_organization;
-  relay: RelayProp;
+  organization: Home_organization,
+  relay: RelayProp,
 };
 
 type State = {
-  contactDialogOpen: boolean;
+  contactDialogOpen: boolean,
 };
 
 class Home extends React.Component<Props, State> {
@@ -125,7 +125,7 @@ class Home extends React.Component<Props, State> {
                 );
               })}
               <Link to="/projects">
-                <FlatButton label="Prosjektoversikt" />
+                <Button variant="text">Prosjektoversikt</Button>
               </Link>
             </div>
             <div
@@ -138,7 +138,7 @@ class Home extends React.Component<Props, State> {
                 return <EventItem key={edge.node.id} event={edge.node} />;
               })}
               <Link to="/events">
-                <FlatButton label="Aktivitetskalender" />
+                <Button variant="text">Aktivitetskalender</Button>
               </Link>
             </div>
             {organization.summaries.length > 0 ? (

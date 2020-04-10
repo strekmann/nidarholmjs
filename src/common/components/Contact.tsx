@@ -2,7 +2,7 @@ import IconButton from "@material-ui/core/IconButton";
 import Menu from "@material-ui/core/Menu";
 import MenuItem from "@material-ui/core/MenuItem";
 import Paper from "material-ui/Paper";
-import RaisedButton from "material-ui/RaisedButton";
+import Button from "@material-ui/core/Button";
 import MoreVertIcon from "material-ui/svg-icons/navigation/more-vert";
 import TextField from "material-ui/TextField";
 import * as React from "react";
@@ -13,24 +13,24 @@ import ContactUser from "./ContactUser";
 import { Contact_organization } from "./__generated__/Contact_organization.graphql";
 
 type Props = {
-  organization: Contact_organization;
-  relay: RelayProp;
+  organization: Contact_organization,
+  relay: RelayProp,
 };
 
 type State = {
-  menuIsOpen: null | HTMLElement;
-  editContacts: boolean;
-  editInfo: boolean;
-  visitorLocation: string;
-  visitorAddress: string;
-  city: string;
-  mailAddress: string;
-  postcode: string;
-  organizationNumber: string;
-  publicBankAccount: string;
-  contactText: string;
-  mapText: string;
-  mapUrl: string;
+  menuIsOpen: null | HTMLElement,
+  editContacts: boolean,
+  editInfo: boolean,
+  visitorLocation: string,
+  visitorAddress: string,
+  city: string,
+  mailAddress: string,
+  postcode: string,
+  organizationNumber: string,
+  publicBankAccount: string,
+  contactText: string,
+  mapText: string,
+  mapUrl: string,
 };
 
 class Contact extends React.Component<Props, State> {
@@ -333,14 +333,17 @@ class Contact extends React.Component<Props, State> {
             />
           </div>
           <div>
-            <RaisedButton type="submit" label="Lagre" primary />
-            <RaisedButton
-              type="cancel"
-              label="Avbryt"
+            <Button type="submit" color="primary">
+              Lagre
+            </Button>
+            <Button
+              type="reset"
               onClick={() => {
                 this.setState({ editInfo: false });
               }}
-            />
+            >
+              Avbryt
+            </Button>
           </div>
         </form>
       </Paper>

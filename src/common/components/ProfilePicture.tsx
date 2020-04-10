@@ -1,7 +1,7 @@
 /* global FormData */
 
 import axios from "axios";
-import IconButton from "material-ui/IconButton";
+import IconButton from "@material-ui/core/Button";
 import Person from "material-ui/svg-icons/social/person";
 import Camera from "material-ui/svg-icons/image/photo-camera";
 import * as React from "react";
@@ -12,16 +12,16 @@ import theme from "../theme";
 import SetProfilePictureMutation from "../mutations/SetProfilePicture";
 
 type Props = {
-  isViewer: boolean;
-  isAdmin: boolean;
-  relay: RelayProp;
+  isViewer: boolean,
+  isAdmin: boolean,
+  relay: RelayProp,
   user: {
-    id: string;
-    name: string;
+    id: string,
+    name: string,
     profilePicture: {
-      normalPath: string;
-    };
-  };
+      normalPath: string,
+    },
+  },
 };
 
 class ProfilePicture extends React.Component<Props> {

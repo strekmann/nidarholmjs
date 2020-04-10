@@ -1,4 +1,4 @@
-import IconButton from "material-ui/IconButton";
+import IconButton from "@material-ui/core/Button";
 import { ListItem } from "material-ui/List";
 import Download from "material-ui/svg-icons/file/file-download";
 import Close from "material-ui/svg-icons/navigation/close";

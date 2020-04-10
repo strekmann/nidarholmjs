@@ -8,7 +8,7 @@ import IconButton from "@material-ui/core/IconButton";
 import Menu from "@material-ui/core/Menu";
 import MenuItem from "@material-ui/core/MenuItem";
 import Paper from "material-ui/Paper";
-import RaisedButton from "material-ui/RaisedButton";
+import Button from "@material-ui/core/Button";
 import getMuiTheme from "material-ui/styles/getMuiTheme";
 import PropTypes from "prop-types";
 import React from "react";
@@ -459,11 +459,13 @@ export class Project extends React.Component<Props, State> {
                 onDrop={this.onDrop}
                 permissions={flattenPermissions(project.permissions)}
               />
-              <RaisedButton
-                label="Ferdig"
-                primary
+              <Button
+                variant="contained"
+                color="primary"
                 onClick={this.closeAddFile}
-              />
+              >
+                Ferdig
+              </Button>
             </Dialog>
             <ProjectPieceForm
               open={addPiece}

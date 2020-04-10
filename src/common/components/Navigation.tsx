@@ -4,11 +4,11 @@ import Avatar from "@material-ui/core/Avatar";
 import IconButton from "@material-ui/core/IconButton";
 import Popover from "@material-ui/core/Popover";
 import Link from "found/Link";
-import ActionLockOpen from "material-ui/svg-icons/action/lock-open";
+import ActionLockOpen from "@material-ui/icons/LockOpen";
 import Person from "@material-ui/icons/Person";
 import { Menu, MenuItem } from "material-ui/Menu";
 import NavigationMenu from "material-ui/svg-icons/navigation/menu";
-import RaisedButton from "material-ui/RaisedButton";
+import Button from "@material-ui/core/Button";
 import getMuiTheme from "material-ui/styles/getMuiTheme";
 import { fullWhite, indigo900 } from "material-ui/styles/colors";
 import PropTypes from "prop-types";
@@ -21,13 +21,13 @@ import { Navigation_viewer } from "./__generated__/Navigation_viewer.graphql";
 import theme from "../theme";
 
 type Props = {
-  organization: Navigation_organization;
-  viewer: Navigation_viewer;
+  organization: Navigation_organization,
+  viewer: Navigation_viewer,
 };
 
 type State = {
-  open: boolean;
-  anchorEl?: any;
+  open: boolean,
+  anchorEl?: any,
 };
 
 class Navigation extends React.Component<Props, State> {
@@ -175,7 +175,9 @@ class Navigation extends React.Component<Props, State> {
                     margin: "12px 15px 12px 10px",
                   }}
                 >
-                  <RaisedButton label="Logg inn" icon={<ActionLockOpen />} />
+                  <Button variant="contained" startIcon={<ActionLockOpen />}>
+                    Logg inn
+                  </Button>
                 </Link>
               )}
             </div>
@@ -188,10 +190,11 @@ class Navigation extends React.Component<Props, State> {
               <Link to={`/users/${viewer.id}`}>{this.renderAvatar()}</Link>
             ) : (
               <Link to="/login">
-                <RaisedButton
+                <Button
+                  variant="contained"
                   style={{ minWidth: 44, marginLeft: 10 }}
-                  icon={<ActionLockOpen />}
-                />
+                  startIcon={<ActionLockOpen />}
+                ></Button>
               </Link>
             )}
           </div>

@@ -2,7 +2,7 @@
 
 import Checkbox from "material-ui/Checkbox";
 import Dialog from "material-ui/Dialog";
-import FlatButton from "material-ui/FlatButton";
+import Button from "@material-ui/core/Button";
 import TextField from "material-ui/TextField";
 import DatePicker from "material-ui/DatePicker";
 import TimePicker from "material-ui/TimePicker";
@@ -190,8 +190,12 @@ class EventForm extends React.Component<Props, State> {
         onRequestClose={this.props.cancel}
         autoScrollBodyContent
         actions={[
-          <FlatButton onClick={this.props.cancel} label="Avbryt" />,
-          <FlatButton onClick={this.save} label="Lagre" primary />,
+          <Button variant="text" onClick={this.props.cancel}>
+            Avbryt
+          </Button>,
+          <Button variant="text" onClick={this.save} color="primary">
+            Lagre
+          </Button>,
         ]}
       >
         <div>

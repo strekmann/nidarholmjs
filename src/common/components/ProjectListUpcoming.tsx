@@ -1,5 +1,5 @@
 import { RelayRefetchProp } from "react-relay";
-import RaisedButton from "material-ui/RaisedButton";
+import Button from "@material-ui/core/Button";
 import React from "react";
 import { createRefetchContainer, graphql } from "react-relay";
 
@@ -9,9 +9,9 @@ import { ProjectListUpcoming_organization } from "./__generated__/ProjectListUpc
 const PROJECTS_PER_PAGE = 5;
 
 type Props = {
-  title: string;
-  organization: ProjectListUpcoming_organization;
-  relay: RelayRefetchProp;
+  title: string,
+  organization: ProjectListUpcoming_organization,
+  relay: RelayRefetchProp,
 };
 
 class ProjectListUpcoming extends React.Component<Props> {
@@ -35,7 +35,9 @@ class ProjectListUpcoming extends React.Component<Props> {
           );
         })}
         {nextProjects.pageInfo.hasNextPage ? (
-          <RaisedButton primary onClick={this.loadMore} label="Mer" />
+          <Button variant="contained" color="primary" onClick={this.loadMore}>
+            Mer
+          </Button>
         ) : null}
       </div>
     );

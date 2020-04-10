@@ -1,21 +1,21 @@
 import Link from "found/Link";
-import IconButton from "material-ui/IconButton";
+import IconButton from "@material-ui/core/Button";
 import { ListItem } from "material-ui/List";
 import CloseIcon from "material-ui/svg-icons/navigation/close";
 import * as React from "react";
 
 type Props = {
   music: {
-    id: string;
+    id: string,
     piece: {
-      id: string;
-      title: string;
-      composers: Array<string>;
-    };
-  };
-  isMember: boolean;
-  isMusicAdmin: boolean;
-  remove: ({ id: string }) => void;
+      id: string,
+      title: string,
+      composers: Array<string>,
+    },
+  },
+  isMember: boolean,
+  isMusicAdmin: boolean,
+  remove: ({ id: string }) => void,
 };
 
 export default class MusicItem extends React.Component<Props> {

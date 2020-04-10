@@ -1,23 +1,26 @@
-/* eslint "max-len": 0 */
-
 import Paper from "material-ui/Paper";
-import RaisedButton from "material-ui/RaisedButton";
+import Button from "@material-ui/core/Button";
 import TextField from "material-ui/TextField";
 import getMuiTheme from "material-ui/styles/getMuiTheme";
 import PropTypes from "prop-types";
 import React from "react";
-import { createFragmentContainer, graphql } from "react-relay";
+import { createFragmentContainer, graphql, RelayProp } from "react-relay";
 
 import theme from "../theme";
 import SendResetMutation from "../mutations/SendReset";
 
-class Reset extends React.Component {
+type Props = {
+  relay: RelayProp,
+};
+
+type State = {
+  email: string,
+  sent: boolean,
+};
+
+class Reset extends React.Component<Props, State> {
   static childContextTypes = {
     muiTheme: PropTypes.object.isRequired,
-  };
-
-  static propTypes = {
-    relay: PropTypes.object.isRequired,
   };
 
   constructor(props) {
@@ -41,9 +44,13 @@ class Reset extends React.Component {
   sendReset = (event) => {
     event.preventDefault();
     this.setState({ sent: true });
-    SendResetMutation.commit(this.props.relay.environment, {
-      email: this.state.email,
-    });
+    SendResetMutation.commit(
+      this.props.relay.environment,
+      {
+        email: this.state.email,
+      },
+      undefined,
+    );
   };
 
   render() {
@@ -75,7 +82,9 @@ class Reset extends React.Component {
                   />
                 </div>
                 <div>
-                  <RaisedButton label="Send" type="submit" primary />
+                  <Button variant="contained" type="submit" color="primary">
+                    Send
+                  </Button>
                 </div>
               </form>
             </div>

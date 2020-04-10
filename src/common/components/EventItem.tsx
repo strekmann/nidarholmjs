@@ -1,6 +1,6 @@
 import { createFragmentContainer, graphql } from "react-relay";
 import Link from "found/Link";
-import IconButton from "material-ui/IconButton";
+import IconButton from "@material-ui/core/Button";
 import Paper from "material-ui/Paper";
 import ExpandLess from "material-ui/svg-icons/navigation/expand-less";
 import ExpandMore from "material-ui/svg-icons/navigation/expand-more";
@@ -31,20 +31,20 @@ function isSoon(date) {
 
 type Props = {
   event: {
-    id: string;
-    title: string;
-    location: string;
-    start: any;
-    end: any;
-    mdtext: string;
-    isEnded: boolean;
-    highlighted: boolean;
-    tags: string[];
-  };
+    id: string,
+    title: string,
+    location: string,
+    start: any,
+    end: any,
+    mdtext: string,
+    isEnded: boolean,
+    highlighted: boolean,
+    tags: string[],
+  },
 };
 
 type State = {
-  expanded: boolean;
+  expanded: boolean,
 };
 
 class EventItem extends React.Component<Props, State> {

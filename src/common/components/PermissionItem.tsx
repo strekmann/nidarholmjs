@@ -1,13 +1,13 @@
-import IconButton from "material-ui/IconButton";
+import IconButton from "@material-ui/core/Button";
 import { ListItem } from "material-ui/List";
 import Close from "material-ui/svg-icons/navigation/close";
 import PropTypes from "prop-types";
 import * as React from "react";
 
 type Props = {
-  name: string;
-  id: string;
-  removePermission: (string) => void;
+  name: string,
+  id: string,
+  removePermission: (string) => void,
 };
 
 export default class PermissionItem extends React.Component<Props> {

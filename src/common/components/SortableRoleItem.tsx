@@ -1,4 +1,4 @@
-import IconButton from "material-ui/IconButton";
+import IconButton from "@material-ui/core/Button";
 import RemoveCircle from "material-ui/svg-icons/content/remove-circle";
 import DragHandle from "material-ui/svg-icons/editor/drag-handle";
 import PropTypes from "prop-types";

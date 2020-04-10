@@ -6,7 +6,7 @@ import Download from "material-ui/svg-icons/file/file-download";
 import IconButton from "@material-ui/core/IconButton";
 import Menu from "@material-ui/core/Menu";
 import MenuItem from "@material-ui/core/MenuItem";
-import RaisedButton from "material-ui/RaisedButton";
+import Button from "@material-ui/core/Button";
 import { grey400 } from "material-ui/styles/colors";
 import * as React from "react";
 import { createFragmentContainer, graphql } from "react-relay";
@@ -198,11 +198,13 @@ class FileItem extends React.Component<Props, State> {
               onChange={this.onTagChange}
               fileTags={this.state.tags}
             />
-            <RaisedButton
-              label="Lagre"
+            <Button
+              variant="contained"
               onClick={this.savePermissions}
-              primary
-            />
+              color="primary"
+            >
+              Lagre
+            </Button>
           </Dialog>
         ) : null}
       </Card>

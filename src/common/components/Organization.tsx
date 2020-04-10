@@ -1,7 +1,7 @@
 import update from "immutability-helper";
 import { List } from "material-ui/List";
 import Paper from "material-ui/Paper";
-import RaisedButton from "material-ui/RaisedButton";
+import Button from "@material-ui/core/Button";
 import { Tab, Tabs } from "material-ui/Tabs";
 import TextField from "material-ui/TextField";
 import getMuiTheme from "material-ui/styles/getMuiTheme";
@@ -24,54 +24,54 @@ type Props = {
     pages: {
       edges: Array<{
         node: {
-          id: string;
-          key: string;
-          slug: string;
-          title: string;
-        };
-        cursor: string;
-      }>;
-    };
+          id: string,
+          key: string,
+          slug: string,
+          title: string,
+        },
+        cursor: string,
+      }>,
+    },
     summaries: Array<{
-      id: string;
-      slug: string;
-      title: string;
-    }>;
+      id: string,
+      slug: string,
+      title: string,
+    }>,
     organizationEventPersonResponsibilities: Array<{
-      id: string;
-      name: string;
-      reminderDaysBefore: number;
-      reminderAtHour: number;
-      reminderText: string;
-    }>;
+      id: string,
+      name: string,
+      reminderDaysBefore: number,
+      reminderAtHour: number,
+      reminderText: string,
+    }>,
     organizationEventGroupResponsibilities: Array<{
-      id: string;
-      name: string;
-      reminderDaysBefore: number;
-      reminderAtHour: number;
-      reminderText: string;
-    }>;
-  };
+      id: string,
+      name: string,
+      reminderDaysBefore: number,
+      reminderAtHour: number,
+      reminderText: string,
+    }>,
+  },
   relay: {
-    environment: {};
-  };
+    environment: {},
+  },
 };
 
 type State = {
   summaries: Array<{
-    id: string;
-    slug: string;
-    title: string;
-  }>;
-  tab: string;
-  eventPersonResponsibilityName: string;
-  eventPersonResponsibilityReminderText: string;
-  eventPersonResponsibilityReminderDaysBefore: number;
-  eventPersonResponsibilityReminderAtHour: number;
-  eventGroupResponsibilityName: string;
-  eventGroupResponsibilityReminderText: string;
-  eventGroupResponsibilityReminderDaysBefore: number;
-  eventGroupResponsibilityReminderAtHour: number;
+    id: string,
+    slug: string,
+    title: string,
+  }>,
+  tab: string,
+  eventPersonResponsibilityName: string,
+  eventPersonResponsibilityReminderText: string,
+  eventPersonResponsibilityReminderDaysBefore: number,
+  eventPersonResponsibilityReminderAtHour: number,
+  eventGroupResponsibilityName: string,
+  eventGroupResponsibilityReminderText: string,
+  eventGroupResponsibilityReminderDaysBefore: number,
+  eventGroupResponsibilityReminderAtHour: number,
 };
 
 class Organization extends React.Component<Props, State> {
@@ -284,7 +284,9 @@ class Organization extends React.Component<Props, State> {
                 onChange={this.onChange}
                 onAdd={this.onAdd}
               />
-              <RaisedButton type="submit" label="Lagre" />
+              <Button variant="contained" type="submit">
+                Lagre
+              </Button>
             </form>
           </Tab>
           <Tab label="Ansvarslister" value="responsibilities">
@@ -343,7 +345,9 @@ class Organization extends React.Component<Props, State> {
                 />
               </div>
               <div>
-                <RaisedButton label="Lagre" type="submit" />
+                <Button variant="contained" type="submit">
+                  Lagre
+                </Button>
               </div>
             </form>
             <h2>Aktivitetsansvarlige - grupper</h2>
@@ -399,7 +403,9 @@ class Organization extends React.Component<Props, State> {
                 />
               </div>
               <div>
-                <RaisedButton label="Lagre" type="submit" />
+                <Button variant="contained" type="submit">
+                  Lagre
+                </Button>
               </div>
             </form>
           </Tab>

@@ -1,7 +1,5 @@
-/* eslint "max-len": 0 */
-
 import Paper from "material-ui/Paper";
-import RaisedButton from "material-ui/RaisedButton";
+import Button from "@material-ui/core/Button";
 import TextField from "material-ui/TextField";
 import getMuiTheme from "material-ui/styles/getMuiTheme";
 import PropTypes from "prop-types";
@@ -12,18 +10,18 @@ import theme from "../theme";
 import SetPasswordMutation from "../mutations/SetPassword";
 
 type Props = {
-  relay: RelayProp;
+  relay: RelayProp,
   router: {
-    push: ({}) => void;
-  };
+    push: ({}) => void,
+  },
   viewer: {
-    id: string;
-  };
+    id: string,
+  },
 };
 
 type State = {
-  newPassword: string;
-  oldPassword: string;
+  newPassword: string,
+  oldPassword: string,
 };
 
 class MemberReset extends React.Component<Props, State> {
@@ -96,7 +94,9 @@ class MemberReset extends React.Component<Props, State> {
             />
           </div>
           <div>
-            <RaisedButton label="Lagre" type="submit" primary />
+            <Button variant="contained" type="submit" color="primary">
+              Lagre
+            </Button>
           </div>
         </form>
       </Paper>

@@ -1,10 +1,9 @@
 import { RelayRefetchProp } from "react-relay";
 import Link from "found/Link";
-import FlatButton from "material-ui/FlatButton";
+import Button from "@material-ui/core/Button";
 import IconButton from "@material-ui/core/IconButton";
 import Menu from "@material-ui/core/Menu";
 import MenuItem from "@material-ui/core/MenuItem";
-import RaisedButton from "material-ui/RaisedButton";
 import { Toolbar, ToolbarGroup } from "material-ui/Toolbar";
 import getMuiTheme from "material-ui/styles/getMuiTheme";
 import ActionHelp from "material-ui/svg-icons/action/help";
@@ -22,12 +21,12 @@ import EventItem from "./EventItem";
 const ITEMS_PER_PAGE = 20;
 
 type Props = {
-  organization: Events_organization;
-  relay: RelayRefetchProp;
+  organization: Events_organization,
+  relay: RelayRefetchProp,
 };
 
 type State = {
-  menuIsOpen: null | HTMLElement;
+  menuIsOpen: null | HTMLElement,
 };
 
 class Events extends React.Component<Props, State> {
@@ -74,10 +73,12 @@ class Events extends React.Component<Props, State> {
           <h1>Aktiviteter</h1>
           <Toolbar style={{ backgroundColor: theme.palette.fullWhite }}>
             <ToolbarGroup lastChild>
-              <FlatButton
-                label="Abonner på kalender"
+              <Button
+                variant="text"
                 href={`webcal://${organization.webdomain}/events/public.ics`}
-              />
+              >
+                Abonner på kalender
+              </Button>
               <IconButton href="/hjelp-om-aktiviteter">
                 <ActionHelp />
               </IconButton>
@@ -109,7 +110,13 @@ class Events extends React.Component<Props, State> {
           })}
         </div>
         {events.pageInfo.hasNextPage ? (
-          <RaisedButton primary onClick={this.loadMoreEvents} label="Mer" />
+          <Button
+            variant="contained"
+            color="primary"
+            onClick={this.loadMoreEvents}
+          >
+            Mer
+          </Button>
         ) : null}
       </div>
     );

@@ -4,7 +4,7 @@ import Menu from "@material-ui/core/Menu";
 import { List, ListItem } from "material-ui/List";
 import MenuItem from "@material-ui/core/MenuItem";
 import Paper from "material-ui/Paper";
-import RaisedButton from "material-ui/RaisedButton";
+import Button from "@material-ui/core/Button";
 import TextField from "material-ui/TextField";
 import getMuiTheme from "material-ui/styles/getMuiTheme";
 import MoreVertIcon from "material-ui/svg-icons/navigation/more-vert";
@@ -96,8 +96,12 @@ class Roles extends React.Component<Props, State> {
     const { organization } = this.props;
     const { isAdmin } = organization;
     const actions = [
-      <RaisedButton label="Avbryt" onClick={this.onClose} />,
-      <RaisedButton label="Lagre" onClick={this.onSave} primary />,
+      <Button variant="contained" onClick={this.onClose}>
+        Avbryt
+      </Button>,
+      <Button variant="contained" onClick={this.onSave} color="primary">
+        Lagre
+      </Button>,
     ];
     return (
       <Paper className="row">

@@ -2,8 +2,7 @@
 
 import Link from "found/Link";
 import { Card, CardTitle, CardText, CardActions } from "material-ui/Card";
-import FlatButton from "material-ui/FlatButton";
-import RaisedButton from "material-ui/RaisedButton";
+import Button from "@material-ui/core/Button";
 import TextField from "material-ui/TextField";
 import getMuiTheme from "material-ui/styles/getMuiTheme";
 import PropTypes from "prop-types";
@@ -50,14 +49,12 @@ class Login extends React.Component<Props> {
             </CardTitle>
             <CardText>
               <div style={{ display: "flex", flexWrap: "wrap" }}>
-                <RaisedButton
-                  label="Logg inn med Facebook"
-                  href="/login/facebook"
-                />
-                <RaisedButton
-                  label="Logg inn med Google"
-                  href="/login/google"
-                />
+                <Button variant="contained" href="/login/facebook">
+                  Logg inn med Facebook
+                </Button>
+                <Button variant="contained" href="/login/google">
+                  Logg inn med Google
+                </Button>
               </div>
               <p>
                 Velkommen tilbake. Pålogging blir husket av nettleseren i en
@@ -80,9 +77,11 @@ class Login extends React.Component<Props> {
             </CardText>
             <CardActions>
               <div>
-                <RaisedButton type="submit" primary label="Logg inn" />
+                <Button variant="contained" type="submit" color="primary">
+                  Logg inn
+                </Button>
                 <Link to="/login/reset">
-                  <FlatButton label="Nytt passord" />
+                  <Button variant="text">Nytt passord</Button>
                 </Link>
               </div>
             </CardActions>
@@ -130,7 +129,9 @@ class Login extends React.Component<Props> {
             </CardText>
             <CardActions>
               <div>
-                <RaisedButton label="Registrer deg" primary type="submit" />
+                <Button color="primary" type="submit">
+                  Registrer deg
+                </Button>
               </div>
             </CardActions>
           </Card>

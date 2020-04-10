@@ -5,7 +5,7 @@ import { RelayRefetchProp } from "react-relay";
 import { createRefetchContainer, graphql } from "react-relay";
 import axios from "axios";
 import getMuiTheme from "material-ui/styles/getMuiTheme";
-import RaisedButton from "material-ui/RaisedButton";
+import Button from "@material-ui/core/Button";
 import Dialog from "material-ui/Dialog";
 import { Toolbar, ToolbarGroup, ToolbarTitle } from "material-ui/Toolbar";
 import PropTypes from "prop-types";
@@ -75,15 +75,19 @@ class Files extends React.Component<Props, State> {
       axios
         .post("/upload", data)
         .then((response) => {
-          AddFileMutation.commit(relay.environment, {
-            filename: file.name,
-            hex: response.data.hex,
-            permissions: permissions.map((permission) => {
-              return permission.id;
-            }),
-            projectTag: null,
-            tags,
-          });
+          AddFileMutation.commit(
+            relay.environment,
+            {
+              filename: file.name,
+              hex: response.data.hex,
+              permissions: permissions.map((permission) => {
+                return permission.id;
+              }),
+              projectTag: null,
+              tags,
+            },
+            undefined,
+          );
         })
         .catch((error) => {
           console.error("err", error);
@@ -190,10 +194,9 @@ class Files extends React.Component<Props, State> {
                   onChange={this.onTagChange}
                   organization={this.props.organization}
                 />
-                <RaisedButton
-                  label="Last opp filer"
-                  onClick={this.toggleAddFile}
-                />
+                <Button variant="contained" onClick={this.toggleAddFile}>
+                  Last opp filer
+                </Button>
                 <Dialog
                   title="Last opp filer"
                   open={this.state.addFile}
@@ -207,11 +210,13 @@ class Files extends React.Component<Props, State> {
                     memberGroupId={organization.memberGroup.id}
                     onTagsChange={this.searchTag}
                   />
-                  <RaisedButton
+                  <Button
                     label="Ferdig"
-                    primary
+                    color="primary"
                     onClick={this.closeAddFile}
-                  />
+                  >
+                    Ferdig
+                  </Button>
                 </Dialog>
               </ToolbarGroup>
             </Toolbar>
@@ -230,7 +235,13 @@ class Files extends React.Component<Props, State> {
             organization={this.props.organization}
           />
           {organization.files.pageInfo.hasNextPage ? (
-            <RaisedButton onClick={this.fetchMore} label="Mer" primary />
+            <Button
+              variant="contained"
+              onClick={this.fetchMore}
+              color="primary"
+            >
+              Mer
+            </Button>
           ) : null}
         </div>
       </div>

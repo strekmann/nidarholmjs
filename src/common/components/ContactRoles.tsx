@@ -1,8 +1,7 @@
-/* eslint "max-len": 0 */
 /* eslint "react/no-multi-comp": 0 */
 
 import IconButton from "@material-ui/core/IconButton";
-import RaisedButton from "material-ui/RaisedButton";
+import Button from "@material-ui/core/Button";
 import AddCircle from "material-ui/svg-icons/content/add-circle";
 import getMuiTheme from "material-ui/styles/getMuiTheme";
 import PropTypes from "prop-types";
@@ -17,8 +16,8 @@ import { ContactRoles_organization } from "./__generated__/ContactRoles_organiza
 
 type ItemProps = {
   // id: string,
-  name: string;
-  onAddRole: (_: any) => void;
+  name: string,
+  onAddRole: (_: any) => void,
 };
 
 class RoleItem extends React.Component<ItemProps> {
@@ -42,19 +41,19 @@ class RoleItem extends React.Component<ItemProps> {
 }
 
 type Role = {
-  id: string;
-  name: string;
-}
+  id: string,
+  name: string,
+};
 
 type Props = {
-  organization: ContactRoles_organization;
-  relay: RelayProp;
-  saveHook: () => void;
+  organization: ContactRoles_organization,
+  relay: RelayProp,
+  saveHook: () => void,
 };
 
 type State = {
-  activeRoles: Role[];
-  contactRoles: Role[];
+  activeRoles: Role[],
+  contactRoles: Role[],
 };
 
 class ContactRoles extends React.Component<Props, State> {
@@ -68,18 +67,18 @@ class ContactRoles extends React.Component<Props, State> {
     this.state = {
       activeRoles: [],
       contactRoles: [],
-    }
+    };
     // TODO: Should be easier
     const _activeRoles: Role[] = [];
     const _contactRoles: Role[] = [];
     activeRoles?.forEach((role: Role | null) => {
       if (role && role.id && role.name) {
-      _activeRoles.push(role);
+        _activeRoles.push(role);
       }
     });
-    contactRoles?.forEach((role: {readonly id: string, readonly name: string} | null) => {
+    contactRoles?.forEach((role: Role | null) => {
       if (role && role.id && role.name) {
-      _contactRoles.push(role);
+        _contactRoles.push(role);
       }
     });
     this.state = {
@@ -162,7 +161,9 @@ class ContactRoles extends React.Component<Props, State> {
               </div>
             </div>
           </div>
-          <RaisedButton label="Lagre" type="submit" />
+          <Button variant="contained" type="submit">
+            Lagre
+          </Button>
         </form>
       </div>
     );

@@ -1,27 +1,27 @@
 import * as React from "react";
 import Dialog from "material-ui/Dialog";
 import { ListItem } from "material-ui/List";
-import RaisedButton from "material-ui/RaisedButton";
+import Button from "@material-ui/core/Button";
 import TextField from "material-ui/TextField";
 import ContentMail from "material-ui/svg-icons/content/mail";
 
 type Props = {
   item: {
-    id: string;
-    name: string;
-    reminderText: string;
-    reminderAtHour: number;
-    reminderDaysBefore: number;
-  };
-  onSave: any; //(string, string, string, number, number) => void,
+    id: string,
+    name: string,
+    reminderText: string,
+    reminderAtHour: number,
+    reminderDaysBefore: number,
+  },
+  onSave: any, //(string, string, string, number, number) => void,
 };
 
 type State = {
-  open: boolean;
-  name: string;
-  reminderText: string;
-  reminderAtHour: number;
-  reminderDaysBefore: number;
+  open: boolean,
+  name: string,
+  reminderText: string,
+  reminderAtHour: number,
+  reminderDaysBefore: number,
 };
 
 export default class extends React.Component<Props, State> {
@@ -129,7 +129,9 @@ export default class extends React.Component<Props, State> {
                   />
                 </div>
                 <div>
-                  <RaisedButton label="Lagre" type="submit" />
+                  <Button variant="contained" type="submit">
+                    Lagre
+                  </Button>
                 </div>
               </form>
             </Dialog>

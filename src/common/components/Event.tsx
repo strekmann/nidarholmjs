@@ -1,7 +1,7 @@
 import getMuiTheme from "material-ui/styles/getMuiTheme";
 import Chip from "@material-ui/core/Chip";
 import Dialog from "material-ui/Dialog";
-import FlatButton from "material-ui/FlatButton";
+import Button from "@material-ui/core/Button";
 import Menu from "@material-ui/core/Menu";
 import MenuItem from "@material-ui/core/MenuItem";
 import IconButton from "@material-ui/core/IconButton";
@@ -196,8 +196,16 @@ class Event extends React.Component<Props, State> {
               onRequestClose={this.closeDelete}
               autoScrollBodyContent
               actions={[
-                <FlatButton onClick={this.closeDelete} label="Avbryt" />,
-                <FlatButton primary onClick={this.deleteEvent} label="Slett" />,
+                <Button variant="text" onClick={this.closeDelete}>
+                  Avbryt
+                </Button>,
+                <Button
+                  variant="text"
+                  color="primary"
+                  onClick={this.deleteEvent}
+                >
+                  Slett
+                </Button>,
               ]}
             >
               <p>{event.title}</p>
