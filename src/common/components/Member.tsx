@@ -1,8 +1,6 @@
-/* eslint "max-len": 0 */
-
 import areIntlLocalesSupported from "intl-locales-supported";
 import AutoComplete from "material-ui/AutoComplete";
-import Checkbox from "material-ui/Checkbox";
+import Checkbox from "@material-ui/core/Checkbox";
 import DatePicker from "material-ui/DatePicker";
 import Dialog from "@material-ui/core/Dialog";
 import DialogTitle from "@material-ui/core/DialogTitle";
@@ -18,7 +16,7 @@ import Menu from "@material-ui/core/Menu";
 import MenuItem from "@material-ui/core/MenuItem";
 import IconButton from "@material-ui/core/IconButton";
 import Paper from "material-ui/Paper";
-import TextField from "material-ui/TextField";
+import TextField from "@material-ui/core/TextField";
 import MoreVertIcon from "@material-ui/icons/MoreVert";
 import { lightBlue100 } from "material-ui/styles/colors";
 import Close from "@material-ui/icons/Close";
@@ -45,6 +43,7 @@ import Yesno from "./Yesno";
 import { Member_organization } from "./__generated__/Member_organization.graphql";
 import { Member_viewer } from "./__generated__/Member_viewer.graphql";
 import ListItemText from "@material-ui/core/ListItemText";
+import FormControlLabel from "@material-ui/core/FormControlLabel";
 
 let DateTimeFormat;
 if (areIntlLocalesSupported(["nb"])) {
@@ -174,32 +173,32 @@ class Member extends React.Component<Props, State> {
     return { muiTheme: this.muiTheme };
   }
 
-  onChangeName = (event, name) => {
-    this.setState({ name });
+  onChangeName = (event: React.ChangeEvent<HTMLInputElement>) => {
+    this.setState({ name: event.target.value });
   };
-  onChangePhone = (event, phone) => {
-    this.setState({ phone });
+  onChangePhone = (event: React.ChangeEvent<HTMLInputElement>) => {
+    this.setState({ phone: event.target.value });
   };
-  onChangeEmail = (event, email) => {
-    this.setState({ email });
+  onChangeEmail = (event: React.ChangeEvent<HTMLInputElement>) => {
+    this.setState({ email: event.target.value });
   };
-  onChangeInstrument = (event, instrument) => {
-    this.setState({ instrument });
+  onChangeInstrument = (event: React.ChangeEvent<HTMLInputElement>) => {
+    this.setState({ instrument: event.target.value });
   };
-  onChangeAddress = (event, address) => {
-    this.setState({ address });
+  onChangeAddress = (event: React.ChangeEvent<HTMLInputElement>) => {
+    this.setState({ address: event.target.value });
   };
-  onChangePostcode = (event, postcode) => {
-    this.setState({ postcode });
+  onChangePostcode = (event: React.ChangeEvent<HTMLInputElement>) => {
+    this.setState({ postcode: event.target.value });
   };
-  onChangeCity = (event, city) => {
-    this.setState({ city });
+  onChangeCity = (event: React.ChangeEvent<HTMLInputElement>) => {
+    this.setState({ city: event.target.value });
   };
-  onChangeCountry = (event, country) => {
-    this.setState({ country });
+  onChangeCountry = (event: React.ChangeEvent<HTMLInputElement>) => {
+    this.setState({ country: event.target.value });
   };
-  onChangeMembershipHistory = (event, membershipHistory) => {
-    this.setState({ membershipHistory });
+  onChangeMembershipHistory = (event: React.ChangeEvent<HTMLInputElement>) => {
+    this.setState({ membershipHistory: event.target.value });
   };
   onChangeJoined = (event, joined) => {
     this.setState({ joined });
@@ -207,14 +206,14 @@ class Member extends React.Component<Props, State> {
   onChangeBorn = (event, born) => {
     this.setState({ born });
   };
-  onChangeInList = (event, inList) => {
-    this.setState({ inList });
+  onChangeInList = (event: React.ChangeEvent<HTMLInputElement>) => {
+    this.setState({ inList: event.target.checked });
   };
-  onChangeOnLeave = (event, onLeave) => {
-    this.setState({ onLeave });
+  onChangeOnLeave = (event: React.ChangeEvent<HTMLInputElement>) => {
+    this.setState({ onLeave: event.target.checked });
   };
-  onChangeNoEmail = (event, noEmail) => {
-    this.setState({ noEmail });
+  onChangeNoEmail = (event: React.ChangeEvent<HTMLInputElement>) => {
+    this.setState({ noEmail: event.target.checked });
   };
 
   muiTheme: {};
@@ -347,7 +346,7 @@ class Member extends React.Component<Props, State> {
             <div>
               <TextField
                 id="name"
-                floatingLabelText="Navn"
+                label="Navn"
                 onChange={this.onChangeName}
                 value={this.state.name}
               />
@@ -355,7 +354,7 @@ class Member extends React.Component<Props, State> {
             <div>
               <TextField
                 id="phone"
-                floatingLabelText="Telefon"
+                label="Telefon"
                 onChange={this.onChangePhone}
                 value={this.state.phone}
               />
@@ -363,7 +362,7 @@ class Member extends React.Component<Props, State> {
             <div>
               <TextField
                 id="email"
-                floatingLabelText="E-post"
+                label="E-post"
                 onChange={this.onChangeEmail}
                 value={this.state.email}
               />
@@ -371,7 +370,7 @@ class Member extends React.Component<Props, State> {
             <div>
               <TextField
                 id="instrument"
-                floatingLabelText="Instrument"
+                label="Instrument"
                 onChange={this.onChangeInstrument}
                 value={this.state.instrument}
               />
@@ -390,7 +389,7 @@ class Member extends React.Component<Props, State> {
             <div>
               <TextField
                 id="address"
-                floatingLabelText="Adresse"
+                label="Adresse"
                 onChange={this.onChangeAddress}
                 value={this.state.address}
               />
@@ -398,7 +397,7 @@ class Member extends React.Component<Props, State> {
             <div>
               <TextField
                 id="postcode"
-                floatingLabelText="Postnummer"
+                label="Postnummer"
                 onChange={this.onChangePostcode}
                 value={this.state.postcode}
               />
@@ -406,7 +405,7 @@ class Member extends React.Component<Props, State> {
             <div>
               <TextField
                 id="city"
-                floatingLabelText="Sted"
+                label="Sted"
                 onChange={this.onChangeCity}
                 value={this.state.city}
               />
@@ -414,7 +413,7 @@ class Member extends React.Component<Props, State> {
             <div>
               <TextField
                 id="country"
-                floatingLabelText="Land"
+                label="Land"
                 onChange={this.onChangeCountry}
                 value={this.state.country}
               />
@@ -424,7 +423,7 @@ class Member extends React.Component<Props, State> {
                 <div>
                   <TextField
                     id="nmfId"
-                    floatingLabelText="NMF-nummer"
+                    label="NMF-nummer"
                     value={this.state.nmfId}
                   />
                 </div>
@@ -442,36 +441,54 @@ class Member extends React.Component<Props, State> {
                 <div>
                   <TextField
                     id="membershipHistory"
-                    floatingLabelText="Medlemskapshistorikk"
+                    label="Medlemskapshistorikk"
                     onChange={this.onChangeMembershipHistory}
                     value={this.state.membershipHistory}
-                    multiLine
+                    multiline
                     fullWidth
                   />
                 </div>
                 <div>
-                  <Checkbox
-                    id="inList"
+                  <FormControlLabel
+                    control={
+                      <Checkbox
+                        id="inList"
+                        name="inList"
+                        checked={this.state.inList}
+                        onChange={this.onChangeInList}
+                        color="primary"
+                      />
+                    }
                     label="Synlig i medlemslista"
-                    onCheck={this.onChangeInList}
-                    checked={this.state.inList}
-                  />
+                  ></FormControlLabel>
                 </div>
                 <div>
-                  <Checkbox
-                    id="onLeave"
+                  <FormControlLabel
+                    control={
+                      <Checkbox
+                        id="onLeave"
+                        name="onLeave"
+                        checked={this.state.onLeave}
+                        onChange={this.onChangeOnLeave}
+                        color="primary"
+                      />
+                    }
                     label="Har permisjon"
-                    onCheck={this.onChangeOnLeave}
-                    checked={this.state.onLeave}
-                  />
+                  ></FormControlLabel>
                 </div>
                 <div>
-                  <Checkbox
-                    id="noEmail"
+                  <FormControlLabel
+                    control={
+                      <Checkbox
+                        id="noEmail"
+                        name="noEmail"
+                        checked={this.state.noEmail}
+                        onChange={this.onChangeNoEmail}
+                        color="primary"
+                      />
+                    }
                     label="Ikke epost"
-                    onCheck={this.onChangeNoEmail}
-                    checked={this.state.noEmail}
-                  />
+                  ></FormControlLabel>
                 </div>
               </div>
             ) : null}

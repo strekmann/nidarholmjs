@@ -1,20 +1,20 @@
-import { List } from "material-ui/List";
-import * as React from "react";
+import List from "@material-ui/core/List";
+import React from "react";
 
 import MusicItem from "./MusicItem";
 
 type Props = {
   music: Array<{
-    id: string;
+    id: string,
     piece: {
-      id: string;
-      title: string;
-      composers: Array<string>;
-    };
-  }>;
-  isMember: boolean;
-  isMusicAdmin: boolean;
-  remove: any; //({ id: string }) => void;
+      id: string,
+      title: string,
+      composers: Array<string>,
+    },
+  }>,
+  isMember: boolean,
+  isMusicAdmin: boolean,
+  remove: any, //({ id: string }) => void;
 };
 
 export default class MusicList extends React.Component<Props> {

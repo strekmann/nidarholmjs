@@ -1,8 +1,8 @@
 import { RelayProp } from "react-relay";
-import Dialog from "@material-ui/core/Dialog";
 import Divider from "@material-ui/core/Divider";
-import { List, ListItem } from "material-ui/List";
-import Menu from "material-ui/Menu";
+import List from "@material-ui/core/List";
+import ListItem from "@material-ui/core/ListItem";
+import Menu from "@material-ui/core/Menu";
 import MenuItem from "@material-ui/core/MenuItem";
 import * as React from "react";
 import { createFragmentContainer, graphql } from "react-relay";
@@ -14,6 +14,7 @@ import { EventGroupResponsibilityChooser_event as Event } from "./__generated__/
 import { EventGroupResponsibilityChooser_organizationEventGroupResponsibility } from "./__generated__/EventGroupResponsibilityChooser_organizationEventGroupResponsibility.graphql";
 import ChooserItem from "./ChooserItem";
 import RemoveIconButton from "./RemoveIconButton";
+import { ListItemSecondaryAction, ListItemText } from "@material-ui/core";
 
 type Props = {
   event: Event,
@@ -34,7 +35,7 @@ class EventGroupResponsibilityChooser extends React.Component<Props, State> {
     groups: [],
   };
 
-  static getDerivedStateFromProps(props, state) {
+  static getDerivedStateFromProps(props: Props, state: State) {
     if (props.groups !== state.groups) {
       return {
         groups: props.groups,
@@ -113,17 +114,14 @@ class EventGroupResponsibilityChooser extends React.Component<Props, State> {
       contributorGroups.map((contributorGroup) => {
         return contributorGroup.role.id ===
           organizationEventGroupResponsibility.id ? (
-          <ListItem
-            key={contributorGroup.id}
-            disabled
-            rightIconButton={
+          <ListItem key={contributorGroup.id}>
+            <ListItemText primary={contributorGroup.group.name} />
+            <ListItemSecondaryAction>
               <RemoveIconButton
                 item={contributorGroup.id}
                 onRemove={this.onRemoveContributorGroup}
               />
-            }
-          >
-            {contributorGroup.group.name}
+            </ListItemSecondaryAction>
           </ListItem>
         ) : null;
       });
@@ -147,17 +145,13 @@ class EventGroupResponsibilityChooser extends React.Component<Props, State> {
       <div>
         <List>{matchingContributorsList}</List>
         <Divider />
-        <Menu>
+        <List>
           {nextButton}
           <MenuItem onClick={this.toggleChooser}>Legg til …</MenuItem>
+        </List>
+        <Menu open={chooserOpen} onClose={this.toggleChooser}>
+          {chooserItems}
         </Menu>
-        <Dialog
-          title="Velg ansvarlig"
-          open={chooserOpen}
-          onClose={this.toggleChooser}
-        >
-          <Menu>{chooserItems}</Menu>
-        </Dialog>
       </div>
     );
   }

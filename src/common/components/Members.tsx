@@ -98,11 +98,11 @@ class Members extends React.Component<Props, State> {
   };
 
   onChangeUserName = (event: React.ChangeEvent<HTMLInputElement>) => {
-    this.setState({ name });
+    this.setState({ name: event.target.value });
   };
 
-  onCheckMember = (event, member) => {
-    this.setState({ member });
+  onCheckMember = (event: React.ChangeEvent<HTMLInputElement>) => {
+    this.setState({ member: event.target.checked });
   };
 
   muiTheme: {};

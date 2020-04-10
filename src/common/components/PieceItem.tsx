@@ -1,17 +1,18 @@
 import Link from "found/Link";
 import { TableRow, TableRowColumn } from "material-ui/Table";
-import { ListItem } from "material-ui/List";
+import ListItem from "@material-ui/core/ListItem";
+import ListItemText from "@material-ui/core/ListItemText";
 import * as React from "react";
 
 import List from "./List";
 
 type Props = {
-  id: string;
-  title: string;
-  subtitle: string;
-  scoreCount: number;
-  arrangers: Array<string>;
-  composers: Array<string>;
+  id: string,
+  title: string,
+  subtitle: string,
+  scoreCount: number,
+  arrangers: Array<string>,
+  composers: Array<string>,
 };
 
 export default class ProjectItem extends React.Component<Props> {
@@ -33,7 +34,9 @@ export default class ProjectItem extends React.Component<Props> {
         </TableRowColumn>
         <TableRowColumn>
           <Link to={`/music/${id}`}>
-            <ListItem primaryText={title} secondaryText={subtitle} />
+            <ListItem>
+              <ListItemText primary={title} secondary={subtitle} />
+            </ListItem>
           </Link>
         </TableRowColumn>
         <TableRowColumn>

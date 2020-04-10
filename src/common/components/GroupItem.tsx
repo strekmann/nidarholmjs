@@ -1,18 +1,18 @@
 import Link from "found/Link";
-import Divider from "material-ui/Divider";
-import { List } from "material-ui/List";
-import Subheader from "material-ui/Subheader";
+import Divider from "@material-ui/core/Divider";
+import List from "@material-ui/core/List";
+import ListSubheader from "@material-ui/core/ListSubheader";
 import * as React from "react";
 import { createFragmentContainer, graphql } from "react-relay";
 
-import { GroupItem_group } from "./__generated__/GroupItem_group.grahpql";
+import { GroupItem_group } from "./__generated__/GroupItem_group.graphql";
 
 import MemberItem from "./MemberItem";
 
 type Props = {
-  group: GroupItem_group;
-  isAdmin: boolean;
-  isMember: boolean;
+  group: GroupItem_group,
+  isAdmin: boolean,
+  isMember: boolean,
 };
 
 class GroupItem extends React.Component<Props> {
@@ -20,12 +20,16 @@ class GroupItem extends React.Component<Props> {
     const { id, name } = this.props.group;
     if (this.props.isAdmin) {
       return (
-        <Subheader style={{ textTransform: "uppercase" }}>
+        <ListSubheader style={{ textTransform: "uppercase" }}>
           <Link to={`/group/${id}`}>{name}</Link>
-        </Subheader>
+        </ListSubheader>
       );
     }
-    return <Subheader style={{ textTransform: "uppercase" }}>{name}</Subheader>;
+    return (
+      <ListSubheader style={{ textTransform: "uppercase" }}>
+        {name}
+      </ListSubheader>
+    );
   }
 
   render() {

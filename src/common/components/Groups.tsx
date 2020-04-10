@@ -1,8 +1,11 @@
 import Link from "found/Link";
 import Paper from "material-ui/Paper";
-import { List, ListItem } from "material-ui/List";
+import List from "@material-ui/core/List";
+import ListItem from "@material-ui/core/ListItem";
+import ListItemSecondaryAction from "@material-ui/core/ListItemSecondaryAction";
+import ListItemText from "@material-ui/core/ListItemText";
 import getMuiTheme from "material-ui/styles/getMuiTheme";
-import GridOff from "material-ui/svg-icons/image/grid-off";
+import GridOff from "@material-ui/icons/GridOff";
 import PropTypes from "prop-types";
 import * as React from "react";
 import { createFragmentContainer, graphql } from "react-relay";
@@ -11,7 +14,7 @@ import { Groups_organization } from "./__generated__/Groups_organization.graphql
 import theme from "../theme";
 
 type Props = {
-  organization: Groups_organization;
+  organization: Groups_organization,
 };
 
 class Groups extends React.Component<Props> {
@@ -40,19 +43,23 @@ class Groups extends React.Component<Props> {
           <List>
             {groups.map((group) => {
               return (
-                <ListItem
-                  disabled
-                  key={group.id}
-                  rightIcon={group.externallyHidden ? <GridOff /> : null}
-                  primaryText={
-                    <span>
-                      <Link to={`/group/${group.id}`}>{group.name}</Link> (
-                      {group.members.length})
-                    </span>
-                  }
-                  secondaryText={`${group.email ||
-                    ""} ${group.groupLeaderEmail || ""}`}
-                />
+                <ListItem key={group.id}>
+                  <ListItemText
+                    primary={
+                      <span>
+                        <Link to={`/group/${group.id}`}>{group.name}</Link> (
+                        {group.members.length})
+                      </span>
+                    }
+                    secondary={`${group.email || ""} ${group.groupLeaderEmail ||
+                      ""}`}
+                  />
+                  {group.externallyHidden ? (
+                    <ListItemSecondaryAction>
+                      <GridOff />
+                    </ListItemSecondaryAction>
+                  ) : null}
+                </ListItem>
               );
             })}
           </List>

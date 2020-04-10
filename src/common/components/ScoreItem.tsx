@@ -1,18 +1,22 @@
 import IconButton from "@material-ui/core/Button";
-import { ListItem } from "material-ui/List";
-import Download from "material-ui/svg-icons/file/file-download";
-import Close from "material-ui/svg-icons/navigation/close";
-import PropTypes from "prop-types";
+import ListItem from "@material-ui/core/ListItem";
+import ListItemIcon from "@material-ui/core/ListItemIcon";
+import ListItemSecondaryAction from "@material-ui/core/ListItemSecondaryAction";
+import ListItemText from "@material-ui/core/ListItemText";
+import Close from "@material-ui/icons/Close";
+import Download from "@material-ui/icons/PlayForWork";
 import React from "react";
 import { createFragmentContainer, graphql } from "react-relay";
 
-class ScoreItem extends React.Component {
-  static propTypes = {
-    file: PropTypes.object,
-    groupscore: PropTypes.object,
-    removeScore: PropTypes.func,
-  };
+import { ScoreItem_file } from "./__generated__/ScoreItem_file.graphql";
 
+type Props = {
+  file: ScoreItem_file,
+  groupscore: any,
+  removeScore: (file: ScoreItem_file) => void,
+};
+
+class ScoreItem extends React.Component<Props> {
   onDelete = (event) => {
     event.preventDefault();
     this.props.removeScore(this.props.file);
@@ -20,22 +24,23 @@ class ScoreItem extends React.Component {
 
   render() {
     const { file } = this.props;
-    const del = (
-      <IconButton onClick={this.onDelete}>
-        <Close />
-      </IconButton>
-    );
     return (
       <a
         key={`${this.props.groupscore.id}-${file.id}`}
         href={file.path}
         download
       >
-        <ListItem
-          primaryText={file.filename}
-          leftIcon={<Download />}
-          rightIconButton={del}
-        />
+        <ListItem>
+          <ListItemIcon>
+            <Download />
+          </ListItemIcon>
+          <ListItemText primary={file.filename} />
+          <ListItemSecondaryAction>
+            <IconButton onClick={this.onDelete}>
+              <Close />
+            </IconButton>
+          </ListItemSecondaryAction>
+        </ListItem>
       </a>
     );
   }

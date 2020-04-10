@@ -172,10 +172,6 @@ export class Project extends React.Component<Props, State> {
     this.setState({ editProject: false });
   };
 
-  closeAddEvent = () => {
-    this.setState({ addEvent: false });
-  };
-
   openAddFile = () => {
     this.setState({ addFile: true, menuIsOpen: null });
   };
@@ -360,7 +356,7 @@ export class Project extends React.Component<Props, State> {
             style={{
               paddingLeft: desktopGutterLess,
               paddingRight: desktopGutterLess,
-              maxWidth: 664,
+              width: "100%",
             }}
           >
             <PermissionChips

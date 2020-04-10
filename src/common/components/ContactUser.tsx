@@ -6,7 +6,7 @@ import {
   CardMedia,
   CardTitle,
 } from "material-ui/Card";
-import { ListItem } from "material-ui/List";
+import ListItem from "@material-ui/core/ListItem";
 import React from "react";
 import { createFragmentContainer, graphql, RelayProp } from "react-relay";
 
@@ -17,17 +17,17 @@ import Phone from "./Phone";
 import { ContactUser_user } from "./__generated__/ContactUser_user.graphql";
 
 type Props = {
-  relay: RelayProp;
+  relay: RelayProp,
   role: {
-    name: string;
-  };
-  user: ContactUser_user;
+    name: string,
+  },
+  user: ContactUser_user,
 };
 
 type State = {
-  email: string;
-  phone: string;
-  show: boolean;
+  email: string,
+  phone: string,
+  show: boolean,
 };
 
 class ContactUser extends React.Component<Props, State> {

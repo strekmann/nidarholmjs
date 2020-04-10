@@ -1,12 +1,15 @@
 /* eslint "no-nested-ternary": 0 */
 
-import Checkbox from "material-ui/Checkbox";
-import Dialog from "@material-ui/core/Dialog";
 import Button from "@material-ui/core/Button";
+import Checkbox from "@material-ui/core/Checkbox";
+import Chip from "@material-ui/core/Chip";
+import Dialog from "@material-ui/core/Dialog";
+import DialogContent from "@material-ui/core/DialogContent";
+import DialogActions from "@material-ui/core/DialogActions";
+import FormControlLabel from "@material-ui/core/FormControlLabel";
 import TextField from "@material-ui/core/TextField";
 import DatePicker from "material-ui/DatePicker";
 import TimePicker from "material-ui/TimePicker";
-import Chip from "@material-ui/core/Chip";
 import moment from "moment";
 import * as React from "react";
 import { createFragmentContainer, graphql } from "react-relay";
@@ -18,8 +21,6 @@ import { EventForm_organization } from "./__generated__/EventForm_organization.g
 import { EventForm_viewer } from "./__generated__/EventForm_viewer.graphql";
 import PermissionField from "./PermissionField";
 import ProjectField from "./ProjectField";
-import DialogContent from "@material-ui/core/DialogContent";
-import DialogActions from "@material-ui/core/DialogActions";
 
 type Props = {
   title: string,
@@ -64,7 +65,7 @@ type State = {
 
 class EventForm extends React.Component<Props, State> {
   state = {
-    id: this.props.event ? this.props.event.id : null,
+    id: this.props.event ? this.props.event.id : undefined,
     title: this.props.event ? this.props.event.title : "",
     location: this.props.event ? this.props.event.location : "",
     start:
@@ -147,8 +148,8 @@ class EventForm extends React.Component<Props, State> {
     this.setState({ projects });
   };
 
-  onChangeHighlighted = (event, highlighted) => {
-    this.setState({ highlighted });
+  onChangeHighlighted = (event: React.ChangeEvent<HTMLInputElement>) => {
+    this.setState({ highlighted: event.target.checked });
   };
 
   save = () => {
@@ -254,11 +255,18 @@ class EventForm extends React.Component<Props, State> {
             />
           </div>
           <div>
-            <Checkbox
-              label="Konsert eller noe annet spesielt"
-              checked={this.state.highlighted}
-              onCheck={this.onChangeHighlighted}
-            />
+            <FormControlLabel
+              control={
+                <Checkbox
+                  id="member"
+                  name="member"
+                  checked={this.state.highlighted}
+                  onChange={this.onChangeHighlighted}
+                  color="primary"
+                />
+              }
+              label="Konsert eller noe annet publikum bør vite om"
+            ></FormControlLabel>
           </div>
           <div>
             {this.state.tags

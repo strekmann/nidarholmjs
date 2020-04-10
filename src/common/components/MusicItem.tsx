@@ -1,7 +1,11 @@
 import Link from "found/Link";
 import IconButton from "@material-ui/core/Button";
-import { ListItem } from "material-ui/List";
-import CloseIcon from "material-ui/svg-icons/navigation/close";
+import ListItem from "@material-ui/core/ListItem";
+import ListItemIcon from "@material-ui/core/ListItemIcon";
+import ListItemText from "@material-ui/core/ListItemText";
+import ListItemSecondaryAction from "@material-ui/core/ListItemSecondaryAction";
+import CloseIcon from "@material-ui/icons/Close";
+import MusicNote from "@material-ui/icons/MusicNote";
 import * as React from "react";
 
 type Props = {
@@ -23,13 +27,18 @@ export default class MusicItem extends React.Component<Props> {
     const { music } = this.props;
     if (this.props.isMember) {
       return (
-        <ListItem
-          key={music.id}
-          primaryText={music.piece.title}
-          secondaryText={music.piece.composers}
-          containerElement={<Link to={`/music/${music.piece.id}`} />}
-          rightIconButton={
-            this.props.isMusicAdmin ? (
+        <ListItem key={music.id}>
+          <ListItemIcon>
+            <Link to={`/music/${music.piece.id}`}>
+              <MusicNote />
+            </Link>
+          </ListItemIcon>
+          <ListItemText
+            primary={music.piece.title}
+            secondary={music.piece.composers}
+          />
+          {this.props.isMusicAdmin ? (
+            <ListItemSecondaryAction>
               <IconButton
                 onClick={(event) => {
                   event.preventDefault();
@@ -38,17 +47,18 @@ export default class MusicItem extends React.Component<Props> {
               >
                 <CloseIcon />
               </IconButton>
-            ) : null
-          }
-        />
+            </ListItemSecondaryAction>
+          ) : null}
+        </ListItem>
       );
     }
     return (
-      <ListItem
-        disabled
-        primaryText={music.piece.title}
-        secondaryText={music.piece.composers}
-      />
+      <ListItem>
+        <ListItemText
+          primary={music.piece.title}
+          secondary={music.piece.composers}
+        />
+      </ListItem>
     );
   }
 }

@@ -1,6 +1,6 @@
 /* global FormData */
 
-import { List } from "material-ui/List";
+import List from "@material-ui/core/List";
 import axios from "axios";
 import * as React from "react";
 import Dropzone from "react-dropzone";
@@ -12,21 +12,21 @@ import RemoveScoreMutation from "../mutations/RemoveScore";
 import ScoreItem from "./ScoreItem";
 
 type Props = {
-  name: string;
+  name: string,
   groupscore: {
-    name: string;
+    name: string,
     files: {
       edges: Array<{
         node: {
-          id: string;
-        };
-      }>;
-    };
-  };
+          id: string,
+        },
+      }>,
+    },
+  },
   piece: {
-    id: string;
-  };
-  relay: RelayProp;
+    id: string,
+  },
+  relay: RelayProp,
 };
 
 class GroupscoreUpload extends React.Component<Props> {
@@ -41,19 +41,28 @@ class GroupscoreUpload extends React.Component<Props> {
       data.append("file", file);
 
       axios.post("/upload", data).then((response) => {
-        AddScoreMutation.commit(relay.environment, {
-          hex: response.data.hex,
-          filename: file.name,
-          groupscore,
-          piece: this.props.piece,
-        });
+        AddScoreMutation.commit(
+          relay.environment,
+          {
+            hex: response.data.hex,
+            filename: file.name,
+            groupscore,
+            piece: this.props.piece,
+          },
+          undefined,
+        );
       });
     });
   };
 
   removeScore = (file) => {
     const { relay } = this.props;
-    RemoveScoreMutation.commit(relay.environment, file.id, this.props.piece.id);
+    RemoveScoreMutation.commit(
+      relay.environment,
+      file.id,
+      this.props.piece.id,
+      undefined,
+    );
   };
 
   render() {
