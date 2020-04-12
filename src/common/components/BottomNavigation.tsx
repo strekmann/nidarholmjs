@@ -1,11 +1,9 @@
-import {
-  BottomNavigation,
-  BottomNavigationItem,
-} from "material-ui/BottomNavigation";
-import Paper from "material-ui/Paper";
-import ActionDateRange from "material-ui/svg-icons/action/date-range";
-import NotificationEventNote from "material-ui/svg-icons/notification/event-note";
-import SocialGroupIcon from "material-ui/svg-icons/social/group";
+import BottomNavigation from "@material-ui/core/BottomNavigation";
+import BottomNavigationAction from "@material-ui/core/BottomNavigationAction";
+import Paper from "@material-ui/core/Paper";
+import ActionDateRange from "@material-ui/icons/DateRange";
+import NotificationEventNote from "@material-ui/icons/EventNote";
+import SocialGroupIcon from "@material-ui/icons/Group";
 import { indigo50 } from "material-ui/styles/colors";
 import getMuiTheme from "material-ui/styles/getMuiTheme";
 import PropTypes from "prop-types";
@@ -18,7 +16,7 @@ import theme from "../theme";
 import { BottomNavigation_organization } from "./__generated__/BottomNavigation_organization.graphql";
 
 type Props = {
-  organization: BottomNavigation_organization;
+  organization: BottomNavigation_organization,
 };
 
 class Navigation extends React.Component<Props> {
@@ -48,22 +46,25 @@ class Navigation extends React.Component<Props> {
               backgroundColor: indigo50,
             }}
           >
-            <BottomNavigationItem
+            <BottomNavigationAction
               label="Prosjekter"
               icon={<NotificationEventNote />}
-              containerElement={<Link to="/projects" />}
+              component={Link}
+              to="/projects"
               style={{ textAlign: "center" }}
             />
-            <BottomNavigationItem
+            <BottomNavigationAction
               label="Aktiviteter"
               icon={<ActionDateRange />}
-              containerElement={<Link to="/events" />}
+              component={Link}
+              to="/events"
               style={{ textAlign: "center" }}
             />
-            <BottomNavigationItem
+            <BottomNavigationAction
               label="Medlemmer"
               icon={<SocialGroupIcon />}
-              containerElement={<Link to="/members" />}
+              component={Link}
+              to="/members"
               style={{ textAlign: "center" }}
             />
           </BottomNavigation>

@@ -4,7 +4,7 @@ import * as React from "react";
 import { createFragmentContainer, graphql, RelayProp } from "react-relay";
 import getMuiTheme from "material-ui/styles/getMuiTheme";
 import Button from "@material-ui/core/Button";
-import Paper from "material-ui/Paper";
+import Paper from "@material-ui/core/Paper";
 import PropTypes from "prop-types";
 import Link from "found/Link";
 

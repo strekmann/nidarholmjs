@@ -1,16 +1,18 @@
+import FormControlLabel from "@material-ui/core/FormControlLabel";
 import IconButton from "@material-ui/core/IconButton";
 import Menu from "@material-ui/core/Menu";
 import List from "@material-ui/core/List";
 import ListItem from "@material-ui/core/ListItem";
 import MenuItem from "@material-ui/core/MenuItem";
-import Paper from "material-ui/Paper";
-import Toggle from "material-ui/Toggle";
-import { Toolbar, ToolbarGroup } from "material-ui/Toolbar";
+import Paper from "@material-ui/core/Paper";
+import Switch from "@material-ui/core/Switch";
+import Toolbar from "@material-ui/core/Toolbar";
+import Typography from "@material-ui/core/Typography";
 import getMuiTheme from "material-ui/styles/getMuiTheme";
 import MoreVertIcon from "@material-ui/icons/MoreVert";
 import PropTypes from "prop-types";
 import * as React from "react";
-import { createFragmentContainer, graphql } from "react-relay";
+import { createFragmentContainer, graphql, RelayProp } from "react-relay";
 
 import theme from "../theme";
 import UpdatePieceMutation from "../mutations/UpdatePiece";
@@ -25,9 +27,7 @@ import { Piece_viewer } from "./__generated__/Piece_viewer.graphql";
 type Props = {
   organization: Piece_organization,
   viewer: Piece_viewer,
-  relay: {
-    environment: {},
-  },
+  relay: RelayProp,
   router: any /* {
     push: ({
       pathname?: string,
@@ -119,28 +119,26 @@ class Piece extends React.Component<Props, State> {
             />
           ) : null}
           <Toolbar style={{ backgroundColor: theme.palette.fullWhite }}>
-            <ToolbarGroup lastChild>
-              <IconButton onClick={this.onMenuOpen}>
-                <MoreVertIcon />
-              </IconButton>
-              <Menu
-                anchorEl={this.state.menuIsOpen}
-                onClose={this.onMenuClose}
-                open={Boolean(this.state.menuIsOpen)}
-                anchorOrigin={{ vertical: "top", horizontal: "right" }}
-                transformOrigin={{ vertical: "top", horizontal: "right" }}
-              >
-                {isMusicAdmin ? (
-                  <MenuItem
-                    onClick={() => {
-                      this.setState({ editPiece: !this.state.editPiece });
-                    }}
-                  >
-                    Rediger info om stykke
-                  </MenuItem>
-                ) : null}
-              </Menu>
-            </ToolbarGroup>
+            <IconButton onClick={this.onMenuOpen}>
+              <MoreVertIcon />
+            </IconButton>
+            <Menu
+              anchorEl={this.state.menuIsOpen}
+              onClose={this.onMenuClose}
+              open={Boolean(this.state.menuIsOpen)}
+              anchorOrigin={{ vertical: "top", horizontal: "right" }}
+              transformOrigin={{ vertical: "top", horizontal: "right" }}
+            >
+              {isMusicAdmin ? (
+                <MenuItem
+                  onClick={() => {
+                    this.setState({ editPiece: !this.state.editPiece });
+                  }}
+                >
+                  Rediger info om stykke
+                </MenuItem>
+              ) : null}
+            </Menu>
           </Toolbar>
         </div>
         <h2>
@@ -160,38 +158,48 @@ class Piece extends React.Component<Props, State> {
         </List>
         {piece.groupscores ? (
           <div>
-            <h3>Alle stemmer</h3>
-            {viewer.isMusicAdmin ? (
-              <Toggle
-                label="Admin"
-                toggled={showAdmin}
-                onToggle={this.handleToggle}
-              />
-            ) : null}
-            {isMusicAdmin && showAdmin ? (
-              <div>
-                {piece.groupscores.map((groupscore) => {
-                  return (
-                    <GroupscoreUpload
-                      key={groupscore.id}
-                      groupscore={groupscore}
-                      piece={piece}
+            <div style={{ display: "flex", justifyContent: "space-between" }}>
+              <h3>Alle stemmer</h3>
+              {viewer.isMusicAdmin ? (
+                <FormControlLabel
+                  control={
+                    <Switch
+                      checked={showAdmin}
+                      onChange={this.handleToggle}
+                      name="toggle"
                     />
-                  );
-                })}
-              </div>
-            ) : (
-              <div>
-                {piece.groupscores.map((groupscore) => {
-                  return (
-                    <GroupscoreList
-                      groupscore={groupscore}
-                      key={groupscore.id}
-                    />
-                  );
-                })}
-              </div>
-            )}
+                  }
+                  label="Admin"
+                />
+              ) : null}
+            </div>
+
+            <div>
+              {isMusicAdmin && showAdmin ? (
+                <div>
+                  {piece.groupscores.map((groupscore) => {
+                    return (
+                      <GroupscoreUpload
+                        key={groupscore.id}
+                        groupscore={groupscore}
+                        piece={piece}
+                      />
+                    );
+                  })}
+                </div>
+              ) : (
+                <div>
+                  {piece.groupscores.map((groupscore) => {
+                    return (
+                      <GroupscoreList
+                        groupscore={groupscore}
+                        key={groupscore.id}
+                      />
+                    );
+                  })}
+                </div>
+              )}
+            </div>
           </div>
         ) : null}
       </Paper>

@@ -4,7 +4,7 @@ import Button from "@material-ui/core/Button";
 import IconButton from "@material-ui/core/IconButton";
 import Menu from "@material-ui/core/Menu";
 import MenuItem from "@material-ui/core/MenuItem";
-import { Toolbar, ToolbarGroup } from "material-ui/Toolbar";
+import Toolbar from "@material-ui/core/Toolbar";
 import getMuiTheme from "material-ui/styles/getMuiTheme";
 import ActionHelp from "material-ui/svg-icons/action/help";
 import MoreVertIcon from "material-ui/svg-icons/navigation/more-vert";
@@ -72,7 +72,7 @@ class Events extends React.Component<Props, State> {
         <div style={{ display: "flex", justifyContent: "space-between" }}>
           <h1>Aktiviteter</h1>
           <Toolbar style={{ backgroundColor: theme.palette.fullWhite }}>
-            <ToolbarGroup lastChild>
+            <div>
               <Button
                 variant="text"
                 href={`webcal://${organization.webdomain}/events/public.ics`}
@@ -101,7 +101,7 @@ class Events extends React.Component<Props, State> {
                   </Menu>
                 </div>
               ) : null}
-            </ToolbarGroup>
+            </div>
           </Toolbar>
         </div>
         <div>

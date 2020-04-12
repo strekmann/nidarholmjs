@@ -1,4 +1,4 @@
-import Paper from "material-ui/Paper";
+import Paper from "@material-ui/core/Paper";
 import moment from "moment";
 import React from "react";
 import { createFragmentContainer, graphql } from "react-relay";
@@ -30,8 +30,8 @@ const renderPublicEvents = (edges) => {
 };
 
 type Props = {
-  project: ProjectItem_project;
-  showText: boolean;
+  project: ProjectItem_project,
+  showText: boolean,
 };
 
 class ProjectItem extends React.Component<Props> {

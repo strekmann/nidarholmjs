@@ -1,6 +1,6 @@
 import update from "immutability-helper";
 import List from "@material-ui/core/List";
-import Paper from "material-ui/Paper";
+import Paper from "@material-ui/core/Paper";
 import Button from "@material-ui/core/Button";
 import { Tab, Tabs } from "material-ui/Tabs";
 import TextField from "@material-ui/core/TextField";

@@ -1,10 +1,10 @@
 import IconButton from "@material-ui/core/IconButton";
 import Menu from "@material-ui/core/Menu";
 import MenuItem from "@material-ui/core/MenuItem";
-import Paper from "material-ui/Paper";
+import Paper from "@material-ui/core/Paper";
 import Button from "@material-ui/core/Button";
-import MoreVertIcon from "material-ui/svg-icons/navigation/more-vert";
-import TextField from "material-ui/TextField";
+import MoreVertIcon from "@material-ui/icons/MoreVert";
+import TextField from "@material-ui/core/TextField";
 import * as React from "react";
 import { createFragmentContainer, graphql, RelayProp } from "react-relay";
 import EditContactInfoMutation from "../mutations/EditContactInfo";
@@ -57,44 +57,44 @@ class Contact extends React.Component<Props, State> {
     this.setState({ menuIsOpen: null });
   };
 
-  onChangeVisitorLocation = (event, visitorLocation) => {
-    this.setState({ visitorLocation });
+  onChangeVisitorLocation = (event: React.ChangeEvent<HTMLInputElement>) => {
+    this.setState({ visitorLocation: event.target.value });
   };
 
-  onChangeVisitorAddress = (event, visitorAddress) => {
-    this.setState({ visitorAddress });
+  onChangeVisitorAddress = (event: React.ChangeEvent<HTMLInputElement>) => {
+    this.setState({ visitorAddress: event.target.value });
   };
 
-  onChangeMailAddress = (event, mailAddress) => {
-    this.setState({ mailAddress });
+  onChangeMailAddress = (event: React.ChangeEvent<HTMLInputElement>) => {
+    this.setState({ mailAddress: event.target.value });
   };
 
-  onChangePostcode = (event, postcode) => {
-    this.setState({ postcode });
+  onChangePostcode = (event: React.ChangeEvent<HTMLInputElement>) => {
+    this.setState({ postcode: event.target.value });
   };
 
-  onChangeCity = (event, city) => {
-    this.setState({ city });
+  onChangeCity = (event: React.ChangeEvent<HTMLInputElement>) => {
+    this.setState({ city: event.target.value });
   };
 
-  onChangeOrganizationNumber = (event, organizationNumber) => {
-    this.setState({ organizationNumber });
+  onChangeOrganizationNumber = (event: React.ChangeEvent<HTMLInputElement>) => {
+    this.setState({ organizationNumber: event.target.value });
   };
 
-  onChangePublicBankAccount = (event, publicBankAccount) => {
-    this.setState({ publicBankAccount });
+  onChangePublicBankAccount = (event: React.ChangeEvent<HTMLInputElement>) => {
+    this.setState({ publicBankAccount: event.target.value });
   };
 
-  onChangeContactText = (event, contactText) => {
-    this.setState({ contactText });
+  onChangeContactText = (event: React.ChangeEvent<HTMLInputElement>) => {
+    this.setState({ contactText: event.target.value });
   };
 
-  onChangeMapText = (event, mapText) => {
-    this.setState({ mapText });
+  onChangeMapText = (event: React.ChangeEvent<HTMLInputElement>) => {
+    this.setState({ mapText: event.target.value });
   };
 
-  onChangeMapUrl = (event, mapUrl) => {
-    this.setState({ mapUrl });
+  onChangeMapUrl = (event: React.ChangeEvent<HTMLInputElement>) => {
+    this.setState({ mapUrl: event.target.value });
   };
 
   saveContactInfo = (event) => {
@@ -250,7 +250,7 @@ class Contact extends React.Component<Props, State> {
           <div>
             <TextField
               id="visitorLocation"
-              floatingLabelText="Besøkssted"
+              label="Besøkssted"
               onChange={this.onChangeVisitorLocation}
               value={this.state.visitorLocation}
             />
@@ -258,7 +258,7 @@ class Contact extends React.Component<Props, State> {
           <div>
             <TextField
               id="visitorAddress"
-              floatingLabelText="Besøksadresse"
+              label="Besøksadresse"
               onChange={this.onChangeVisitorAddress}
               value={this.state.visitorAddress}
             />
@@ -266,7 +266,7 @@ class Contact extends React.Component<Props, State> {
           <div>
             <TextField
               id="mailAddress"
-              floatingLabelText="Postadresse"
+              label="Postadresse"
               onChange={this.onChangeMailAddress}
               value={this.state.mailAddress}
             />
@@ -274,7 +274,7 @@ class Contact extends React.Component<Props, State> {
           <div>
             <TextField
               id="postcode"
-              floatingLabelText="Postnummer"
+              label="Postnummer"
               onChange={this.onChangePostcode}
               value={this.state.postcode}
             />
@@ -282,7 +282,7 @@ class Contact extends React.Component<Props, State> {
           <div>
             <TextField
               id="city"
-              floatingLabelText="Poststed"
+              label="Poststed"
               onChange={this.onChangeCity}
               value={this.state.city}
             />
@@ -290,7 +290,7 @@ class Contact extends React.Component<Props, State> {
           <div>
             <TextField
               id="organizationNumber"
-              floatingLabelText="Organisasjonsnummer"
+              label="Organisasjonsnummer"
               onChange={this.onChangeOrganizationNumber}
               value={this.state.organizationNumber}
             />
@@ -298,7 +298,7 @@ class Contact extends React.Component<Props, State> {
           <div>
             <TextField
               id="publicBankAccount"
-              floatingLabelText="Kontonummer"
+              label="Kontonummer"
               onChange={this.onChangePublicBankAccount}
               value={this.state.publicBankAccount}
             />
@@ -306,27 +306,27 @@ class Contact extends React.Component<Props, State> {
           <div>
             <TextField
               id="contactText"
-              floatingLabelText="Introtekst på kontaktside"
+              label="Introtekst på kontaktside"
               onChange={this.onChangeContactText}
               value={this.state.contactText}
               fullWidth
-              multiLine
+              multiline
             />
           </div>
           <div>
             <TextField
               id="mapText"
-              floatingLabelText="Karttekst"
+              label="Karttekst"
               onChange={this.onChangeMapText}
               value={this.state.mapText}
               fullWidth
-              multiLine
+              multiline
             />
           </div>
           <div>
             <TextField
               id="mapUrl"
-              floatingLabelText="URL til kart"
+              label="URL til kart"
               onChange={this.onChangeMapUrl}
               value={this.state.mapUrl}
               fullWidth

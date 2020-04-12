@@ -1,4 +1,4 @@
-import Paper from "material-ui/Paper";
+import Paper from "@material-ui/core/Paper";
 import Button from "@material-ui/core/Button";
 import TextField from "material-ui/TextField";
 import getMuiTheme from "material-ui/styles/getMuiTheme";

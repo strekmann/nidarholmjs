@@ -10,12 +10,12 @@ import Button from "@material-ui/core/Button";
 import ListItemSecondaryAction from "@material-ui/core/ListItemSecondaryAction";
 import List from "@material-ui/core/List";
 import ListItem from "@material-ui/core/ListItem";
-import { Toolbar, ToolbarGroup } from "material-ui/Toolbar";
+import Toolbar from "@material-ui/core/Toolbar";
 import getMuiTheme from "material-ui/styles/getMuiTheme";
 import Menu from "@material-ui/core/Menu";
 import MenuItem from "@material-ui/core/MenuItem";
 import IconButton from "@material-ui/core/IconButton";
-import Paper from "material-ui/Paper";
+import Paper from "@material-ui/core/Paper";
 import TextField from "@material-ui/core/TextField";
 import MoreVertIcon from "@material-ui/icons/MoreVert";
 import { lightBlue100 } from "material-ui/styles/colors";
@@ -561,7 +561,7 @@ class Member extends React.Component<Props, State> {
             </Dialog>
           ) : null}
           <Toolbar style={{ backgroundColor: theme.palette.fullWhite }}>
-            <ToolbarGroup lastChild>
+            <div>
               {this.props.viewer.id === user.id ? (
                 <Button variant="text" href="/logout">
                   Logg ut
@@ -610,7 +610,7 @@ class Member extends React.Component<Props, State> {
                   </MenuItem>
                 ) : null}
               </Menu>
-            </ToolbarGroup>
+            </div>
           </Toolbar>
         </div>
         <div

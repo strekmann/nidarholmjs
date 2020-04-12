@@ -10,7 +10,8 @@ import Dialog from "@material-ui/core/Dialog";
 import DialogActions from "@material-ui/core/DialogActions";
 import DialogContent from "@material-ui/core/DialogContent";
 import DialogTitle from "@material-ui/core/DialogTitle";
-import { Toolbar, ToolbarGroup, ToolbarTitle } from "material-ui/Toolbar";
+import Toolbar from "@material-ui/core/Toolbar";
+import Typography from "@material-ui/core/Typography";
 import PropTypes from "prop-types";
 import * as React from "react";
 
@@ -184,13 +185,10 @@ class Files extends React.Component<Props, State> {
         <div className="row">
           {isMember ? (
             <Toolbar style={{ height: 106, backgroundColor: "none" }}>
-              <ToolbarGroup firstChild>
-                <ToolbarTitle
-                  text="Filer"
-                  style={{ color: theme.palette.textColor }}
-                />
-              </ToolbarGroup>
-              <ToolbarGroup lastChild>
+              <div>
+                <Typography variant="h1">Filer</Typography>
+              </div>
+              <div>
                 <TagField
                   autoFocus
                   fileTags={this.state.tags}
@@ -217,7 +215,7 @@ class Files extends React.Component<Props, State> {
                     </Button>
                   </DialogActions>
                 </Dialog>
-              </ToolbarGroup>
+              </div>
             </Toolbar>
           ) : null}
           {isMember ? null : <h1>Filer</h1>}

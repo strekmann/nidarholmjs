@@ -1,5 +1,5 @@
 import Button from "@material-ui/core/Button";
-import TextField from "material-ui/TextField";
+import TextField from "@material-ui/core/TextField";
 import * as React from "react";
 
 type Props = {
@@ -17,13 +17,13 @@ export default class PieceSearch extends React.Component<Props, State> {
     term: this.props.term,
   };
 
-  onSearchChange = (event: SyntheticEvent<HTMLButtonElement>, term: string) => {
+  onSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     this.setState({
-      term,
+      term: event.target.value,
     });
   };
 
-  onSearch = (event: SyntheticEvent<HTMLButtonElement>) => {
+  onSearch = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     this.props.onSearch(this.state.term);
   };
@@ -33,7 +33,7 @@ export default class PieceSearch extends React.Component<Props, State> {
       <form onSubmit={this.onSearch}>
         <TextField
           id="term"
-          floatingLabelText="Tittel, komponist eller arrangør"
+          label="Tittel, komponist eller arrangør"
           value={this.state.term}
           onChange={this.onSearchChange}
         />

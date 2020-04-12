@@ -2,16 +2,14 @@ import { RelayRefetchProp } from "react-relay";
 import IconButton from "@material-ui/core/IconButton";
 import Menu from "@material-ui/core/Menu";
 import MenuItem from "@material-ui/core/MenuItem";
-import Paper from "material-ui/Paper";
+import Paper from "@material-ui/core/Paper";
 import Button from "@material-ui/core/Button";
-import {
-  Table,
-  TableHeader,
-  TableBody,
-  TableRow,
-  TableHeaderColumn,
-} from "material-ui/Table";
-import { Toolbar, ToolbarGroup } from "material-ui/Toolbar";
+import Table from "@material-ui/core/Table";
+import TableBody from "@material-ui/core/TableBody";
+import TableHead from "@material-ui/core/TableHead";
+import TableRow from "@material-ui/core/TableRow";
+import TableCell from "@material-ui/core/TableCell";
+import Toolbar from "@material-ui/core/Toolbar";
 import getMuiTheme from "material-ui/styles/getMuiTheme";
 import MoreVertIcon from "material-ui/svg-icons/navigation/more-vert";
 import PropTypes from "prop-types";
@@ -184,7 +182,7 @@ class Pieces extends React.Component<Props, State> {
             />
           ) : null}
           <Toolbar style={{ backgroundColor: theme.palette.fullWhite }}>
-            <ToolbarGroup lastChild>
+            <div>
               <IconButton onClick={this.onMenuOpen}>
                 <MoreVertIcon />
               </IconButton>
@@ -208,7 +206,7 @@ class Pieces extends React.Component<Props, State> {
                   Last ned regneark
                 </MenuItem>
               </Menu>
-            </ToolbarGroup>
+            </div>
           </Toolbar>
         </div>
         <PieceSearch
@@ -218,13 +216,13 @@ class Pieces extends React.Component<Props, State> {
           key={this.state.term}
         />
         <Table>
-          <TableHeader displaySelectAll={false} adjustForCheckbox={false}>
+          <TableHead>
             <TableRow>
-              <TableHeaderColumn>Digitale stemmer</TableHeaderColumn>
-              <TableHeaderColumn>Tittel</TableHeaderColumn>
-              <TableHeaderColumn>Komponist (Arrangør)</TableHeaderColumn>
+              <TableCell>Digitale stemmer</TableCell>
+              <TableCell>Tittel</TableCell>
+              <TableCell>Komponist (Arrangør)</TableCell>
             </TableRow>
-          </TableHeader>
+          </TableHead>
           <TableBody>
             {pieces.edges.map((edge) => {
               return <PieceItem key={edge.node.id} {...edge.node} />;

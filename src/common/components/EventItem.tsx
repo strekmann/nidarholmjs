@@ -1,7 +1,7 @@
 import { createFragmentContainer, graphql } from "react-relay";
 import Link from "found/Link";
 import IconButton from "@material-ui/core/Button";
-import Paper from "material-ui/Paper";
+import Paper from "@material-ui/core/Paper";
 import ExpandLess from "material-ui/svg-icons/navigation/expand-less";
 import ExpandMore from "material-ui/svg-icons/navigation/expand-more";
 import moment from "moment";

@@ -1,5 +1,6 @@
 import Link from "found/Link";
-import { TableRow, TableRowColumn } from "material-ui/Table";
+import TableRow from "@material-ui/core/TableRow";
+import TableCell from "@material-ui/core/TableCell";
 import ListItem from "@material-ui/core/ListItem";
 import ListItemText from "@material-ui/core/ListItemText";
 import * as React from "react";
@@ -27,24 +28,22 @@ export default class ProjectItem extends React.Component<Props> {
     } = this.props;
     return (
       <TableRow>
-        <TableRowColumn
-          style={{ width: "10%", minWidth: 50, overflow: "visible" }}
-        >
+        <TableCell style={{ width: "10%", minWidth: 50, overflow: "visible" }}>
           {scoreCount}
-        </TableRowColumn>
-        <TableRowColumn>
+        </TableCell>
+        <TableCell>
           <Link to={`/music/${id}`}>
             <ListItem>
               <ListItemText primary={title} secondary={subtitle} />
             </ListItem>
           </Link>
-        </TableRowColumn>
-        <TableRowColumn>
+        </TableCell>
+        <TableCell>
           <List items={composers} />{" "}
           <small>
             <List items={arrangers} />
           </small>
-        </TableRowColumn>
+        </TableCell>
       </TableRow>
     );
   }

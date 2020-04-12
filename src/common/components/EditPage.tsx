@@ -1,9 +1,7 @@
-/* eslint "max-len": 0 */
-
 import React from "react";
-import Paper from "material-ui/Paper";
+import Paper from "@material-ui/core/Paper";
 import Button from "@material-ui/core/Button";
-import TextField from "material-ui/TextField";
+import TextField from "@material-ui/core/TextField";
 
 import theme from "../theme";
 import { PermissionArray, Viewer } from "../types";
@@ -45,20 +43,20 @@ export default class EditPage extends React.Component<Props, State> {
     permissions: this.props.permissions,
   };
 
-  onChangeSlug = (event: void, slug: string) => {
-    this.setState({ slug });
+  onChangeSlug = (event: React.ChangeEvent<HTMLInputElement>) => {
+    this.setState({ slug: event.target.value });
   };
 
-  onChangeTitle = (event: void, title: string) => {
-    this.setState({ title });
+  onChangeTitle = (event: React.ChangeEvent<HTMLInputElement>) => {
+    this.setState({ title: event.target.value });
   };
 
-  onChangeSummary = (event: void, summary: string) => {
-    this.setState({ summary });
+  onChangeSummary = (event: React.ChangeEvent<HTMLInputElement>) => {
+    this.setState({ summary: event.target.value });
   };
 
-  onChangeContent = (event: void, mdtext: string) => {
-    this.setState({ mdtext });
+  onChangeContent = (event: React.ChangeEvent<HTMLInputElement>) => {
+    this.setState({ mdtext: event.target.value });
   };
 
   onPermissionChange = (
@@ -92,8 +90,8 @@ export default class EditPage extends React.Component<Props, State> {
             <TextField
               id="mdtext"
               value={this.state.mdtext}
-              floatingLabelText="Sideinnhold"
-              multiLine
+              label="Sideinnhold"
+              multiline
               fullWidth
               onChange={this.onChangeContent}
               style={{ width: "100%" }}
@@ -108,14 +106,14 @@ export default class EditPage extends React.Component<Props, State> {
             <TextField
               id="title"
               value={this.state.title}
-              floatingLabelText="Tittel"
+              label="Tittel"
               onChange={this.onChangeTitle}
             />
             <TextField
               id="summary"
               value={this.state.summary}
-              floatingLabelText="Introduksjon"
-              multiLine
+              label="Introduksjon"
+              multiline
               fullWidth
               onChange={this.onChangeSummary}
             />
@@ -124,9 +122,9 @@ export default class EditPage extends React.Component<Props, State> {
             <TextField
               id="slug"
               value={this.state.slug}
-              floatingLabelText="Identifikator"
+              label="Identifikator"
               onChange={this.onChangeSlug}
-              hintText="Bør sjelden endres, da den endrer adressen til sida."
+              helperText="Bør sjelden endres, da den endrer adressen til sida."
               required
             />
             <PermissionField

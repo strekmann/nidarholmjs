@@ -1,6 +1,6 @@
-import Paper from "material-ui/Paper";
+import Paper from "@material-ui/core/Paper";
 import Button from "@material-ui/core/Button";
-import TextField from "material-ui/TextField";
+import TextField from "@material-ui/core/TextField";
 import getMuiTheme from "material-ui/styles/getMuiTheme";
 import PropTypes from "prop-types";
 import * as React from "react";
@@ -43,12 +43,12 @@ class MemberReset extends React.Component<Props, State> {
     return { muiTheme: this.muiTheme };
   }
 
-  onChangeOldPassword = (event, oldPassword) => {
-    this.setState({ oldPassword });
+  onChangeOldPassword = (event: React.ChangeEvent<HTMLInputElement>) => {
+    this.setState({ oldPassword: event.target.value });
   };
 
-  onChangeNewPassword = (event, newPassword) => {
-    this.setState({ newPassword });
+  onChangeNewPassword = (event: React.ChangeEvent<HTMLInputElement>) => {
+    this.setState({ newPassword: event.target.value });
   };
 
   setPassword = (event) => {
@@ -79,7 +79,7 @@ class MemberReset extends React.Component<Props, State> {
           </p>
           <div>
             <TextField
-              floatingLabelText="Gammelt passord"
+              label="Gammelt passord"
               onChange={this.onChangeOldPassword}
               type="password"
               value={this.state.oldPassword}
@@ -87,7 +87,7 @@ class MemberReset extends React.Component<Props, State> {
           </div>
           <div>
             <TextField
-              floatingLabelText="Nytt passord"
+              label="Nytt passord"
               onChange={this.onChangeNewPassword}
               type="password"
               value={this.state.newPassword}

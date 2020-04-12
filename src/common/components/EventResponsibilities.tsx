@@ -1,11 +1,8 @@
-import {
-  Table,
-  TableBody,
-  TableHeader,
-  TableHeaderColumn,
-  TableRow,
-  TableRowColumn,
-} from "material-ui/Table";
+import Table from "@material-ui/core/Table";
+import TableBody from "@material-ui/core/TableBody";
+import TableHead from "@material-ui/core/TableHead";
+import TableRow from "@material-ui/core/TableRow";
+import TableCell from "@material-ui/core/TableCell";
 import getMuiTheme from "material-ui/styles/getMuiTheme";
 import * as React from "react";
 import { createFragmentContainer, graphql } from "react-relay";
@@ -19,12 +16,12 @@ import Daterange from "./Daterange";
 import { EventResponsibilities_organization } from "./__generated__/EventResponsibilities_organization.graphql";
 
 type Props = {
-  organization: EventResponsibilities_organization;
+  organization: EventResponsibilities_organization,
 };
 
 type State = {
-  instrumentGroups: Array<{ id: string; name: string }>;
-  users: Array<{ id: string; name: string }>;
+  instrumentGroups: Array<{ id: string, name: string }>,
+  users: Array<{ id: string, name: string }>,
 };
 
 class EventResponsibilities extends React.Component<Props, State> {
@@ -138,41 +135,41 @@ class EventResponsibilities extends React.Component<Props, State> {
     const { users } = this.state;
     return (
       <Table>
-        <TableHeader displaySelectAll={false} adjustForCheckbox={false}>
+        <TableHead>
           <TableRow>
-            <TableHeaderColumn />
+            <TableCell />
             {organizationEventPersonResponsibilities.map((responsibility) => {
               return (
-                <TableHeaderColumn key={responsibility.id}>
+                <TableCell key={responsibility.id}>
                   {responsibility.name}
-                </TableHeaderColumn>
+                </TableCell>
               );
             })}
             {organizationEventGroupResponsibilities.map((responsibility) => {
               return (
-                <TableHeaderColumn key={responsibility.id}>
+                <TableCell key={responsibility.id}>
                   {responsibility.name}
-                </TableHeaderColumn>
+                </TableCell>
               );
             })}
           </TableRow>
-        </TableHeader>
-        <TableBody displayRowCheckbox={false}>
+        </TableHead>
+        <TableBody>
           {events.edges.map((edge) => {
             return (
-              <TableRow key={edge.node.id} selectable={false}>
-                <TableRowColumn style={{ verticalAlign: "top" }}>
+              <TableRow key={edge.node.id}>
+                <TableCell style={{ verticalAlign: "top" }}>
                   <h2>{edge.node.title}</h2>
                   <div className="meta">
                     <Daterange start={edge.node.start} end={edge.node.end} />{" "}
                     {edge.node.location}
                   </div>
                   <div>{edge.node.text}</div>
-                </TableRowColumn>
+                </TableCell>
                 {organizationEventPersonResponsibilities.map(
                   (responsibility) => {
                     return (
-                      <TableRowColumn
+                      <TableCell
                         style={{ verticalAlign: "top" }}
                         key={`${edge.node.id}-${responsibility.id}`}
                       >
@@ -182,14 +179,14 @@ class EventResponsibilities extends React.Component<Props, State> {
                           event={edge.node}
                           selectUser={this.setUserOrder}
                         />
-                      </TableRowColumn>
+                      </TableCell>
                     );
                   },
                 )}
                 {organizationEventGroupResponsibilities.map(
                   (responsibility) => {
                     return (
-                      <TableRowColumn
+                      <TableCell
                         style={{ verticalAlign: "top" }}
                         key={`${edge.node.id}-${responsibility.id}`}
                       >
@@ -199,7 +196,7 @@ class EventResponsibilities extends React.Component<Props, State> {
                           event={edge.node}
                           selectGroup={this.setGroupOrder}
                         />
-                      </TableRowColumn>
+                      </TableCell>
                     );
                   },
                 )}

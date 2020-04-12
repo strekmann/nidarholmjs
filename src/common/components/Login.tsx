@@ -3,7 +3,7 @@
 import Link from "found/Link";
 import { Card, CardTitle, CardText, CardActions } from "material-ui/Card";
 import Button from "@material-ui/core/Button";
-import TextField from "material-ui/TextField";
+import TextField from "@material-ui/core/TextField";
 import getMuiTheme from "material-ui/styles/getMuiTheme";
 import PropTypes from "prop-types";
 import * as React from "react";
@@ -62,17 +62,10 @@ class Login extends React.Component<Props> {
                 ut fra din side.
               </p>
               <div>
-                <TextField
-                  name="email"
-                  floatingLabelText="E-post eller brukernavn"
-                />
+                <TextField name="email" label="E-post eller brukernavn" />
               </div>
               <div>
-                <TextField
-                  type="password"
-                  name="password"
-                  floatingLabelText="Passord"
-                />
+                <TextField type="password" name="password" label="Passord" />
               </div>
             </CardText>
             <CardActions>
@@ -111,20 +104,13 @@ class Login extends React.Component<Props> {
                 kan sette nytt passord.
               </p>
               <div>
-                <TextField name="name" floatingLabelText="Fullt navn" />
+                <TextField name="name" label="Fullt navn" />
               </div>
               <div>
-                <TextField
-                  name="email"
-                  floatingLabelText="E-post eller brukernavn"
-                />
+                <TextField name="email" label="E-post eller brukernavn" />
               </div>
               <div>
-                <TextField
-                  type="password"
-                  name="password"
-                  floatingLabelText="Passord"
-                />
+                <TextField type="password" name="password" label="Passord" />
               </div>
             </CardText>
             <CardActions>

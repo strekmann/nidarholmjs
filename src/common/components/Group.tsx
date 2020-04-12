@@ -6,9 +6,9 @@ import IconButton from "@material-ui/core/IconButton";
 import List from "@material-ui/core/List";
 import Menu from "@material-ui/core/Menu";
 import MenuItem from "@material-ui/core/MenuItem";
-import Paper from "material-ui/Paper";
-import TextField from "material-ui/TextField";
-import { Toolbar, ToolbarGroup } from "material-ui/Toolbar";
+import Paper from "@material-ui/core/Paper";
+import TextField from "@material-ui/core/TextField";
+import Toolbar from "@material-ui/core/Toolbar";
 import MoreVertIcon from "@material-ui/icons/MoreVert";
 import getMuiTheme from "material-ui/styles/getMuiTheme";
 import PropTypes from "prop-types";
@@ -162,8 +162,8 @@ class Group extends React.Component<Props, State> {
                 <div>
                   <TextField
                     floatingLabelText="Epost til liste"
-                    onChange={(event, _email) => {
-                      this.setState({ email: _email });
+                    onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
+                      this.setState({ email: event.target.value });
                     }}
                     value={email}
                   />
@@ -190,10 +190,10 @@ class Group extends React.Component<Props, State> {
               </DialogActions>
             </Dialog>
             <Toolbar style={{ backgroundColor: theme.palette.fullWhite }}>
-              <ToolbarGroup firstChild>
+              <div>
                 <Link to="/groups">Alle grupper</Link>
-              </ToolbarGroup>
-              <ToolbarGroup lastChild>
+              </div>
+              <div>
                 <IconButton onClick={this.onMenuOpen}>
                   <MoreVertIcon />
                 </IconButton>
@@ -219,7 +219,7 @@ class Group extends React.Component<Props, State> {
                     Epostinnstillinger
                   </MenuItem>
                 </Menu>
-              </ToolbarGroup>
+              </div>
             </Toolbar>
             <div>
               <h1>{group.name}</h1>
