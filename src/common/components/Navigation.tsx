@@ -1,26 +1,24 @@
 /* eslint "react/require-default-props": 0 */
 
 import Avatar from "@material-ui/core/Avatar";
-import IconButton from "@material-ui/core/IconButton";
-import Popover from "@material-ui/core/Popover";
-import Link from "found/Link";
-import ActionLockOpen from "@material-ui/icons/LockOpen";
-import Person from "@material-ui/icons/Person";
-import { Menu, MenuItem } from "material-ui/Menu";
-import NavigationMenu from "material-ui/svg-icons/navigation/menu";
 import Button from "@material-ui/core/Button";
-import getMuiTheme from "material-ui/styles/getMuiTheme";
-import { fullWhite, indigo900 } from "material-ui/styles/colors";
-import PropTypes from "prop-types";
+import common from "@material-ui/core/colors/common";
+import indigo from "@material-ui/core/colors/indigo";
+import IconButton from "@material-ui/core/IconButton";
+import MenuItem from "@material-ui/core/MenuItem";
+import Popover from "@material-ui/core/Popover";
+import withStyles from "@material-ui/core/styles/withStyles";
+import LockOpen from "@material-ui/icons/LockOpen";
+import NavigationMenu from "@material-ui/icons/Menu";
+import Person from "@material-ui/icons/Person";
+import Link from "found/Link";
 import * as React from "react";
 import { createFragmentContainer, graphql } from "react-relay";
-
 import { Navigation_organization } from "./__generated__/Navigation_organization.graphql";
 import { Navigation_viewer } from "./__generated__/Navigation_viewer.graphql";
 
-import theme from "../theme";
-
 type Props = {
+  classes: any,
   organization: Navigation_organization,
   viewer: Navigation_viewer,
 };
@@ -31,18 +29,10 @@ type State = {
 };
 
 class Navigation extends React.Component<Props, State> {
-  static childContextTypes = {
-    muiTheme: PropTypes.object.isRequired,
-  };
-
   state = {
     open: false,
     anchorEl: null,
   };
-
-  getChildContext() {
-    return { muiTheme: getMuiTheme(theme) };
-  }
 
   handleOpen = (event: React.MouseEvent<HTMLElement>) => {
     // This prevents ghost click.
@@ -79,7 +69,7 @@ class Navigation extends React.Component<Props, State> {
   };
 
   render() {
-    const { organization, viewer } = this.props;
+    const { classes, organization, viewer } = this.props;
     const { open, anchorEl } = this.state;
     const { isMember } = organization;
     const logo = (
@@ -103,7 +93,7 @@ class Navigation extends React.Component<Props, State> {
       </Link>
     );
     return (
-      <div style={{ backgroundColor: indigo900 }}>
+      <div style={{ backgroundColor: indigo[900] }}>
         <div className="flex-menu-desktop">
           <nav
             className="flex-menu"
@@ -125,19 +115,19 @@ class Navigation extends React.Component<Props, State> {
                 alignItems: "center",
               }}
             >
-              <Link to="/om" style={{ color: "white" }}>
+              <Link to="/om" style={{ color: common.white }}>
                 Om oss
               </Link>
-              <Link to="/projects" style={{ color: "white" }}>
+              <Link to="/projects" style={{ color: common.white }}>
                 Prosjekter
               </Link>
-              <Link to="/members" style={{ color: "white" }}>
+              <Link to="/members" style={{ color: common.white }}>
                 Medlemmer
               </Link>
-              <Link to="/stott-oss" style={{ color: "white" }}>
+              <Link to="/stott-oss" style={{ color: common.white }}>
                 Støtt oss
               </Link>
-              <Link to="/contact" style={{ color: "white" }}>
+              <Link to="/contact" style={{ color: common.white }}>
                 Kontakt
               </Link>
             </div>
@@ -161,7 +151,7 @@ class Navigation extends React.Component<Props, State> {
                     display: "flex",
                     alignItems: "center",
                     margin: "-5px 0",
-                    color: "white",
+                    color: common.white,
                   }}
                 >
                   {this.renderAvatar()}
@@ -175,7 +165,11 @@ class Navigation extends React.Component<Props, State> {
                     margin: "12px 15px 12px 10px",
                   }}
                 >
-                  <Button variant="contained" startIcon={<ActionLockOpen />}>
+                  <Button
+                    variant="contained"
+                    startIcon={<LockOpen />}
+                    className={classes.loginButton}
+                  >
                     Logg inn
                   </Button>
                 </Link>
@@ -190,17 +184,19 @@ class Navigation extends React.Component<Props, State> {
               <Link to={`/users/${viewer.id}`}>{this.renderAvatar()}</Link>
             ) : (
               <Link to="/login">
-                <Button
-                  variant="contained"
+                <IconButton
+                  disableFocusRipple
                   style={{ minWidth: 44, marginLeft: 10 }}
-                  startIcon={<ActionLockOpen />}
-                ></Button>
+                  className={classes.loginButton}
+                >
+                  <LockOpen />
+                </IconButton>
               </Link>
             )}
           </div>
           <div>
             <IconButton className="flex-menu-handler" onClick={this.handleOpen}>
-              <NavigationMenu color={fullWhite} />
+              <NavigationMenu className={classes.menuButtonIcon} />
             </IconButton>
             <Popover
               open={open}
@@ -216,10 +212,10 @@ class Navigation extends React.Component<Props, State> {
                   flexWrap: "wrap",
                   justifyContent: "space-around",
                   width: "100%",
-                  backgroundColor: indigo900,
+                  backgroundColor: indigo[900],
                 }}
               >
-                <Menu>
+                <div>
                   <MenuItem>
                     <Link to="/om" onClick={this.handleClose}>
                       Om oss
@@ -245,9 +241,9 @@ class Navigation extends React.Component<Props, State> {
                       Kontakt
                     </Link>
                   </MenuItem>
-                </Menu>
+                </div>
                 {isMember ? (
-                  <Menu>
+                  <div>
                     {isMember ? (
                       <MenuItem>
                         <Link to="/files" onClick={this.handleClose}>
@@ -276,7 +272,7 @@ class Navigation extends React.Component<Props, State> {
                         </Link>
                       </MenuItem>
                     ) : null}
-                  </Menu>
+                  </div>
                 ) : null}
               </nav>
             </Popover>
@@ -287,20 +283,33 @@ class Navigation extends React.Component<Props, State> {
   }
 }
 
-export default createFragmentContainer(Navigation, {
-  viewer: graphql`
-    fragment Navigation_viewer on User {
-      id
-      name
-      profilePicture {
-        thumbnailPath
+const useStyles = () => {
+  return {
+    loginButton: {
+      backgroundColor: common.white,
+    },
+    menuButtonIcon: {
+      color: common.white,
+    },
+  };
+};
+
+export default withStyles(useStyles)(
+  createFragmentContainer(Navigation, {
+    viewer: graphql`
+      fragment Navigation_viewer on User {
+        id
+        name
+        profilePicture {
+          thumbnailPath
+        }
       }
-    }
-  `,
-  organization: graphql`
-    fragment Navigation_organization on Organization {
-      id
-      isMember
-    }
-  `,
-});
+    `,
+    organization: graphql`
+      fragment Navigation_organization on Organization {
+        id
+        isMember
+      }
+    `,
+  }),
+);

@@ -25,7 +25,7 @@ export default class PermissionChips extends React.Component<Props> {
       return (
         <PermissionChipItem
           id={permission.id}
-          key={permission.id}
+          key={permission.id || "default"}
           memberGroupId={this.props.memberGroupId}
           removePermission={this.removePermission}
           text={permission.name}
