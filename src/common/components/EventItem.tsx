@@ -1,16 +1,14 @@
-import { createFragmentContainer, graphql } from "react-relay";
-import Link from "found/Link";
 import IconButton from "@material-ui/core/Button";
 import Paper from "@material-ui/core/Paper";
-import ExpandLess from "material-ui/svg-icons/navigation/expand-less";
-import ExpandMore from "material-ui/svg-icons/navigation/expand-more";
+import ExpandLess from "@material-ui/icons/ExpandLess";
+import ExpandMore from "@material-ui/icons/ExpandMore";
+import Link from "found/Link";
 import moment from "moment";
-import * as React from "react";
-
-import theme from "../theme";
-
+import React from "react";
+import { createFragmentContainer, graphql } from "react-relay";
 import Daterange from "./Daterange";
 import Text from "./Text";
+import { withTheme, Theme } from "@material-ui/core";
 
 function isSoon(date) {
   if (!date) {
@@ -41,6 +39,7 @@ type Props = {
     highlighted: boolean,
     tags: string[],
   },
+  theme: Theme,
 };
 
 type State = {
@@ -48,7 +47,7 @@ type State = {
 };
 
 class EventItem extends React.Component<Props, State> {
-  constructor(props) {
+  constructor(props: Props) {
     super(props);
     const { event } = this.props;
     this.state = {
@@ -64,7 +63,7 @@ class EventItem extends React.Component<Props, State> {
   };
 
   render() {
-    const { event } = this.props;
+    const { event, theme } = this.props;
     const {
       id,
       title,
@@ -77,13 +76,12 @@ class EventItem extends React.Component<Props, State> {
       tags,
     } = event;
     const { expanded } = this.state;
-    const { desktopGutterLess, desktopGutterMini } = theme.spacing;
     return (
       <Paper
-        style={{ marginBottom: desktopGutterLess }}
+        style={{ marginBottom: theme.spacing(2) }}
         className={isEnded ? "shade" : ""}
       >
-        <div style={{ padding: desktopGutterLess }}>
+        <div style={{ padding: theme.spacing(2) }}>
           <div style={{ float: "right" }}>
             <IconButton
               style={{ padding: 0, height: "inherit", width: "inherit" }}
@@ -92,7 +90,7 @@ class EventItem extends React.Component<Props, State> {
               {expanded ? <ExpandMore /> : <ExpandLess />}
             </IconButton>
           </div>
-          <h2 style={{ marginTop: desktopGutterMini }}>
+          <h2 style={{ marginTop: theme.spacing(1) }}>
             <Link
               to={`/events/${id}`}
               style={{ fontWeight: highlighted ? "bold" : "normal" }}
@@ -114,7 +112,7 @@ class EventItem extends React.Component<Props, State> {
                     <span
                       key={tag}
                       style={{
-                        color: theme.palette.disabledColor,
+                        color: "#555",
                         marginRight: 10,
                       }}
                     >
@@ -131,29 +129,31 @@ class EventItem extends React.Component<Props, State> {
   }
 }
 
-export default createFragmentContainer(EventItem, {
-  event: graphql`
-    fragment EventItem_event on Event {
-      id
-      title
-      location
-      start
-      end
-      isEnded
-      highlighted
-      tags
-      permissions {
-        public
-        groups {
-          id
-          name
+export default withTheme(
+  createFragmentContainer(EventItem, {
+    event: graphql`
+      fragment EventItem_event on Event {
+        id
+        title
+        location
+        start
+        end
+        isEnded
+        highlighted
+        tags
+        permissions {
+          public
+          groups {
+            id
+            name
+          }
+          users {
+            id
+            name
+          }
         }
-        users {
-          id
-          name
-        }
+        mdtext
       }
-      mdtext
-    }
-  `,
-});
+    `,
+  }),
+);

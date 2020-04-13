@@ -1,35 +1,16 @@
-import Link from "found/Link";
-import Card from "@material-ui/core/Card";
-import CardContent from "@material-ui/core/CardContent";
-import CardActions from "@material-ui/core/CardActions";
 import Button from "@material-ui/core/Button";
+import Card from "@material-ui/core/Card";
+import CardActions from "@material-ui/core/CardActions";
+import CardContent from "@material-ui/core/CardContent";
 import TextField from "@material-ui/core/TextField";
-import getMuiTheme from "material-ui/styles/getMuiTheme";
-import PropTypes from "prop-types";
-import * as React from "react";
-
-import theme from "../theme";
-import { Typography } from "@material-ui/core";
+import Typography from "@material-ui/core/Typography";
+import Link from "found/Link";
+import React from "react";
 
 type Props = {};
 
 class Login extends React.Component<Props> {
-  static childContextTypes = {
-    muiTheme: PropTypes.object.isRequired,
-  };
-  constructor(props: {}) {
-    super(props);
-    this.muiTheme = getMuiTheme(theme);
-  }
-
-  getChildContext() {
-    return { muiTheme: this.muiTheme };
-  }
-
-  muiTheme: {};
-
   render() {
-    const { desktopGutterLess } = theme.spacing;
     return (
       <section style={{ display: "flex", flexWrap: "wrap" }}>
         <form
@@ -39,7 +20,7 @@ class Login extends React.Component<Props> {
             width: "50%",
             minWidth: 300,
             flexGrow: 1,
-            padding: desktopGutterLess,
+            padding: 10,
           }}
         >
           <Card>
@@ -95,7 +76,7 @@ class Login extends React.Component<Props> {
             width: "50%",
             minWidth: 300,
             flexGrow: 1,
-            padding: desktopGutterLess,
+            padding: 10,
           }}
         >
           <Card>

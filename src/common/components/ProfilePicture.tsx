@@ -1,14 +1,12 @@
 /* global FormData */
 
-import axios from "axios";
 import IconButton from "@material-ui/core/Button";
-import Person from "material-ui/svg-icons/social/person";
-import Camera from "material-ui/svg-icons/image/photo-camera";
-import * as React from "react";
+import Person from "@material-ui/icons/Person";
+import Camera from "@material-ui/icons/PhotoCamera";
+import axios from "axios";
+import React from "react";
 import Dropzone from "react-dropzone";
 import { createFragmentContainer, graphql, RelayProp } from "react-relay";
-
-import theme from "../theme";
 import SetProfilePictureMutation from "../mutations/SetProfilePicture";
 
 type Props = {
@@ -32,12 +30,16 @@ class ProfilePicture extends React.Component<Props> {
       data.append("file", file);
 
       axios.post("/upload", data).then((response) => {
-        SetProfilePictureMutation.commit(relay.environment, {
-          hash: response.data.hex,
-          mimetype: response.data.mimetype,
-          size: response.data.size,
-          userId: user.id,
-        });
+        SetProfilePictureMutation.commit(
+          relay.environment,
+          {
+            hash: response.data.hex,
+            mimetype: response.data.mimetype,
+            size: response.data.size,
+            userId: user.id,
+          },
+          undefined,
+        );
       });
     });
   };
@@ -66,13 +68,12 @@ class ProfilePicture extends React.Component<Props> {
                 style={{
                   height: 100,
                   width: "100%",
-                  color: theme.palette.pickerHeaderColor,
                 }}
               />
             )}
             <div style={{ position: "absolute", bottom: 0 }}>
               <IconButton>
-                <Camera color={theme.palette.alternateTextColor} />
+                <Camera />
               </IconButton>
             </div>
           </div>
@@ -93,7 +94,6 @@ class ProfilePicture extends React.Component<Props> {
             style={{
               height: 100,
               width: "100%",
-              color: theme.palette.pickerHeaderColor,
             }}
           />
         )}

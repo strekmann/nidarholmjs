@@ -1,49 +1,45 @@
-import areIntlLocalesSupported from "intl-locales-supported";
-import AutoComplete from "material-ui/AutoComplete";
-import Checkbox from "@material-ui/core/Checkbox";
-import DatePicker from "material-ui/DatePicker";
-import Dialog from "@material-ui/core/Dialog";
-import DialogTitle from "@material-ui/core/DialogTitle";
-import DialogContent from "@material-ui/core/DialogContent";
-import DialogActions from "@material-ui/core/DialogActions";
+import { Theme } from "@material-ui/core";
 import Button from "@material-ui/core/Button";
-import ListItemSecondaryAction from "@material-ui/core/ListItemSecondaryAction";
+import Checkbox from "@material-ui/core/Checkbox";
+import Dialog from "@material-ui/core/Dialog";
+import DialogActions from "@material-ui/core/DialogActions";
+import DialogContent from "@material-ui/core/DialogContent";
+import DialogTitle from "@material-ui/core/DialogTitle";
+import FormControlLabel from "@material-ui/core/FormControlLabel";
+import IconButton from "@material-ui/core/IconButton";
 import List from "@material-ui/core/List";
 import ListItem from "@material-ui/core/ListItem";
-import Toolbar from "@material-ui/core/Toolbar";
-import getMuiTheme from "material-ui/styles/getMuiTheme";
+import ListItemSecondaryAction from "@material-ui/core/ListItemSecondaryAction";
+import ListItemText from "@material-ui/core/ListItemText";
 import Menu from "@material-ui/core/Menu";
 import MenuItem from "@material-ui/core/MenuItem";
-import IconButton from "@material-ui/core/IconButton";
 import Paper from "@material-ui/core/Paper";
+import withTheme from "@material-ui/core/styles/withTheme";
 import TextField from "@material-ui/core/TextField";
-import MoreVertIcon from "@material-ui/icons/MoreVert";
-import { lightBlue100 } from "material-ui/styles/colors";
+import Toolbar from "@material-ui/core/Toolbar";
 import Close from "@material-ui/icons/Close";
-import moment from "moment";
-import PropTypes from "prop-types";
-import * as React from "react";
-import { createFragmentContainer, graphql } from "react-relay";
-import { RelayProp } from "react-relay";
+import MoreVertIcon from "@material-ui/icons/MoreVert";
 import Link from "found/Link";
-
-import theme from "../theme";
+import areIntlLocalesSupported from "intl-locales-supported";
+import AutoComplete from "material-ui/AutoComplete";
+import DatePicker from "material-ui/DatePicker";
+import { lightBlue100 } from "material-ui/styles/colors";
+import moment from "moment";
+import React from "react";
+import { createFragmentContainer, graphql, RelayProp } from "react-relay";
+import AddRoleMutation from "../mutations/AddRole";
 import EditUserMutation from "../mutations/EditUser";
 import JoinGroupMutation from "../mutations/JoinGroup";
 import LeaveGroupMutation from "../mutations/LeaveGroup";
-import AddRoleMutation from "../mutations/AddRole";
 import RemoveRoleMutation from "../mutations/RemoveRole";
-
-import Text from "./Text";
-import Phone from "./Phone";
 import Date from "./Date";
 import DateFromNow from "./DateFromNow";
+import Phone from "./Phone";
 import ProfilePicture from "./ProfilePicture";
+import Text from "./Text";
 import Yesno from "./Yesno";
 import { Member_organization } from "./__generated__/Member_organization.graphql";
 import { Member_viewer } from "./__generated__/Member_viewer.graphql";
-import ListItemText from "@material-ui/core/ListItemText";
-import FormControlLabel from "@material-ui/core/FormControlLabel";
 
 let DateTimeFormat;
 if (areIntlLocalesSupported(["nb"])) {
@@ -53,6 +49,7 @@ if (areIntlLocalesSupported(["nb"])) {
 type Props = {
   organization: Member_organization,
   relay: RelayProp,
+  theme: Theme,
   viewer: Member_viewer,
 };
 
@@ -80,13 +77,8 @@ type State = {
 };
 
 class Member extends React.Component<Props, State> {
-  static childContextTypes = {
-    muiTheme: PropTypes.object.isRequired,
-  };
-
   constructor(props) {
     super(props);
-    this.muiTheme = getMuiTheme(theme);
     let member;
     let user;
     const { organization } = this.props;
@@ -168,11 +160,6 @@ class Member extends React.Component<Props, State> {
   onMenuClose = () => {
     this.setState({ menuIsOpen: null });
   };
-
-  getChildContext() {
-    return { muiTheme: this.muiTheme };
-  }
-
   onChangeName = (event: React.ChangeEvent<HTMLInputElement>) => {
     this.setState({ name: event.target.value });
   };
@@ -215,8 +202,6 @@ class Member extends React.Component<Props, State> {
   onChangeNoEmail = (event: React.ChangeEvent<HTMLInputElement>) => {
     this.setState({ noEmail: event.target.checked });
   };
-
-  muiTheme: {};
 
   saveMember = (event) => {
     event.preventDefault();
@@ -329,7 +314,7 @@ class Member extends React.Component<Props, State> {
   };
 
   render() {
-    const { organization, viewer } = this.props;
+    const { organization, theme, viewer } = this.props;
     const { groups, isAdmin, member, roles } = organization;
     if (!member) {
       throw new Error("Member not defined");
@@ -338,7 +323,6 @@ class Member extends React.Component<Props, State> {
     if (!user) {
       throw new Error("User not defined in member");
     }
-    const { desktopGutterLess } = theme.spacing;
     if (this.state.editMember) {
       return (
         <Paper className="row">
@@ -560,7 +544,7 @@ class Member extends React.Component<Props, State> {
               </DialogActions>
             </Dialog>
           ) : null}
-          <Toolbar style={{ backgroundColor: theme.palette.fullWhite }}>
+          <Toolbar>
             <div>
               {this.props.viewer.id === user.id ? (
                 <Button variant="text" href="/logout">
@@ -617,14 +601,14 @@ class Member extends React.Component<Props, State> {
           style={{
             display: "flex",
             justifyContent: "space-between",
-            marginLeft: -desktopGutterLess,
-            marginRight: -desktopGutterLess,
+            marginLeft: -theme.spacing(2),
+            marginRight: -theme.spacing(2),
           }}
         >
           <div
             style={{
-              paddingLeft: desktopGutterLess,
-              paddingRight: desktopGutterLess,
+              paddingLeft: theme.spacing(2),
+              paddingRight: theme.spacing(2),
             }}
           >
             {user.email ? (
@@ -733,8 +717,8 @@ class Member extends React.Component<Props, State> {
           </div>
           <div
             style={{
-              paddingLeft: desktopGutterLess,
-              paddingRight: desktopGutterLess,
+              paddingLeft: theme.spacing(2),
+              paddingRight: theme.spacing(2),
               width: "25%",
               minWidth: 230,
             }}
@@ -762,68 +746,70 @@ class Member extends React.Component<Props, State> {
   }
 }
 
-export default createFragmentContainer(Member, {
-  organization: graphql`
-    fragment Member_organization on Organization {
-      isMember
-      isAdmin
-      member(id: $id) {
-        id
-        roles {
+export default withTheme(
+  createFragmentContainer(Member, {
+    organization: graphql`
+      fragment Member_organization on Organization {
+        isMember
+        isAdmin
+        member(id: $id) {
           id
-          name
-          email
-        }
-        user {
-          id
-          username
-          name
-          email
-          groups {
+          roles {
             id
             name
+            email
           }
-          isActive
-          isAdmin
-          created
-          facebookId
-          googleId
-          twitterId
-          nmfId
-          phone
-          address
-          postcode
-          city
-          country
-          born
-          joined
-          instrument
-          instrumentInsurance
-          membershipHistory
-          membershipStatus
-          inList
-          onLeave
-          noEmail
-          ...ProfilePicture_user
-        }
-      }
-      groups {
-        id
-        name
-      }
-      roles(first: 100) {
-        edges {
-          node {
+          user {
             id
+            username
             name
+            email
+            groups {
+              id
+              name
+            }
+            isActive
+            isAdmin
+            created
+            facebookId
+            googleId
+            twitterId
+            nmfId
+            phone
+            address
+            postcode
+            city
+            country
+            born
+            joined
+            instrument
+            instrumentInsurance
+            membershipHistory
+            membershipStatus
+            inList
+            onLeave
+            noEmail
+            ...ProfilePicture_user
+          }
+        }
+        groups {
+          id
+          name
+        }
+        roles(first: 100) {
+          edges {
+            node {
+              id
+              name
+            }
           }
         }
       }
-    }
-  `,
-  viewer: graphql`
-    fragment Member_viewer on User {
-      id
-    }
-  `,
-});
+    `,
+    viewer: graphql`
+      fragment Member_viewer on User {
+        id
+      }
+    `,
+  }),
+);

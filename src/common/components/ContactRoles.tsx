@@ -1,16 +1,12 @@
 /* eslint "react/no-multi-comp": 0 */
 
-import IconButton from "@material-ui/core/IconButton";
 import Button from "@material-ui/core/Button";
+import IconButton from "@material-ui/core/IconButton";
 import AddCircle from "material-ui/svg-icons/content/add-circle";
-import getMuiTheme from "material-ui/styles/getMuiTheme";
 import PropTypes from "prop-types";
-import * as React from "react";
+import React from "react";
 import { createFragmentContainer, graphql, RelayProp } from "react-relay";
-
 import SaveContactRolesMutation from "../mutations/SaveContactRoles";
-import theme from "../theme";
-
 import SortableRoleList from "./SortableRoleList";
 import { ContactRoles_organization } from "./__generated__/ContactRoles_organization.graphql";
 
@@ -57,10 +53,6 @@ type State = {
 };
 
 class ContactRoles extends React.Component<Props, State> {
-  static childContextTypes = {
-    muiTheme: PropTypes.object.isRequired,
-  };
-
   constructor(props: Props) {
     super(props);
     const { activeRoles, contactRoles } = props.organization;
@@ -85,11 +77,6 @@ class ContactRoles extends React.Component<Props, State> {
       activeRoles: _activeRoles,
       contactRoles: _contactRoles,
     };
-    this.muiTheme = getMuiTheme(theme);
-  }
-
-  getChildContext() {
-    return { muiTheme: this.muiTheme };
   }
 
   onChange = (contactRoles: Role[]) => {
@@ -117,8 +104,6 @@ class ContactRoles extends React.Component<Props, State> {
       },
     );
   };
-
-  muiTheme: {};
 
   render() {
     const roleIds = this.state.contactRoles.map((role) => {

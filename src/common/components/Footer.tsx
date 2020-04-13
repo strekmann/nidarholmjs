@@ -1,35 +1,22 @@
+import React from "react";
 import { createFragmentContainer, graphql, RelayProp } from "react-relay";
-import getMuiTheme from "material-ui/styles/getMuiTheme";
-import PropTypes from "prop-types";
-import * as React from "react";
-
-import theme from "../theme";
 import SendContactEmailMutation from "../mutations/SendContactEmail";
-
-import { Footer_organization } from "./__generated__/Footer_organization.graphql";
 import ContactForm from "./ContactForm";
+import { Footer_organization } from "./__generated__/Footer_organization.graphql";
 
 type Props = {
-  organization: Footer_organization;
-  relay: RelayProp;
+  organization: Footer_organization,
+  relay: RelayProp,
 };
 
 type State = {
-  contactDialogOpen: boolean;
+  contactDialogOpen: boolean,
 };
 
 class Footer extends React.Component<Props, State> {
-  static childContextTypes = {
-    muiTheme: PropTypes.object.isRequired,
-  };
-
   state = {
     contactDialogOpen: false,
   };
-
-  getChildContext() {
-    return { muiTheme: getMuiTheme(theme) };
-  }
 
   sendEmail = (form) => {
     const { relay } = this.props;

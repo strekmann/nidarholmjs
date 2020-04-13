@@ -1,31 +1,25 @@
-import Link from "found/Link";
-import { RelayProp } from "react-relay";
-import AutoComplete from "material-ui/AutoComplete";
+import {
+  DialogContent,
+  DialogTitle,
+  FormControlLabel,
+} from "@material-ui/core";
+import Button from "@material-ui/core/Button";
 import Checkbox from "@material-ui/core/Checkbox";
 import Dialog from "@material-ui/core/Dialog";
 import IconButton from "@material-ui/core/IconButton";
 import Menu from "@material-ui/core/Menu";
 import MenuItem from "@material-ui/core/MenuItem";
 import Paper from "@material-ui/core/Paper";
-import Button from "@material-ui/core/Button";
-import SelectField from "material-ui/SelectField";
 import TextField from "@material-ui/core/TextField";
-import getMuiTheme from "material-ui/styles/getMuiTheme";
-import MoreVertIcon from "material-ui/svg-icons/navigation/more-vert";
-import * as React from "react";
-import PropTypes from "prop-types";
-import { createFragmentContainer, graphql } from "react-relay";
-
+import MoreVertIcon from "@material-ui/icons/MoreVert";
+import Link from "found/Link";
+import AutoComplete from "material-ui/AutoComplete";
+import SelectField from "material-ui/SelectField";
+import React from "react";
+import { createFragmentContainer, graphql, RelayProp } from "react-relay";
 import AddUserMutation from "../mutations/AddUser";
-import theme from "../theme";
-
-import { Members_organization } from "./__generated__/Members_organization.graphql";
 import GroupItem from "./GroupItem";
-import {
-  DialogTitle,
-  DialogContent,
-  FormControlLabel,
-} from "@material-ui/core";
+import { Members_organization } from "./__generated__/Members_organization.graphql";
 
 type Props = {
   relay: RelayProp,
@@ -45,15 +39,6 @@ type State = {
 };
 
 class Members extends React.Component<Props, State> {
-  static childContextTypes = {
-    muiTheme: PropTypes.object.isRequired,
-  };
-
-  constructor(props: Props) {
-    super(props);
-    this.muiTheme = getMuiTheme(theme);
-  }
-
   state = {
     menuIsOpen: null,
     addUser: false,
@@ -64,10 +49,6 @@ class Members extends React.Component<Props, State> {
     groupId: undefined,
     member: false,
   };
-
-  getChildContext() {
-    return { muiTheme: this.muiTheme };
-  }
 
   onMenuOpen = (event: React.MouseEvent<HTMLButtonElement>) => {
     this.setState({ menuIsOpen: event.currentTarget });
@@ -104,8 +85,6 @@ class Members extends React.Component<Props, State> {
   onCheckMember = (event: React.ChangeEvent<HTMLInputElement>) => {
     this.setState({ member: event.target.checked });
   };
-
-  muiTheme: {};
 
   addUser = (event) => {
     event.preventDefault();

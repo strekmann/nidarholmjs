@@ -1,14 +1,8 @@
-/* eslint "max-len": 0 */
 /* eslint "react/no-multi-comp": 0 */
 
 import IconButton from "@material-ui/core/Button";
 import AddCircle from "material-ui/svg-icons/content/add-circle";
-import getMuiTheme from "material-ui/styles/getMuiTheme";
-import PropTypes from "prop-types";
-import * as React from "react";
-
-import theme from "../theme";
-
+import React from "react";
 import SortablePageList from "./SortablePageList";
 
 type PageSummaryProps = {
@@ -69,19 +63,6 @@ type Props = {
 };
 
 class FrontpageSummaries extends React.Component<Props> {
-  static childContextTypes = {
-    muiTheme: PropTypes.object.isRequired,
-  };
-
-  constructor(props: any) {
-    super(props);
-    this.muiTheme = getMuiTheme(theme);
-  }
-
-  getChildContext() {
-    return { muiTheme: this.muiTheme };
-  }
-
   onChange = (
     summaries: Array<{
       id: string,
@@ -95,8 +76,6 @@ class FrontpageSummaries extends React.Component<Props> {
   onAdd = (page: {}) => {
     this.props.onAdd(page);
   };
-
-  muiTheme: {};
 
   render() {
     const summaryIds = this.props.summaries.map((summary) => {

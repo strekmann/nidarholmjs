@@ -1,19 +1,14 @@
+import { Theme, withTheme } from "@material-ui/core";
 import IconButton from "@material-ui/core/IconButton";
 import Menu from "@material-ui/core/Menu";
 import MenuItem from "@material-ui/core/MenuItem";
-import getMuiTheme from "material-ui/styles/getMuiTheme";
 import MoreVertIcon from "@material-ui/icons/MoreVert";
-import PropTypes from "prop-types";
 import React from "react";
-import { createFragmentContainer, graphql } from "react-relay";
-import { RelayProp } from "react-relay";
-
-import theme from "../theme";
+import { createFragmentContainer, graphql, RelayProp } from "react-relay";
 import AddProjectMutation from "../mutations/AddProject";
-
+import ProjectForm from "./ProjectForm";
 import ProjectListPrevious from "./ProjectListPrevious";
 import ProjectListUpcoming from "./ProjectListUpcoming";
-import ProjectForm from "./ProjectForm";
 import { Projects_organization } from "./__generated__/Projects_organization.graphql";
 import { Projects_viewer } from "./__generated__/Projects_viewer.graphql";
 
@@ -21,6 +16,7 @@ type Props = {
   organization: Projects_organization,
   viewer: Projects_viewer,
   relay: RelayProp,
+  theme: Theme,
 };
 
 type State = {
@@ -29,25 +25,10 @@ type State = {
 };
 
 class Projects extends React.Component<Props, State> {
-  static childContextTypes = {
-    muiTheme: PropTypes.object.isRequired,
-  };
-
-  constructor(props) {
-    super(props);
-    this.muiTheme = getMuiTheme(theme);
-  }
-
   state = {
     addProject: false,
     menuIsOpen: null,
   };
-
-  getChildContext() {
-    return { muiTheme: this.muiTheme };
-  }
-
-  muiTheme: {};
 
   onMenuOpen = (event: React.MouseEvent<HTMLButtonElement>) => {
     this.setState({ menuIsOpen: event.currentTarget });
@@ -70,8 +51,8 @@ class Projects extends React.Component<Props, State> {
   };
 
   render() {
-    const { isMember } = this.props.organization;
-    const { desktopGutterLess } = theme.spacing;
+    const { organization, theme } = this.props;
+    const { isMember } = organization;
     return (
       <section>
         {isMember ? (
@@ -107,14 +88,14 @@ class Projects extends React.Component<Props, State> {
           className="row small-narrow"
           style={{
             display: "flex",
-            marginLeft: -desktopGutterLess,
-            marginRight: -desktopGutterLess,
+            marginLeft: -theme.spacing(2),
+            marginRight: -theme.spacing(2),
           }}
         >
           <div
             style={{
-              paddingLeft: desktopGutterLess,
-              paddingRight: desktopGutterLess,
+              paddingLeft: theme.spacing(2),
+              paddingRight: theme.spacing(2),
               flex: "1 1 50%",
             }}
           >
@@ -125,8 +106,8 @@ class Projects extends React.Component<Props, State> {
           </div>
           <div
             style={{
-              paddingLeft: desktopGutterLess,
-              paddingRight: desktopGutterLess,
+              paddingLeft: theme.spacing(2),
+              paddingRight: theme.spacing(2),
               flex: "1 1 50%",
             }}
           >
@@ -141,19 +122,21 @@ class Projects extends React.Component<Props, State> {
   }
 }
 
-export default createFragmentContainer(Projects, {
-  organization: graphql`
-    fragment Projects_organization on Organization {
-      isMember
-      ...ProjectListPrevious_organization
-      ...ProjectListUpcoming_organization
-      ...ProjectForm_organization
-    }
-  `,
-  viewer: graphql`
-    fragment Projects_viewer on User {
-      id
-      ...ProjectForm_viewer
-    }
-  `,
-});
+export default withTheme(
+  createFragmentContainer(Projects, {
+    organization: graphql`
+      fragment Projects_organization on Organization {
+        isMember
+        ...ProjectListPrevious_organization
+        ...ProjectListUpcoming_organization
+        ...ProjectForm_organization
+      }
+    `,
+    viewer: graphql`
+      fragment Projects_viewer on User {
+        id
+        ...ProjectForm_viewer
+      }
+    `,
+  }),
+);

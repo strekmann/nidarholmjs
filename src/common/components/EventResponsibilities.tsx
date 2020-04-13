@@ -3,12 +3,8 @@ import TableBody from "@material-ui/core/TableBody";
 import TableHead from "@material-ui/core/TableHead";
 import TableRow from "@material-ui/core/TableRow";
 import TableCell from "@material-ui/core/TableCell";
-import getMuiTheme from "material-ui/styles/getMuiTheme";
-import * as React from "react";
+import React from "react";
 import { createFragmentContainer, graphql } from "react-relay";
-import PropTypes from "prop-types";
-
-import theme from "../theme";
 
 import EventGroupResponsibilityChooser from "./EventGroupResponsibilityChooser";
 import EventPersonResponsibilityChooser from "./EventPersonResponsibilityChooser";
@@ -25,10 +21,6 @@ type State = {
 };
 
 class EventResponsibilities extends React.Component<Props, State> {
-  static childContextTypes = {
-    muiTheme: PropTypes.object.isRequired,
-  };
-
   constructor(props: Props) {
     super(props);
     const { organization } = props;
@@ -51,10 +43,6 @@ class EventResponsibilities extends React.Component<Props, State> {
       instrumentGroups,
       users,
     };
-  }
-
-  getChildContext() {
-    return { muiTheme: getMuiTheme(theme) };
   }
 
   orderGroups = (groups, lastGroup) => {

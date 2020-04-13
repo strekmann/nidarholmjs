@@ -1,16 +1,15 @@
-import Paper from "@material-ui/core/Paper";
+import { Theme } from "@material-ui/core";
 import Button from "@material-ui/core/Button";
-import TextField from "material-ui/TextField";
-import getMuiTheme from "material-ui/styles/getMuiTheme";
-import PropTypes from "prop-types";
+import Paper from "@material-ui/core/Paper";
+import withTheme from "@material-ui/core/styles/withTheme";
+import TextField from "@material-ui/core/TextField";
 import React from "react";
 import { createFragmentContainer, graphql, RelayProp } from "react-relay";
-
-import theme from "../theme";
 import SendResetMutation from "../mutations/SendReset";
 
 type Props = {
   relay: RelayProp,
+  theme: Theme,
 };
 
 type State = {
@@ -19,26 +18,13 @@ type State = {
 };
 
 class Reset extends React.Component<Props, State> {
-  static childContextTypes = {
-    muiTheme: PropTypes.object.isRequired,
-  };
-
-  constructor(props) {
-    super(props);
-    this.muiTheme = getMuiTheme(theme);
-  }
-
   state = {
     email: "",
     sent: false,
   };
 
-  getChildContext() {
-    return { muiTheme: this.muiTheme };
-  }
-
-  onChangeEmail = (event, email) => {
-    this.setState({ email });
+  onChangeEmail = (event: React.ChangeEvent<HTMLInputElement>) => {
+    this.setState({ email: event.target.value });
   };
 
   sendReset = (event) => {
@@ -54,14 +40,14 @@ class Reset extends React.Component<Props, State> {
   };
 
   render() {
-    const { desktopGutterLess } = theme.spacing;
+    const { theme } = this.props;
     const sentMessage =
       "Hvis du er registrert i systemet vil du snart motta en epost med en lenke til hvor du kan endre passordet.";
     const forgottenPasswordMessage =
       "Om du har glemt passordet, eller ikke fått noe passord til å begynne med, kan du få tilsendt en lenke hvor du kan sette nytt passord på epost. Vi trenger derfor epostadresse for å finne deg i databasen.";
     return (
       <section>
-        <Paper style={{ padding: desktopGutterLess }}>
+        <Paper style={{ padding: theme.spacing(2) }}>
           <h1>Nytt passord</h1>
           {this.state.sent ? (
             <div>
@@ -73,7 +59,7 @@ class Reset extends React.Component<Props, State> {
               <form onSubmit={this.sendReset}>
                 <div>
                   <TextField
-                    floatingLabelText="E-postadresse"
+                    label="E-postadresse"
                     name="email"
                     onChange={this.onChangeEmail}
                     required
@@ -94,10 +80,13 @@ class Reset extends React.Component<Props, State> {
     );
   }
 }
-export default createFragmentContainer(Reset, {
-  organization: graphql`
-    fragment Reset_organization on Organization {
-      id
-    }
-  `,
-});
+
+export default withTheme(
+  createFragmentContainer(Reset, {
+    organization: graphql`
+      fragment Reset_organization on Organization {
+        id
+      }
+    `,
+  }),
+);

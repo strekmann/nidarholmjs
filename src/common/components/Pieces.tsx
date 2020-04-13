@@ -1,24 +1,20 @@
-import { RelayRefetchProp } from "react-relay";
+import { Theme } from "@material-ui/core";
+import Button from "@material-ui/core/Button";
 import IconButton from "@material-ui/core/IconButton";
 import Menu from "@material-ui/core/Menu";
 import MenuItem from "@material-ui/core/MenuItem";
 import Paper from "@material-ui/core/Paper";
-import Button from "@material-ui/core/Button";
+import withTheme from "@material-ui/core/styles/withTheme";
 import Table from "@material-ui/core/Table";
 import TableBody from "@material-ui/core/TableBody";
+import TableCell from "@material-ui/core/TableCell";
 import TableHead from "@material-ui/core/TableHead";
 import TableRow from "@material-ui/core/TableRow";
-import TableCell from "@material-ui/core/TableCell";
 import Toolbar from "@material-ui/core/Toolbar";
-import getMuiTheme from "material-ui/styles/getMuiTheme";
-import MoreVertIcon from "material-ui/svg-icons/navigation/more-vert";
-import PropTypes from "prop-types";
-import * as React from "react";
-import { createRefetchContainer, graphql } from "react-relay";
-
-import theme from "../theme";
+import MoreVertIcon from "@material-ui/icons/MoreVert";
+import React from "react";
+import { createRefetchContainer, graphql, RelayRefetchProp } from "react-relay";
 import CreatePieceMutation from "../mutations/CreatePiece";
-
 import PieceForm from "./PieceForm";
 import PieceItem from "./PieceItem";
 import PieceSearch from "./PieceSearch";
@@ -37,6 +33,7 @@ type Props = {
       term: string,
     },
   },
+  theme: Theme,
 };
 
 type State = {
@@ -46,24 +43,11 @@ type State = {
 };
 
 class Pieces extends React.Component<Props, State> {
-  static childContextTypes = {
-    muiTheme: PropTypes.object.isRequired,
-  };
-
-  constructor(props) {
-    super(props);
-    this.muiTheme = getMuiTheme(theme);
-  }
-
   state = {
     addPiece: false,
     menuIsOpen: null,
     term: "",
   };
-
-  getChildContext() {
-    return { muiTheme: this.muiTheme };
-  }
 
   componentDidMount() {
     this.props.relay.refetch((variables) => {
@@ -114,8 +98,6 @@ class Pieces extends React.Component<Props, State> {
     });
   };
 
-  muiTheme: {};
-
   savePiece = (piece) => {
     this.setState({ addPiece: false });
     const { relay } = this.props;
@@ -152,14 +134,13 @@ class Pieces extends React.Component<Props, State> {
   };
 
   render() {
-    const { organization } = this.props;
+    const { organization, theme } = this.props;
     const { pieces, isMusicAdmin } = organization;
-    const { desktopGutterLess } = theme.spacing;
     return (
       <Paper
         className="row"
         style={{
-          paddingBottom: desktopGutterLess,
+          paddingBottom: theme.spacing(2),
         }}
       >
         <div
@@ -181,7 +162,7 @@ class Pieces extends React.Component<Props, State> {
               searching
             />
           ) : null}
-          <Toolbar style={{ backgroundColor: theme.palette.fullWhite }}>
+          <Toolbar>
             <div>
               <IconButton onClick={this.onMenuOpen}>
                 <MoreVertIcon />
@@ -348,43 +329,45 @@ class Pieces extends React.Component<Props, State> {
                                             </div>
                                             */
 
-export default createRefetchContainer(
-  Pieces,
-  {
-    organization: graphql`
-      fragment Pieces_organization on Organization
-        @argumentDefinitions(
-          showItems: { type: "Int", defaultValue: 20 }
-          term: { type: "String", defaultValue: "" }
-        ) {
-        id
-        isMusicAdmin
-        memberGroup {
+export default withTheme(
+  createRefetchContainer(
+    Pieces,
+    {
+      organization: graphql`
+        fragment Pieces_organization on Organization
+          @argumentDefinitions(
+            showItems: { type: "Int", defaultValue: 20 }
+            term: { type: "String", defaultValue: "" }
+          ) {
           id
-        }
-        pieces(first: $showItems, term: $term) {
-          edges {
-            node {
-              id
-              title
-              subtitle
-              composers
-              arrangers
-              scoreCount
+          isMusicAdmin
+          memberGroup {
+            id
+          }
+          pieces(first: $showItems, term: $term) {
+            edges {
+              node {
+                id
+                title
+                subtitle
+                composers
+                arrangers
+                scoreCount
+              }
+            }
+            pageInfo {
+              hasNextPage
             }
           }
-          pageInfo {
-            hasNextPage
-          }
+        }
+      `,
+    },
+    graphql`
+      query PiecesRefetchQuery($showItems: Int, $term: String) {
+        organization {
+          ...Pieces_organization @arguments(showItems: $showItems, term: $term)
         }
       }
     `,
-  },
-  graphql`
-    query PiecesRefetchQuery($showItems: Int, $term: String) {
-      organization {
-        ...Pieces_organization @arguments(showItems: $showItems, term: $term)
-      }
-    }
-  `,
+  ),
 );

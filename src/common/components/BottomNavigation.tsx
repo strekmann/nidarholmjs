@@ -4,15 +4,10 @@ import Paper from "@material-ui/core/Paper";
 import ActionDateRange from "@material-ui/icons/DateRange";
 import NotificationEventNote from "@material-ui/icons/EventNote";
 import SocialGroupIcon from "@material-ui/icons/Group";
-import { indigo50 } from "material-ui/styles/colors";
-import getMuiTheme from "material-ui/styles/getMuiTheme";
-import PropTypes from "prop-types";
-import * as React from "react";
-import { createFragmentContainer, graphql } from "react-relay";
 import Link from "found/Link";
-
-import theme from "../theme";
-
+import indigo from "@material-ui/core/colors/indigo";
+import React from "react";
+import { createFragmentContainer, graphql } from "react-relay";
 import { BottomNavigation_organization } from "./__generated__/BottomNavigation_organization.graphql";
 
 type Props = {
@@ -20,14 +15,6 @@ type Props = {
 };
 
 class Navigation extends React.Component<Props> {
-  static childContextTypes = {
-    muiTheme: PropTypes.object.isRequired,
-  };
-
-  getChildContext() {
-    return { muiTheme: getMuiTheme(theme) };
-  }
-
   render() {
     if (this.props.organization.isMember) {
       return (
@@ -43,7 +30,7 @@ class Navigation extends React.Component<Props> {
         >
           <BottomNavigation
             style={{
-              backgroundColor: indigo50,
+              backgroundColor: indigo[50],
             }}
           >
             <BottomNavigationAction

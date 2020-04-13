@@ -1,12 +1,9 @@
 import Paper from "@material-ui/core/Paper";
 import Button from "@material-ui/core/Button";
 import TextField from "@material-ui/core/TextField";
-import getMuiTheme from "material-ui/styles/getMuiTheme";
-import PropTypes from "prop-types";
-import * as React from "react";
+import React from "react";
 import { createFragmentContainer, graphql, RelayProp } from "react-relay";
 
-import theme from "../theme";
 import SetPasswordMutation from "../mutations/SetPassword";
 
 type Props = {
@@ -25,23 +22,10 @@ type State = {
 };
 
 class MemberReset extends React.Component<Props, State> {
-  static childContextTypes = {
-    muiTheme: PropTypes.object.isRequired,
-  };
-
-  constructor(props: Props) {
-    super(props);
-    this.muiTheme = getMuiTheme(theme);
-  }
-
   state = {
     oldPassword: "",
     newPassword: "",
   };
-
-  getChildContext() {
-    return { muiTheme: this.muiTheme };
-  }
 
   onChangeOldPassword = (event: React.ChangeEvent<HTMLInputElement>) => {
     this.setState({ oldPassword: event.target.value });
@@ -64,8 +48,6 @@ class MemberReset extends React.Component<Props, State> {
       },
     );
   };
-
-  muiTheme: {};
 
   render() {
     return (

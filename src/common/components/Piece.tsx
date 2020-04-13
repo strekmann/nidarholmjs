@@ -1,25 +1,19 @@
 import FormControlLabel from "@material-ui/core/FormControlLabel";
 import IconButton from "@material-ui/core/IconButton";
-import Menu from "@material-ui/core/Menu";
 import List from "@material-ui/core/List";
 import ListItem from "@material-ui/core/ListItem";
+import Menu from "@material-ui/core/Menu";
 import MenuItem from "@material-ui/core/MenuItem";
 import Paper from "@material-ui/core/Paper";
 import Switch from "@material-ui/core/Switch";
 import Toolbar from "@material-ui/core/Toolbar";
-import Typography from "@material-ui/core/Typography";
-import getMuiTheme from "material-ui/styles/getMuiTheme";
 import MoreVertIcon from "@material-ui/icons/MoreVert";
-import PropTypes from "prop-types";
-import * as React from "react";
+import React from "react";
 import { createFragmentContainer, graphql, RelayProp } from "react-relay";
-
-import theme from "../theme";
 import UpdatePieceMutation from "../mutations/UpdatePiece";
-
-import TextList from "./List";
 import GroupscoreList from "./GroupscoreList";
 import GroupscoreUpload from "./GroupscoreUpload";
+import TextList from "./List";
 import PieceForm from "./PieceForm";
 import { Piece_organization } from "./__generated__/Piece_organization.graphql";
 import { Piece_viewer } from "./__generated__/Piece_viewer.graphql";
@@ -42,26 +36,11 @@ type State = {
 };
 
 class Piece extends React.Component<Props, State> {
-  static childContextTypes = {
-    muiTheme: PropTypes.object.isRequired,
-  };
-
-  constructor(props) {
-    super(props);
-    this.muiTheme = getMuiTheme(theme);
-  }
-
   state = {
     editPiece: false,
     menuIsOpen: null,
     showAdmin: true,
   };
-
-  getChildContext() {
-    return { muiTheme: this.muiTheme };
-  }
-
-  muiTheme: {};
 
   onMenuOpen = (event: React.MouseEvent<HTMLButtonElement>) => {
     this.setState({ menuIsOpen: event.currentTarget });
@@ -118,7 +97,7 @@ class Piece extends React.Component<Props, State> {
               router={router}
             />
           ) : null}
-          <Toolbar style={{ backgroundColor: theme.palette.fullWhite }}>
+          <Toolbar>
             <IconButton onClick={this.onMenuOpen}>
               <MoreVertIcon />
             </IconButton>

@@ -2,11 +2,10 @@ import React from "react";
 import Paper from "@material-ui/core/Paper";
 import Button from "@material-ui/core/Button";
 import TextField from "@material-ui/core/TextField";
-
-import theme from "../theme";
 import { PermissionArray, Viewer } from "../types";
 
 import PermissionField from "./PermissionField";
+import { withTheme, Theme } from "@material-ui/core";
 
 type Props = {
   viewer: Viewer,
@@ -24,6 +23,7 @@ type Props = {
     summary: ?string,
     permissions: PermissionArray,
   }) => void,*/,
+  theme: Theme,
 };
 
 type State = {
@@ -34,7 +34,7 @@ type State = {
   permissions: PermissionArray,
 };
 
-export default class EditPage extends React.Component<Props, State> {
+class EditPage extends React.Component<Props, State> {
   state = {
     slug: this.props.slug,
     title: this.props.title,
@@ -81,7 +81,7 @@ export default class EditPage extends React.Component<Props, State> {
   };
 
   render() {
-    const { desktopGutterLess } = theme.spacing;
+    const { theme } = this.props;
     return (
       <section>
         <form onSubmit={this.savePage}>
@@ -97,7 +97,7 @@ export default class EditPage extends React.Component<Props, State> {
               style={{ width: "100%" }}
             />
           </div>
-          <Paper style={{ padding: desktopGutterLess }}>
+          <Paper style={{ padding: theme.spacing(2) }}>
             <h2>Forsidesnutt</h2>
             <p>
               Tittel og introduksjon til bruk på forsida. Det er ennå ikke
@@ -144,3 +144,5 @@ export default class EditPage extends React.Component<Props, State> {
     );
   }
 }
+
+export default withTheme(EditPage);

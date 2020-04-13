@@ -1,8 +1,7 @@
 /* global FormData */
 
-import { RelayProp } from "react-relay";
-import axios from "axios";
-import MoreVertIcon from "@material-ui/icons/MoreVert";
+import { Theme, withStyles } from "@material-ui/core";
+import Button from "@material-ui/core/Button";
 import Dialog from "@material-ui/core/Dialog";
 import DialogActions from "@material-ui/core/DialogActions";
 import DialogContent from "@material-ui/core/DialogContent";
@@ -11,34 +10,30 @@ import IconButton from "@material-ui/core/IconButton";
 import Menu from "@material-ui/core/Menu";
 import MenuItem from "@material-ui/core/MenuItem";
 import Paper from "@material-ui/core/Paper";
-import Button from "@material-ui/core/Button";
-import getMuiTheme from "material-ui/styles/getMuiTheme";
-import PropTypes from "prop-types";
+import MoreVertIcon from "@material-ui/icons/MoreVert";
+import axios from "axios";
 import React from "react";
 import Helmet from "react-helmet";
-import { createFragmentContainer, graphql } from "react-relay";
-
+import { createFragmentContainer, graphql, RelayProp } from "react-relay";
 import AddEventMutation from "../mutations/AddEvent";
-import AddProjectFileMutation from "../mutations/AddProjectFile";
 import AddPieceMutation from "../mutations/AddPiece";
+import AddProjectFileMutation from "../mutations/AddProjectFile";
 import RemovePieceMutation from "../mutations/RemovePiece";
 import SaveFilePermissionsMutation from "../mutations/SaveFilePermissions";
 import SaveProjectMutation from "../mutations/SaveProject";
 import SetProjectPosterMutation from "../mutations/SetProjectPoster";
 import { flattenPermissions } from "../utils";
-import theme from "../theme";
-
 import Daterange from "./Daterange";
-import List from "./List";
-import Text from "./Text";
-import EventItem from "./EventItem";
 import EventForm from "./EventForm";
-import ProjectForm from "./ProjectForm";
-import ProjectPieceForm from "./ProjectPieceForm";
+import EventItem from "./EventItem";
 import FileList from "./FileList";
 import FileUpload from "./FileUpload";
+import List from "./List";
 import MusicList from "./MusicList";
 import PermissionChips from "./PermissionChips";
+import ProjectForm from "./ProjectForm";
+import ProjectPieceForm from "./ProjectPieceForm";
+import Text from "./Text";
 import { Project_organization } from "./__generated__/Project_organization.graphql";
 import { Project_viewer } from "./__generated__/Project_viewer.graphql";
 
@@ -46,6 +41,7 @@ type Props = {
   organization: Project_organization,
   viewer: Project_viewer,
   relay: RelayProp,
+  theme: Theme,
 };
 
 type State = {
@@ -59,17 +55,6 @@ type State = {
 };
 
 export class Project extends React.Component<Props, State> {
-  static childContextTypes = {
-    muiTheme: PropTypes.object.isRequired,
-  };
-
-  muiTheme: {};
-
-  constructor(props) {
-    super(props);
-    this.muiTheme = getMuiTheme(theme);
-  }
-
   state = {
     public: false,
     menuIsOpen: null,
@@ -79,10 +64,6 @@ export class Project extends React.Component<Props, State> {
     editProject: false,
     showEnded: false,
   };
-
-  getChildContext() {
-    return { muiTheme: this.muiTheme };
-  }
 
   onMenuOpen = (event: React.MouseEvent<HTMLButtonElement>) => {
     this.setState({ menuIsOpen: event.currentTarget });
@@ -247,7 +228,7 @@ export class Project extends React.Component<Props, State> {
   };
 
   render() {
-    const { organization, viewer } = this.props;
+    const { organization, theme, viewer } = this.props;
     const {
       project,
       isMember,
@@ -263,7 +244,6 @@ export class Project extends React.Component<Props, State> {
           return edge.node.isEnded;
         }).length > 0;
     }
-    const { desktopGutterLess } = theme.spacing;
     return (
       <Paper className="row">
         <Helmet
@@ -348,14 +328,14 @@ export class Project extends React.Component<Props, State> {
             display: "flex",
             flexWrap: "wrap",
             justifyContent: "space-between",
-            marginLeft: -desktopGutterLess,
-            marginRight: -desktopGutterLess,
+            marginLeft: -theme.spacing(2),
+            marginRight: -theme.spacing(2),
           }}
         >
           <div
             style={{
-              paddingLeft: desktopGutterLess,
-              paddingRight: desktopGutterLess,
+              paddingLeft: theme.spacing(2),
+              paddingRight: theme.spacing(2),
               width: "100%",
             }}
           >
@@ -393,8 +373,8 @@ export class Project extends React.Component<Props, State> {
                 onSavePermissions={this.onSaveFilePermissions}
                 onSetProjectPoster={this.onSetProjectPoster}
                 style={{
-                  marginLeft: -desktopGutterLess,
-                  marginRight: -desktopGutterLess,
+                  marginLeft: -theme.spacing(2),
+                  marginRight: -theme.spacing(2),
                 }}
                 title="Prosjektfiler"
                 viewer={viewer}
@@ -405,8 +385,8 @@ export class Project extends React.Component<Props, State> {
           <div
             style={{
               width: 300,
-              paddingLeft: desktopGutterLess,
-              paddingRight: desktopGutterLess,
+              paddingLeft: theme.spacing(2),
+              paddingRight: theme.spacing(2),
             }}
           >
             {project.poster ? (
@@ -481,102 +461,104 @@ export class Project extends React.Component<Props, State> {
   }
 }
 
-export default createFragmentContainer(Project, {
-  organization: graphql`
-    fragment Project_organization on Organization {
-      name
-      isMember
-      isMusicAdmin
-      memberGroup {
-        id
-      }
-      baseurl
-      project(year: $year, tag: $tag) {
-        id
-        title
-        tag
-        start
-        end
-        year
-        publicMdtext
-        privateMdtext
-        conductors {
+export default withStyles(
+  createFragmentContainer(Project, {
+    organization: graphql`
+      fragment Project_organization on Organization {
+        name
+        isMember
+        isMusicAdmin
+        memberGroup {
           id
-          name
         }
-        managers {
+        baseurl
+        project(year: $year, tag: $tag) {
           id
-          name
-        }
-        poster {
-          filename
-          largePath
-        }
-        events(first: 100) {
-          edges {
-            node {
-              id
-              isEnded
-              ...EventItem_event
-            }
+          title
+          tag
+          start
+          end
+          year
+          publicMdtext
+          privateMdtext
+          conductors {
+            id
+            name
           }
-        }
-        files(first: 100) {
-          edges {
-            node {
-              id
-              filename
-              created
-              mimetype
-              size
-              permissions {
-                public
-                groups {
-                  id
-                  name
-                }
-                users {
-                  id
-                  name
-                }
+          managers {
+            id
+            name
+          }
+          poster {
+            filename
+            largePath
+          }
+          events(first: 100) {
+            edges {
+              node {
+                id
+                isEnded
+                ...EventItem_event
               }
-              tags
-              isImage
-              thumbnailPath
-              path
+            }
+          }
+          files(first: 100) {
+            edges {
+              node {
+                id
+                filename
+                created
+                mimetype
+                size
+                permissions {
+                  public
+                  groups {
+                    id
+                    name
+                  }
+                  users {
+                    id
+                    name
+                  }
+                }
+                tags
+                isImage
+                thumbnailPath
+                path
+              }
+            }
+          }
+          music {
+            id
+            piece {
+              id
+              title
+              composers
+            }
+          }
+          permissions {
+            public
+            groups {
+              id
+              name
+            }
+            users {
+              id
+              name
             }
           }
         }
-        music {
-          id
-          piece {
-            id
-            title
-            composers
-          }
-        }
-        permissions {
-          public
-          groups {
-            id
-            name
-          }
-          users {
-            id
-            name
-          }
-        }
+        ...ProjectPieceForm_organization
+        ...FileList_organization
+        ...FileUpload_organization
+        ...ProjectForm_organization
       }
-      ...ProjectPieceForm_organization
-      ...FileList_organization
-      ...FileUpload_organization
-      ...ProjectForm_organization
-    }
-  `,
-  viewer: graphql`
-    fragment Project_viewer on User {
-      ...EventForm_viewer
-      ...ProjectForm_viewer
-    }
-  `,
-});
+    `,
+    viewer: graphql`
+      fragment Project_viewer on User {
+        ...EventForm_viewer
+        ...ProjectForm_viewer
+      }
+    `,
+  }),
+);

@@ -1,26 +1,20 @@
-import getMuiTheme from "material-ui/styles/getMuiTheme";
+import Button from "@material-ui/core/Button";
 import Chip from "@material-ui/core/Chip";
 import Dialog from "@material-ui/core/Dialog";
-import Button from "@material-ui/core/Button";
+import IconButton from "@material-ui/core/IconButton";
 import Menu from "@material-ui/core/Menu";
 import MenuItem from "@material-ui/core/MenuItem";
-import IconButton from "@material-ui/core/IconButton";
 import Paper from "@material-ui/core/Paper";
-import MoreVertIcon from "material-ui/svg-icons/navigation/more-vert";
-import PropTypes from "prop-types";
-import * as React from "react";
-import { createFragmentContainer, graphql } from "react-relay";
-import { RelayProp } from "react-relay";
-
-import theme from "../theme";
-import EditEventMutation from "../mutations/EditEvent";
+import MoreVertIcon from "@material-ui/icons/MoreVert";
+import React from "react";
+import { createFragmentContainer, graphql, RelayProp } from "react-relay";
 import DeleteEventMutation from "../mutations/DeleteEvent";
-
-import { Event_viewer } from "./__generated__/Event_viewer.graphql";
-import { Event_organization } from "./__generated__/Event_organization.graphql";
+import EditEventMutation from "../mutations/EditEvent";
 import Daterange from "./Daterange";
-import Text from "./Text";
 import EventForm from "./EventForm";
+import Text from "./Text";
+import { Event_organization } from "./__generated__/Event_organization.graphql";
+import { Event_viewer } from "./__generated__/Event_viewer.graphql";
 
 type Props = {
   organization: Event_organization,
@@ -39,26 +33,11 @@ type State = {
 };
 
 class Event extends React.Component<Props, State> {
-  static childContextTypes = {
-    muiTheme: PropTypes.object.isRequired,
-  };
-
-  constructor(props) {
-    super(props);
-    this.muiTheme = getMuiTheme(theme);
-  }
-
   state = {
     editing: false,
     deleting: false,
     menuIsOpen: null,
   };
-
-  getChildContext() {
-    return { muiTheme: this.muiTheme };
-  }
-
-  muiTheme: {};
 
   onMenuOpen = (event: React.MouseEvent<HTMLButtonElement>) => {
     this.setState({ menuIsOpen: event.currentTarget });

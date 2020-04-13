@@ -1,22 +1,17 @@
-import { createFragmentContainer, graphql, RelayProp } from "react-relay";
-import getMuiTheme from "material-ui/styles/getMuiTheme";
+import IconButton from "@material-ui/core/IconButton";
 import Menu from "@material-ui/core/Menu";
 import MenuItem from "@material-ui/core/MenuItem";
-import IconButton from "@material-ui/core/IconButton";
 import Paper from "@material-ui/core/Paper";
 import MoreVertIcon from "@material-ui/icons/MoreVert";
-import PropTypes from "prop-types";
-import * as React from "react";
-
+import React from "react";
+import { createFragmentContainer, graphql, RelayProp } from "react-relay";
 import EditPageMutation from "../mutations/EditPage";
-import theme from "../theme";
-import { flattenPermissions } from "../utils";
 import { PermissionArray } from "../types";
-
-import { Page_organization } from "./__generated__/Page_organization.graphql";
-import { Page_viewer } from "./__generated__/Page_viewer.graphql";
+import { flattenPermissions } from "../utils";
 import EditPage from "./EditPage";
 import Text from "./Text";
+import { Page_organization } from "./__generated__/Page_organization.graphql";
+import { Page_viewer } from "./__generated__/Page_viewer.graphql";
 
 type Props = {
   viewer: Page_viewer,
@@ -34,15 +29,6 @@ type State = {
 };
 
 class Page extends React.Component<Props, State> {
-  static childContextTypes = {
-    muiTheme: PropTypes.object.isRequired,
-  };
-
-  constructor(props: Props) {
-    super(props);
-    this.muiTheme = getMuiTheme(theme);
-  }
-
   state = {
     edit: false,
     menuIsOpen: null,
@@ -51,12 +37,6 @@ class Page extends React.Component<Props, State> {
         ? flattenPermissions(this.props.organization.page.permissions)
         : [],
   };
-
-  getChildContext() {
-    return { muiTheme: this.muiTheme };
-  }
-
-  muiTheme: {};
 
   onMenuOpen = (event: React.MouseEvent<HTMLButtonElement>) => {
     this.setState({ menuIsOpen: event.currentTarget });

@@ -1,29 +1,26 @@
+import Button from "@material-ui/core/Button";
 import Dialog from "@material-ui/core/Dialog";
 import DialogActions from "@material-ui/core/DialogActions";
 import DialogContent from "@material-ui/core/DialogContent";
 import DialogTitle from "@material-ui/core/DialogTitle";
 import IconButton from "@material-ui/core/IconButton";
-import Menu from "@material-ui/core/Menu";
 import List from "@material-ui/core/List";
 import ListItem from "@material-ui/core/ListItem";
+import ListItemSecondaryAction from "@material-ui/core/ListItemSecondaryAction";
 import ListItemText from "@material-ui/core/ListItemText";
+import Menu from "@material-ui/core/Menu";
 import MenuItem from "@material-ui/core/MenuItem";
 import Paper from "@material-ui/core/Paper";
-import Button from "@material-ui/core/Button";
+import withStyles from "@material-ui/core/styles/withStyles";
 import TextField from "@material-ui/core/TextField";
-import getMuiTheme from "material-ui/styles/getMuiTheme";
-import MoreVertIcon from "@material-ui/icons/MoreVert";
+import { Theme } from "@material-ui/core";
 import Delete from "@material-ui/icons/Delete";
-import { withStyles } from "@material-ui/core/styles";
-import PropTypes from "prop-types";
+import MoreVertIcon from "@material-ui/icons/MoreVert";
 import React from "react";
 import { createFragmentContainer, graphql, RelayProp } from "react-relay";
-
 import CreateRoleMutation from "../mutations/CreateRole";
 import DeleteRoleMutation from "../mutations/DeleteRole";
-import theme from "../theme";
 import { Roles_organization } from "./__generated__/Roles_organization.graphql";
-import { ListItemSecondaryAction } from "@material-ui/core";
 
 type Props = {
   organization: Roles_organization,
@@ -39,25 +36,12 @@ type State = {
 };
 
 class Roles extends React.Component<Props, State> {
-  static childContextTypes = {
-    muiTheme: PropTypes.object.isRequired,
-  };
-
-  constructor(props: Props) {
-    super(props);
-    this.muiTheme = getMuiTheme(theme);
-  }
-
   state = {
     creating: false,
     name: "",
     email: "",
     menuIsOpen: null,
   };
-
-  getChildContext() {
-    return { muiTheme: this.muiTheme };
-  }
 
   onMenuOpen = (event: React.MouseEvent<HTMLButtonElement>) => {
     this.setState({ menuIsOpen: event.currentTarget });
@@ -199,7 +183,7 @@ class Roles extends React.Component<Props, State> {
   }
 }
 
-const useStyles = (theme) => {
+const useStyles = (theme: Theme) => {
   return {
     nested: {
       paddingLeft: theme.spacing(8),

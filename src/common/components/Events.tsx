@@ -1,22 +1,15 @@
-import { RelayRefetchProp } from "react-relay";
-import Link from "found/Link";
 import Button from "@material-ui/core/Button";
 import IconButton from "@material-ui/core/IconButton";
 import Menu from "@material-ui/core/Menu";
 import MenuItem from "@material-ui/core/MenuItem";
 import Toolbar from "@material-ui/core/Toolbar";
-import getMuiTheme from "material-ui/styles/getMuiTheme";
+import Link from "found/Link";
 import ActionHelp from "material-ui/svg-icons/action/help";
 import MoreVertIcon from "material-ui/svg-icons/navigation/more-vert";
-import PropTypes from "prop-types";
-import * as React from "react";
-import { createRefetchContainer, graphql } from "react-relay";
-
-import { Events_organization } from "./__generated__/Events_organization.graphql";
-
-import theme from "../theme";
-
+import React from "react";
+import { createRefetchContainer, graphql, RelayRefetchProp } from "react-relay";
 import EventItem from "./EventItem";
+import { Events_organization } from "./__generated__/Events_organization.graphql";
 
 const ITEMS_PER_PAGE = 20;
 
@@ -30,22 +23,11 @@ type State = {
 };
 
 class Events extends React.Component<Props, State> {
-  muiTheme: {};
-
-  static childContextTypes = {
-    muiTheme: PropTypes.object.isRequired,
-  };
-
   constructor(props) {
     super(props);
-    this.muiTheme = getMuiTheme(theme);
     this.state = {
       menuIsOpen: null,
     };
-  }
-
-  getChildContext() {
-    return { muiTheme: this.muiTheme };
   }
 
   loadMoreEvents = () => {
@@ -71,7 +53,7 @@ class Events extends React.Component<Props, State> {
       <div className="row">
         <div style={{ display: "flex", justifyContent: "space-between" }}>
           <h1>Aktiviteter</h1>
-          <Toolbar style={{ backgroundColor: theme.palette.fullWhite }}>
+          <Toolbar>
             <div>
               <Button
                 variant="text"

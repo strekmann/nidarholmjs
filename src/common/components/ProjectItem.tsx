@@ -1,10 +1,10 @@
 import Paper from "@material-ui/core/Paper";
+import withTheme from "@material-ui/core/styles/withTheme";
+import { Theme } from "@material-ui/core";
 import moment from "moment";
 import React from "react";
 import { createFragmentContainer, graphql } from "react-relay";
 import Link from "found/Link";
-
-import theme from "../theme";
 
 import Date from "./Date";
 import Daterange from "./Daterange";
@@ -32,12 +32,12 @@ const renderPublicEvents = (edges) => {
 type Props = {
   project: ProjectItem_project,
   showText: boolean,
+  theme: Theme,
 };
 
 class ProjectItem extends React.Component<Props> {
   render() {
-    const { desktopGutterLess, desktopGutterMini } = theme.spacing;
-    const { project, showText } = this.props;
+    const { project, showText, theme } = this.props;
     const {
       title,
       start,
@@ -52,7 +52,7 @@ class ProjectItem extends React.Component<Props> {
     const widePoster = moment(end).isAfter(moment([2016, 7, 1]));
     if (widePoster) {
       return (
-        <Paper style={{ marginBottom: desktopGutterLess }}>
+        <Paper style={{ marginBottom: theme.spacing(2) }}>
           {poster ? (
             <Link to={`/${year}/${tag}`}>
               <img alt="" src={poster.normalPath} className="responsive" />
@@ -60,13 +60,13 @@ class ProjectItem extends React.Component<Props> {
           ) : null}
           <div
             style={{
-              paddingLeft: desktopGutterLess,
-              paddingRight: desktopGutterLess,
-              paddingTop: poster ? null : desktopGutterLess,
-              paddingBottom: desktopGutterLess,
+              paddingLeft: theme.spacing(2),
+              paddingRight: theme.spacing(2),
+              paddingTop: poster ? 0 : theme.spacing(2),
+              paddingBottom: theme.spacing(2),
             }}
           >
-            <h2 style={{ marginTop: desktopGutterMini }}>
+            <h2 style={{ marginTop: theme.spacing(1) }}>
               <Link to={`/${year}/${tag}`}>{title}</Link>
             </h2>
             {renderPublicEvents(events.edges)}
@@ -89,11 +89,11 @@ class ProjectItem extends React.Component<Props> {
       );
     }
     return (
-      <Paper style={{ display: "flex", marginBottom: desktopGutterLess }}>
+      <Paper style={{ display: "flex", marginBottom: theme.spacing(2) }}>
         <div
-          style={{ width: poster ? "50%" : "100%", padding: desktopGutterLess }}
+          style={{ width: poster ? "50%" : "100%", padding: theme.spacing(2) }}
         >
-          <h2 style={{ marginTop: desktopGutterMini }}>
+          <h2 style={{ marginTop: theme.spacing(1) }}>
             <Link to={`/${year}/${tag}`}>{title}</Link>
           </h2>
           {renderPublicEvents(events.edges)}
@@ -121,7 +121,7 @@ class ProjectItem extends React.Component<Props> {
               width: "50%",
               height: "100%",
               maxWidth: 230,
-              paddingLeft: desktopGutterLess,
+              paddingLeft: theme.spacing(2),
             }}
           />
         ) : null}
@@ -130,32 +130,34 @@ class ProjectItem extends React.Component<Props> {
   }
 }
 
-export default createFragmentContainer(ProjectItem, {
-  project: graphql`
-    fragment ProjectItem_project on Project {
-      id
-      title
-      start
-      end
-      year
-      tag
-      publicMdtext
-      poster {
-        filename
-        normalPath
-      }
-      conductors {
-        name
-      }
-      events(first: 5, highlighted: true) {
-        edges {
-          node {
-            id
-            location
-            start
+export default withTheme(
+  createFragmentContainer(ProjectItem, {
+    project: graphql`
+      fragment ProjectItem_project on Project {
+        id
+        title
+        start
+        end
+        year
+        tag
+        publicMdtext
+        poster {
+          filename
+          normalPath
+        }
+        conductors {
+          name
+        }
+        events(first: 5, highlighted: true) {
+          edges {
+            node {
+              id
+              location
+              start
+            }
           }
         }
       }
-    }
-  `,
-});
+    `,
+  }),
+);

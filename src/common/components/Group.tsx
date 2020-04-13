@@ -1,6 +1,8 @@
-import Link from "found/Link";
-import AutoComplete from "material-ui/AutoComplete";
+import Button from "@material-ui/core/Button";
 import Dialog from "@material-ui/core/Dialog";
+import DialogActions from "@material-ui/core/DialogActions";
+import DialogContent from "@material-ui/core/DialogContent";
+import DialogTitle from "@material-ui/core/DialogTitle";
 import Divider from "@material-ui/core/Divider";
 import IconButton from "@material-ui/core/IconButton";
 import List from "@material-ui/core/List";
@@ -10,23 +12,14 @@ import Paper from "@material-ui/core/Paper";
 import TextField from "@material-ui/core/TextField";
 import Toolbar from "@material-ui/core/Toolbar";
 import MoreVertIcon from "@material-ui/icons/MoreVert";
-import getMuiTheme from "material-ui/styles/getMuiTheme";
-import PropTypes from "prop-types";
-import * as React from "react";
+import Link from "found/Link";
+import AutoComplete from "material-ui/AutoComplete";
+import React from "react";
 import { createFragmentContainer, graphql } from "react-relay";
-import { RelayProp } from "react-relay";
-
-import theme from "../theme";
 import JoinGroupMutation from "../mutations/JoinGroup";
 import SaveGroupMutation from "../mutations/SaveGroup";
-
 import GroupSettingsUserItem from "./GroupSettingsUserItem";
-
 import { Group_organization } from "./__generated__/Group_organization.graphql";
-import DialogTitle from "@material-ui/core/DialogTitle";
-import Button from "@material-ui/core/Button";
-import DialogActions from "@material-ui/core/DialogActions";
-import DialogContent from "@material-ui/core/DialogContent";
 
 type Props = {
   organization: Group_organization,
@@ -45,13 +38,8 @@ type State = {
 };
 
 class Group extends React.Component<Props, State> {
-  static childContextTypes = {
-    muiTheme: PropTypes.object.isRequired,
-  };
-
   constructor(props: Props) {
     super(props);
-    this.muiTheme = getMuiTheme(theme);
     const { organization } = this.props;
     this.state = {
       joinGroup: false,
@@ -61,10 +49,6 @@ class Group extends React.Component<Props, State> {
       groupLeaderEmail: organization.group?.groupLeaderEmail || "",
       menuIsOpen: null,
     };
-  }
-
-  getChildContext() {
-    return { muiTheme: this.muiTheme };
   }
 
   onMenuOpen = (event: React.MouseEvent<HTMLButtonElement>) => {
@@ -91,8 +75,6 @@ class Group extends React.Component<Props, State> {
       );
     }
   };
-
-  muiTheme: {};
 
   joinGroup = (selection) => {
     this.setState({ joinGroup: false });
@@ -189,7 +171,7 @@ class Group extends React.Component<Props, State> {
                 </Button>
               </DialogActions>
             </Dialog>
-            <Toolbar style={{ backgroundColor: theme.palette.fullWhite }}>
+            <Toolbar>
               <div>
                 <Link to="/groups">Alle grupper</Link>
               </div>

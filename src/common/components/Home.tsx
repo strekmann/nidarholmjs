@@ -1,21 +1,17 @@
 /* eslint "react/no-danger": 0 */
 
-import * as React from "react";
-import { createFragmentContainer, graphql, RelayProp } from "react-relay";
-import getMuiTheme from "material-ui/styles/getMuiTheme";
 import Button from "@material-ui/core/Button";
 import Paper from "@material-ui/core/Paper";
-import PropTypes from "prop-types";
 import Link from "found/Link";
-
-import theme from "../theme";
+import React from "react";
+import { createFragmentContainer, graphql, RelayProp } from "react-relay";
 import SendContactEmailMutation from "../mutations/SendContactEmail";
-
 import ContactForm from "./ContactForm";
 import EventItem from "./EventItem";
 import ProjectItem from "./ProjectItem";
 import Text from "./Text";
 import { Home_organization } from "./__generated__/Home_organization.graphql";
+import { withTheme } from "@material-ui/core";
 
 type Props = {
   organization: Home_organization,
@@ -27,24 +23,9 @@ type State = {
 };
 
 class Home extends React.Component<Props, State> {
-  muiTheme: {};
-
-  static childContextTypes = {
-    muiTheme: PropTypes.object.isRequired,
-  };
-
-  constructor(props: Props) {
-    super(props);
-    this.muiTheme = getMuiTheme(theme);
-  }
-
   state = {
     contactDialogOpen: false,
   };
-
-  getChildContext() {
-    return { muiTheme: this.muiTheme };
-  }
 
   sendEmail = (form) => {
     const { organization, relay } = this.props;
@@ -60,10 +41,9 @@ class Home extends React.Component<Props, State> {
   };
 
   render() {
-    const { organization } = this.props;
+    const { organization, theme } = this.props;
     const { contactDialogOpen } = this.state;
     const { nextProjects, nextEvents } = organization;
-    const { desktopGutterLess } = theme.spacing;
     return (
       <div id="home">
         <div
@@ -87,16 +67,6 @@ class Home extends React.Component<Props, State> {
           >
             {organization.name}
           </h1>
-          <div
-            style={{
-              position: "absolute",
-              bottom: 0,
-              right: 0,
-              paddingRight: desktopGutterLess,
-              paddingLeft: desktopGutterLess,
-              color: theme.palette.accent3Color,
-            }}
-          />
         </div>
         <div
           style={{
@@ -146,8 +116,8 @@ class Home extends React.Component<Props, State> {
                 id="information"
                 className="item"
                 style={{
-                  paddingLeft: desktopGutterLess,
-                  paddingRight: desktopGutterLess,
+                  paddingLeft: theme.spacing(2),
+                  paddingRight: theme.spacing(2),
                 }}
               >
                 <h2>
@@ -163,8 +133,8 @@ class Home extends React.Component<Props, State> {
               <Paper
                 className="item"
                 style={{
-                  paddingLeft: desktopGutterLess,
-                  paddingRight: desktopGutterLess,
+                  paddingLeft: theme.spacing(2),
+                  paddingRight: theme.spacing(2),
                 }}
               >
                 <h2>
@@ -180,8 +150,8 @@ class Home extends React.Component<Props, State> {
               <Paper
                 className="item"
                 style={{
-                  paddingLeft: desktopGutterLess,
-                  paddingRight: desktopGutterLess,
+                  paddingLeft: theme.spacing(2),
+                  paddingRight: theme.spacing(2),
                 }}
               >
                 <h2>
@@ -197,8 +167,8 @@ class Home extends React.Component<Props, State> {
               id="contact"
               className="item"
               style={{
-                paddingLeft: desktopGutterLess,
-                paddingRight: desktopGutterLess,
+                paddingLeft: theme.spacing(2),
+                paddingRight: theme.spacing(2),
               }}
             >
               <ContactForm
@@ -214,15 +184,15 @@ class Home extends React.Component<Props, State> {
                 className="small-narrow"
                 style={{
                   display: "flex",
-                  marginLeft: -desktopGutterLess,
-                  marginRight: -desktopGutterLess,
+                  marginLeft: -theme.spacing(2),
+                  marginRight: -theme.spacing(2),
                 }}
               >
                 <div
                   style={{
                     flex: "2 1 66%",
-                    paddingLeft: desktopGutterLess,
-                    paddingRight: desktopGutterLess,
+                    paddingLeft: theme.spacing(2),
+                    paddingRight: theme.spacing(2),
                   }}
                 >
                   <iframe
@@ -236,8 +206,8 @@ class Home extends React.Component<Props, State> {
                 <div
                   style={{
                     flex: "1 1 33%",
-                    paddingLeft: desktopGutterLess,
-                    paddingRight: desktopGutterLess,
+                    paddingLeft: theme.spacing(2),
+                    paddingRight: theme.spacing(2),
                   }}
                 >
                   <h3>E-post</h3>
@@ -260,44 +230,46 @@ class Home extends React.Component<Props, State> {
   }
 }
 
-export default createFragmentContainer(Home, {
-  viewer: graphql`
-    fragment Home_viewer on User {
-      id
-      name
-      email
-      username
-    }
-  `,
-  organization: graphql`
-    fragment Home_organization on Organization {
-      id
-      name
-      encodedEmail
-      mapUrl
-      contactText
-      summaries {
-        title
-        summary
-        slug
+export default withTheme(
+  createFragmentContainer(Home, {
+    viewer: graphql`
+      fragment Home_viewer on User {
+        id
+        name
+        email
+        username
       }
-      nextProjects(first: 3) {
-        edges {
-          node {
-            id
-            ...ProjectItem_project
+    `,
+    organization: graphql`
+      fragment Home_organization on Organization {
+        id
+        name
+        encodedEmail
+        mapUrl
+        contactText
+        summaries {
+          title
+          summary
+          slug
+        }
+        nextProjects(first: 3) {
+          edges {
+            node {
+              id
+              ...ProjectItem_project
+            }
           }
         }
-      }
-      nextEvents(first: 4) {
-        edges {
-          node {
-            id
-            ...EventItem_event
+        nextEvents(first: 4) {
+          edges {
+            node {
+              id
+              ...EventItem_event
+            }
           }
         }
+        ...ContactForm_organization
       }
-      ...ContactForm_organization
-    }
-  `,
-});
+    `,
+  }),
+);

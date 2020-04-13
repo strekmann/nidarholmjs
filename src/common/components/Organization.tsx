@@ -4,9 +4,7 @@ import Paper from "@material-ui/core/Paper";
 import Button from "@material-ui/core/Button";
 import { Tab, Tabs } from "material-ui/Tabs";
 import TextField from "@material-ui/core/TextField";
-import getMuiTheme from "material-ui/styles/getMuiTheme";
-import PropTypes from "prop-types";
-import * as React from "react";
+import React from "react";
 import { createFragmentContainer, graphql } from "react-relay";
 
 import AddOrganizationEventPersonResponsibilityMutation from "../mutations/AddOrganizationEventPersonResponsibility";
@@ -14,7 +12,6 @@ import AddOrganizationEventGroupResponsibilityMutation from "../mutations/AddOrg
 import SaveOrganizationEventPersonResponsibilityMutation from "../mutations/SaveOrganizationEventPersonResponsibility";
 import SaveOrganizationEventGroupResponsibilityMutation from "../mutations/SaveOrganizationEventGroupResponsibility";
 import SaveOrganizationMutation from "../mutations/SaveOrganization";
-import theme from "../theme";
 
 import OrganizationResponsibilityItem from "./OrganizationResponsibilityItem";
 import FrontpageSummaries from "./FrontpageSummaries";
@@ -43,15 +40,6 @@ type State = {
 };
 
 class Organization extends React.Component<Props, State> {
-  static childContextTypes = {
-    muiTheme: PropTypes.object.isRequired,
-  };
-
-  constructor(props) {
-    super(props);
-    this.muiTheme = getMuiTheme(theme);
-  }
-
   state = {
     summaries: this.props.organization.summaries,
     tab: "frontpage",
@@ -64,10 +52,6 @@ class Organization extends React.Component<Props, State> {
     eventGroupResponsibilityReminderDaysBefore: 0,
     eventGroupResponsibilityReminderAtHour: 0,
   };
-
-  getChildContext() {
-    return { muiTheme: this.muiTheme };
-  }
 
   onChange = (summaries) => {
     this.setState({ summaries });
@@ -150,8 +134,6 @@ class Organization extends React.Component<Props, State> {
       }),
     );
   };
-
-  muiTheme: {};
 
   saveOrganization = (event) => {
     event.preventDefault();
