@@ -1,26 +1,26 @@
-import update from "immutability-helper";
+import Button from "@material-ui/core/Button";
 import List from "@material-ui/core/List";
 import Paper from "@material-ui/core/Paper";
-import Button from "@material-ui/core/Button";
-import { Tab, Tabs } from "material-ui/Tabs";
+import Tab from "@material-ui/core/Tab";
+import Tabs from "@material-ui/core/Tabs";
 import TextField from "@material-ui/core/TextField";
+import update from "immutability-helper";
 import React from "react";
-import { createFragmentContainer, graphql } from "react-relay";
-
-import AddOrganizationEventPersonResponsibilityMutation from "../mutations/AddOrganizationEventPersonResponsibility";
+import { createFragmentContainer, graphql, RelayProp } from "react-relay";
 import AddOrganizationEventGroupResponsibilityMutation from "../mutations/AddOrganizationEventGroupResponsibility";
-import SaveOrganizationEventPersonResponsibilityMutation from "../mutations/SaveOrganizationEventPersonResponsibility";
-import SaveOrganizationEventGroupResponsibilityMutation from "../mutations/SaveOrganizationEventGroupResponsibility";
+import AddOrganizationEventPersonResponsibilityMutation from "../mutations/AddOrganizationEventPersonResponsibility";
 import SaveOrganizationMutation from "../mutations/SaveOrganization";
-
-import OrganizationResponsibilityItem from "./OrganizationResponsibilityItem";
+import SaveOrganizationEventGroupResponsibilityMutation from "../mutations/SaveOrganizationEventGroupResponsibility";
+import SaveOrganizationEventPersonResponsibilityMutation from "../mutations/SaveOrganizationEventPersonResponsibility";
 import FrontpageSummaries from "./FrontpageSummaries";
+import OrganizationResponsibilityItem from "./OrganizationResponsibilityItem";
 import { Organization_organization } from "./__generated__/Organization_organization.graphql";
+import { Theme, withStyles, WithStyles } from "@material-ui/core";
 
-type Props = {
-  organization: Organization_organization,
-  relay: RelayProp,
-};
+interface Props extends WithStyles<typeof styles> {
+  organization: Organization_organization;
+  relay: RelayProp;
+}
 
 type State = {
   summaries: Array<{
@@ -57,7 +57,7 @@ class Organization extends React.Component<Props, State> {
     this.setState({ summaries });
   };
 
-  onChangeTab = (tab: string) => {
+  onChangeTab = (event: React.ChangeEvent<{}>, tab: string) => {
     this.setState({ tab });
   };
 
@@ -233,17 +233,25 @@ class Organization extends React.Component<Props, State> {
   };
 
   render() {
-    const org = this.props.organization;
-    const personResponsibilities = org.organizationEventPersonResponsibilities;
-    const groupResponsibilities = org.organizationEventGroupResponsibilities;
+    const { organization, classes } = this.props;
+    const personResponsibilities =
+      organization.organizationEventPersonResponsibilities;
+    const groupResponsibilities =
+      organization.organizationEventGroupResponsibilities;
     return (
       <Paper className="row">
         <h1>Innstillinger</h1>
         <Tabs value={this.state.tab} onChange={this.onChangeTab}>
-          <Tab label="Forside" value="frontpage">
+          <Tab label="Forside" value="frontpage"></Tab>
+          <Tab label="Ansvarslister" value="responsibilities">
+            {" "}
+          </Tab>
+        </Tabs>
+        {this.state.tab === "frontpage" ? (
+          <Paper variant="outlined" square className={classes.tabPanel}>
             <form onSubmit={this.saveOrganization}>
               <FrontpageSummaries
-                pages={org.pages}
+                pages={organization.pages}
                 summaries={this.state.summaries}
                 onChange={this.onChange}
                 onAdd={this.onAdd}
@@ -252,166 +260,193 @@ class Organization extends React.Component<Props, State> {
                 Lagre
               </Button>
             </form>
-          </Tab>
-          <Tab label="Ansvarslister" value="responsibilities">
-            <h2>Aktivitetsansvarlige - personer</h2>
-            <p>
-              Her defineres ansvarsroller som kan tilordnes aktiviteter i
-              lister. For eksempel kakeansvar.
-            </p>
-            <List>
-              {personResponsibilities.map((responsibility) => {
-                return (
-                  <OrganizationResponsibilityItem
-                    key={responsibility.id}
-                    item={responsibility}
-                    onSave={this.savePersonResponsibility}
+          </Paper>
+        ) : null}
+        {this.state.tab === "responsibilities" ? (
+          <div>
+            <Paper variant="outlined" className={classes.tabPanel}>
+              <h2>Aktivitetsansvarlige - personer</h2>
+              <p>
+                Her defineres ansvarsroller som kan tilordnes aktiviteter i
+                lister. For eksempel kakeansvar.
+              </p>
+              <List>
+                {personResponsibilities.map((responsibility) => {
+                  return (
+                    <OrganizationResponsibilityItem
+                      key={responsibility.id}
+                      item={responsibility}
+                      onSave={this.savePersonResponsibility}
+                    />
+                  );
+                })}
+              </List>
+              <form onSubmit={this.addEventPersonResponsibility}>
+                <h3>Nytt personansvar</h3>
+                <div>
+                  <TextField
+                    label="Navn"
+                    value={this.state.eventPersonResponsibilityName}
+                    onChange={this.onChangeEventPersonResponsibilityName}
                   />
-                );
-              })}
-            </List>
-            <form onSubmit={this.addEventPersonResponsibility}>
-              <h3>Nytt personansvar</h3>
-              <div>
-                <TextField
-                  label="Navn"
-                  value={this.state.eventPersonResponsibilityName}
-                  onChange={this.onChangeEventPersonResponsibilityName}
-                />
-              </div>
-              <div>
-                <TextField
-                  label="Epostinnhold"
-                  fullWidth
-                  multiline
-                  value={this.state.eventPersonResponsibilityReminderText}
-                  onChange={this.onChangeEventPersonResponsibilityReminderText}
-                />
-              </div>
-              <div>
-                <TextField
-                  label="Sendes klokka"
-                  type="number"
-                  value={this.state.eventPersonResponsibilityReminderAtHour}
-                  onChange={
-                    this.onChangeEventPersonResponsibilityReminderAtHour
-                  }
-                />
-              </div>
-              <div>
-                <TextField
-                  label="Dager i forveien"
-                  type="number"
-                  value={this.state.eventPersonResponsibilityReminderDaysBefore}
-                  onChange={
-                    this.onChangeEventPersonResponsibilityReminderDaysBefore
-                  }
-                />
-              </div>
-              <div>
-                <Button variant="contained" type="submit">
-                  Lagre
-                </Button>
-              </div>
-            </form>
-            <h2>Aktivitetsansvarlige - grupper</h2>
-            <p>
-              Her defineres gruppeansvar som kan tilordnes aktiviteter i lister.
-              For eksempel sjauing.
-            </p>
-            <List>
-              {groupResponsibilities.map((responsibility) => {
-                return (
-                  <OrganizationResponsibilityItem
-                    key={responsibility.id}
-                    item={responsibility}
-                    onSave={this.saveGroupResponsibility}
+                </div>
+                <div>
+                  <TextField
+                    label="Epostinnhold"
+                    fullWidth
+                    multiline
+                    value={this.state.eventPersonResponsibilityReminderText}
+                    onChange={
+                      this.onChangeEventPersonResponsibilityReminderText
+                    }
                   />
-                );
-              })}
-            </List>
-            <form onSubmit={this.addEventGroupResponsibility}>
-              <h3>Nytt gruppeansvar</h3>
-              <div>
-                <TextField
-                  label="Navn"
-                  value={this.state.eventGroupResponsibilityName}
-                  onChange={this.onChangeEventGroupResponsibilityName}
-                />
-              </div>
-              <div>
-                <TextField
-                  label="Epostinnhold"
-                  fullWidth
-                  multiline
-                  value={this.state.eventGroupResponsibilityReminderText}
-                  onChange={this.onChangeEventGroupResponsibilityReminderText}
-                />
-              </div>
-              <div>
-                <TextField
-                  label="Sendes klokka"
-                  type="number"
-                  value={this.state.eventGroupResponsibilityReminderAtHour}
-                  onChange={this.onChangeEventGroupResponsibilityReminderAtHour}
-                />
-              </div>
-              <div>
-                <TextField
-                  label="Dager i forveien"
-                  type="number"
-                  value={this.state.eventGroupResponsibilityReminderDaysBefore}
-                  onChange={
-                    this.onChangeEventGroupResponsibilityReminderDaysBefore
-                  }
-                />
-              </div>
-              <div>
-                <Button variant="contained" type="submit">
-                  Lagre
-                </Button>
-              </div>
-            </form>
-          </Tab>
-        </Tabs>
+                </div>
+                <div>
+                  <TextField
+                    label="Sendes klokka"
+                    type="number"
+                    value={this.state.eventPersonResponsibilityReminderAtHour}
+                    onChange={
+                      this.onChangeEventPersonResponsibilityReminderAtHour
+                    }
+                  />
+                </div>
+                <div>
+                  <TextField
+                    label="Dager i forveien"
+                    type="number"
+                    value={
+                      this.state.eventPersonResponsibilityReminderDaysBefore
+                    }
+                    onChange={
+                      this.onChangeEventPersonResponsibilityReminderDaysBefore
+                    }
+                  />
+                </div>
+                <div>
+                  <Button variant="contained" type="submit">
+                    Lagre
+                  </Button>
+                </div>
+              </form>
+            </Paper>
+            <Paper variant="outlined" className={classes.tabPanel}>
+              <h2>Aktivitetsansvarlige - grupper</h2>
+              <p>
+                Her defineres gruppeansvar som kan tilordnes aktiviteter i
+                lister. For eksempel sjauing.
+              </p>
+              <List>
+                {groupResponsibilities.map((responsibility) => {
+                  return (
+                    <OrganizationResponsibilityItem
+                      key={responsibility.id}
+                      item={responsibility}
+                      onSave={this.saveGroupResponsibility}
+                    />
+                  );
+                })}
+              </List>
+              <form onSubmit={this.addEventGroupResponsibility}>
+                <h3>Nytt gruppeansvar</h3>
+                <div>
+                  <TextField
+                    label="Navn"
+                    value={this.state.eventGroupResponsibilityName}
+                    onChange={this.onChangeEventGroupResponsibilityName}
+                  />
+                </div>
+                <div>
+                  <TextField
+                    label="Epostinnhold"
+                    fullWidth
+                    multiline
+                    value={this.state.eventGroupResponsibilityReminderText}
+                    onChange={this.onChangeEventGroupResponsibilityReminderText}
+                  />
+                </div>
+                <div>
+                  <TextField
+                    label="Sendes klokka"
+                    type="number"
+                    value={this.state.eventGroupResponsibilityReminderAtHour}
+                    onChange={
+                      this.onChangeEventGroupResponsibilityReminderAtHour
+                    }
+                  />
+                </div>
+                <div>
+                  <TextField
+                    label="Dager i forveien"
+                    type="number"
+                    value={
+                      this.state.eventGroupResponsibilityReminderDaysBefore
+                    }
+                    onChange={
+                      this.onChangeEventGroupResponsibilityReminderDaysBefore
+                    }
+                  />
+                </div>
+                <div>
+                  <Button variant="contained" type="submit">
+                    Lagre
+                  </Button>
+                </div>
+              </form>
+            </Paper>
+          </div>
+        ) : null}
       </Paper>
     );
   }
 }
 
-export default createFragmentContainer(Organization, {
-  organization: graphql`
-    fragment Organization_organization on Organization {
-      id
-      summaries {
+const styles = (theme: Theme) => {
+  return {
+    tabPanel: {
+      marginBottom: theme.spacing(2),
+      paddingLeft: theme.spacing(2),
+      paddingRight: theme.spacing(2),
+      paddingBottom: theme.spacing(1),
+    },
+  };
+};
+
+export default withStyles(styles)(
+  createFragmentContainer(Organization, {
+    organization: graphql`
+      fragment Organization_organization on Organization {
         id
-        title
-        slug
-      }
-      organizationEventPersonResponsibilities {
-        id
-        name
-        reminderDaysBefore
-        reminderAtHour
-        reminderText
-      }
-      organizationEventGroupResponsibilities {
-        id
-        name
-        reminderDaysBefore
-        reminderAtHour
-        reminderText
-      }
-      pages(first: 100) {
-        edges {
-          cursor
-          node {
-            id
-            title
-            slug
+        summaries {
+          id
+          title
+          slug
+        }
+        organizationEventPersonResponsibilities {
+          id
+          name
+          reminderDaysBefore
+          reminderAtHour
+          reminderText
+        }
+        organizationEventGroupResponsibilities {
+          id
+          name
+          reminderDaysBefore
+          reminderAtHour
+          reminderText
+        }
+        pages(first: 100) {
+          edges {
+            cursor
+            node {
+              id
+              title
+              slug
+            }
           }
         }
       }
-    }
-  `,
-});
+    `,
+  }),
+);

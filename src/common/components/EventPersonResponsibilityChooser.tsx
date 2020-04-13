@@ -1,7 +1,6 @@
 import { RelayProp } from "react-relay";
 import Dialog from "@material-ui/core/Dialog";
 import Divider from "@material-ui/core/Divider";
-import Menu from "material-ui/Menu";
 import MenuItem from "@material-ui/core/MenuItem";
 import * as React from "react";
 import { createFragmentContainer, graphql } from "react-relay";
@@ -141,16 +140,16 @@ class EventPersonResponsibilityChooser extends React.Component<Props, State> {
       <div>
         <div>{matchingContributorsList}</div>
         <Divider />
-        <Menu>
+        <div>
           {nextButton}
           <MenuItem onClick={this.toggleChooser}>Legg til …</MenuItem>
-        </Menu>
+        </div>
         <Dialog
           title="Velg ansvarlig"
           open={this.state.chooserOpen}
           onClose={this.toggleChooser}
         >
-          <Menu>{chooserItems}</Menu>
+          <div>{chooserItems}</div>
         </Dialog>
       </div>
     );

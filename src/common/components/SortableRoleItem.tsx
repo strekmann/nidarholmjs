@@ -1,7 +1,6 @@
 import IconButton from "@material-ui/core/Button";
-import RemoveCircle from "material-ui/svg-icons/content/remove-circle";
-import DragHandle from "material-ui/svg-icons/editor/drag-handle";
-import PropTypes from "prop-types";
+import RemoveCircle from "@material-ui/icons/RemoveCircle";
+import DragHandle from "@material-ui/icons/DragHandle";
 import React from "react";
 import { DragSource, DropTarget } from "react-dnd";
 
@@ -34,6 +33,14 @@ const roleTarget = {
   },
 };
 
+type Props = {
+  connectDragSource: (_: any) => any,
+  connectDropTarget: (_: any) => any,
+  isDragging: boolean,
+  name: string,
+  onRemoveRole: (_: any) => any,
+};
+
 @DropTarget(Types.ROLE, roleTarget, (connect) => {
   return {
     connectDropTarget: connect.dropTarget(),
@@ -45,15 +52,7 @@ const roleTarget = {
     isDragging: monitor.isDragging(),
   };
 })
-export default class SortableRoleItem extends React.Component {
-  static propTypes = {
-    connectDragSource: PropTypes.func.isRequired,
-    connectDropTarget: PropTypes.func.isRequired,
-    isDragging: PropTypes.bool.isRequired,
-    name: PropTypes.string.isRequired,
-    onRemoveRole: PropTypes.func,
-  };
-
+export default class SortableRoleItem extends React.Component<Props> {
   removeRole = () => {
     this.props.onRemoveRole(this.props);
   };

@@ -60,10 +60,15 @@
     "trailingComma": "all"
   },
   "nodemonConfig": {
+    "watch": [
+      "src"
+    ],
     "ignore": [
+      ".git",
       "client/",
       "convert/",
       "dist/",
+      "node_modules",
       "public/",
       "setup/",
       "test/",
@@ -71,7 +76,8 @@
       "uploaded_files/",
       "files/*",
       "target/"
-    ]
+    ],
+    "ext": "tsx,ts,js"
   },
   "dependencies": {
     "@babel/polyfill": "^7.2.5",
@@ -144,7 +150,6 @@
     "relay-runtime": "^9.0.0",
     "serialize-javascript": "^2.1.1",
     "serve-static": "^1.11.1",
-    "socket.io": "^1.4.8",
     "tempy": "^0.2.1"
   },
   "devDependencies": {
@@ -187,9 +192,9 @@
     "jscodeshift": "^0.3.32",
     "mini-css-extract-plugin": "^0.5.0",
     "mocha": "^3.3.0",
-    "nodemon": "^1.11.0",
+    "nodemon": "^2.0.3",
     "postcss-loader": "^3.0.0",
-    "prettier": "^1.13.7",
+    "prettier": "^2.0.4",
     "relay-compiler-language-typescript": "^12.0.0",
     "retire": "^1.2.10",
     "sass-loader": "^7.1.0",

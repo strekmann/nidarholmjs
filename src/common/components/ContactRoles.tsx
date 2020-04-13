@@ -2,8 +2,7 @@
 
 import Button from "@material-ui/core/Button";
 import IconButton from "@material-ui/core/IconButton";
-import AddCircle from "material-ui/svg-icons/content/add-circle";
-import PropTypes from "prop-types";
+import AddCircle from "@material-ui/icons/AddCircle";
 import React from "react";
 import { createFragmentContainer, graphql, RelayProp } from "react-relay";
 import SaveContactRolesMutation from "../mutations/SaveContactRoles";

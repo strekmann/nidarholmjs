@@ -23,7 +23,7 @@ import Link from "found/Link";
 import areIntlLocalesSupported from "intl-locales-supported";
 import AutoComplete from "material-ui/AutoComplete";
 import DatePicker from "material-ui/DatePicker";
-import { lightBlue100 } from "material-ui/styles/colors";
+import lightBlue from "@material-ui/core/colors/lightBlue";
 import moment from "moment";
 import React from "react";
 import { createFragmentContainer, graphql, RelayProp } from "react-relay";
@@ -702,7 +702,7 @@ class Member extends React.Component<Props, State> {
               ) : null}
             </div>
             {isAdmin && user ? (
-              <div style={{ backgroundColor: lightBlue100 }}>
+              <div style={{ backgroundColor: lightBlue[100] }}>
                 <h2>Admininfo</h2>
                 <Text text={user.membershipHistory || ""} />
                 <div>

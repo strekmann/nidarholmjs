@@ -13,7 +13,7 @@ import DialogTitle from "@material-ui/core/DialogTitle";
 import IconButton from "@material-ui/core/IconButton";
 import Menu from "@material-ui/core/Menu";
 import MenuItem from "@material-ui/core/MenuItem";
-import withStyles from "@material-ui/core/styles/withStyles";
+import withStyles, { WithStyles } from "@material-ui/core/styles/withStyles";
 import MoreVertIcon from "@material-ui/icons/MoreVert";
 import Download from "@material-ui/icons/PlayForWork";
 import * as React from "react";
@@ -25,22 +25,21 @@ import PermissionField from "./PermissionField";
 import TagField from "./TagField";
 import { FileItem_organization } from "./__generated__/FileItem_organization.graphql";
 
-type Props = {
-  classes: any,
-  id: string,
-  filename: string,
-  isImage: boolean,
-  memberGroupId: string,
-  onSavePermissions: any, //(string, PermissionArray, string[], () => void) => {},
-  onSetProjectPoster: (string) => {},
-  organization: FileItem_organization,
-  permissions: PermissionObject,
-  path: string,
-  searchTag: (string) => {},
-  tags: string[],
-  thumbnailPath: string,
-  viewer: any, //FileItem_viewer;
-};
+interface Props extends WithStyles<typeof styles> {
+  id: string;
+  filename: string;
+  isImage: boolean;
+  memberGroupId: string;
+  onSavePermissions: any; //(string, PermissionArray, string[], () => void) => {},
+  onSetProjectPoster: (string) => {};
+  organization: FileItem_organization;
+  permissions: PermissionObject;
+  path: string;
+  searchTag: (string) => {};
+  tags: string[];
+  thumbnailPath: string;
+  viewer: any; //FileItem_viewer;
+}
 
 type State = {
   editPermissions: boolean,
@@ -207,7 +206,7 @@ class FileItem extends React.Component<Props, State> {
   }
 }
 
-const useStyles = () => {
+const styles = () => {
   return {
     root: {
       width: 300,
@@ -222,7 +221,7 @@ const useStyles = () => {
   };
 };
 
-export default withStyles(useStyles)(
+export default withStyles(styles)(
   createFragmentContainer(FileItem, {
     organization: graphql`
       fragment FileItem_organization on Organization {

@@ -2,9 +2,8 @@ import IconButton from "@material-ui/core/Button";
 import ListItem from "@material-ui/core/ListItem";
 import ListItemSecondaryAction from "@material-ui/core/ListItemSecondaryAction";
 import ListItemText from "@material-ui/core/ListItemText";
-import Close from "material-ui/svg-icons/navigation/close";
-import PropTypes from "prop-types";
-import * as React from "react";
+import Close from "@material-ui/icons/Close";
+import React from "react";
 
 type Props = {
   name: string,
@@ -13,11 +12,6 @@ type Props = {
 };
 
 export default class PermissionItem extends React.Component<Props> {
-  static propTypes = {
-    name: PropTypes.string,
-    id: PropTypes.string,
-    removePermission: PropTypes.func,
-  };
   removePermission = () => {
     this.props.removePermission(this.props.id);
   };

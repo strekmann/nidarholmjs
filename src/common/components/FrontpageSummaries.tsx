@@ -1,7 +1,7 @@
 /* eslint "react/no-multi-comp": 0 */
 
 import IconButton from "@material-ui/core/Button";
-import AddCircle from "material-ui/svg-icons/content/add-circle";
+import AddCircle from "@material-ui/icons/AddCircle";
 import React from "react";
 import SortablePageList from "./SortablePageList";
 
