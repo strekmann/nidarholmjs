@@ -2,7 +2,6 @@ import config from "config";
 import ReactDOMServer from "react-dom/server";
 import serialize from "serialize-javascript";
 import "cookie-parser";
-import moment from "moment";
 import Helmet from "react-helmet";
 
 export default function renderPage(element, fetcher, userAgent) {
@@ -13,7 +12,7 @@ export default function renderPage(element, fetcher, userAgent) {
   if (config.get("html.style")) {
     link = helmet.link.toString();
   }
-  moment.locale("nb");
+
   global.navigator = { userAgent };
   return `
     <!doctype html>

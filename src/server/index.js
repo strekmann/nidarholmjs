@@ -53,6 +53,8 @@ import schema from "./schema";
 
 // import * as profileAPI from './server/api/profile';
 
+moment.locale("nb");
+
 const app = express();
 const httpServer = http.createServer(app);
 const port = config.get("express.port") || 3000;
