@@ -1,20 +1,22 @@
-import {
-  DialogContent,
-  DialogTitle,
-  FormControlLabel,
-} from "@material-ui/core";
 import Button from "@material-ui/core/Button";
 import Checkbox from "@material-ui/core/Checkbox";
 import Dialog from "@material-ui/core/Dialog";
+import DialogActions from "@material-ui/core/DialogActions";
+import DialogContent from "@material-ui/core/DialogContent";
+import DialogTitle from "@material-ui/core/DialogTitle";
+import FormControl from "@material-ui/core/FormControl";
+import FormControlLabel from "@material-ui/core/FormControlLabel";
 import IconButton from "@material-ui/core/IconButton";
+import InputLabel from "@material-ui/core/InputLabel";
 import Menu from "@material-ui/core/Menu";
 import MenuItem from "@material-ui/core/MenuItem";
 import Paper from "@material-ui/core/Paper";
+import Select from "@material-ui/core/Select";
 import TextField from "@material-ui/core/TextField";
 import MoreVertIcon from "@material-ui/icons/MoreVert";
+import Autocomplete, { createFilterOptions } from '@material-ui/lab/Autocomplete';
 import Link from "found/Link";
-import AutoComplete from "material-ui/AutoComplete";
-import SelectField from "material-ui/SelectField";
+import matchSorter from "match-sorter";
 import React from "react";
 import { createFragmentContainer, graphql, RelayProp } from "react-relay";
 import AddUserMutation from "../mutations/AddUser";
@@ -33,10 +35,16 @@ type State = {
   name: string,
   email: string,
   instrument: string,
-  new: boolean,
   groupId?: string,
   member: boolean,
+  userOption: UserOptionType | null
 };
+
+type UserOptionType = {
+  inputValue?: string;
+  id?: string;
+  name: string;
+}
 
 class Members extends React.Component<Props, State> {
   state = {
@@ -45,9 +53,9 @@ class Members extends React.Component<Props, State> {
     name: "",
     email: "",
     instrument: "",
-    new: false,
     groupId: undefined,
     member: false,
+    userOption: null,
   };
 
   onMenuOpen = (event: React.MouseEvent<HTMLButtonElement>) => {
@@ -57,20 +65,12 @@ class Members extends React.Component<Props, State> {
     this.setState({ menuIsOpen: null });
   };
 
-  onAutoCompleteChoose = (element, chosen) => {
-    if (chosen > -1) {
-      this.props.router.push({ pathname: `/users/${element.value}` });
-    } else {
-      // Pressed enter without choosing
-      this.setState({ new: true });
-    }
-  };
-
   onChangeEmail = (event: React.ChangeEvent<HTMLInputElement>) => {
     this.setState({ email: event.target.value });
   };
 
-  onChangeGroup = (event, index, groupId) => {
+  onChangeGroup = (event: React.ChangeEvent<{ value: unknown }>) => {
+    const groupId: string = event.target.value as string;
     this.setState({ groupId });
   };
 
@@ -84,6 +84,24 @@ class Members extends React.Component<Props, State> {
 
   onCheckMember = (event: React.ChangeEvent<HTMLInputElement>) => {
     this.setState({ member: event.target.checked });
+  };
+
+  onChangeUserOption = (event: any, newValue: UserOptionType | string | null) => {
+    if (typeof newValue === 'string') {
+      // timeout to avoid instant validation of the dialog's form.
+      setTimeout(() => {
+        this.setState({addUser: true, name: newValue});
+      });
+      return;
+    }
+
+    if (newValue && newValue.inputValue) {
+      this.setState({ addUser: true, name: newValue.inputValue });
+      return;
+    }
+    if (newValue.id) {
+      this.props.router.push({ pathname: `/users/${newValue.id}` });
+    }
   };
 
   addUser = (event) => {
@@ -123,8 +141,9 @@ class Members extends React.Component<Props, State> {
   render() {
     const { organization } = this.props;
     const { instrumentGroups, isAdmin, isMember, users } = organization;
-    const searchMessage =
-      "Mens du skriver inn navn, søker vi opp de med likest navn, i tilfelle personen allerede er registrert. For å legge inn en ny person, skriver du hele navnet og trykker enter.";
+    const userOptions: UserOptionType[] = users.map((user) => {
+        return { name: user.name, id: user.id };
+    });
     return (
       <Paper className="row">
         <div style={{ display: "flex", justifyContent: "space-between" }}>
@@ -132,7 +151,41 @@ class Members extends React.Component<Props, State> {
             <h1>Medlemmer</h1>
           </div>
           {isAdmin ? (
-            <div>
+            <div style={{ display: "flex" }}>
+              <Autocomplete
+                value={this.state.userOption}
+                onChange={this.onChangeUserOption}
+                filterOptions={(options, params) => {
+                  const filtered = matchSorter(options, params.inputValue, {keys: ["name"]}) as UserOptionType[];
+        
+                  if (params.inputValue !== '') {
+                    filtered.push({
+                      inputValue: params.inputValue,
+                      name: `Legg til "${params.inputValue}"`,
+                    });
+                  }
+        
+                  return filtered;
+                }}
+                options={userOptions}
+                getOptionLabel={(option) => {
+                  if (typeof option === 'string') {
+                    return option;
+                  }
+                  if (option.inputValue) {
+                    return option.inputValue;
+                  }
+                  return option.name;
+                }}
+                renderOption={(option) => {
+                  return option.name;
+                }}
+                freeSolo
+                renderInput={(params) => {
+                  return (
+                  <TextField {...params} label="Finn eller legg til" style={{ width: 200 }} />);
+                }}
+               />
               <IconButton onClick={this.onMenuOpen}>
                 <MoreVertIcon />
               </IconButton>
@@ -143,9 +196,6 @@ class Members extends React.Component<Props, State> {
                 anchorOrigin={{ vertical: "top", horizontal: "right" }}
                 transformOrigin={{ vertical: "top", horizontal: "right" }}
               >
-                <MenuItem onClick={this.toggleAddUser}>
-                  Finn / legg til medlem
-                </MenuItem>
                 <MenuItem component={Link} to="/groups">
                   Grupper
                 </MenuItem>
@@ -156,95 +206,74 @@ class Members extends React.Component<Props, State> {
             </div>
           ) : null}
           <Dialog open={this.state.addUser} onClose={this.closeAddUser}>
-            <DialogTitle>Finn eller legg til medlem</DialogTitle>
-            <DialogContent>
-              <p>{searchMessage}</p>
-              <AutoComplete
-                hintText="Navn"
-                dataSource={users.map((user) => {
-                  return { text: user.name, value: user.id };
-                })}
-                floatingLabelText="Navn"
-                onUpdateInput={this.onChangeUserName}
-                onNewRequest={this.onAutoCompleteChoose}
-                filter={AutoComplete.fuzzyFilter}
-                fullWidth
-              />
-              {this.state.new ? (
-                <form onSubmit={this.addUser}>
-                  <div>
-                    <TextField
-                      id="email"
-                      label="E-post"
-                      type="email"
-                      value={this.state.email}
-                      onChange={this.onChangeEmail}
-                    />
-                  </div>
-                  <div>
-                    <TextField
-                      id="instrument"
-                      label="Instrument"
-                      value={this.state.instrument}
-                      onChange={this.onChangeInstrument}
-                    />
-                  </div>
-                  <div>
-                    <FormControlLabel
-                      control={
-                        <Checkbox
-                          id="member"
-                          name="member"
-                          checked={this.state.member}
-                          onChange={this.onCheckMember}
-                          color="primary"
-                        />
-                      }
-                      label="Gi personen medlemsrettigheter"
-                    ></FormControlLabel>
-                  </div>
-                  <div>
-                    <SelectField
-                      id="group"
-                      floatingLabelText="Instrumentgruppe"
+            <DialogTitle>Legg til medlem</DialogTitle>
+            <form onSubmit={this.addUser}>
+              <DialogContent>
+                <div>
+                  <TextField
+                    id="email"
+                    label="E-post"
+                    type="email"
+                    value={this.state.email}
+                    onChange={this.onChangeEmail}
+                  />
+                </div>
+                <div>
+                  <TextField
+                    id="instrument"
+                    label="Instrument"
+                    value={this.state.instrument}
+                    onChange={this.onChangeInstrument}
+                  />
+                </div>
+                <div>
+                  <FormControlLabel
+                    control={
+                      <Checkbox
+                        id="member"
+                        name="member"
+                        checked={this.state.member}
+                        onChange={this.onCheckMember}
+                        color="primary"
+                      />
+                    }
+                    label="Gi personen medlemsrettigheter"
+                  ></FormControlLabel>
+                </div>
+                <div>
+                  <FormControl>
+                    <InputLabel htmlFor="group">Instrumentgruppe</InputLabel>
+                    <Select
+                      native
+                      inputProps={{id: "group", name: "group"}}
                       value={this.state.groupId}
                       onChange={this.onChangeGroup}
                     >
-                      <MenuItem>(Ingen)</MenuItem>
+                      <option key="None" value="" aria-label="Ingen"></option>
                       {instrumentGroups.map((group) => {
                         return (
-                          <MenuItem key={group.id} value={group.id}>
+                          <option key={group.id} value={group.id}>
                             {group.name}
-                          </MenuItem>
+                          </option>
                         );
                       })}
-                    </SelectField>
-                  </div>
-                  <div>
-                    <Button variant="contained" type="submit" color="primary">
-                      Legg til
-                    </Button>
-                    <Button
-                      variant="contained"
-                      type="reset"
-                      onClick={this.closeAddUser}
-                    >
-                      Avbryt
-                    </Button>
-                  </div>
-                </form>
-              ) : (
-                <div>
-                  <Button
-                    variant="contained"
-                    type="reset"
-                    onClick={this.closeAddUser}
-                  >
-                    Avbryt
-                  </Button>
+                    </Select>
+                  </FormControl>
                 </div>
-              )}
-            </DialogContent>
+              </DialogContent>
+              <DialogActions>
+                <Button variant="contained" type="submit" color="primary">
+                  Legg til
+                </Button>
+                <Button
+                  variant="contained"
+                  type="reset"
+                  onClick={this.closeAddUser}
+                >
+                  Avbryt
+                </Button>
+              </DialogActions>
+            </form>
           </Dialog>
         </div>
         {instrumentGroups.map((group) => {

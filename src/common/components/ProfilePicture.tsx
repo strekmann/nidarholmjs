@@ -73,7 +73,7 @@ class ProfilePicture extends React.Component<Props> {
             )}
             <div style={{ position: "absolute", bottom: 0 }}>
               <IconButton>
-                <Camera />
+                <Camera style={{ color: "white" }} />
               </IconButton>
             </div>
           </div>
