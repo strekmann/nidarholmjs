@@ -4,7 +4,6 @@
 import { RelayRefetchProp } from "react-relay";
 import { createRefetchContainer, graphql } from "react-relay";
 import axios from "axios";
-import getMuiTheme from "material-ui/styles/getMuiTheme";
 import Button from "@material-ui/core/Button";
 import Dialog from "@material-ui/core/Dialog";
 import DialogActions from "@material-ui/core/DialogActions";
@@ -12,10 +11,8 @@ import DialogContent from "@material-ui/core/DialogContent";
 import DialogTitle from "@material-ui/core/DialogTitle";
 import Toolbar from "@material-ui/core/Toolbar";
 import Typography from "@material-ui/core/Typography";
-import PropTypes from "prop-types";
 import * as React from "react";
 
-import theme from "../theme";
 import AddFileMutation from "../mutations/AddFile";
 import SaveFilePermissionsMutation from "../mutations/SaveFilePermissions";
 
@@ -51,13 +48,8 @@ type State = {
 };
 
 class Files extends React.Component<Props, State> {
-  static childContextTypes = {
-    muiTheme: PropTypes.object.isRequired,
-  };
-
   constructor(props) {
     super(props);
-    this.muiTheme = getMuiTheme(theme);
   }
 
   state = {
@@ -65,10 +57,6 @@ class Files extends React.Component<Props, State> {
     search: false,
     tags: [],
   };
-
-  getChildContext() {
-    return { muiTheme: this.muiTheme };
-  }
 
   onDrop = (files, permissions, tags) => {
     const { relay } = this.props;
@@ -132,8 +120,6 @@ class Files extends React.Component<Props, State> {
     });
   };
 
-  muiTheme: {};
-
   toggleAddFile = () => {
     this.setState({ addFile: !this.state.addFile });
   };
@@ -179,68 +165,55 @@ class Files extends React.Component<Props, State> {
   render() {
     const { organization } = this.props;
     const { isMember } = organization;
-    const { desktopGutterLess } = theme.spacing;
     return (
       <div>
-        <div className="row">
-          {isMember ? (
-            <Toolbar style={{ height: 106, backgroundColor: "none" }}>
-              <div>
-                <Typography variant="h1">Filer</Typography>
-              </div>
-              <div>
-                <TagField
-                  autoFocus
-                  fileTags={this.state.tags}
-                  onChange={this.onTagChange}
-                  organization={this.props.organization}
-                />
-                <Button variant="contained" onClick={this.toggleAddFile}>
-                  Last opp filer
-                </Button>
-                <Dialog open={this.state.addFile} onClose={this.closeAddFile}>
-                  <DialogTitle>Last opp filer</DialogTitle>
-                  <DialogContent>
-                    <FileUpload
-                      viewer={this.props.viewer}
-                      organization={this.props.organization}
-                      onDrop={this.onDrop}
-                      memberGroupId={organization.memberGroup.id}
-                      onTagsChange={this.searchTag}
-                    />
-                  </DialogContent>
-                  <DialogActions>
-                    <Button color="primary" onClick={this.closeAddFile}>
-                      Ferdig
-                    </Button>
-                  </DialogActions>
-                </Dialog>
-              </div>
-            </Toolbar>
-          ) : null}
-          {isMember ? null : <h1>Filer</h1>}
-          <FileList
-            files={organization.files}
-            memberGroupId={organization.memberGroup.id}
-            onSavePermissions={this.onSaveFilePermissions}
-            searchTag={this.searchTag}
-            style={{
-              marginLeft: -desktopGutterLess,
-              marginRight: -desktopGutterLess,
-            }}
-            viewer={this.props.viewer}
-            organization={this.props.organization}
-          />
-          {organization.files.pageInfo.hasNextPage ? (
-            <Button
-              variant="contained"
-              onClick={this.fetchMore}
-              color="primary"
-            >
-              Mer
-            </Button>
-          ) : null}
-        </div>
+        {isMember ? (
+          <Toolbar style={{ display: "flex", justifyContent: "space-between" }}>
+            <Typography variant="h1">Filer</Typography>
+            <div style={{ display: "flex" }}>
+              <TagField
+                autoFocus
+                fileTags={this.state.tags}
+                onChange={this.onTagChange}
+                organization={this.props.organization}
+              />
+              <Button variant="contained" onClick={this.toggleAddFile}>
+                Last opp filer
+              </Button>
+              <Dialog open={this.state.addFile} onClose={this.closeAddFile}>
+                <DialogTitle>Last opp filer</DialogTitle>
+                <DialogContent>
+                  <FileUpload
+                    viewer={this.props.viewer}
+                    organization={this.props.organization}
+                    onDrop={this.onDrop}
+                    memberGroupId={organization.memberGroup.id}
+                    onTagsChange={this.searchTag}
+                  />
+                </DialogContent>
+                <DialogActions>
+                  <Button color="primary" onClick={this.closeAddFile}>
+                    Ferdig
+                  </Button>
+                </DialogActions>
+              </Dialog>
+            </div>
+          </Toolbar>
+        ) : null}
+        {isMember ? null : <h1>Filer</h1>}
+        <FileList
+          files={organization.files}
+          memberGroupId={organization.memberGroup.id}
+          onSavePermissions={this.onSaveFilePermissions}
+          searchTag={this.searchTag}
+          viewer={this.props.viewer}
+          organization={this.props.organization}
+        />
+        {organization.files.pageInfo.hasNextPage ? (
+          <Button variant="contained" onClick={this.fetchMore} color="primary">
+            Mer
+          </Button>
+        ) : null}
       </div>
     );
   }

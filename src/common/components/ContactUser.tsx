@@ -1,20 +1,17 @@
 import Button from "@material-ui/core/Button";
-import {
-  Card,
-  CardActions,
-  CardHeader,
-  CardMedia,
-  CardTitle,
-} from "material-ui/Card";
+import Card from "@material-ui/core/Card";
+import CardActions from "@material-ui/core/CardActions";
+import CardHeader from "@material-ui/core/CardHeader";
+import CardMedia from "@material-ui/core/CardMedia";
 import ListItem from "@material-ui/core/ListItem";
+import Typography from "@material-ui/core/Typography";
 import React from "react";
 import { createFragmentContainer, graphql, RelayProp } from "react-relay";
-
 import ShowContactInfoMutation from "../mutations/ShowContactInfo";
-
 import Email from "./Email";
 import Phone from "./Phone";
 import { ContactUser_user } from "./__generated__/ContactUser_user.graphql";
+import { ShowContactInfoMutationResponse } from "../mutations/__generated__/ShowContactInfoMutation.graphql";
 
 type Props = {
   relay: RelayProp,
@@ -45,7 +42,7 @@ class ContactUser extends React.Component<Props, State> {
       {
         userId: user.id,
       },
-      (results) => {
+      (results: ShowContactInfoMutationResponse) => {
         this.setState({
           email: results.showContactInfo.user.email,
           phone: results.showContactInfo.user.phone,
@@ -62,7 +59,7 @@ class ContactUser extends React.Component<Props, State> {
           title={role.name}
           textStyle={{ paddingRight: 0, fontFamily: "Montserrat, serif" }}
         />
-        <CardTitle title={user.name} />
+        <Typography>{user.name}</Typography>
         <CardMedia>
           {user.profilePicture && user.profilePicture.thumbnailPath ? (
             <img src={user.profilePicture.thumbnailPath} alt="" />

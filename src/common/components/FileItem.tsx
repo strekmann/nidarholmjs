@@ -1,29 +1,32 @@
-import { Card, CardTitle, CardMedia, CardActions } from "material-ui/Card";
+import Button from "@material-ui/core/Button";
+import Card from "@material-ui/core/Card";
+import CardActionArea from "@material-ui/core/CardActionArea";
+import CardActions from "@material-ui/core/CardActions";
+import CardHeader from "@material-ui/core/CardHeader";
+import CardMedia from "@material-ui/core/CardMedia";
 import Chip from "@material-ui/core/Chip";
-import MoreVertIcon from "@material-ui/icons/MoreVert";
+import grey from "@material-ui/core/colors/grey";
 import Dialog from "@material-ui/core/Dialog";
 import DialogActions from "@material-ui/core/DialogActions";
-import DialogTitle from "@material-ui/core/DialogTitle";
 import DialogContent from "@material-ui/core/DialogContent";
-import Download from "@material-ui/icons/PlayForWork";
+import DialogTitle from "@material-ui/core/DialogTitle";
 import IconButton from "@material-ui/core/IconButton";
 import Menu from "@material-ui/core/Menu";
 import MenuItem from "@material-ui/core/MenuItem";
-import Button from "@material-ui/core/Button";
-import { grey400 } from "material-ui/styles/colors";
+import withStyles from "@material-ui/core/styles/withStyles";
+import MoreVertIcon from "@material-ui/icons/MoreVert";
+import Download from "@material-ui/icons/PlayForWork";
 import * as React from "react";
 import { createFragmentContainer, graphql } from "react-relay";
-
+import { PermissionArray, PermissionObject } from "../types";
 import { flattenPermissions } from "../utils";
-import theme from "../theme";
-import { PermissionArray, PermissionObject, Viewer } from "../types";
-import { FileItem_organization } from "./__generated__/FileItem_organization.graphql";
-
 import PermissionChips from "./PermissionChips";
 import PermissionField from "./PermissionField";
 import TagField from "./TagField";
+import { FileItem_organization } from "./__generated__/FileItem_organization.graphql";
 
 type Props = {
+  classes: any,
   id: string,
   filename: string,
   isImage: boolean,
@@ -107,64 +110,80 @@ class FileItem extends React.Component<Props, State> {
   };
 
   render() {
-    const { desktopGutterLess } = theme.spacing;
+    const { classes } = this.props;
     return (
-      <Card
-        key={this.props.id}
-        style={{
-          width: 216,
-          marginLeft: desktopGutterLess,
-          marginRight: desktopGutterLess,
-          marginBottom: desktopGutterLess,
-        }}
-      >
-        <CardTitle style={{ paddingBottom: 0 }}>
-          <div style={{ float: "right" }}>
-            <IconButton
-              onClick={this.onMenuOpen}
-              style={{ padding: 0, height: "inherit", width: "inherit" }}
-            >
+      <Card className={classes.root} key={this.props.id}>
+        <CardHeader
+          action={
+            <IconButton onClick={this.onMenuOpen}>
               <MoreVertIcon />
             </IconButton>
-            <Menu
-              anchorEl={this.state.menuIsOpen}
-              onClose={this.onMenuClose}
-              open={Boolean(this.state.menuIsOpen)}
-              anchorOrigin={{ vertical: "top", horizontal: "right" }}
-              transformOrigin={{ vertical: "top", horizontal: "right" }}
-            >
-              <MenuItem onClick={this.toggleEditPermissions}>
-                Rediger filegenskaper
-              </MenuItem>
-              {this.props.onSetProjectPoster ? (
-                <MenuItem onClick={this.setProjectPoster}>
-                  Bruk som prosjektplakat
-                </MenuItem>
-              ) : null}
-            </Menu>
-          </div>
-          <span
-            style={{
-              textOverflow: "ellipsis",
-              overflow: "hidden",
-            }}
-          >
-            {this.props.filename}
-          </span>
-        </CardTitle>
+          }
+          title={this.props.filename}
+        />
         {this.props.isImage ? (
-          <CardMedia>
-            <img alt="" src={this.props.thumbnailPath} />
-          </CardMedia>
+          <CardMedia
+            image={this.props.thumbnailPath}
+            component="img"
+            className={classes.media}
+          />
         ) : (
           <a
             style={{ display: "block", textAlign: "center" }}
             href={this.props.path}
             download
           >
-            <Download style={{ height: 100, width: "100%" }} color={grey400} />
+            <Download className={classes.downloadIcon} />
           </a>
         )}
+        <CardActionArea style={{ paddingBottom: 0 }}>
+          <Menu
+            anchorEl={this.state.menuIsOpen}
+            onClose={this.onMenuClose}
+            open={Boolean(this.state.menuIsOpen)}
+            anchorOrigin={{ vertical: "top", horizontal: "right" }}
+            transformOrigin={{ vertical: "top", horizontal: "right" }}
+          >
+            <MenuItem onClick={this.toggleEditPermissions}>
+              Rediger filegenskaper
+            </MenuItem>
+            {this.props.onSetProjectPoster ? (
+              <MenuItem onClick={this.setProjectPoster}>
+                Bruk som prosjektplakat
+              </MenuItem>
+            ) : null}
+          </Menu>
+          {this.state.editPermissions ? (
+            <Dialog
+              open={this.state.editPermissions}
+              onClose={this.closeEditPermissions}
+            >
+              <DialogTitle>Rediger rettigheter</DialogTitle>
+              <DialogContent>
+                <PermissionField
+                  permissions={this.state.permissions}
+                  onChange={this.onPermissionChange}
+                  groups={this.props.viewer.groups}
+                  users={[]}
+                />
+                <TagField
+                  organization={this.props.organization}
+                  onChange={this.onTagChange}
+                  fileTags={this.state.tags}
+                />
+              </DialogContent>
+              <DialogActions>
+                <Button
+                  variant="contained"
+                  onClick={this.savePermissions}
+                  color="primary"
+                >
+                  Lagre
+                </Button>
+              </DialogActions>
+            </Dialog>
+          ) : null}
+        </CardActionArea>
         <CardActions style={{ display: "flex", flexWrap: "wrap" }}>
           <PermissionChips
             memberGroupId={this.props.memberGroupId}
@@ -183,45 +202,32 @@ class FileItem extends React.Component<Props, State> {
               );
             })}
         </CardActions>
-        {this.state.editPermissions ? (
-          <Dialog
-            open={this.state.editPermissions}
-            onClose={this.closeEditPermissions}
-          >
-            <DialogTitle>Rediger rettigheter</DialogTitle>
-            <DialogContent>
-              <PermissionField
-                permissions={this.state.permissions}
-                onChange={this.onPermissionChange}
-                groups={this.props.viewer.groups}
-                users={[]}
-              />
-              <TagField
-                organization={this.props.organization}
-                onChange={this.onTagChange}
-                fileTags={this.state.tags}
-              />
-            </DialogContent>
-            <DialogActions>
-              <Button
-                variant="contained"
-                onClick={this.savePermissions}
-                color="primary"
-              >
-                Lagre
-              </Button>
-            </DialogActions>
-          </Dialog>
-        ) : null}
       </Card>
     );
   }
 }
 
-export default createFragmentContainer(FileItem, {
-  organization: graphql`
-    fragment FileItem_organization on Organization {
-      ...TagField_organization
-    }
-  `,
-});
+const useStyles = () => {
+  return {
+    root: {
+      width: 300,
+      marginLeft: 10,
+      marginRight: 10,
+      marginBottom: 10,
+    },
+    media: {
+      maxHeight: 168,
+    },
+    downloadIcon: { height: 168, width: "100%", color: grey[500] },
+  };
+};
+
+export default withStyles(useStyles)(
+  createFragmentContainer(FileItem, {
+    organization: graphql`
+      fragment FileItem_organization on Organization {
+        ...TagField_organization
+      }
+    `,
+  }),
+);

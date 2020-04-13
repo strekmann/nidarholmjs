@@ -10,34 +10,32 @@ type Props = {
     edges: [
       {
         node: {
-          id: string;
-        };
+          id: string,
+        },
       },
-    ];
-  };
-  memberGroupId: string;
+    ],
+  },
+  memberGroupId: string,
   style: {
-    display: string;
-    flexWrap: string;
-  };
-  title: string;
-  onSavePermissions: () => {};
-  onSetProjectPoster: () => {};
-  viewer: {};
-  organization: {};
-  searchTag: () => {};
+    display: string,
+    flexWrap: string,
+  },
+  title: string,
+  onSavePermissions: () => {},
+  onSetProjectPoster: () => {},
+  viewer: {},
+  organization: {},
+  searchTag: () => {},
 };
 
 class FileList extends React.Component<Props> {
   render() {
-    const style =
-      this.props.style ||
-      ({
-        display: "flex",
-        flexWrap: "wrap",
-      } as React.CSSProperties);
-    style.display = "flex";
-    style.flexWrap = "wrap";
+    const style = {
+      display: "flex",
+      flexWrap: "wrap",
+      marginLeft: 20,
+      marginRight: 20,
+    };
     return (
       <div>
         {this.props.title ? <h2>{this.props.title}</h2> : null}
