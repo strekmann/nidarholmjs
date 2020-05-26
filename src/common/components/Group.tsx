@@ -13,12 +13,13 @@ import TextField from "@material-ui/core/TextField";
 import Toolbar from "@material-ui/core/Toolbar";
 import MoreVertIcon from "@material-ui/icons/MoreVert";
 import Link from "found/Link";
-import AutoComplete from "material-ui/AutoComplete";
 import React from "react";
 import { createFragmentContainer, graphql } from "react-relay";
 import JoinGroupMutation from "../mutations/JoinGroup";
 import SaveGroupMutation from "../mutations/SaveGroup";
+import Autocomplete, { AutocompleteOptionType } from "./Autocomplete";
 import GroupSettingsUserItem from "./GroupSettingsUserItem";
+import { UserOptionType } from "./Member";
 import { Group_organization } from "./__generated__/Group_organization.graphql";
 
 type Props = {
@@ -60,7 +61,7 @@ class Group extends React.Component<Props, State> {
 
   onSave = (event) => {
     event.preventDefault();
-    this.setState({ editing: false });
+    this.setState({ editing: false, menuIsOpen: null });
     const { relay, organization } = this.props;
     const { email, groupLeaderEmail } = this.state;
     if (organization.group) {
@@ -76,60 +77,68 @@ class Group extends React.Component<Props, State> {
     }
   };
 
-  joinGroup = (selection) => {
-    this.setState({ joinGroup: false });
-    const { organization, relay } = this.props;
-    if (organization.group) {
-      JoinGroupMutation.commit(
-        relay.environment,
-        {
-          groupId: organization.group.id,
-          userId: selection.value.id,
-        },
-        undefined,
-      );
+  joinGroup = (_: any, selection: AutocompleteOptionType | null) => {
+    if (selection) {
+      this.setState({ joinGroup: false, menuIsOpen: null });
+      const { organization, relay } = this.props;
+      if (organization.group) {
+        JoinGroupMutation.commit(
+          relay.environment,
+          {
+            groupId: organization.group.id,
+            userId: selection.id,
+          },
+          undefined,
+        );
+      }
     }
   };
 
   closeJoinGroup = () => {
-    this.setState({ joinGroup: false });
+    this.setState({ joinGroup: false, menuIsOpen: null });
   };
 
   closeEditing = () => {
-    this.setState({ editing: false });
+    this.setState({ editing: false, menuIsOpen: null });
   };
 
   render() {
     const { organization } = this.props;
-    const { group, isAdmin, roles, instrumentGroups } = organization;
+    const {
+      group,
+      isAdmin,
+      roles,
+      instrumentGroups,
+      memberGroup,
+    } = organization;
     const { joinGroup, editing, email, groupLeaderEmail } = this.state;
-    const members = group.members.filter((member) => {
+    const groupMembers = group.members.filter((member) => {
       return member.user;
     });
-    members.sort((a, b) => {
+    groupMembers.sort((a, b) => {
       if (a.user.name > b.user.name) {
         return 1;
       }
       return -1;
     });
+    const userOptions: AutocompleteOptionType[] = memberGroup.members
+      .map((member) => {
+        return member.user;
+      })
+      .map((user) => {
+        return { label: user.name, id: user.id };
+      });
     return (
       <section>
         {isAdmin ? (
           <Paper className="row">
-            <Dialog title="" open={joinGroup} onClose={this.closeJoinGroup}>
+            <Dialog open={joinGroup} onClose={this.closeJoinGroup}>
               <DialogTitle>Legg til gruppemedlem</DialogTitle>
               <DialogContent>
-                <AutoComplete
-                  dataSource={organization.users.map((user) => {
-                    return {
-                      text: `${user.name} (${user.username})`,
-                      value: user,
-                    };
-                  })}
-                  floatingLabelText="Navn"
-                  onNewRequest={this.joinGroup}
-                  filter={AutoComplete.fuzzyFilter}
-                  fullWidth
+                <Autocomplete
+                  options={userOptions}
+                  onChange={this.joinGroup}
+                  label="Navn"
                 />
               </DialogContent>
               <DialogActions>
@@ -143,7 +152,7 @@ class Group extends React.Component<Props, State> {
               <DialogContent>
                 <div>
                   <TextField
-                    floatingLabelText="Epost til liste"
+                    label="Epost til liste"
                     onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
                       this.setState({ email: event.target.value });
                     }}
@@ -155,9 +164,11 @@ class Group extends React.Component<Props, State> {
                 }) ? (
                   <div>
                     <TextField
-                      floatingLabelText="Epostalias til gruppeleder"
-                      onChange={(event, _groupLeaderEmail) => {
-                        this.setState({ groupLeaderEmail: _groupLeaderEmail });
+                      label="Epostalias til gruppeleder"
+                      onChange={(
+                        event: React.ChangeEvent<HTMLInputElement>,
+                      ) => {
+                        this.setState({ groupLeaderEmail: event.target.value });
                       }}
                       value={groupLeaderEmail}
                     />
@@ -171,7 +182,7 @@ class Group extends React.Component<Props, State> {
                 </Button>
               </DialogActions>
             </Dialog>
-            <Toolbar>
+            <Toolbar style={{ justifyContent: "space-between" }} disableGutters>
               <div>
                 <Link to="/groups">Alle grupper</Link>
               </div>
@@ -221,7 +232,7 @@ class Group extends React.Component<Props, State> {
               ) : null}
               <List>
                 <Divider />
-                {members.map((member) => {
+                {groupMembers.map((member) => {
                   const isGroupLeader = member.roles.some((role) => {
                     return !!role.name;
                   });
@@ -252,6 +263,15 @@ export default createFragmentContainer(Group, {
         id
         name
         username
+      }
+      memberGroup {
+        members {
+          id
+          user {
+            id
+            name
+          }
+        }
       }
       group(groupId: $groupId) {
         id

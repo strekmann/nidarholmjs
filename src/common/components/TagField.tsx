@@ -1,90 +1,68 @@
-import AutoComplete from "material-ui/AutoComplete";
 import Chip from "@material-ui/core/Chip";
+import TextField from "@material-ui/core/TextField";
+import Autocomplete from "@material-ui/lab/Autocomplete";
 import * as React from "react";
-import { RelayRefetchProp } from "react-relay";
-import { createRefetchContainer, graphql } from "react-relay";
-
+import { createRefetchContainer, graphql, RelayRefetchProp } from "react-relay";
 import { TagField_organization } from "./__generated__/TagField_organization.graphql";
 
 type Props = {
-  autoFocus: boolean,
-  fileTags: string[],
+  autoFocus?: boolean,
   onChange: any, // (string[]) => {},
+  fileTags: string[],
+  fullWidth?: boolean,
   organization: TagField_organization,
   relay: RelayRefetchProp,
+  style?: any,
 };
 
-type State = {
-  tag: string,
-};
+type State = {};
 
 class TagField extends React.Component<Props, State> {
-  state = {
-    tag: "",
-  };
-
-  onTagChange = (tag) => {
-    this.setState({ tag });
+  onTagChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     this.props.relay.refetch((variables) => {
       return {
         searchTags: variables.searchTags,
-        searchTerm: tag,
+        searchTerm: event.target.value,
       };
     });
   };
 
-  addTag = (chosen) => {
-    let tag = chosen;
-    if (tag instanceof Object) {
-      tag = tag.value;
-    }
-    const fileTags = new Set(this.props.fileTags);
-    fileTags.add(tag);
-    this.setState({
-      tag: "",
-    });
-    this.props.onChange(Array.from(fileTags));
-  };
-
-  removeTag = (tag) => {
-    const fileTags = this.props.fileTags.filter((t) => {
-      return t !== tag;
-    });
-    this.props.onChange(fileTags);
+  setTags = (_: any, tags: string[]) => {
+    this.props.onChange(tags);
   };
 
   render() {
     const tags = this.props.organization.tags || [];
     return (
-      <div>
-        <AutoComplete
-          floatingLabelText="Søk i merkelapper"
-          dataSource={tags.map((tag) => {
-            return { text: `${tag.tag} (${tag.count})`, value: tag.tag };
-          })}
-          maxSearchResults={8}
-          searchText={this.state.tag}
-          onNewRequest={this.addTag}
-          onUpdateInput={this.onTagChange}
-          filter={() => {
-            return true;
-          }}
-          autoFocus={this.props.autoFocus}
-        />
-        <div style={{ display: "flex", flexWrap: "wrap" }}>
-          {this.props.fileTags.map((tag) => {
+      <Autocomplete
+        multiple
+        freeSolo
+        style={this.props.style}
+        options={tags.map((tag) => tag.tag)}
+        onChange={this.setTags}
+        value={this.props.fileTags}
+        renderInput={(params) => {
+          return (
+            <TextField
+              {...params}
+              label="Søk i merkelapper"
+              onChange={this.onTagChange}
+              fullWidth={this.props.fullWidth}
+            />
+          );
+        }}
+        renderTags={(options, getTagProps) => {
+          return options.map((option, index) => {
             return (
               <Chip
-                key={tag}
-                onDelete={() => {
-                  this.removeTag(tag);
-                }}
-                label={tag}
+                variant="outlined"
+                label={option}
+                {...getTagProps({ index })}
               />
             );
-          })}
-        </div>
-      </div>
+          });
+        }}
+      />
     );
   }
 }

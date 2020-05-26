@@ -1,10 +1,9 @@
-import AutoComplete from "material-ui/AutoComplete";
 import Dialog from "@material-ui/core/Dialog";
 import DialogContent from "@material-ui/core/DialogContent";
 import DialogTitle from "@material-ui/core/DialogTitle";
 import React from "react";
 import { createRefetchContainer, graphql, RelayRefetchProp } from "react-relay";
-
+import Autocomplete, { AutocompleteOptionType } from "./Autocomplete";
 import { ProjectPieceForm_organization } from "./__generated__/ProjectPieceForm_organization.graphql";
 
 type Props = {
@@ -16,11 +15,17 @@ type Props = {
 };
 
 class ProjectPieceForm extends React.Component<Props> {
-  searchPiece = (term) => {
+  searchPiece = (term: string) => {
     this.props.relay.refetch((variables) => {
       variables.term = term;
       return variables;
     });
+  };
+
+  addPiece = (_: any, selection: AutocompleteOptionType | null) => {
+    if (selection) {
+      this.props.save(selection.id);
+    }
   };
 
   render() {
@@ -29,26 +34,20 @@ class ProjectPieceForm extends React.Component<Props> {
       <Dialog open={this.props.open} onClose={this.props.onClose}>
         <DialogTitle>Legg til reperotar</DialogTitle>
         <DialogContent>
-          <AutoComplete
-            floatingLabelText="Navn på stykke / komponist / arrangør"
-            dataSource={pieces.edges.map((edge) => {
+          <Autocomplete
+            label="Navn på stykke / komponist / arrangør"
+            options={pieces.edges.map((edge) => {
               const piece = edge.node;
               return {
-                text: `${piece.scoreCount}: ${piece.title} - ${piece.composers} (${piece.arrangers})`,
-                value: edge.node,
+                label: `${piece.scoreCount}: ${piece.title} - ${piece.composers} (${piece.arrangers})`,
+                id: piece.id,
               };
             })}
-            onNewRequest={(chosen) => {
-              this.props.save(chosen.value);
-            }}
-            onUpdateInput={(searchTerm) => {
-              this.searchPiece(searchTerm);
-            }}
-            filter={() => {
-              return true;
+            onChange={this.addPiece}
+            onUpdateInput={(event: React.ChangeEvent<HTMLInputElement>) => {
+              this.searchPiece(event.target.value);
             }}
             fullWidth
-            style={{ flexGrow: 1 }}
           />
         </DialogContent>
       </Dialog>

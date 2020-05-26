@@ -1,6 +1,7 @@
 import { Theme } from "@material-ui/core";
 import Button from "@material-ui/core/Button";
 import Checkbox from "@material-ui/core/Checkbox";
+import lightBlue from "@material-ui/core/colors/lightBlue";
 import Dialog from "@material-ui/core/Dialog";
 import DialogActions from "@material-ui/core/DialogActions";
 import DialogContent from "@material-ui/core/DialogContent";
@@ -21,9 +22,7 @@ import Close from "@material-ui/icons/Close";
 import MoreVertIcon from "@material-ui/icons/MoreVert";
 import Link from "found/Link";
 import areIntlLocalesSupported from "intl-locales-supported";
-import AutoComplete from "material-ui/AutoComplete";
 import DatePicker from "material-ui/DatePicker";
-import lightBlue from "@material-ui/core/colors/lightBlue";
 import moment from "moment";
 import React from "react";
 import { createFragmentContainer, graphql, RelayProp } from "react-relay";
@@ -32,6 +31,7 @@ import EditUserMutation from "../mutations/EditUser";
 import JoinGroupMutation from "../mutations/JoinGroup";
 import LeaveGroupMutation from "../mutations/LeaveGroup";
 import RemoveRoleMutation from "../mutations/RemoveRole";
+import Autocomplete, { AutocompleteOptionType } from "./Autocomplete";
 import Date from "./Date";
 import DateFromNow from "./DateFromNow";
 import Phone from "./Phone";
@@ -40,6 +40,12 @@ import Text from "./Text";
 import Yesno from "./Yesno";
 import { Member_organization } from "./__generated__/Member_organization.graphql";
 import { Member_viewer } from "./__generated__/Member_viewer.graphql";
+
+export type UserOptionType = {
+  inputValue?: string,
+  id?: string,
+  name: string,
+};
 
 let DateTimeFormat;
 if (areIntlLocalesSupported(["nb"])) {
@@ -77,7 +83,7 @@ type State = {
 };
 
 class Member extends React.Component<Props, State> {
-  constructor(props) {
+  constructor(props: Props) {
     super(props);
     let member;
     let user;
@@ -88,12 +94,12 @@ class Member extends React.Component<Props, State> {
       phone: "",
       email: "",
       instrument: "",
-      born: null,
+      born: undefined,
       address: "",
       postcode: "",
       city: "",
       country: "",
-      joined: null,
+      joined: undefined,
       nmfId: "",
       membershipHistory: "",
       inList: true,
@@ -133,12 +139,12 @@ class Member extends React.Component<Props, State> {
             phone: phone || "",
             email: email || "",
             instrument: instrument || "",
-            born: born ? moment(born).toDate() : null,
+            born: born ? moment(born).toDate() : undefined,
             address: address || "",
             postcode: postcode || "",
             city: city || "",
             country: country || "",
-            joined: joined ? moment(joined).toDate() : null,
+            joined: joined ? moment(joined).toDate() : undefined,
             nmfId: nmfId || "",
             membershipHistory: membershipHistory || "",
             inList: !!inList,
@@ -255,7 +261,7 @@ class Member extends React.Component<Props, State> {
       editMember: true,
     });
   };
-  addRole = (roleId) => {
+  addRole = (roleId: string) => {
     this.setState({ addingRole: false, menuIsOpen: null });
     if (this.props.organization.member) {
       AddRoleMutation.commit(
@@ -268,7 +274,8 @@ class Member extends React.Component<Props, State> {
       );
     }
   };
-  removeRole = (roleId) => {
+
+  removeRole = (roleId: string) => {
     if (this.props.organization.member) {
       RemoveRoleMutation.commit(
         this.props.relay.environment,
@@ -280,19 +287,21 @@ class Member extends React.Component<Props, State> {
       );
     }
   };
-  joinGroup = (selection) => {
+
+  joinGroup = (_: any, selection: AutocompleteOptionType | null) => {
     this.setState({ joinGroup: false, menuIsOpen: null });
     if (this.props.organization.member && this.props.organization.member.user) {
       JoinGroupMutation.commit(
         this.props.relay.environment,
         {
-          groupId: selection.value.id,
+          groupId: selection.id,
           userId: this.props.organization.member.user.id,
         },
         undefined,
       );
     }
   };
+
   leaveGroup = (user, group) => {
     if (user && group) {
       LeaveGroupMutation.commit(
@@ -485,6 +494,12 @@ class Member extends React.Component<Props, State> {
         </Paper>
       );
     }
+    const groupOptions: AutocompleteOptionType[] = groups.map((group) => {
+      return {
+        label: `${group && group.name ? group.name : ""}`,
+        id: group.id,
+      };
+    });
     return (
       <Paper className="row">
         <div style={{ display: "flex", justifyContent: "space-between" }}>
@@ -493,17 +508,10 @@ class Member extends React.Component<Props, State> {
             <Dialog open={this.state.joinGroup} onClose={this.closeJoinGroup}>
               <DialogTitle>Legg til i gruppe</DialogTitle>
               <DialogContent>
-                <AutoComplete
-                  dataSource={groups.map((group) => {
-                    return {
-                      text: `${group && group.name ? group.name : ""}`,
-                      value: group,
-                    };
-                  })}
-                  floatingLabelText="Gruppe"
-                  onNewRequest={this.joinGroup}
-                  filter={AutoComplete.fuzzyFilter}
-                  fullWidth
+                <Autocomplete
+                  options={groupOptions}
+                  onChange={this.joinGroup}
+                  label="Gruppe"
                 />
               </DialogContent>
               <DialogActions>

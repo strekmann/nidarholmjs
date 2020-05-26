@@ -9,16 +9,16 @@ import PermissionField from "./PermissionField";
 import TagField from "./TagField";
 
 type Props = {
-  memberGroupId: string;
-  onDrop: any; //([{}], PermissionArray, string[]) => {},
-  organization: FileUpload_organization;
-  permissions: PermissionArray;
-  viewer: Viewer;
+  memberGroupId: string,
+  onDrop: any, //([{}], PermissionArray, string[]) => {},
+  organization: FileUpload_organization,
+  permissions: PermissionArray,
+  viewer: Viewer,
 };
 
 type State = {
-  permissions: PermissionArray;
-  tags: Array<string>;
+  permissions: PermissionArray,
+  tags: Array<string>,
 };
 
 class FileUpload extends React.Component<Props, State> {
@@ -53,11 +53,13 @@ class FileUpload extends React.Component<Props, State> {
             groups={viewer.groups}
             users={[]}
             memberGroupId={this.props.memberGroupId}
+            fullWidth
           />
           <TagField
             fileTags={this.state.tags}
             onChange={this.onTagChange}
             organization={this.props.organization}
+            fullWidth
           />
         </div>
         <div style={{ width: "50%", minWidth: 300, flexGrow: 1 }}>

@@ -15,6 +15,7 @@ import EventForm from "./EventForm";
 import Text from "./Text";
 import { Event_organization } from "./__generated__/Event_organization.graphql";
 import { Event_viewer } from "./__generated__/Event_viewer.graphql";
+import { DialogActions, DialogContent, DialogTitle } from "@material-ui/core";
 
 type Props = {
   organization: Event_organization,
@@ -49,11 +50,12 @@ class Event extends React.Component<Props, State> {
   toggleEdit = () => {
     this.setState({
       editing: !this.state.editing,
+      menuIsOpen: null,
     });
   };
 
   toggleDelete = () => {
-    this.setState({ deleting: !this.state.deleting });
+    this.setState({ deleting: !this.state.deleting, menuIsOpen: null });
   };
 
   closeEdit = () => {
@@ -169,25 +171,23 @@ class Event extends React.Component<Props, State> {
               save={this.saveEvent}
               cancel={this.closeEdit}
             />
-            <Dialog
-              title="Slett aktivitet"
-              open={this.state.deleting}
-              onRequestClose={this.closeDelete}
-              autoScrollBodyContent
-              actions={[
+            <Dialog open={this.state.deleting} onClose={this.closeDelete}>
+              <DialogTitle>Slett aktivitet</DialogTitle>
+              <DialogContent>
+                <p>{event.title}</p>
+              </DialogContent>
+              <DialogActions>
                 <Button variant="text" onClick={this.closeDelete}>
                   Avbryt
-                </Button>,
+                </Button>
                 <Button
                   variant="text"
                   color="primary"
                   onClick={this.deleteEvent}
                 >
                   Slett
-                </Button>,
-              ]}
-            >
-              <p>{event.title}</p>
+                </Button>
+              </DialogActions>
             </Dialog>
           </div>
         ) : null}

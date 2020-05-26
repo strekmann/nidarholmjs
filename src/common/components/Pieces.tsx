@@ -66,8 +66,8 @@ class Pieces extends React.Component<Props, State> {
   }
 
   static getDerivedStateFromProps(props, state) {
-    if (props.location.query.term !== state.term) {
-      return { term: props.location.query.term };
+    if (props.match.location.query.term !== state.term) {
+      return { term: props.match.location.query.term };
     }
     return null;
   }
@@ -90,8 +90,8 @@ class Pieces extends React.Component<Props, State> {
     });
   };
 
-  onSearch = (term) => {
-    this.props.router.push({ ...this.props.location, query: { term } });
+  onSearch = (term: string, next: string) => {
+    this.props.router.push({ ...this.props.match.location, query: { term } });
     this.props.relay.refetch((variables) => {
       variables.term = term;
       return variables;
@@ -128,7 +128,7 @@ class Pieces extends React.Component<Props, State> {
     const { pieces } = this.props.organization;
     this.props.relay.refetch((variables) => {
       variables.term = this.state.term;
-      variables.showItems = pieces.edges.length + itemsPerPage;
+      variables.showItems = pieces?.edges?.length || 0 + itemsPerPage;
       return variables;
     });
   };
@@ -156,7 +156,7 @@ class Pieces extends React.Component<Props, State> {
               isOpen={this.state.addPiece}
               save={this.savePiece}
               cancel={this.closeAddPiece}
-              pieces={this.props.organization.pieces}
+              pieces={pieces}
               search={this.onSearch}
               router={this.props.router}
               searching

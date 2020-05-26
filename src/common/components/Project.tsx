@@ -1,6 +1,6 @@
 /* global FormData */
 
-import { Theme, withStyles } from "@material-ui/core";
+import { Theme, withTheme } from "@material-ui/core";
 import Button from "@material-ui/core/Button";
 import Dialog from "@material-ui/core/Dialog";
 import DialogActions from "@material-ui/core/DialogActions";
@@ -160,14 +160,14 @@ export class Project extends React.Component<Props, State> {
     this.setState({ addFile: false });
   };
 
-  addPiece = (piece) => {
+  addPiece = (pieceId: string) => {
     const { organization, relay } = this.props;
     const { project } = organization;
     this.closeAddPiece();
     AddPieceMutation.commit(
       relay.environment,
       {
-        pieceId: piece.id,
+        pieceId: pieceId,
         projectId: project.id,
       },
       undefined,
@@ -461,7 +461,7 @@ export class Project extends React.Component<Props, State> {
   }
 }
 
-export default withStyles(
+export default withTheme(
   createFragmentContainer(Project, {
     organization: graphql`
       fragment Project_organization on Organization {

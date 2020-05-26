@@ -101,6 +101,7 @@ class FileItem extends React.Component<Props, State> {
   toggleEditPermissions = () => {
     this.setState({
       editPermissions: !this.state.editPermissions,
+      menuIsOpen: null,
     });
   };
 
@@ -164,11 +165,13 @@ class FileItem extends React.Component<Props, State> {
                   onChange={this.onPermissionChange}
                   groups={this.props.viewer.groups}
                   users={[]}
+                  fullWidth
                 />
                 <TagField
                   organization={this.props.organization}
                   onChange={this.onTagChange}
                   fileTags={this.state.tags}
+                  fullWidth
                 />
               </DialogContent>
               <DialogActions>

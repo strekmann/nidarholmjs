@@ -14,13 +14,14 @@ import Paper from "@material-ui/core/Paper";
 import Select from "@material-ui/core/Select";
 import TextField from "@material-ui/core/TextField";
 import MoreVertIcon from "@material-ui/icons/MoreVert";
-import Autocomplete, { createFilterOptions } from '@material-ui/lab/Autocomplete';
+import Autocomplete from '@material-ui/lab/Autocomplete';
 import Link from "found/Link";
 import matchSorter from "match-sorter";
 import React from "react";
 import { createFragmentContainer, graphql, RelayProp } from "react-relay";
 import AddUserMutation from "../mutations/AddUser";
 import GroupItem from "./GroupItem";
+import { UserOptionType } from "./Member";
 import { Members_organization } from "./__generated__/Members_organization.graphql";
 
 type Props = {
@@ -39,12 +40,6 @@ type State = {
   member: boolean,
   userOption: UserOptionType | null
 };
-
-type UserOptionType = {
-  inputValue?: string;
-  id?: string;
-  name: string;
-}
 
 class Members extends React.Component<Props, State> {
   state = {
@@ -175,9 +170,6 @@ class Members extends React.Component<Props, State> {
                   if (option.inputValue) {
                     return option.inputValue;
                   }
-                  return option.name;
-                }}
-                renderOption={(option) => {
                   return option.name;
                 }}
                 freeSolo

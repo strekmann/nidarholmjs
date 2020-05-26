@@ -14,18 +14,6 @@ function decrypt(data, key, callback) {
   callback(null, cipher.update(d, "base64", "utf8") + cipher.final("utf8"));
 }
 
-/*
-var test = function (data) {
-    var key = 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa';
-    encrypt(data, key, function (err, data) {
-        console.log(data);
-        decrypt(data, key, function (err, data) {
-            console.log(data);
-        });
-    });
-};
-*/
-
 module.exports.aes = {
   encrypt,
   decrypt,

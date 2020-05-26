@@ -1,25 +1,31 @@
-import React from "react";
-import Dialog from "@material-ui/core/Dialog";
-import AutoComplete from "material-ui/AutoComplete";
-import DialogContent from "@material-ui/core/DialogContent";
-import DialogActions from "@material-ui/core/DialogActions";
-import DialogTitle from "@material-ui/core/DialogTitle";
 import Button from "@material-ui/core/Button";
+import Dialog from "@material-ui/core/Dialog";
+import DialogActions from "@material-ui/core/DialogActions";
+import DialogContent from "@material-ui/core/DialogContent";
+import DialogTitle from "@material-ui/core/DialogTitle";
+import IconButton from "@material-ui/core/IconButton";
 import ListItem from "@material-ui/core/ListItem";
 import ListItemSecondaryAction from "@material-ui/core/ListItemSecondaryAction";
-import IconButton from "@material-ui/core/IconButton";
+import ListItemText from "@material-ui/core/ListItemText";
 import Menu from "@material-ui/core/Menu";
 import MenuItem from "@material-ui/core/MenuItem";
-import ListItemText from "@material-ui/core/ListItemText";
-import MoreVertIcon from "@material-ui/icons/MoreVert";
 import Switch from "@material-ui/core/Switch";
+import TextField from "@material-ui/core/TextField";
+import MoreVertIcon from "@material-ui/icons/MoreVert";
+import Autocomplete from "@material-ui/lab/Autocomplete";
 import Link from "found/Link";
+import matchSorter from "match-sorter";
+import React from "react";
 import { createFragmentContainer, graphql, RelayProp } from "react-relay";
 import AddRoleMutation from "../mutations/AddRole";
 import LeaveGroupMutation from "../mutations/LeaveGroup";
 import RemoveRoleMutation from "../mutations/RemoveRole";
-
 import { GroupSettingsUserItem_member } from "./__generated__/GroupSettingsUserItem_member.graphql";
+
+type RoleOptionType = {
+  id: string,
+  name: string,
+};
 
 type Props = {
   group: {
@@ -77,28 +83,31 @@ class GroupSettingsUserItem extends React.Component<Props, State> {
         },
         undefined,
       );
+      this.setState({ menuIsOpen: null });
     } else {
       // add group leader status
-      this.setState({ addingGroupLeader: member });
+      this.setState({ addingGroupLeader: member, menuIsOpen: null });
     }
   };
 
   closeAddingGroupLeader = () => {
-    this.setState({ addingGroupLeader: null });
+    this.setState({ addingGroupLeader: null, menuIsOpen: null });
   };
 
-  setGroupLeader = (role) => {
-    const { addingGroupLeader } = this.state;
-    const { relay } = this.props;
-    if (addingGroupLeader) {
-      AddRoleMutation.commit(
-        relay.environment,
-        {
-          roleId: role.value,
-          memberId: addingGroupLeader.id,
-        },
-        undefined,
-      );
+  setGroupLeader = (_: any, role: RoleOptionType | null) => {
+    if (role) {
+      const { addingGroupLeader } = this.state;
+      const { relay } = this.props;
+      if (addingGroupLeader) {
+        AddRoleMutation.commit(
+          relay.environment,
+          {
+            roleId: role.id,
+            memberId: addingGroupLeader.id,
+          },
+          undefined,
+        );
+      }
     }
     this.setState({ addingGroupLeader: null, menuIsOpen: null });
   };
@@ -120,6 +129,9 @@ class GroupSettingsUserItem extends React.Component<Props, State> {
   render() {
     const { member, isGroupLeader, roles, group } = this.props;
     const { addingGroupLeader } = this.state;
+    const roleOptions: RoleOptionType[] = roles.edges.map((edge) => {
+      return { name: edge.node.name, id: edge.node.id };
+    });
     return (
       <ListItem>
         <Dialog
@@ -129,22 +141,16 @@ class GroupSettingsUserItem extends React.Component<Props, State> {
           <DialogTitle>Sett som gruppeleder</DialogTitle>
           <DialogContent>
             <p>Velg en rolle fra lista under</p>
-            <AutoComplete
-              dataSource={roles.edges.map((edge) => {
-                return {
-                  text: edge.node.name,
-                  value: edge.node.id,
-                };
-              })}
-              floatingLabelText="Rolle"
-              onNewRequest={this.setGroupLeader}
+            <Autocomplete
+              options={roleOptions}
+              onChange={this.setGroupLeader}
               openOnFocus
-              filter={AutoComplete.fuzzyFilter}
-              fullWidth
-              menuStyle={{
-                maxHeight: "40vh",
-                overflowY: "auto",
-              }}
+              getOptionLabel={(option) => option.name}
+              getOptionSelected={(option, value) => option.id === value.id}
+              renderInput={(params) => <TextField {...params} label="Rolle" />}
+              filterOptions={(options, { inputValue }) =>
+                matchSorter(options, inputValue, { keys: ["name"] })
+              }
             />
           </DialogContent>
           <DialogActions>

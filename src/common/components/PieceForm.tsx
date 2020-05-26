@@ -1,4 +1,3 @@
-import AutoComplete from "material-ui/AutoComplete";
 import Button from "@material-ui/core/Button";
 import Dialog from "@material-ui/core/Dialog";
 import DialogActions from "@material-ui/core/DialogActions";
@@ -6,6 +5,7 @@ import DialogContent from "@material-ui/core/DialogContent";
 import DialogTitle from "@material-ui/core/DialogTitle";
 import TextField from "@material-ui/core/TextField";
 import * as React from "react";
+import Autocomplete, { AutocompleteOptionType } from "./Autocomplete";
 
 type Props = {
   pieces?: {
@@ -41,7 +41,7 @@ type Props = {
       pathname?: string,
     }) => void*/,
   },
-  search?: (string) => void,
+  search?: (text: string) => void,
 };
 
 type State = {
@@ -71,27 +71,27 @@ class PieceForm extends React.Component<Props, State> {
     };
   }
 
-  handleChangeTitle = (event: void, title: string) => {
-    this.setState({ title });
+  handleChangeTitle = (event: React.ChangeEvent<HTMLInputElement>) => {
+    this.setState({ title: event.target.value });
   };
 
-  handleChangeSubtitle = (event: void, subtitle: string) => {
-    this.setState({ subtitle });
+  handleChangeSubtitle = (event: React.ChangeEvent<HTMLInputElement>) => {
+    this.setState({ subtitle: event.target.value });
   };
 
-  handleChangeComposers = (event: void, composers: string) => {
-    this.setState({ composers });
+  handleChangeComposers = (event: React.ChangeEvent<HTMLInputElement>) => {
+    this.setState({ composers: event.target.value });
   };
 
-  handleChangeArrangers = (event: void, arrangers: string) => {
-    this.setState({ arrangers });
+  handleChangeArrangers = (event: React.ChangeEvent<HTMLInputElement>) => {
+    this.setState({ arrangers: event.target.value });
   };
 
   handleClickNewPiece = () => {
     this.setState({ searching: false });
   };
 
-  goToPiece = (piece: { id: string }) => {
+  goToPiece = (piece: AutocompleteOptionType) => {
     this.props.router.push({ pathname: `/music/${piece.id}` });
   };
 
@@ -113,6 +113,16 @@ class PieceForm extends React.Component<Props, State> {
   };
 
   render() {
+    const pieceOptions: AutocompleteOptionType[] =
+      this.props.pieces?.edges.map((edge) => {
+        const piece = edge.node;
+        return {
+          label: `${piece.scoreCount}: ${piece.title} - ${piece.composers.join(
+            ", ",
+          )} (${piece.arrangers.join(", ")})`,
+          id: piece.id,
+        };
+      }) || [];
     return (
       <Dialog open={this.props.isOpen} onClose={this.props.cancel}>
         <DialogTitle>{this.props.title}</DialogTitle>
@@ -123,27 +133,19 @@ class PieceForm extends React.Component<Props, State> {
                 Søk blant stykkene som allerede er i arkivet, og legg til nytt
                 hvis det ikke finnes
               </p>
-              <AutoComplete
-                dataSource={this.props.pieces.edges.map((edge) => {
-                  const piece = edge.node;
-                  return {
-                    text: `${piece.scoreCount}: ${
-                      piece.title
-                    } - ${piece.composers.join(", ")} (${piece.arrangers.join(
-                      ", ",
-                    )})`,
-                    value: piece,
-                  };
-                })}
-                floatingLabelText="Tittel"
-                onNewRequest={(selected) => {
-                  this.goToPiece(selected.value);
+              <Autocomplete
+                options={pieceOptions}
+                label="Tittel"
+                onChange={(
+                  event: any,
+                  selected: AutocompleteOptionType | null,
+                ) => {
+                  if (selected) {
+                    this.goToPiece(selected);
+                  }
                 }}
-                onUpdateInput={(text) => {
-                  this.search(text);
-                }}
-                filter={() => {
-                  return true;
+                onUpdateInput={(event: React.ChangeEvent<HTMLInputElement>) => {
+                  this.search(event.target.value);
                 }}
                 fullWidth
               />
@@ -169,7 +171,7 @@ class PieceForm extends React.Component<Props, State> {
                   label="Komponist(er)"
                   onChange={this.handleChangeComposers}
                   value={this.state.composers}
-                  hintText="Bruk komma som skilletegn"
+                  helperText="Bruk komma som skilletegn"
                 />
               </div>
               <div>
@@ -177,7 +179,7 @@ class PieceForm extends React.Component<Props, State> {
                   label="Arrangør(er)"
                   onChange={this.handleChangeArrangers}
                   value={this.state.arrangers}
-                  hintText="Bruk komma som skilletegn"
+                  helperText="Bruk komma som skilletegn"
                 />
               </div>
             </div>

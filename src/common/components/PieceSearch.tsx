@@ -14,7 +14,7 @@ type State = {
 
 export default class PieceSearch extends React.Component<Props, State> {
   state = {
-    term: this.props.term,
+    term: this.props.term || "",
   };
 
   onSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -36,6 +36,7 @@ export default class PieceSearch extends React.Component<Props, State> {
           label="Tittel, komponist eller arrangør"
           value={this.state.term}
           onChange={this.onSearchChange}
+          fullWidth
         />
         <Button variant="contained" type="submit" color="primary">
           Søk

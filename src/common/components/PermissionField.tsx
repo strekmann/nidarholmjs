@@ -1,26 +1,26 @@
-import AutoComplete from "material-ui/AutoComplete";
+import { TextField } from "@material-ui/core";
+import Chip from "@material-ui/core/Chip";
+import Autocomplete from "@material-ui/lab/Autocomplete";
 import * as React from "react";
-
 import { PermissionArray } from "../types";
-
-import PermissionChips from "./PermissionChips";
+import { AutocompleteOptionType } from "./Autocomplete";
 
 type Props = {
   groups?: Array<{
-    id: string;
-    name?: string;
-  }>;
-  memberGroupId?: string;
-  onChange: (PermissionArray) => void;
-  permissions: PermissionArray;
+    id: string,
+    name?: string,
+  }>,
+  onChange: (permissions: PermissionArray) => void,
+  permissions: PermissionArray,
   users: Array<{
-    id: string;
-    name?: string;
-  }>;
+    id: string,
+    name?: string,
+  }>,
+  fullWidth?: boolean,
 };
 
 type State = {
-  permission: string;
+  permission: string,
 };
 
 export default class PermissionField extends React.Component<Props, State> {
@@ -34,32 +34,18 @@ export default class PermissionField extends React.Component<Props, State> {
     });
   };
 
-  addPermission = (chosen: { id: string; name?: string }, index: number) => {
-    const permissions = this.props.permissions.slice();
-    if (index > -1) {
-      permissions.push(chosen);
-    }
-    this.setState({
-      permission: "",
-    });
-    this.props.onChange(permissions);
-  };
-
-  removePermission = (permissionId: string) => {
-    const permissions = this.props.permissions.filter((_p) => {
-      return _p.id !== permissionId;
-    });
+  setPermissions = (_: any, permissions: AutocompleteOptionType[]) => {
     this.props.onChange(permissions);
   };
 
   render() {
-    const permissions = [];
+    const permissions: AutocompleteOptionType[] = [];
     const groups = this.props.groups || [];
     // const users = this.props.users || [];
-    permissions.push({ id: "p", name: "Verden" });
+    permissions.push({ id: "p", label: "Verden" });
     groups.forEach((group) => {
       if (group) {
-        permissions.push({ id: group.id, name: group.name });
+        permissions.push({ id: group.id, label: group.name || "" });
       }
     });
     /*
@@ -69,23 +55,41 @@ export default class PermissionField extends React.Component<Props, State> {
         */
     return (
       <div>
-        <AutoComplete
-          id="permissions"
-          floatingLabelText="Legg til rettigheter"
-          filter={AutoComplete.fuzzyFilter}
-          dataSource={permissions}
-          dataSourceConfig={{ text: "name", value: "id" }}
-          maxSearchResults={8}
-          searchText={this.state.permission}
-          onNewRequest={this.addPermission}
-          onUpdateInput={this.onPermissionChange}
-        />
-        <PermissionChips
-          permissions={this.props.permissions}
-          groups={this.props.groups}
-          users={this.props.users}
-          memberGroupId={this.props.memberGroupId}
-          removePermission={this.removePermission}
+        <Autocomplete
+          multiple
+          options={permissions}
+          onChange={this.setPermissions}
+          getOptionSelected={(option, value) => {
+            return option.id === value.id;
+          }}
+          getOptionLabel={(option) => option.label}
+          value={this.props.permissions.map((permission) => {
+            return {
+              id: permission.id || "",
+              label: permission.name || permission.label || "",
+            };
+          })}
+          renderInput={(params) => {
+            return (
+              <TextField
+                {...params}
+                label="Legg til rettigheter"
+                onChange={this.onPermissionChange}
+                fullWidth={this.props.fullWidth}
+              />
+            );
+          }}
+          renderTags={(options, getTagProps) => {
+            return options.map((option, index) => {
+              return (
+                <Chip
+                  variant="outlined"
+                  label={option.label}
+                  {...getTagProps({ index })}
+                />
+              );
+            });
+          }}
         />
       </div>
     );

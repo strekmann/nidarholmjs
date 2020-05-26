@@ -132,6 +132,7 @@ class EditPage extends React.Component<Props, State> {
               onChange={this.onPermissionChange}
               groups={this.props.viewer.groups}
               users={[]}
+              fullWidth
             />
           </div>
           <div>

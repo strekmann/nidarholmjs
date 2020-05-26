@@ -11,19 +11,7 @@ import Group from "./models/Group";
 import User from "./models/User";
 import PasswordCode from "./models/PasswordCode";
 
-type ContactEmailType = {
-  name: string;
-  email: string;
-  text: string;
-  organization: any;
-};
-
-export function sendContactEmail({
-  name,
-  email,
-  text,
-  organization,
-}: ContactEmailType) {
+export function sendContactEmail({ name, email, text, organization }) {
   if (config && config.auth && config.auth.smtp && config.auth.smtp.host) {
     const transporter = nodemailer.createTransport(config.auth.smtp);
     const data = {
@@ -52,7 +40,7 @@ export function sendContactEmail({
   }
 }
 
-export function sendPasswordEmail(organization: any, user: any) {
+export function sendPasswordEmail(organization, user) {
   const code = new PasswordCode();
   code.user = user._id;
   return code.save().then((newCode) => {

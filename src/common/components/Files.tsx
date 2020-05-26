@@ -19,24 +19,10 @@ import SaveFilePermissionsMutation from "../mutations/SaveFilePermissions";
 import FileList from "./FileList";
 import FileUpload from "./FileUpload";
 import TagField from "./TagField";
+import { Files_organization } from "./__generated__/Files_organization.graphql";
 
 type Props = {
-  organization: {
-    files: {
-      edges: Array<{
-        node: {
-          id: string,
-        },
-      }>,
-      pageInfo: {
-        hasNextPage: boolean,
-      },
-    },
-    isMember: boolean,
-    memberGroup: {
-      id: string,
-    },
-  },
+  organization: Files_organization,
   relay: RelayRefetchProp,
   viewer: {},
 };
@@ -105,10 +91,7 @@ class Files extends React.Component<Props, State> {
   onTagChange = (tags) => {
     this.setState({ tags });
     this.props.relay.refetch((variables) => {
-      variables.searchTags = tags
-        .sort()
-        .join("|")
-        .toLowerCase();
+      variables.searchTags = tags.sort().join("|").toLowerCase();
       return variables;
     });
   };
@@ -141,10 +124,7 @@ class Files extends React.Component<Props, State> {
         search: true,
         tags,
       });
-      variables.searchTags = this.state.tags
-        .sort()
-        .join("|")
-        .toLowerCase();
+      variables.searchTags = this.state.tags.sort().join("|").toLowerCase();
       return variables;
     });
   };
@@ -153,10 +133,7 @@ class Files extends React.Component<Props, State> {
     const { files } = this.props.organization;
     this.props.relay.refetch((variables) => {
       variables.showFiles = files.edges.length + 20;
-      variables.searchTags = this.state.tags
-        .sort()
-        .join("|")
-        .toLowerCase();
+      variables.searchTags = this.state.tags.sort().join("|").toLowerCase();
       variables.searchTerm = variables.searchTerm;
       return variables;
     });
@@ -170,34 +147,34 @@ class Files extends React.Component<Props, State> {
         {isMember ? (
           <Toolbar style={{ display: "flex", justifyContent: "space-between" }}>
             <Typography variant="h1">Filer</Typography>
-            <div style={{ display: "flex" }}>
-              <TagField
-                autoFocus
-                fileTags={this.state.tags}
-                onChange={this.onTagChange}
-                organization={this.props.organization}
-              />
-              <Button variant="contained" onClick={this.toggleAddFile}>
-                Last opp filer
-              </Button>
-              <Dialog open={this.state.addFile} onClose={this.closeAddFile}>
-                <DialogTitle>Last opp filer</DialogTitle>
-                <DialogContent>
-                  <FileUpload
-                    viewer={this.props.viewer}
-                    organization={this.props.organization}
-                    onDrop={this.onDrop}
-                    memberGroupId={organization.memberGroup.id}
-                    onTagsChange={this.searchTag}
-                  />
-                </DialogContent>
-                <DialogActions>
-                  <Button color="primary" onClick={this.closeAddFile}>
-                    Ferdig
-                  </Button>
-                </DialogActions>
-              </Dialog>
-            </div>
+            <TagField
+              autoFocus
+              fileTags={this.state.tags}
+              onChange={this.onTagChange}
+              organization={this.props.organization}
+              fullWidth
+              style={{ flexGrow: 1, marginRight: 20, marginLeft: 20 }}
+            />
+            <Button variant="contained" onClick={this.toggleAddFile}>
+              Last opp filer
+            </Button>
+            <Dialog open={this.state.addFile} onClose={this.closeAddFile}>
+              <DialogTitle>Last opp filer</DialogTitle>
+              <DialogContent>
+                <FileUpload
+                  viewer={this.props.viewer}
+                  organization={this.props.organization}
+                  onDrop={this.onDrop}
+                  memberGroupId={organization.memberGroup.id}
+                  onTagsChange={this.searchTag}
+                />
+              </DialogContent>
+              <DialogActions>
+                <Button color="primary" onClick={this.closeAddFile}>
+                  Ferdig
+                </Button>
+              </DialogActions>
+            </Dialog>
           </Toolbar>
         ) : null}
         {isMember ? null : <h1>Filer</h1>}

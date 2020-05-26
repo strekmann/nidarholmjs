@@ -1,29 +1,20 @@
-import areIntlLocalesSupported from "intl-locales-supported";
-// import MomentUtils from "@date-io/moment";
+import MomentUtils from "@date-io/moment";
 import Button from "@material-ui/core/Button";
 import Dialog from "@material-ui/core/Dialog";
 import DialogActions from "@material-ui/core/DialogActions";
 import DialogContent from "@material-ui/core/DialogContent";
 import DialogTitle from "@material-ui/core/DialogTitle";
 import TextField from "@material-ui/core/TextField";
-// import { KeyboardDatePicker, MuiPickersUtilsProvider } from "@material-ui/pickers";
-import DatePicker from "material-ui/DatePicker";
+import { DatePicker, MuiPickersUtilsProvider } from "@material-ui/pickers";
 import moment from "moment";
 import React from "react";
 import { createFragmentContainer, graphql } from "react-relay";
-
+import { PermissionArray, PermissionObject } from "../types";
 import { flattenPermissions, urlify } from "../utils";
-import { PermissionObject, PermissionArray } from "../types";
-
-import UserField from "./UserField";
 import PermissionField from "./PermissionField";
+import UserField from "./UserField";
 import { ProjectForm_organization } from "./__generated__/ProjectForm_organization.graphql";
 import { ProjectForm_viewer } from "./__generated__/ProjectForm_viewer.graphql";
-
-let DateTimeFormat;
-if (areIntlLocalesSupported(["nb"])) {
-  ({ DateTimeFormat } = global.Intl);
-}
 
 type Props = {
   open: boolean,
@@ -47,16 +38,16 @@ type Props = {
   onClose: () => void,
   viewer: ProjectForm_viewer,
   organization: ProjectForm_organization,
-  id: string,
-  title: string,
-  tag: string,
-  privateMdtext: string,
-  publicMdtext: string,
-  start: string,
-  end: string,
-  permissions: PermissionObject,
-  conductors: any[],
-  managers: any[],
+  id?: string,
+  title?: string,
+  tag?: string,
+  privateMdtext?: string,
+  publicMdtext?: string,
+  start?: moment.Moment | null,
+  end?: moment.Moment | null,
+  permissions?: PermissionObject,
+  conductors?: any[],
+  managers?: any[],
 };
 
 type State = {
@@ -64,8 +55,8 @@ type State = {
   tag: string,
   privateMdtext: string,
   publicMdtext: string,
-  start?: Date,
-  end?: Date,
+  start?: moment.Moment | null,
+  end?: moment.Moment | null,
   permissions: PermissionArray,
   conductors: any[],
   managers: any[],
@@ -91,8 +82,8 @@ class ProjectForm extends React.Component<Props, State> {
     tag: this.props.tag,
     privateMdtext: this.props.privateMdtext,
     publicMdtext: this.props.publicMdtext,
-    start: this.props.start ? moment(this.props.start).toDate() : undefined,
-    end: this.props.end ? moment(this.props.end).toDate() : undefined,
+    start: this.props.start ? moment(this.props.start) : undefined,
+    end: this.props.end ? moment(this.props.end) : undefined,
     permissions: this.props.permissions
       ? flattenPermissions(this.props.permissions)
       : [],
@@ -126,12 +117,12 @@ class ProjectForm extends React.Component<Props, State> {
     this.setState({ publicMdtext: event.target.value });
   };
 
-  onChangeStart = (event, start) => {
-    this.setState({ start });
+  onChangeStart = (start: moment.Moment | null) => {
+    this.setState({ start: start ? start.startOf("date") : null });
   };
 
-  onChangeEnd = (event, end) => {
-    this.setState({ end });
+  onChangeEnd = (end: moment.Moment | null) => {
+    this.setState({ end: end ? end.startOf("date") : null });
   };
 
   onPermissionChange = (permissions) => {
@@ -224,112 +215,113 @@ class ProjectForm extends React.Component<Props, State> {
     }
 
     return (
-      <Dialog open={this.props.open} onClose={this.onClose}>
-        <form onSubmit={this.saveProject}>
-          <DialogTitle id="project-dialog-title">
-            {this.props.id ? "Rediger prosjekt" : "Nytt prosjekt"}
-          </DialogTitle>
-          <DialogContent>
-            <div>
-              <TextField
-                label="Tittel"
-                onChange={this.onChangeTitle}
-                value={this.state.title}
-                error={!this.state.title}
-                required
-              />
-            </div>
-            <div>
-              <TextField
-                label="Identifikator"
-                onChange={this.onChangeTag}
-                value={this.state.tag}
-                error={!this.state.tag}
-                helperText="Dette feltet bør være unikt per prosjekt"
-                required
-              />
-            </div>
-            <div>
-              <TextField
-                label="Intern beskrivelse"
-                onChange={this.onChangePrivateMdtext}
-                value={this.state.privateMdtext}
-                multiline
-                fullWidth
-              />
-            </div>
-            {this.props.id ? (
+      <MuiPickersUtilsProvider utils={MomentUtils}>
+        <Dialog open={this.props.open} onClose={this.onClose}>
+          <form onSubmit={this.saveProject}>
+            <DialogTitle id="project-dialog-title">
+              {this.props.id ? "Rediger prosjekt" : "Nytt prosjekt"}
+            </DialogTitle>
+            <DialogContent>
               <div>
                 <TextField
-                  label="Ekstern beskrivelse"
-                  onChange={this.onChangePublicMdtext}
-                  value={this.state.publicMdtext}
+                  label="Tittel"
+                  onChange={this.onChangeTitle}
+                  value={this.state.title}
+                  error={!this.state.title}
+                  required
+                />
+              </div>
+              <div>
+                <TextField
+                  label="Identifikator"
+                  onChange={this.onChangeTag}
+                  value={this.state.tag}
+                  error={!this.state.tag}
+                  helperText="Dette feltet bør være unikt per prosjekt"
+                  required
+                />
+              </div>
+              <div>
+                <TextField
+                  label="Intern beskrivelse"
+                  onChange={this.onChangePrivateMdtext}
+                  value={this.state.privateMdtext}
                   multiline
                   fullWidth
                 />
               </div>
-            ) : null}
-            <div>
-              <DatePicker
-                id="start"
-                floatingLabelText="Prosjektstart"
-                onChange={this.onChangeStart}
-                value={this.state.start}
-                locale="nb"
-                DateTimeFormat={DateTimeFormat}
-              />
-            </div>
-            <div>
-              <DatePicker
-                id="end"
-                floatingLabelText="Prosjektslutt"
-                onChange={this.onChangeEnd}
-                value={this.state.end}
-                locale="nb"
-                DateTimeFormat={DateTimeFormat}
-                required
-              />
-            </div>
-            <div>
-              <UserField
-                users={this.state.conductors}
-                organization={organization}
-                onChange={this.onChangeConductors}
-                title="Dirigent(er)"
-              />
-            </div>
-            <div>
-              <UserField
-                users={this.state.managers}
-                organization={organization}
-                onChange={this.onChangeManagers}
-                title="Prosjektleder(e)"
-              />
-            </div>
-            <div>
-              <PermissionField
-                permissions={this.state.permissions}
-                onChange={this.onPermissionChange}
-                groups={this.props.viewer.groups}
-                users={this.props.viewer.friends}
-              />
-            </div>
-          </DialogContent>
-          <DialogActions>
-            <Button variant="contained" type="reset" onClick={this.onClose}>
-              Avbryt
-            </Button>
-            <Button
-              variant="contained"
-              onSubmit={this.saveProject}
-              type="submit"
-              color="primary"
-            >
-              Lagre
-            </Button>
-          </DialogActions>
-        </form>
-      </Dialog>
+              {this.props.id ? (
+                <div>
+                  <TextField
+                    label="Ekstern beskrivelse"
+                    onChange={this.onChangePublicMdtext}
+                    value={this.state.publicMdtext}
+                    multiline
+                    fullWidth
+                  />
+                </div>
+              ) : null}
+              <div>
+                <DatePicker
+                  label="Prosjektstart"
+                  onChange={this.onChangeStart}
+                  value={this.state.start}
+                  clearable
+                  autoOk
+                />
+              </div>
+              <div>
+                <DatePicker
+                  id="end"
+                  label="Prosjektslutt"
+                  onChange={this.onChangeEnd}
+                  value={this.state.end}
+                  required
+                  autoOk
+                />
+              </div>
+              <div>
+                <UserField
+                  users={this.state.conductors}
+                  organization={organization}
+                  onChange={this.onChangeConductors}
+                  title="Dirigent(er)"
+                />
+              </div>
+              <div>
+                <UserField
+                  users={this.state.managers}
+                  organization={organization}
+                  onChange={this.onChangeManagers}
+                  title="Prosjektleder(e)"
+                />
+              </div>
+              <div>
+                <PermissionField
+                  permissions={this.state.permissions}
+                  onChange={this.onPermissionChange}
+                  groups={this.props.viewer.groups}
+                  users={[]}
+                  fullWidth
+                />
+              </div>
+            </DialogContent>
+            <DialogActions>
+              <Button variant="contained" type="reset" onClick={this.onClose}>
+                Avbryt
+              </Button>
+              <Button
+                variant="contained"
+                onSubmit={this.saveProject}
+                type="submit"
+                color="primary"
+              >
+                Lagre
+              </Button>
+            </DialogActions>
+          </form>
+        </Dialog>
+      </MuiPickersUtilsProvider>
     );
   }
 }

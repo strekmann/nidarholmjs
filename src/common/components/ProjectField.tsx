@@ -1,10 +1,9 @@
-import AutoComplete from "material-ui/AutoComplete";
 import Chip from "@material-ui/core/Chip";
 import React from "react";
 import { createFragmentContainer, graphql } from "react-relay";
-
-import { ProjectField_organization } from "./__generated__/ProjectField_organization.graphql";
+import Autocomplete from "./Autocomplete";
 import { Project } from "./Project";
+import { ProjectField_organization } from "./__generated__/ProjectField_organization.graphql";
 
 type Props = {
   organization: ProjectField_organization,
@@ -62,21 +61,16 @@ class ProjectField extends React.Component<Props, State> {
     }
     const projects = organization.projectTags.map((_project) => {
       return {
-        title: `${_project.title} (${_project.year})`,
-        _project,
+        label: `${_project.title} (${_project.year})`,
+        id: _project.id,
       };
     });
     return (
       <div>
-        <AutoComplete
-          id="projects"
-          floatingLabelText="Tilhører prosjekt"
-          filter={AutoComplete.fuzzyFilter}
-          dataSource={projects}
-          dataSourceConfig={{ text: "title", value: "project" }}
-          maxSearchResults={20}
-          searchText={project}
-          onNewRequest={this.addProject}
+        <Autocomplete
+          label="Tilhører prosjekt"
+          options={projects}
+          onChange={this.addProject}
           onUpdateInput={this.onProjectChange}
         />
         {stateProjects.map((_project) => {

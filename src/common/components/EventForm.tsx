@@ -1,26 +1,28 @@
 /* eslint "no-nested-ternary": 0 */
 
+import MomentUtils from "@date-io/moment";
 import Button from "@material-ui/core/Button";
 import Checkbox from "@material-ui/core/Checkbox";
 import Chip from "@material-ui/core/Chip";
 import Dialog from "@material-ui/core/Dialog";
-import DialogContent from "@material-ui/core/DialogContent";
 import DialogActions from "@material-ui/core/DialogActions";
+import DialogContent from "@material-ui/core/DialogContent";
 import FormControlLabel from "@material-ui/core/FormControlLabel";
 import TextField from "@material-ui/core/TextField";
-import DatePicker from "material-ui/DatePicker";
-import TimePicker from "material-ui/TimePicker";
+import {
+  DatePicker,
+  MuiPickersUtilsProvider,
+  TimePicker,
+} from "@material-ui/pickers";
 import moment from "moment";
 import * as React from "react";
 import { createFragmentContainer, graphql } from "react-relay";
-
-import { flattenPermissions } from "../utils";
 import { PermissionArray, PermissionObject } from "../types";
-
-import { EventForm_organization } from "./__generated__/EventForm_organization.graphql";
-import { EventForm_viewer } from "./__generated__/EventForm_viewer.graphql";
+import { flattenPermissions } from "../utils";
 import PermissionField from "./PermissionField";
 import ProjectField from "./ProjectField";
+import { EventForm_organization } from "./__generated__/EventForm_organization.graphql";
+import { EventForm_viewer } from "./__generated__/EventForm_viewer.graphql";
 
 type Props = {
   title: string,
@@ -28,8 +30,8 @@ type Props = {
     id: string,
     title: string,
     location: string,
-    start: any,
-    end: any,
+    start: moment.Moment,
+    end: moment.Moment,
     mdtext: string,
     highlighted: boolean,
     permissions: PermissionObject,
@@ -51,8 +53,8 @@ type State = {
   id?: string,
   title: string,
   location: string,
-  start: any,
-  end: any,
+  start: moment.Moment | null,
+  end: moment.Moment | null,
   mdtext: string,
   permissions: PermissionArray,
   projects: Array<{
@@ -70,11 +72,11 @@ class EventForm extends React.Component<Props, State> {
     location: this.props.event ? this.props.event.location : "",
     start:
       this.props.event && this.props.event.start
-        ? moment(this.props.event.start).toDate()
+        ? moment(this.props.event.start)
         : null,
     end:
       this.props.event && this.props.event.end
-        ? moment(this.props.event.end).toDate()
+        ? moment(this.props.event.end)
         : null,
     mdtext: this.props.event ? this.props.event.mdtext : "",
     permissions: this.props.event
@@ -97,41 +99,41 @@ class EventForm extends React.Component<Props, State> {
     this.setState({ location: event.target.value });
   };
 
-  onChangeStart = (event, date) => {
-    this.setState({ start: date });
+  onChangeStart = (start: moment.Moment | null) => {
+    this.setState({ start });
   };
-  onChangeEnd = (event, date) => {
-    this.setState({ end: date });
+  onChangeEnd = (end: moment.Moment | null) => {
+    this.setState({ end });
   };
 
-  onChangeStartDate = (event, date) => {
+  onChangeStartDate = (start: moment.Moment | null) => {
     if (!this.state.start) {
-      this.setState({ start: date });
+      this.setState({ start });
     } else {
       this.setState({
-        start: moment(this.state.start)
-          .set({
-            year: date.getFullYear(),
-            month: date.getMonth(),
-            date: date.getDate(),
-          })
-          .toDate(),
+        start: start
+          ? moment(this.state.start).set({
+              year: start.year(),
+              month: start.month(),
+              date: start.date(),
+            })
+          : null,
       });
     }
   };
 
-  onChangeEndDate = (event, date) => {
+  onChangeEndDate = (end: moment.Moment | null) => {
     if (!this.state.end) {
-      this.setState({ end: date });
+      this.setState({ end });
     } else {
       this.setState({
-        end: moment(this.state.end)
-          .set({
-            year: date.getFullYear(),
-            month: date.getMonth(),
-            date: date.getDate(),
-          })
-          .toDate(),
+        end: end
+          ? moment(this.state.end).set({
+              year: end.year(),
+              month: end.month(),
+              date: end.date(),
+            })
+          : null,
       });
     }
   };
@@ -187,112 +189,121 @@ class EventForm extends React.Component<Props, State> {
 
   render() {
     return (
-      <Dialog
-        title={this.props.title}
-        open={this.props.isOpen}
-        onClose={this.props.cancel}
-      >
-        <DialogContent>
-          <div>
-            <TextField
-              value={this.state.title}
-              label="Tittel"
-              onChange={this.onChangeTitle}
-              required
-            />
-          </div>
-          <div>
-            <TextField
-              value={this.state.location}
-              label="Sted"
-              onChange={this.onChangeLocation}
-            />
-          </div>
-          <div className="small-narrow" style={{ display: "flex" }}>
-            <DatePicker
-              value={this.state.start}
-              floatingLabelText="Start"
-              onChange={this.onChangeStartDate}
-              style={{ flex: "1 1 auto" }}
-            />
-            <TimePicker
-              value={this.state.start}
-              floatingLabelText="Klokkeslett"
-              format="24hr"
-              onChange={this.onChangeStart}
-              style={{ flex: "1 1 auto" }}
-            />
-          </div>
-          <div className="small-narrow" style={{ display: "flex" }}>
-            <DatePicker
-              value={this.state.end}
-              floatingLabelText="Slutt"
-              onChange={this.onChangeEndDate}
-              style={{ flex: "1 1 auto" }}
-            />
-            <TimePicker
-              value={this.state.end}
-              floatingLabelText="Klokkeslett"
-              format="24hr"
-              onChange={this.onChangeEnd}
-              style={{ flex: "1 1 auto" }}
-            />
-          </div>
-          <div>
-            <TextField
-              value={this.state.mdtext}
-              label="Beskrivelse"
-              multiline
-              fullWidth
-              onChange={this.onChangeDescription}
-            />
-          </div>
-          <div>
-            <ProjectField
-              projects={this.state.projects}
-              organization={this.props.organization}
-              onChange={this.onChangeProjects}
-            />
-          </div>
-          <div>
-            <FormControlLabel
-              control={
-                <Checkbox
-                  id="member"
-                  name="member"
-                  checked={this.state.highlighted}
-                  onChange={this.onChangeHighlighted}
-                  color="primary"
-                />
-              }
-              label="Konsert eller noe annet publikum bør vite om"
-            ></FormControlLabel>
-          </div>
-          <div>
-            {this.state.tags
-              ? this.state.tags.map((tag, i) => {
-                  return this.renderChip(tag, i);
-                })
-              : null}
-          </div>
-          <div>
-            <PermissionField
-              permissions={this.state.permissions}
-              onChange={this.onChangePermissions}
-              groups={this.props.viewer.groups}
-              users={[]}
-            />
-          </div>
-        </DialogContent>
-        <DialogActions>
-          <Button variant="text" onClick={this.props.cancel}>
-            Avbryt
-          </Button>
-          <Button variant="text" onClick={this.save} color="primary">
-            Lagre
-          </Button>
-        </DialogActions>
-      </Dialog>
+      <MuiPickersUtilsProvider utils={MomentUtils}>
+        <Dialog
+          title={this.props.title}
+          open={this.props.isOpen}
+          onClose={this.props.cancel}
+        >
+          <DialogContent>
+            <div>
+              <TextField
+                value={this.state.title}
+                label="Tittel"
+                onChange={this.onChangeTitle}
+                required
+              />
+            </div>
+            <div>
+              <TextField
+                value={this.state.location}
+                label="Sted"
+                onChange={this.onChangeLocation}
+              />
+            </div>
+            <div className="small-narrow" style={{ display: "flex" }}>
+              <DatePicker
+                value={this.state.start}
+                label="Start"
+                onChange={this.onChangeStartDate}
+                style={{ flex: "1 1 auto" }}
+                autoOk
+                required
+              />
+              <TimePicker
+                value={this.state.start}
+                clearable
+                label="Klokkeslett"
+                ampm={false}
+                onChange={this.onChangeStart}
+                style={{ flex: "1 1 auto" }}
+              />
+            </div>
+            <div className="small-narrow" style={{ display: "flex" }}>
+              <DatePicker
+                value={this.state.end}
+                label="Slutt"
+                onChange={this.onChangeEndDate}
+                style={{ flex: "1 1 auto" }}
+                autoOk
+                clearable
+              />
+              <TimePicker
+                value={this.state.end}
+                label="Klokkeslett"
+                ampm={false}
+                onChange={this.onChangeEnd}
+                style={{ flex: "1 1 auto" }}
+                clearable
+              />
+            </div>
+            <div>
+              <TextField
+                value={this.state.mdtext}
+                label="Beskrivelse"
+                multiline
+                fullWidth
+                onChange={this.onChangeDescription}
+              />
+            </div>
+            <div>
+              <ProjectField
+                projects={this.state.projects}
+                organization={this.props.organization}
+                onChange={this.onChangeProjects}
+              />
+            </div>
+            <div>
+              <FormControlLabel
+                control={
+                  <Checkbox
+                    id="member"
+                    name="member"
+                    checked={this.state.highlighted}
+                    onChange={this.onChangeHighlighted}
+                    color="primary"
+                  />
+                }
+                label="Konsert eller noe annet publikum bør vite om"
+              ></FormControlLabel>
+            </div>
+            <div>
+              {this.state.tags
+                ? this.state.tags.map((tag, i) => {
+                    return this.renderChip(tag, i);
+                  })
+                : null}
+            </div>
+            <div>
+              <PermissionField
+                permissions={this.state.permissions}
+                onChange={this.onChangePermissions}
+                groups={this.props.viewer.groups}
+                users={[]}
+                fullWidth
+              />
+            </div>
+          </DialogContent>
+          <DialogActions>
+            <Button variant="text" onClick={this.props.cancel}>
+              Avbryt
+            </Button>
+            <Button variant="text" onClick={this.save} color="primary">
+              Lagre
+            </Button>
+          </DialogActions>
+        </Dialog>
+      </MuiPickersUtilsProvider>
     );
   }
 }

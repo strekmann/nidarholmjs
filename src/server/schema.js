@@ -339,10 +339,7 @@ const memberType = new GraphQLObjectType({
         type: new GraphQLList(roleType),
         resolve: (_member) => {
           // populating
-          return Role.find()
-            .where("_id")
-            .in(_member.roles)
-            .exec();
+          return Role.find().where("_id").in(_member.roles).exec();
         },
       },
       organizationRoles: {
@@ -359,10 +356,7 @@ const memberType = new GraphQLObjectType({
             },
           );
           if (organizationMember) {
-            return Role.find()
-              .where("_id")
-              .in(organizationMember.roles)
-              .exec();
+            return Role.find().where("_id").in(organizationMember.roles).exec();
           }
           return [];
         },
@@ -474,10 +468,7 @@ roleType = new GraphQLObjectType({
               }
               return _member.user;
             });
-          return User.find()
-            .where("_id")
-            .in(userIds)
-            .exec();
+          return User.find().where("_id").in(userIds).exec();
         },
       },
     };
@@ -630,10 +621,7 @@ eventType = new GraphQLObjectType({
       projects: {
         type: new GraphQLList(projectType),
         resolve: (event) => {
-          return Project.find()
-            .where("tag")
-            .in(event.tags)
-            .exec();
+          return Project.find().where("tag").in(event.tags).exec();
         },
       },
       highlighted: {
@@ -782,9 +770,7 @@ pieceType = new GraphQLObjectType({
               }
               return connectionFromMongooseQuery(
                 authenticate(
-                  File.find()
-                    .where("_id")
-                    .in(piece.scores),
+                  File.find().where("_id").in(piece.scores),
                   viewer,
                 ).sort("filename"),
                 args,
@@ -869,19 +855,13 @@ projectType = new GraphQLObjectType({
     conductors: {
       type: new GraphQLList(userType),
       resolve: (project) => {
-        return User.find()
-          .where("_id")
-          .in(project.conductors)
-          .exec();
+        return User.find().where("_id").in(project.conductors).exec();
       },
     },
     managers: {
       type: new GraphQLList(userType),
       resolve: (project) => {
-        return User.find()
-          .where("_id")
-          .in(project.managers)
-          .exec();
+        return User.find().where("_id").in(project.managers).exec();
       },
     },
     poster: {
@@ -1271,9 +1251,7 @@ organizationType = new GraphQLObjectType({
       resolve: (_, args, { viewer, organization }) => {
         let query = Project.findOne({
           end: {
-            $gte: moment()
-              .startOf("day")
-              .toDate(),
+            $gte: moment().startOf("day").toDate(),
           },
         });
         if (!isMember(organization, viewer)) {
@@ -1314,9 +1292,7 @@ organizationType = new GraphQLObjectType({
         return connectionFromMongooseQuery(
           Project.find({
             end: {
-              $lt: moment()
-                .startOf("day")
-                .toDate(),
+              $lt: moment().startOf("day").toDate(),
             },
           }).sort({ end: -1 }),
           args,
@@ -1336,9 +1312,7 @@ organizationType = new GraphQLObjectType({
           query = query
             .where({
               end: {
-                $gte: moment()
-                  .startOf("day")
-                  .toDate(),
+                $gte: moment().startOf("day").toDate(),
               },
             })
             .sort({ end: 1 });
@@ -1346,9 +1320,7 @@ organizationType = new GraphQLObjectType({
           query = query
             .where({
               end: {
-                $lt: moment()
-                  .startOf("day")
-                  .toDate(),
+                $lt: moment().startOf("day").toDate(),
               },
             })
             .sort({ end: -1 });
@@ -1386,9 +1358,7 @@ organizationType = new GraphQLObjectType({
       resolve: (parent, { ...args }, { viewer }) => {
         const query = Event.find({
           start: {
-            $gte: moment()
-              .startOf("day")
-              .toDate(),
+            $gte: moment().startOf("day").toDate(),
           },
         }).sort({ start: 1 });
         return connectionFromMongooseQuery(
@@ -1403,13 +1373,8 @@ organizationType = new GraphQLObjectType({
       resolve: (parent, { ...args }, { viewer }) => {
         const query = Event.find({
           start: {
-            $gte: moment()
-              .startOf("day")
-              .toDate(),
-            $lt: moment()
-              .add(2, "months")
-              .startOf("day")
-              .toDate(),
+            $gte: moment().startOf("day").toDate(),
+            $lt: moment().add(2, "months").startOf("day").toDate(),
           },
         }).sort({ start: 1 });
         return connectionFromMongooseQuery(
@@ -2624,9 +2589,7 @@ const mutationAddFile = mutationWithClientMutationId({
         content_type: "upload",
         "changes.user": file.creator,
         modified: {
-          $gt: moment(file.created)
-            .subtract(10, "minutes")
-            .toDate(),
+          $gt: moment(file.created).subtract(10, "minutes").toDate(),
         },
         project: projectTag,
       })

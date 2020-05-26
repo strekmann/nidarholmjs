@@ -59,7 +59,7 @@ class Projects extends React.Component<Props, State> {
           <ProjectForm
             open={this.state.addProject}
             save={this.addProject}
-            toggle={this.toggleAddProject}
+            onClose={this.toggleAddProject}
             viewer={this.props.viewer}
             organization={this.props.organization}
           />

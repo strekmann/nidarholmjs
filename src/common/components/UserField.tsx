@@ -1,8 +1,9 @@
-import AutoComplete from "material-ui/AutoComplete";
 import Chip from "@material-ui/core/Chip";
+import TextField from "@material-ui/core/TextField";
+import Autocomplete from "@material-ui/lab/Autocomplete";
+import matchSorter from "match-sorter";
 import React from "react";
 import { createFragmentContainer, graphql } from "react-relay";
-
 import { UserField_organization } from "./__generated__/UserField_organization.graphql";
 
 type Props = {
@@ -27,7 +28,7 @@ class UserField extends React.Component<Props, State> {
     this.setState({ user });
   };
 
-  addUser = (user) => {
+  addUser = (_: any, user: any | null) => {
     const users = this.state.users.slice();
     users.push(user);
     this.setState({
@@ -50,19 +51,26 @@ class UserField extends React.Component<Props, State> {
       return null;
     }
     const { users } = this.props.organization;
+    const userOptions: any[] = users.map((user) => {
+      return {
+        id: user.id,
+        user,
+      };
+    });
+
     return (
       <div>
-        <AutoComplete
-          floatingLabelText={this.props.title}
-          filter={AutoComplete.fuzzyFilter}
-          dataSource={users}
-          dataSourceConfig={{ text: "name", value: "id" }}
-          maxSearchResults={20}
-          searchText={this.state.user}
-          onNewRequest={this.addUser}
-          onUpdateInput={this.onUserChange}
-          hintText="Personer må allerede finnes i databasen"
-          fullWidth
+        <Autocomplete
+          options={userOptions}
+          onChange={this.addUser}
+          getOptionLabel={(option) => option.user.name}
+          getOptionSelected={(option, value) => option.id === value.id}
+          renderInput={(params) => (
+            <TextField {...params} label={this.props.title} />
+          )}
+          filterOptions={(options, { inputValue }) =>
+            matchSorter(options, inputValue, { keys: ["label"] })
+          }
         />
         {this.state.users.map((user) => {
           return (
