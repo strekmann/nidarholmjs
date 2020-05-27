@@ -113,7 +113,7 @@ class Group extends React.Component<Props, State> {
     } = organization;
     const { joinGroup, editing, email, groupLeaderEmail } = this.state;
     const groupMembers = group.members.filter((member) => {
-      return member.user;
+      return member?.user;
     });
     groupMembers.sort((a, b) => {
       if (a.user.name > b.user.name) {
@@ -122,8 +122,11 @@ class Group extends React.Component<Props, State> {
       return -1;
     });
     const userOptions: AutocompleteOptionType[] = memberGroup.members
+      .filter((member) => {
+        return member?.user;
+      })
       .map((member) => {
-        return member.user;
+        return member?.user;
       })
       .map((user) => {
         return { label: user.name, id: user.id };

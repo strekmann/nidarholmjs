@@ -211,19 +211,19 @@ userType = new GraphQLObjectType({
   fields: () => {
     return {
       id: globalIdField("User"),
-      username: { type: GraphQLString },
-      name: { type: GraphQLString },
+      username: { type: new GraphQLNonNull(GraphQLString) },
+      name: { type: new GraphQLNonNull(GraphQLString) },
       email: { type: GraphQLString },
       isActive: {
-        type: GraphQLBoolean,
+        type: new GraphQLNonNull(GraphQLBoolean),
         resolve: (user) => {
           return user.is_active;
         },
       },
-      isAdmin: { type: GraphQLBoolean },
-      isMember: { type: GraphQLBoolean },
-      isMusicAdmin: { type: GraphQLBoolean },
-      created: { type: GraphQLDate },
+      isAdmin: { type: new GraphQLNonNull(GraphQLBoolean) },
+      isMember: { type: new GraphQLNonNull(GraphQLBoolean) },
+      isMusicAdmin: { type: new GraphQLNonNull(GraphQLBoolean) },
+      created: { type: new GraphQLNonNull(GraphQLDate) },
       facebookId: {
         type: GraphQLString,
         resolve: (user) => {
@@ -391,7 +391,7 @@ groupType = new GraphQLObjectType({
   name: "Group",
   fields: {
     id: globalIdField("Group"),
-    name: { type: GraphQLString },
+    name: { type: new GraphQLNonNull(GraphQLString) },
     email: {
       type: GraphQLString,
       resolve: (group) => {
@@ -563,7 +563,7 @@ const contributorType = new GraphQLObjectType({
   fields: () => {
     return {
       id: globalIdField("Contributor"),
-      user: { type: userType },
+      user: { type: new GraphQLNonNull(userType) },
       role: { type: organizationEventPersonResponsibilityType },
     };
   },
@@ -574,7 +574,7 @@ const contributorGroupType = new GraphQLObjectType({
   fields: () => {
     return {
       id: globalIdField("ContributorGroup"),
-      group: { type: groupType },
+      group: { type: new GraphQLNonNull(groupType) },
       role: { type: organizationEventGroupResponsibilityType },
     };
   },
@@ -586,9 +586,9 @@ eventType = new GraphQLObjectType({
   fields: () => {
     return {
       id: globalIdField("Event"),
-      title: { type: GraphQLString },
+      title: { type: new GraphQLNonNull(GraphQLString) },
       location: { type: GraphQLString },
-      start: { type: GraphQLDate },
+      start: { type: new GraphQLNonNull(GraphQLDate) },
       end: { type: GraphQLDate },
       tags: { type: new GraphQLList(GraphQLString) },
       mdtext: { type: GraphQLString },
@@ -672,7 +672,7 @@ const groupScoreType = new GraphQLObjectType({
     return {
       id: globalIdField("Groupscore"),
       name: {
-        type: GraphQLString,
+        type: new GraphQLNonNull(GraphQLString),
         resolve: (group) => {
           return group.name;
         },
@@ -738,7 +738,7 @@ pieceType = new GraphQLObjectType({
   fields: () => {
     return {
       id: globalIdField("Piece"),
-      title: { type: GraphQLString },
+      title: { type: new GraphQLNonNull(GraphQLString) },
       subtitle: { type: GraphQLString },
       description: { type: GraphQLString },
       description_composer: { type: GraphQLString },
@@ -817,7 +817,7 @@ pieceType = new GraphQLObjectType({
       publisher: { type: GraphQLString },
       import_id: { type: GraphQLInt },
       created: { type: GraphQLDate },
-      creator: { type: userType },
+      creator: { type: new GraphQLNonNull(userType) },
     };
   },
   interfaces: [nodeInterface],
@@ -832,11 +832,11 @@ projectType = new GraphQLObjectType({
   name: "Project",
   fields: {
     id: globalIdField("Project"),
-    title: { type: GraphQLString },
-    tag: { type: GraphQLString },
+    title: { type: new GraphQLNonNull(GraphQLString) },
+    tag: { type: new GraphQLNonNull(GraphQLString) },
     start: { type: GraphQLDate },
-    end: { type: GraphQLDate },
-    year: { type: GraphQLString },
+    end: { type: new GraphQLNonNull(GraphQLDate) },
+    year: { type: new GraphQLNonNull(GraphQLString) },
     publicMdtext: {
       type: GraphQLString,
       resolve: (project) => {
@@ -933,20 +933,20 @@ pageType = new GraphQLObjectType({
   description: "Wiki page",
   fields: {
     id: globalIdField("Page"),
-    slug: { type: GraphQLString },
-    title: { type: GraphQLString },
+    slug: { type: new GraphQLNonNull(GraphQLString) },
+    title: { type: new GraphQLNonNull(GraphQLString) },
     summary: { type: GraphQLString },
     mdtext: { type: GraphQLString },
     created: { type: GraphQLDate },
     creator: {
-      type: userType,
+      type: new GraphQLNonNull(userType),
       resolve: (page) => {
         return User.findById(page.creator).exec();
       },
     },
     updated: { type: GraphQLDate },
     updator: {
-      type: userType,
+      type: new GraphQLNonNull(userType),
       resolve: (page) => {
         return User.findById(page.updator).exec();
       },
@@ -968,7 +968,7 @@ organizationEventPersonResponsibilityType = new GraphQLObjectType({
   fields: () => {
     return {
       id: globalIdField("OrganizationEventPersonResponsibility"),
-      name: { type: GraphQLString },
+      name: { type: new GraphQLNonNull(GraphQLString) },
       reminderText: { type: GraphQLString },
       reminderDaysBefore: { type: GraphQLInt },
       reminderAtHour: { type: GraphQLInt },
@@ -989,7 +989,7 @@ organizationEventGroupResponsibilityType = new GraphQLObjectType({
   fields: () => {
     return {
       id: globalIdField("OrganizationEventGroupResponsibility"),
-      name: { type: GraphQLString },
+      name: { type: new GraphQLNonNull(GraphQLString) },
       reminderText: { type: GraphQLString },
       reminderDaysBefore: { type: GraphQLInt },
       reminderAtHour: { type: GraphQLInt },
@@ -1010,7 +1010,7 @@ organizationType = new GraphQLObjectType({
   description: "Organization and site info",
   fields: {
     id: globalIdField("Organization"),
-    name: { type: GraphQLString },
+    name: { type: new GraphQLNonNull(GraphQLString) },
     webdomain: { type: GraphQLString },
     mailAddress: {
       type: GraphQLString,
@@ -1181,7 +1181,7 @@ organizationType = new GraphQLObjectType({
       },
     },
     memberGroup: {
-      type: groupType,
+      type: new GraphQLNonNull(groupType),
       resolve: (organization) => {
         return organization.member_group;
       },
@@ -1608,7 +1608,7 @@ const queryType = new GraphQLObjectType({
       },
     },
     organization: {
-      type: organizationType,
+      type: new GraphQLNonNull(organizationType),
     },
     node: nodeField,
   },

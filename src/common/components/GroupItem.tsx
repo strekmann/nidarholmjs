@@ -33,9 +33,10 @@ class GroupItem extends React.Component<Props> {
   }
 
   render() {
-    const members = this.props.group.members.filter((member) => {
-      return member.user;
-    });
+    const members =
+      this.props.group.members?.filter((member) => {
+        return member?.user;
+      }) || [];
     if (!members.length) {
       return null;
     }

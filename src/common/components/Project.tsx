@@ -37,12 +37,12 @@ import Text from "./Text";
 import { Project_organization } from "./__generated__/Project_organization.graphql";
 import { Project_viewer } from "./__generated__/Project_viewer.graphql";
 
-type Props = {
-  organization: Project_organization,
-  viewer: Project_viewer,
-  relay: RelayProp,
-  theme: Theme,
-};
+export interface ProjectProps {
+  organization: Project_organization;
+  viewer: Project_viewer;
+  relay: RelayProp;
+  theme: Theme;
+}
 
 type State = {
   public: boolean,
@@ -54,7 +54,7 @@ type State = {
   showEnded: boolean,
 };
 
-export class Project extends React.Component<Props, State> {
+export class Project extends React.Component<ProjectProps, State> {
   state = {
     public: false,
     menuIsOpen: null,

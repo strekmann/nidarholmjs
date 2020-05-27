@@ -24,6 +24,11 @@ import ProjectField from "./ProjectField";
 import { EventForm_organization } from "./__generated__/EventForm_organization.graphql";
 import { EventForm_viewer } from "./__generated__/EventForm_viewer.graphql";
 
+interface ProjectOption {
+  id: string;
+  tag: string;
+}
+
 type Props = {
   title: string,
   event: {
@@ -45,7 +50,7 @@ type Props = {
   isOpen: boolean,
   save: ({}) => void,
   cancel: () => void,
-  projectPermissions: {},
+  projectPermissions: PermissionObject,
   highlighted: boolean,
 };
 
@@ -142,11 +147,11 @@ class EventForm extends React.Component<Props, State> {
     this.setState({ mdtext: event.target.value });
   };
 
-  onChangePermissions = (permissions) => {
+  onChangePermissions = (permissions: PermissionArray) => {
     this.setState({ permissions });
   };
 
-  onChangeProjects = (projects) => {
+  onChangeProjects = (projects: ProjectOption[]) => {
     this.setState({ projects });
   };
 
@@ -183,7 +188,7 @@ class EventForm extends React.Component<Props, State> {
     });
   };
 
-  renderChip = (data, key) => {
+  renderChip = (data: string, key: string) => {
     return <Chip key={key} label={data} />;
   };
 
