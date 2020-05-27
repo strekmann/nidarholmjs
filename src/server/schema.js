@@ -217,10 +217,15 @@ userType = new GraphQLObjectType({
       isActive: {
         type: new GraphQLNonNull(GraphQLBoolean),
         resolve: (user) => {
-          return user.is_active;
+          return user.is_active || false;
         },
       },
-      isAdmin: { type: new GraphQLNonNull(GraphQLBoolean) },
+      isAdmin: {
+        type: new GraphQLNonNull(GraphQLBoolean),
+        resolve: (user) => {
+          return user.isAdmin || false;
+        },
+      },
       isMember: { type: new GraphQLNonNull(GraphQLBoolean) },
       isMusicAdmin: { type: new GraphQLNonNull(GraphQLBoolean) },
       created: { type: new GraphQLNonNull(GraphQLDate) },
@@ -837,6 +842,12 @@ projectType = new GraphQLObjectType({
     start: { type: GraphQLDate },
     end: { type: new GraphQLNonNull(GraphQLDate) },
     year: { type: new GraphQLNonNull(GraphQLString) },
+    isCreator: {
+      type: new GraphQLNonNull(GraphQLBoolean),
+      resolve: (project, _, { viewer }) => {
+        return viewer.id === project.creator;
+      },
+    },
     publicMdtext: {
       type: GraphQLString,
       resolve: (project) => {
@@ -2828,6 +2839,51 @@ const mutationSaveProject = mutationWithClientMutationId({
   },
 });
 
+const mutationDeleteProject = mutationWithClientMutationId({
+  name: "DeleteProject",
+  inputFields: {
+    id: { type: new GraphQLNonNull(GraphQLID) },
+  },
+  outputFields: {
+    organization: {
+      type: organizationType,
+      resolve: (_, args, { organization }) => {
+        return organization;
+      },
+    },
+    deletedProjectID: {
+      type: GraphQLID,
+      resolve: (payload) => {
+        return payload.id;
+      },
+    },
+  },
+  mutateAndGetPayload: ({ id }, { viewer }) => {
+    if (!viewer) {
+      // TODO: more
+      throw new Error("Nobody!");
+    }
+    const projectId = fromGlobalId(id).id;
+    return Project.findById(projectId).then((project) => {
+      if (!viewer.isAdmin && project.creator !== viewer.id) {
+        throw new Error("Not permitted to delete project");
+      }
+
+      return Event.find({ tags: project.tag }).then((events) => {
+        if (events.length) {
+          throw new Error("Cannot delete project with assigned events");
+        }
+        return File.find({ tags: project.tag }).then((files) => {
+          if (files.length) {
+            throw new Error("Cannot delete project with assigned files");
+          }
+          return Project.findByIdAndRemove(projectId).exec();
+        });
+      });
+    });
+  },
+});
+
 const mutationSetPassword = mutationWithClientMutationId({
   name: "SetPassword",
   inputFields: {
@@ -3505,6 +3561,7 @@ const mutationType = new GraphQLObjectType({
       setProjectPoster: mutationSetProjectPoster,
       addProject: mutationAddProject,
       saveProject: mutationSaveProject,
+      deleteProject: mutationDeleteProject,
       setPassword: mutationSetPassword,
       sendReset: mutationSendReset,
       joinGroup: mutationJoinGroup,

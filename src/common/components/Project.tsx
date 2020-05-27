@@ -21,6 +21,7 @@ import AddProjectFileMutation from "../mutations/AddProjectFile";
 import RemovePieceMutation from "../mutations/RemovePiece";
 import SaveFilePermissionsMutation from "../mutations/SaveFilePermissions";
 import SaveProjectMutation from "../mutations/SaveProject";
+import DeleteProjectMutation from "../mutations/DeleteProject";
 import SetProjectPosterMutation from "../mutations/SetProjectPoster";
 import { flattenPermissions } from "../utils";
 import Daterange from "./Daterange";
@@ -41,6 +42,7 @@ export interface ProjectProps {
   organization: Project_organization;
   viewer: Project_viewer;
   relay: RelayProp;
+  router: any;
   theme: Theme;
 }
 
@@ -215,6 +217,15 @@ export class Project extends React.Component<ProjectProps, State> {
     });
   };
 
+  removeProject = () => {
+    const { organization, relay } = this.props;
+    const { project } = organization;
+    const { id } = project;
+    DeleteProjectMutation.commit(relay.environment, { id }, () => {
+      this.props.router.push({ pathname: `/projects` });
+    });
+  };
+
   showEnded = () => {
     this.setState({ showEnded: true });
   };
@@ -231,6 +242,7 @@ export class Project extends React.Component<ProjectProps, State> {
     const { organization, theme, viewer } = this.props;
     const {
       project,
+      isAdmin,
       isMember,
       isMusicAdmin,
       memberGroup,
@@ -238,14 +250,14 @@ export class Project extends React.Component<ProjectProps, State> {
     } = organization;
     const { addEvent, addFile, addPiece, showEnded, editProject } = this.state;
     let hasEndedActivities = false;
-    if (project && project.events.length) {
+    if (project && project.events.edges.length) {
       hasEndedActivities =
         project.events.edges.filter((edge) => {
           return edge.node.isEnded;
         }).length > 0;
     }
     return (
-      <Paper className="row">
+      <Paper className="row" className="project">
         <Helmet
           title={project.title}
           meta={[
@@ -292,7 +304,7 @@ export class Project extends React.Component<ProjectProps, State> {
           </div>
           {isMember ? (
             <div>
-              <IconButton onClick={this.onMenuOpen}>
+              <IconButton onClick={this.onMenuOpen} className="context-menu">
                 <MoreVertIcon />
               </IconButton>
               <Menu
@@ -319,6 +331,16 @@ export class Project extends React.Component<ProjectProps, State> {
                   </MenuItem>
                 ) : null}
                 <MenuItem onClick={this.openAddFile}>Last opp filer</MenuItem>
+                {!project?.events.edges.length &&
+                !project?.files.edges.length &&
+                (project.isCreator || isAdmin) ? (
+                  <MenuItem
+                    onClick={this.removeProject}
+                    className="project-delete"
+                  >
+                    Slett prosjekt
+                  </MenuItem>
+                ) : null}
               </Menu>
             </div>
           ) : null}
@@ -466,6 +488,7 @@ export default withTheme(
     organization: graphql`
       fragment Project_organization on Organization {
         name
+        isAdmin
         isMember
         isMusicAdmin
         memberGroup {
@@ -481,6 +504,7 @@ export default withTheme(
           year
           publicMdtext
           privateMdtext
+          isCreator
           conductors {
             id
             name

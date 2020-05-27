@@ -195,8 +195,11 @@ class Navigation extends React.Component<Props, State> {
             )}
           </div>
           <div>
-            <IconButton className="flex-menu-handler" onClick={this.handleOpen}>
-              <NavigationMenu className={classes.menuButtonIcon} />
+            <IconButton
+              className="flex-menu-handler main-menu-mobile"
+              onClick={this.handleOpen}
+            >
+              <NavigationMenu style={{ color: common.white }} />
             </IconButton>
             <Popover
               open={open}
@@ -221,7 +224,7 @@ class Navigation extends React.Component<Props, State> {
                       Om oss
                     </Link>
                   </MenuItem>
-                  <MenuItem>
+                  <MenuItem className="projects">
                     <Link to="/projects" onClick={this.handleClose}>
                       Prosjekter
                     </Link>
@@ -283,18 +286,13 @@ class Navigation extends React.Component<Props, State> {
   }
 }
 
-const useStyles = () => {
-  return {
-    loginButton: {
-      backgroundColor: common.white,
-    },
-    menuButtonIcon: {
-      color: common.white,
-    },
-  };
+const styles = {
+  loginButton: {
+    backgroundColor: common.white,
+  },
 };
 
-export default withStyles(useStyles)(
+export default withStyles(styles)(
   createFragmentContainer(Navigation, {
     viewer: graphql`
       fragment Navigation_viewer on User {

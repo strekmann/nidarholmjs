@@ -229,6 +229,7 @@ class ProjectForm extends React.Component<Props, State> {
                   value={this.state.title}
                   error={!this.state.title}
                   required
+                  name="title"
                 />
               </div>
               <div>
@@ -239,6 +240,7 @@ class ProjectForm extends React.Component<Props, State> {
                   error={!this.state.tag}
                   helperText="Dette feltet bør være unikt per prosjekt"
                   required
+                  name="identifier"
                 />
               </div>
               <div>
@@ -265,7 +267,7 @@ class ProjectForm extends React.Component<Props, State> {
                 <DatePicker
                   label="Prosjektstart"
                   onChange={this.onChangeStart}
-                  value={this.state.start}
+                  value={this.state.start || null}
                   clearable
                   autoOk
                 />
@@ -275,9 +277,10 @@ class ProjectForm extends React.Component<Props, State> {
                   id="end"
                   label="Prosjektslutt"
                   onChange={this.onChangeEnd}
-                  value={this.state.end}
+                  value={this.state.end || null}
                   required
                   autoOk
+                  className="project-end"
                 />
               </div>
               <div>
@@ -307,7 +310,12 @@ class ProjectForm extends React.Component<Props, State> {
               </div>
             </DialogContent>
             <DialogActions>
-              <Button variant="contained" type="reset" onClick={this.onClose}>
+              <Button
+                variant="contained"
+                type="reset"
+                onClick={this.onClose}
+                className="project-new-reset"
+              >
                 Avbryt
               </Button>
               <Button
@@ -315,6 +323,7 @@ class ProjectForm extends React.Component<Props, State> {
                 onSubmit={this.saveProject}
                 type="submit"
                 color="primary"
+                className="project-new-submit"
               >
                 Lagre
               </Button>

@@ -182,6 +182,17 @@ app.use((req, res, next) => {
         req.user = user;
         next();
       });
+  } else if (
+    process.env.NODE_ENV !== "production" &&
+    process.env.NIDARHOLM_USER_EMAIL
+  ) {
+    User.findOne({ email: process.env.NIDARHOLM_USER_EMAIL })
+      .exec()
+      .then((user) => {
+        req.user = user;
+        console.warn(`Running as ${user.name}`);
+        next();
+      });
   } else {
     next();
   }

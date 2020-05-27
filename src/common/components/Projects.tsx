@@ -38,10 +38,10 @@ class Projects extends React.Component<Props, State> {
   };
 
   toggleAddProject = () => {
-    this.setState({ addProject: !this.state.addProject });
+    this.setState({ addProject: !this.state.addProject, menuIsOpen: null });
   };
 
-  addProject = (project, callbacks) => {
+  addProject = (project, callbacks: { onSuccess: () => void }) => {
     const { relay } = this.props;
     AddProjectMutation.commit(relay.environment, project, () => {
       if (callbacks && callbacks.onSuccess) {
@@ -67,7 +67,7 @@ class Projects extends React.Component<Props, State> {
         <div style={{ display: "flex", justifyContent: "flex-end" }}>
           {isMember ? (
             <div>
-              <IconButton onClick={this.onMenuOpen}>
+              <IconButton onClick={this.onMenuOpen} className="context-menu">
                 <MoreVertIcon />
               </IconButton>
               <Menu
@@ -77,7 +77,10 @@ class Projects extends React.Component<Props, State> {
                 anchorOrigin={{ vertical: "top", horizontal: "right" }}
                 transformOrigin={{ vertical: "top", horizontal: "right" }}
               >
-                <MenuItem onClick={this.toggleAddProject}>
+                <MenuItem
+                  onClick={this.toggleAddProject}
+                  className="project-new"
+                >
                   Nytt prosjekt
                 </MenuItem>
               </Menu>

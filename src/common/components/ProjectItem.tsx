@@ -1,16 +1,16 @@
+import { Theme } from "@material-ui/core";
 import Paper from "@material-ui/core/Paper";
 import withTheme from "@material-ui/core/styles/withTheme";
-import { Theme } from "@material-ui/core";
+import Link from "found/Link";
 import moment from "moment";
 import React from "react";
 import { createFragmentContainer, graphql } from "react-relay";
-import Link from "found/Link";
-
 import Date from "./Date";
 import Daterange from "./Daterange";
 import List from "./List";
+import PermissionChips from "./PermissionChips";
+import PermissionVisibility from "./PermissionVisibility";
 import Text from "./Text";
-
 import { ProjectItem_project } from "./__generated__/ProjectItem_project.graphql";
 
 const renderPublicEvents = (edges) => {
@@ -48,6 +48,7 @@ class ProjectItem extends React.Component<Props> {
       events,
       poster,
       conductors,
+      permissions,
     } = project;
     const widePoster = moment(end).isAfter(moment([2016, 7, 1]));
     if (widePoster) {
@@ -66,9 +67,17 @@ class ProjectItem extends React.Component<Props> {
               paddingBottom: theme.spacing(2),
             }}
           >
-            <h2 style={{ marginTop: theme.spacing(1) }}>
-              <Link to={`/${year}/${tag}`}>{title}</Link>
-            </h2>
+            <div style={{ display: "flex", justifyContent: "space-between" }}>
+              <h2 style={{ marginTop: theme.spacing(1) }}>
+                <Link
+                  to={`/${year}/${tag}`}
+                  className={`project-${year}-${tag}`}
+                >
+                  {title}
+                </Link>
+              </h2>
+              <PermissionVisibility permissions={permissions} />
+            </div>
             {renderPublicEvents(events.edges)}
             {conductors.length ? (
               <p>
@@ -93,9 +102,14 @@ class ProjectItem extends React.Component<Props> {
         <div
           style={{ width: poster ? "50%" : "100%", padding: theme.spacing(2) }}
         >
-          <h2 style={{ marginTop: theme.spacing(1) }}>
-            <Link to={`/${year}/${tag}`}>{title}</Link>
-          </h2>
+          <div style={{ display: "flex", justifyContent: "space-between" }}>
+            <h2 style={{ marginTop: theme.spacing(1) }}>
+              <Link to={`/${year}/${tag}`} className={`project-${year}-${tag}`}>
+                {title}
+              </Link>
+            </h2>
+            <PermissionVisibility permissions={permissions} />
+          </div>
           {renderPublicEvents(events.edges)}
           {conductors.length ? (
             <p>
@@ -141,6 +155,17 @@ export default withTheme(
         year
         tag
         publicMdtext
+        permissions {
+          public
+          groups {
+            id
+            name
+          }
+          users {
+            id
+            name
+          }
+        }
         poster {
           filename
           normalPath
