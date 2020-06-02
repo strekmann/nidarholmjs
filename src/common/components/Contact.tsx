@@ -150,14 +150,20 @@ class Contact extends React.Component<Props, State> {
             >
               <MenuItem
                 onClick={() => {
-                  this.setState({ editContacts: !this.state.editContacts });
+                  this.setState({
+                    editContacts: !this.state.editContacts,
+                    menuIsOpen: null,
+                  });
                 }}
               >
                 Rediger kontaktpersoner
               </MenuItem>
               <MenuItem
                 onClick={() => {
-                  this.setState({ editInfo: !this.state.editInfo });
+                  this.setState({
+                    editInfo: !this.state.editInfo,
+                    menuIsOpen: null,
+                  });
                 }}
               >
                 Rediger kontaktinfo

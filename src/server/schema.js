@@ -1105,7 +1105,7 @@ organizationType = new GraphQLObjectType({
         if (!memberGroupId) {
           memberGroupId = organization.member_group;
         }
-        return Group.aggregate(
+        return Group.aggregate([
           { $match: { _id: memberGroupId } },
           { $unwind: "$members" },
           { $match: { "members.roles": { $exists: 1 } } },
@@ -1129,7 +1129,7 @@ organizationType = new GraphQLObjectType({
               email: "$_id.email",
             },
           },
-        ).exec();
+        ]).exec();
       },
     },
     contactRoles: {
@@ -1144,7 +1144,7 @@ organizationType = new GraphQLObjectType({
       type: new GraphQLList(memberType),
       resolve: (organization) => {
         return organization.contactRoles.map((roleId) => {
-          return Group.aggregate(
+          return Group.aggregate([
             {
               $match: {
                 _id: organization.member_group._id || organization.member_group,
@@ -1183,7 +1183,7 @@ organizationType = new GraphQLObjectType({
                 "roles.name": 1,
               },
             },
-          )
+          ])
             .exec()
             .then((g) => {
               return g[0];
@@ -3487,7 +3487,7 @@ const mutationShowContactInfo = mutationWithClientMutationId({
   },
   mutateAndGetPayload: ({ userId }, { organization }) => {
     const uId = fromGlobalId(userId).id;
-    return Group.aggregate(
+    return Group.aggregate([
       { $match: { _id: organization.member_group._id } },
       { $unwind: "$members" },
       {
@@ -3523,7 +3523,7 @@ const mutationShowContactInfo = mutationWithClientMutationId({
           email: "$roles.email",
         },
       },
-    )
+    ])
       .exec()
       .then((u) => {
         if (u.length) {

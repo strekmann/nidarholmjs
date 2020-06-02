@@ -1,8 +1,10 @@
 import Button from "@material-ui/core/Button";
 import Card from "@material-ui/core/Card";
 import CardActions from "@material-ui/core/CardActions";
+import CardContent from "@material-ui/core/CardContent";
 import CardHeader from "@material-ui/core/CardHeader";
 import CardMedia from "@material-ui/core/CardMedia";
+import List from "@material-ui/core/List";
 import ListItem from "@material-ui/core/ListItem";
 import Typography from "@material-ui/core/Typography";
 import React from "react";
@@ -22,8 +24,8 @@ type Props = {
 };
 
 type State = {
-  email: string,
-  phone: string,
+  email: string | null,
+  phone: string | null,
   show: boolean,
 };
 
@@ -59,24 +61,28 @@ class ContactUser extends React.Component<Props, State> {
           title={role.name}
           textStyle={{ paddingRight: 0, fontFamily: "Montserrat, serif" }}
         />
-        <Typography>{user.name}</Typography>
+        <CardContent>
+          <Typography>{user.name}</Typography>
+        </CardContent>
         <CardMedia>
           {user.profilePicture && user.profilePicture.thumbnailPath ? (
             <img src={user.profilePicture.thumbnailPath} alt="" />
           ) : null}
         </CardMedia>
         {this.state.show ? (
-          <CardActions>
-            {this.state.phone ? (
-              <ListItem>
-                <Phone phone={this.state.phone} />
-              </ListItem>
-            ) : null}
-            {this.state.email ? (
-              <ListItem>
-                <Email email={this.state.email} />
-              </ListItem>
-            ) : null}
+          <CardActions className="contact-info">
+            <List>
+              {this.state.phone ? (
+                <ListItem>
+                  <Phone phone={this.state.phone} />
+                </ListItem>
+              ) : null}
+              {this.state.email ? (
+                <ListItem>
+                  <Email email={this.state.email} />
+                </ListItem>
+              ) : null}
+            </List>
           </CardActions>
         ) : (
           <CardActions>
@@ -88,7 +94,6 @@ class ContactUser extends React.Component<Props, State> {
             >
               Vis kontaktinfo
             </Button>
-            />
           </CardActions>
         )}
       </Card>

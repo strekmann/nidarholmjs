@@ -239,7 +239,7 @@ class Navigation extends React.Component<Props, State> {
                       Støtt oss
                     </Link>
                   </MenuItem>
-                  <MenuItem>
+                  <MenuItem className="contact">
                     <Link to="/contact" onClick={this.handleClose}>
                       Kontakt
                     </Link>
