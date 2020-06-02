@@ -1,5 +1,3 @@
-import { cyan100 } from "material-ui/styles/colors";
-
 describe("Open main", () => {
   const randomString = () => Cypress._.random(0, 1e6);
   it("shows up", () => {

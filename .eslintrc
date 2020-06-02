@@ -5,11 +5,15 @@
         "plugin:flowtype/recommended",
         "plugin:prettier/recommended",
         "prettier",
+        "plugin:jest/recommended",
+        "plugin:cypress/recommended",
     ],
     "plugins": [
         "import",
         "react",
         "flowtype",
+        "jest",
+        "cypress",
     ],
     "rules": {
         "arrow-body-style": ["error", "always"],
