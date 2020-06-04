@@ -13,7 +13,7 @@ import bodyParser from "body-parser";
 import cookieParser from "cookie-parser";
 import session from "express-session";
 import errorHandler from "errorhandler";
-import express from "express";
+import express, { NextFunction, Request, Response } from "express";
 import httpProxy from "http-proxy";
 import mongoose from "mongoose";
 import bunyan from "bunyan";
@@ -23,7 +23,7 @@ import connectMongo from "connect-mongo";
 import moment from "moment";
 import multer from "multer";
 import graphqlHTTP from "express-graphql";
-import { getFarceResult } from "found/server";
+import { getFarceResult, FarceRedirectResult, FarceElementResult } from "found/server";
 import jwt from "jsonwebtoken";
 import { ExtractJwt } from "passport-jwt";
 
@@ -42,7 +42,7 @@ import { downloadArchive } from "./musicRoutes";
 import File from "./models/File";
 import Organization from "./models/Organization";
 import PasswordCode from "./models/PasswordCode";
-import User from "./models/User";
+import User, { IUser } from "./models/User";
 import "./lib/db";
 import saveFile from "./lib/saveFile";
 import findFilePath from "./lib/findFilePath";
@@ -72,12 +72,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
 if (config.util.getEnv("NODE_ENV") === "test") {
-  app.use(
-    errorHandler({
-      dumpExceptions: true,
-      showStack: true,
-    }),
-  );
+  app.use(errorHandler());
   app.use(
     session({
       secret: "testing-secret",
@@ -88,45 +83,45 @@ if (config.util.getEnv("NODE_ENV") === "test") {
 }
 
 const MongoStore = connectMongo(session);
-
+const maxAge: number = config.get("express.session.maxAge");
 app.use(
   session({
     store: new MongoStore({
       mongooseConnection: mongoose.connection,
-      ttl: config.get("express.session.maxAge") / 1000,
-      touchAfter: config.get("express.session.maxAge") / 10000,
+      ttl: maxAge / 1000,
+      touchAfter: maxAge / 10000,
     }),
     secret: config.get("express.session.secret"),
     name: config.get("express.session.name"),
     resave: config.get("express.session.resave"),
     saveUninitialized: config.get("express.session.saveUninitialized"),
     rolling: config.get("express.session.rolling"),
-    maxAge: config.get("express.session.maxAge"),
-    httpOnly: false,
     cookie: {
       maxAge: config.get("express.session.maxAge"),
       secure: config.get("express.session.secure"),
     },
-    sameSite: "strict",
   }),
 );
 
 /* LOGGING */
 const log = bunyan.createLogger(config.get("bunyan"));
+const excludes: string[] = config.get("bunyan-express.excludes");
+const format: string = config.get("bunyan-express.format");
 const bunyan_opts = {
   logger: log,
-  excludes: config.get("bunyan-express").excludes,
-  format: config.get("bunyan-express").format,
+  excludes,
+  format,
 };
 app.use(expressBunyan(bunyan_opts));
 app.use(expressBunyan.errorLogger(bunyan_opts));
 
 app.use(passport.initialize());
 app.use(passport.session());
-if (config.auth.remember_me) {
+const auth: any = config.get("auth");
+if (auth.remember_me) {
   app.use(passport.authenticate("remember-me"));
 }
-if (config.auth.jwt) {
+if (auth.jwt) {
   // Alternative authentication through authenticate bearer header and jwt.
   // Still allows anonymous requests, it just does not set req.user.
   app.use((req, res, next) => {
@@ -139,9 +134,9 @@ if (config.auth.jwt) {
     }
     return jwt.verify(
       token,
-      config.express.session.secret,
+      config.get("express.session.secret"),
       {},
-      (error, decoded) => {
+      (error, decoded: any) => {
         if (error) {
           log.error(error);
           return next();
@@ -150,6 +145,8 @@ if (config.auth.jwt) {
           // no sub in token
           return next();
         }
+        return next();
+        /*
         return passport.deserializeUser(decoded.sub.id, (err, user) => {
           if (err) {
             log.error(err);
@@ -158,6 +155,7 @@ if (config.auth.jwt) {
           }
           return next();
         });
+        */
       },
     );
   });
@@ -173,13 +171,14 @@ app.use(serveStatic(path.join(__dirname, "..", "static")));
 app.use((req, res, next) => {
   if (
     process.env.NODE_ENV !== "production" &&
-    config.override &&
-    config.override.user
+    config.has("override.user")
   ) {
-    User.findOne({ email: config.override.user })
+    User.findOne({ email: config.get("override.user") })
       .exec()
       .then((user) => {
-        req.user = user;
+        if (user) {
+          req.user = user;
+        }
         next();
       });
   } else if (
@@ -188,9 +187,11 @@ app.use((req, res, next) => {
   ) {
     User.findOne({ email: process.env.NIDARHOLM_USER_EMAIL })
       .exec()
-      .then((user) => {
-        req.user = user;
-        console.warn(`Running as ${user.name}`);
+      .then((user: IUser | null) => {
+        if (user) {
+          req.user = user;
+          console.warn(`Running as ${user.name}`);
+        }
         next();
       });
   } else {
@@ -200,10 +201,10 @@ app.use((req, res, next) => {
 
 // Fetch active organization from hostname, config override
 // or pick the default.
-app.use((req, res, next) => {
+app.use((req: any, res, next) => {
   let organizationId = req.hostname;
-  if (config.override && config.override.site) {
-    organizationId = config.override.site;
+  if (config.has("override.site")) {
+    organizationId = config.get("override.site");
   }
   if (organizationId === "localhost") {
     // TODO: Change this part for samklang.
@@ -217,7 +218,7 @@ app.use((req, res, next) => {
       if (err) {
         return next(err);
       }
-      req.organization = organization.toObject();
+      req.organization = organization?.toObject();
       if (req.user) {
         req.user.isMember = req.user.groups.includes(
           req.organization.member_group.id,
@@ -237,7 +238,7 @@ app.use((req, res, next) => {
 /* GraphQL */
 app.use(
   "/graphql",
-  graphqlHTTP((req) => {
+  graphqlHTTP((req: any) => {
     const contextValue = {
       viewer: req.user,
       organization: req.organization,
@@ -255,7 +256,7 @@ app.use(
 
 app.post("/upload", upload, (req, res, next) => {
   // TODO: Add check on org membership
-  return saveFile(req.file.path, config.files.raw_prefix)
+  return saveFile(req.file.path)
     .then((_file) => {
       return res.json(_file);
     })
@@ -334,7 +335,7 @@ app.get("/files/o/:path/:filename", (req, res) => {
     if (exists) {
       File.findOne({ hash: filepath }).then((file) => {
         res.sendFile(fullpath, {
-          headers: { "Content-Type": file.mimetype },
+          headers: { "Content-Type": file?.mimetype },
         });
       });
     } else {
@@ -366,7 +367,9 @@ if (
 /* Authentication stuff */
 app.get("/logout", (req, res, next) => {
   req.logout();
-  req.session.destroy();
+  req.session?.destroy((err: Error) => {
+    log.error(`Cannot destroy session: ${err}`);
+  });
   res.clearCookie("remember_me");
   res.redirect("/");
 });
@@ -386,13 +389,16 @@ app.get("/login/reset/:code", (req, res, next) => {
     .then((passwordCode) => {
       if (
         !passwordCode ||
-        passwordCode.created < moment().subtract(1, "hours")
+        moment(passwordCode.created) < moment().subtract(1, "hours")
       ) {
         return res.redirect("/login/reset");
       }
       return User.findById(passwordCode.user)
         .exec()
         .then((user) => {
+          if (!user) {
+            throw("Could not log in user: Not found");
+          }
           req.logIn(user, (err) => {
             if (err) {
               throw err;
@@ -439,8 +445,8 @@ app.get(
   "/auth/google/callback",
   passport.authenticate("google", { failureRedirect: "/login" }),
   (req, res) => {
-    const url = req.session.returnTo || "/";
-    delete req.session.returnTo;
+    const url = req.session?.returnTo || "/";
+    delete req.session?.returnTo;
     res.redirect(url);
   },
 );
@@ -451,8 +457,8 @@ app.get(
   "/login/facebook/callback",
   passport.authenticate("facebook", { failureRedirect: "/login" }),
   (req, res) => {
-    const url = req.session.returnTo || "/";
-    delete req.session.returnTo;
+    const url = req.session?.returnTo || "/";
+    delete req.session?.returnTo;
     res.redirect(url);
   },
 );
@@ -464,8 +470,8 @@ app.get(
   passport.authenticate("twitter", { failureRedirect: "/login" }),
   persistentLogin,
   (req, res) => {
-    const url = req.session.returnTo || "/";
-    delete req.session.returnTo;
+    const url = req.session?.returnTo || "/";
+    delete req.session?.returnTo;
     res.redirect(url);
   },
 );
@@ -482,7 +488,7 @@ app.use(async (req, res, next) => {
   );
   const fetcher = new ServerFetcher(`http://localhost:${port}/graphql`, token);
   try {
-    const { redirect, status, element } = await getFarceResult({
+    const result = await getFarceResult({
       url: req.url,
       historyMiddlewares,
       routeConfig,
@@ -490,20 +496,20 @@ app.use(async (req, res, next) => {
       render,
     });
 
-    if (redirect) {
-      res.redirect(302, redirect.url);
+    if ((result as FarceRedirectResult).redirect) {
+      res.redirect(302, (result as FarceRedirectResult).redirect.url);
       return;
     }
 
     res
-      .status(status)
-      .send(renderPage(element, fetcher, req.headers["user-agent"]));
+      .status((result as FarceElementResult).status)
+      .send(renderPage((result as FarceElementResult).element, fetcher, req.headers["user-agent"]));
   } catch (error) {
     next(error);
   }
 });
 
-app.use((err, req, res, next) => {
+app.use((err: HttpException, req: Request, res: Response, next: NextFunction) => {
   let status = 500;
   let message = err.message || err;
 
@@ -557,3 +563,13 @@ httpServer.listen(port, () => {
 });
 
 export default app;
+
+class HttpException extends Error {
+  status: number;
+  message: string;
+  constructor(status: number, message: string) {
+    super(message);
+    this.status = status;
+    this.message = message;
+  }
+}

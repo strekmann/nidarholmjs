@@ -1,5 +1,6 @@
-const webpack = require("webpack");
 const path = require("path");
+
+const webpack = require("webpack");
 const CopyWebpackPlugin = require("copy-webpack-plugin");
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 const ServiceWorkerWebpackPlugin = require("serviceworker-webpack-plugin");
@@ -7,7 +8,7 @@ const ServiceWorkerWebpackPlugin = require("serviceworker-webpack-plugin");
 const devMode = process.env.NODE_ENV !== "production";
 
 module.exports = {
-  entry: "./src/client.js",
+  entry: "./src/client.tsx",
   output: {
     path: path.join(__dirname, "dist", "static"),
     filename: "javascript.js",
@@ -15,7 +16,7 @@ module.exports = {
   module: {
     rules: [
       {
-        test: /\.js$/,
+        test: /\.(j|t)sx?$/,
         exclude: /node_modules/,
         loader: "babel-loader",
       },
@@ -74,4 +75,7 @@ module.exports = {
       },
     ),
   ],
+  resolve: {
+    extensions: [".js", ".jsx", ".ts", ".tsx"],
+  },
 };

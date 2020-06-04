@@ -1,4 +1,5 @@
-import { commitMutation, graphql } from "react-relay";
+import { commitMutation, graphql, Environment } from "react-relay";
+import { SendContactEmailInput } from "./__generated__/SendContactEmailMutation.graphql";
 
 const mutation = graphql`
   mutation SendContactEmailMutation($input: SendContactEmailInput!) {
@@ -10,7 +11,7 @@ const mutation = graphql`
   }
 `;
 
-function commit(environment, form) {
+function commit(environment: Environment, form: SendContactEmailInput) {
   return commitMutation(environment, {
     mutation,
     variables: {

@@ -2,12 +2,22 @@ import path from "path";
 
 import mongoose from "mongoose";
 import moment from "moment";
-import uuid from "node-uuid";
+import { v4 } from "uuid";
 
 import schemaOptions from "./schemaOptions";
 
+export interface IFile extends mongoose.Document {
+  _id: string;
+  filename: string;
+  hash: string;
+  created: Date;
+  creator: string;
+  mimetype?: string;
+  size?: string;
+}
+
 const FileSchema = new mongoose.Schema({
-  _id: { type: String, required: true, default: uuid.v4 },
+  _id: { type: String, required: true, default: v4 },
   filename: { type: String, trim: true, required: true },
   hash: { type: String, required: true },
   created: { type: Date, default: Date.now },
@@ -70,4 +80,4 @@ FileSchema.virtual("_type").get(() => {
 });
 FileSchema.set("toObject", schemaOptions);
 FileSchema.set("toJSON", schemaOptions);
-export default mongoose.model("File", FileSchema);
+export default mongoose.model < IFile > ("File", FileSchema);

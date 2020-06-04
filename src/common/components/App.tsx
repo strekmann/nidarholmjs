@@ -44,16 +44,16 @@ function App(props: Props) {
             content: "width=device-width, initial-scale=1",
           },
           { name: "author", content: "Musikkforeningen Nidarholm" },
-          { name: "description", content: organization.description_nb },
+          { name: "description", content: organization.description_nb || "" },
           { property: "og:site_name", content: "Nidarholm" },
-          { property: "og:url", content: organization.baseurl },
+          { property: "og:url", content: organization.baseurl || "" },
           { property: "og:title", content: "Nidarholm" },
-          { property: "og:image", content: imageUrl },
+          { property: "og:image", content: imageUrl || "" },
           {
             property: "og:description",
-            content: organization.description_nb,
+            content: organization.description_nb || "",
           },
-          { property: "fb:app_id", content: organization.facebookAppid },
+          { property: "fb:app_id", content: organization.facebookAppid || "" },
         ]}
       />
       <Navigation viewer={viewer} organization={organization} />

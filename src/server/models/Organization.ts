@@ -3,6 +3,29 @@ import mongoose from "mongoose";
 
 import schemaOptions from "./schemaOptions";
 
+export interface IOrganization extends mongoose.Document {
+  _id: string;
+  name?: string;
+  webdomain?: string;
+  instrument_groups?: string[];
+  contact_groups?: string[];
+  contactRoles?: string[];
+  administration_group?: string;
+  musicscoreadmin_group?: string;
+  member_group?: string;
+  contact_text?: string;
+  visitor_location?: string;
+  visitor_address?: string;
+  mail_address?: string;
+  postcode?: string;
+  city?: string;
+  email?: string;
+  organization_number?: string;
+  public_bank_account?: string;
+  map_url?: string;
+  map_text?: string;
+}
+
 const OrganizationSchema = new mongoose.Schema({
   _id: {
     type: String,
@@ -65,4 +88,6 @@ OrganizationSchema.virtual("_type").get(() => {
 OrganizationSchema.set("toObject", schemaOptions);
 OrganizationSchema.set("toJSON", schemaOptions);
 
-export default mongoose.model("Organization", OrganizationSchema);
+export default mongoose.model <
+  IOrganization >
+  ("Organization", OrganizationSchema);

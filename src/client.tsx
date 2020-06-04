@@ -1,5 +1,5 @@
 /* global window, document, navigator */
-
+// @ts-nocheck
 import "@babel/polyfill";
 import BrowserProtocol from "farce/BrowserProtocol";
 import createInitialFarceRouter from "found/createInitialFarceRouter";

@@ -1,3 +1,5 @@
+// @ts-nocheck
+
 import queryMiddleware from "farce/queryMiddleware";
 import createRender from "found/createRender";
 import makeRouteConfig from "found/makeRouteConfig";

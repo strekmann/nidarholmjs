@@ -48,7 +48,7 @@
 
       - name: Setup nodesource repository
         apt_repository:
-            repo: "deb https://deb.nodesource.com/node_8.x {{ debian_version }} main"
+            repo: "deb https://deb.nodesource.com/node_12.x {{ debian_version }} main"
             state: present
 
       - name: Add Yarn key

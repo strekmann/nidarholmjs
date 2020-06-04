@@ -12,7 +12,7 @@ module.exports = {
     },
   },
   devtool: "cheap-module-eval-source-map",
-  entry: ["./src/client.js"],
+  entry: ["./src/client.tsx"],
   module: {
     rules: [
       {

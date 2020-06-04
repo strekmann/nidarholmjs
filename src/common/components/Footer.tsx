@@ -3,6 +3,7 @@ import { createFragmentContainer, graphql, RelayProp } from "react-relay";
 import SendContactEmailMutation from "../mutations/SendContactEmail";
 import ContactForm from "./ContactForm";
 import { Footer_organization } from "./__generated__/Footer_organization.graphql";
+import { SendContactEmailInput } from "../mutations/__generated__/SendContactEmailMutation.graphql";
 
 type Props = {
   organization: Footer_organization,
@@ -18,7 +19,7 @@ class Footer extends React.Component<Props, State> {
     contactDialogOpen: false,
   };
 
-  sendEmail = (form) => {
+  sendEmail = (form: SendContactEmailInput) => {
     const { relay } = this.props;
     SendContactEmailMutation.commit(relay.environment, form);
   };

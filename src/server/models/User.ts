@@ -1,15 +1,54 @@
 import crypto from "crypto";
 
 import mongoose from "mongoose";
-import uuid from "node-uuid";
+import { v4 } from "uuid";
 
 import schemaOptions from "./schemaOptions";
+
+export interface IUser extends mongoose.Document {
+  _id: string;
+  username: string;
+  name: string;
+  email?: string;
+  password?: string;
+  algorithm?: string;
+  salt?: string;
+  groups?: string[];
+  friends?: string[];
+  is_active?: boolean;
+  is_admin?: boolean;
+  created: Date;
+  nmf_id?: string;
+  facebook_id?: string;
+  google_id?: string;
+  twitter_id?: string;
+  phone?: string;
+  address?: string;
+  postcode?: string;
+  city?: string;
+  country?: string;
+  born?: Date;
+  joined?: Date;
+  instrument?: string;
+  insrument_insurance?: boolean;
+  reskontro?: string;
+  membership_history?: string;
+  profile_picture?: string;
+  profile_picture_path?: string;
+  membership_status?: number;
+  in_list: boolean;
+  on_leave: boolean;
+  no_email: boolean;
+  hashPassword: (
+    password: string,
+  ) => { hashedPassword: string, algorithm: string, salt: string };
+}
 
 const UserSchema = new mongoose.Schema({
   _id: {
     type: String,
     required: true,
-    default: uuid.v4,
+    default: v4,
   },
   username: {
     type: String,
@@ -110,4 +149,4 @@ UserSchema.set("toObject", schemaOptions);
 UserSchema.virtual("_type").get(() => {
   return "User";
 });
-export default mongoose.model("User", UserSchema);
+export default mongoose.model < IUser > ("User", UserSchema);
