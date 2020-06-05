@@ -16,17 +16,17 @@ import { ContactUser_user } from "./__generated__/ContactUser_user.graphql";
 import { ShowContactInfoMutationResponse } from "../mutations/__generated__/ShowContactInfoMutation.graphql";
 
 type Props = {
-  relay: RelayProp,
+  relay: RelayProp;
   role: {
-    name: string,
-  },
-  user: ContactUser_user,
+    name: string;
+  };
+  user: ContactUser_user;
 };
 
 type State = {
-  email: string | null,
-  phone: string | null,
-  show: boolean,
+  email: string | null;
+  phone: string | null;
+  show: boolean;
 };
 
 class ContactUser extends React.Component<Props, State> {
@@ -58,12 +58,10 @@ class ContactUser extends React.Component<Props, State> {
     return (
       <Card style={{ width: 220, marginBottom: 15 }}>
         <CardHeader
-          title={role.name}
-          textStyle={{ paddingRight: 0, fontFamily: "Montserrat, serif" }}
+          title={user.name}
+          subheader={role.name}
+          titleTypographyProps={{ variant: "h6", style: { minHeight: 64 } }}
         />
-        <CardContent>
-          <Typography>{user.name}</Typography>
-        </CardContent>
         <CardMedia>
           {user.profilePicture && user.profilePicture.thumbnailPath ? (
             <img src={user.profilePicture.thumbnailPath} alt="" />

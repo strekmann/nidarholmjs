@@ -383,7 +383,12 @@ const memberType = new GraphQLObjectType({
             });
           }
           if (!isMember(organization, viewer)) {
-            query = query.select("name");
+            if (_member.roles.length) {
+              // If user has roles, picture should be accessible for contacts page
+              query = query.select("name profile_picture");
+            } else {
+              query = query.select("name");
+            }
           }
           return query.exec();
         },
@@ -1212,6 +1217,9 @@ organizationType = new GraphQLObjectType({
     isAdmin: {
       type: GraphQLBoolean,
       resolve: (_, args, { viewer }) => {
+        if (!viewer) {
+          return false;
+        }
         return viewer.isAdmin;
       },
     },
