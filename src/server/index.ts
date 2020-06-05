@@ -145,9 +145,8 @@ if (auth.jwt) {
           // no sub in token
           return next();
         }
-        return next();
-        /*
-        return passport.deserializeUser(decoded.sub.id, (err, user) => {
+
+        return passport.deserializeUser(decoded.sub.id, (err, user: IUser) => {
           if (err) {
             log.error(err);
           } else if (user) {
@@ -155,7 +154,6 @@ if (auth.jwt) {
           }
           return next();
         });
-        */
       },
     );
   });

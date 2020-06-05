@@ -220,16 +220,15 @@ class Contact extends React.Component<Props, State> {
                 justifyContent: "space-between",
               }}
             >
-              {organization.contacts &&
-                organization.contacts.map((contact) => {
-                  return (
-                    <ContactUser
-                      key={contact.id}
-                      user={contact.user}
-                      role={contact.roles[0]}
-                    />
-                  );
-                })}
+              {organization.contacts?.map((contact) => {
+                return (
+                  <ContactUser
+                    key={contact?.id || undefined}
+                    user={contact?.user}
+                    role={contact.roles[0]}
+                  />
+                );
+              })}
             </div>
           </div>
         ) : null}
