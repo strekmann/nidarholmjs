@@ -32,8 +32,6 @@
     "prettier": "prettier --write --ignore-path .gitignore \"src/**/*(js|ts|tsx)\""
   },
   "prettier": {
-    "arrowParens": "always",
-    "parser": "babel",
     "trailingComma": "all"
   },
   "nodemonConfig": {

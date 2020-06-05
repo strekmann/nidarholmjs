@@ -23,7 +23,11 @@ import connectMongo from "connect-mongo";
 import moment from "moment";
 import multer from "multer";
 import graphqlHTTP from "express-graphql";
-import { getFarceResult, FarceRedirectResult, FarceElementResult } from "found/server";
+import {
+  getFarceResult,
+  FarceRedirectResult,
+  FarceElementResult,
+} from "found/server";
 import jwt from "jsonwebtoken";
 import { ExtractJwt } from "passport-jwt";
 
@@ -145,7 +149,7 @@ if (auth.jwt) {
           // no sub in token
           return next();
         }
-
+        // @ts-ignore
         return passport.deserializeUser(decoded.sub.id, (err, user: IUser) => {
           if (err) {
             log.error(err);
@@ -167,10 +171,7 @@ app.use(serveStatic(path.join(__dirname, "..", "static")));
 
 // We have a possibility to override user login during development
 app.use((req, res, next) => {
-  if (
-    process.env.NODE_ENV !== "production" &&
-    config.has("override.user")
-  ) {
+  if (process.env.NODE_ENV !== "production" && config.has("override.user")) {
     User.findOne({ email: config.get("override.user") })
       .exec()
       .then((user) => {
@@ -395,7 +396,7 @@ app.get("/login/reset/:code", (req, res, next) => {
         .exec()
         .then((user) => {
           if (!user) {
-            throw("Could not log in user: Not found");
+            throw new Error("Could not log in user: Not found");
           }
           req.logIn(user, (err) => {
             if (err) {
@@ -501,36 +502,44 @@ app.use(async (req, res, next) => {
 
     res
       .status((result as FarceElementResult).status)
-      .send(renderPage((result as FarceElementResult).element, fetcher, req.headers["user-agent"]));
+      .send(
+        renderPage(
+          (result as FarceElementResult).element,
+          fetcher,
+          req.headers["user-agent"],
+        ),
+      );
   } catch (error) {
     next(error);
   }
 });
 
-app.use((err: HttpException, req: Request, res: Response, next: NextFunction) => {
-  let status = 500;
-  let message = err.message || err;
+app.use(
+  (err: HttpException, req: Request, res: Response, next: NextFunction) => {
+    let status = 500;
+    let message = err.message || err;
 
-  switch (err.name) {
-    case "UnauthorizedError":
-      status = 401;
-      message = "Invalid token";
-      break;
-    default:
-      log.error(err, "unhandeled error");
-  }
+    switch (err.name) {
+      case "UnauthorizedError":
+        status = 401;
+        message = "Invalid token";
+        break;
+      default:
+        log.error(err, "unhandeled error");
+    }
 
-  res.format({
-    html: () => {
-      res.status(status).send(message);
-    },
-    json: () => {
-      res.status(status).json({
-        error: message,
-      });
-    },
-  });
-});
+    res.format({
+      html: () => {
+        res.status(status).send(message);
+      },
+      json: () => {
+        res.status(status).json({
+          error: message,
+        });
+      },
+    });
+  },
+);
 
 app.use((req, res, next) => {
   res.format({
