@@ -11,15 +11,17 @@ import EventItem from "./EventItem";
 import ProjectItem from "./ProjectItem";
 import Text from "./Text";
 import { Home_organization } from "./__generated__/Home_organization.graphql";
-import { withTheme } from "@material-ui/core";
+import { withTheme, Theme } from "@material-ui/core";
+import { SendContactEmailInput } from "../mutations/__generated__/SendContactEmailMutation.graphql";
 
 type Props = {
-  organization: Home_organization,
-  relay: RelayProp,
+  organization: Home_organization;
+  relay: RelayProp;
+  theme: Theme;
 };
 
 type State = {
-  contactDialogOpen: boolean,
+  contactDialogOpen: boolean;
 };
 
 class Home extends React.Component<Props, State> {
@@ -27,9 +29,9 @@ class Home extends React.Component<Props, State> {
     contactDialogOpen: false,
   };
 
-  sendEmail = (form) => {
+  sendEmail = (form: SendContactEmailInput) => {
     const { organization, relay } = this.props;
-    SendContactEmailMutation.commit(relay.environment, organization, form);
+    SendContactEmailMutation.commit(relay.environment, form);
   };
 
   openEmailDialog = () => {

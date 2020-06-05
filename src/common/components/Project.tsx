@@ -47,13 +47,13 @@ export interface ProjectProps {
 }
 
 type State = {
-  public: boolean,
-  addEvent: boolean,
-  addFile: boolean,
-  addPiece: boolean,
-  editProject: boolean,
-  menuIsOpen: null | HTMLElement,
-  showEnded: boolean,
+  public: boolean;
+  addEvent: boolean;
+  addFile: boolean;
+  addPiece: boolean;
+  editProject: boolean;
+  menuIsOpen: null | HTMLElement;
+  showEnded: boolean;
 };
 
 export class Project extends React.Component<ProjectProps, State> {
@@ -257,7 +257,7 @@ export class Project extends React.Component<ProjectProps, State> {
         }).length > 0;
     }
     return (
-      <Paper className="row" className="project">
+      <Paper className="row project">
         <Helmet
           title={project.title}
           meta={[

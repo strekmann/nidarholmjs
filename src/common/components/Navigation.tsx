@@ -18,14 +18,14 @@ import { Navigation_organization } from "./__generated__/Navigation_organization
 import { Navigation_viewer } from "./__generated__/Navigation_viewer.graphql";
 
 type Props = {
-  classes: any,
-  organization: Navigation_organization,
-  viewer: Navigation_viewer,
+  classes: any;
+  organization: Navigation_organization;
+  viewer: Navigation_viewer;
 };
 
 type State = {
-  open: boolean,
-  anchorEl?: any,
+  open: boolean;
+  anchorEl?: any;
 };
 
 class Navigation extends React.Component<Props, State> {
@@ -57,12 +57,12 @@ class Navigation extends React.Component<Props, State> {
         <Avatar
           src={viewer.profilePicture.thumbnailPath || undefined}
           style={{ margin: "0 5px" }}
-          alt="Din profil"
+          alt={viewer.name}
         />
       );
     }
     return (
-      <Avatar style={{ margin: "0 5px" }} alt="Din profil">
+      <Avatar style={{ margin: "0 5px" }} alt={viewer.name}>
         <Person />
       </Avatar>
     );
