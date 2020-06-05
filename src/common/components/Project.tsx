@@ -313,6 +313,7 @@ export class Project extends React.Component<ProjectProps, State> {
                 open={Boolean(this.state.menuIsOpen)}
                 anchorOrigin={{ vertical: "top", horizontal: "right" }}
                 transformOrigin={{ vertical: "top", horizontal: "right" }}
+                BackdropProps={{ className: "backdrop" }}
               >
                 {hasEndedActivities ? (
                   <MenuItem onClick={this.showEnded}>
@@ -322,7 +323,10 @@ export class Project extends React.Component<ProjectProps, State> {
                 <MenuItem onClick={this.openEditProject}>
                   Rediger prosjektinfo
                 </MenuItem>
-                <MenuItem onClick={this.openAddEvent}>
+                <MenuItem
+                  onClick={this.openAddEvent}
+                  className="project-add-activity"
+                >
                   Legg til aktivitet
                 </MenuItem>
                 {isMusicAdmin ? (
@@ -419,7 +423,7 @@ export class Project extends React.Component<ProjectProps, State> {
               />
             ) : null}
             {project.events.edges.length ? (
-              <div id="eventList">
+              <div id="eventList" className="event-list">
                 {project.events.edges
                   .filter((edge) => {
                     return showEnded || !edge.node.isEnded;

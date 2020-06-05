@@ -7,6 +7,7 @@ import Chip from "@material-ui/core/Chip";
 import Dialog from "@material-ui/core/Dialog";
 import DialogActions from "@material-ui/core/DialogActions";
 import DialogContent from "@material-ui/core/DialogContent";
+import DialogTitle from "@material-ui/core/DialogTitle";
 import FormControlLabel from "@material-ui/core/FormControlLabel";
 import TextField from "@material-ui/core/TextField";
 import {
@@ -30,44 +31,44 @@ interface ProjectOption {
 }
 
 type Props = {
-  title: string,
+  title: string;
   event: {
-    id: string,
-    title: string,
-    location: string,
-    start: moment.Moment,
-    end: moment.Moment,
-    mdtext: string,
-    highlighted: boolean,
-    permissions: PermissionObject,
+    id: string;
+    title: string;
+    location: string;
+    start: moment.Moment;
+    end: moment.Moment;
+    mdtext: string;
+    highlighted: boolean;
+    permissions: PermissionObject;
     projects: Array<{
-      id: string,
-      tag: string,
-    }>,
-  },
-  viewer: EventForm_viewer,
-  organization: EventForm_organization,
-  isOpen: boolean,
-  save: ({}) => void,
-  cancel: () => void,
-  projectPermissions: PermissionObject,
-  highlighted: boolean,
+      id: string;
+      tag: string;
+    }>;
+  };
+  viewer: EventForm_viewer;
+  organization: EventForm_organization;
+  isOpen: boolean;
+  save: ({}) => void;
+  cancel: () => void;
+  projectPermissions: PermissionObject;
+  highlighted: boolean;
 };
 
 type State = {
-  id?: string,
-  title: string,
-  location: string,
-  start: moment.Moment | null,
-  end: moment.Moment | null,
-  mdtext: string,
-  permissions: PermissionArray,
+  id?: string;
+  title: string;
+  location: string;
+  start: moment.Moment | null;
+  end: moment.Moment | null;
+  mdtext: string;
+  permissions: PermissionArray;
   projects: Array<{
-    id: string,
-    tag: string,
-  }>,
-  tags: Array<string>,
-  highlighted: boolean,
+    id: string;
+    tag: string;
+  }>;
+  tags: Array<string>;
+  highlighted: boolean;
 };
 
 class EventForm extends React.Component<Props, State> {
@@ -200,6 +201,9 @@ class EventForm extends React.Component<Props, State> {
           open={this.props.isOpen}
           onClose={this.props.cancel}
         >
+          <DialogTitle>
+            {this.props.id ? "Rediger aktivitet" : "Ny aktivitet"}
+          </DialogTitle>
           <DialogContent>
             <div>
               <TextField
@@ -207,6 +211,7 @@ class EventForm extends React.Component<Props, State> {
                 label="Tittel"
                 onChange={this.onChangeTitle}
                 required
+                name="title"
               />
             </div>
             <div>
@@ -224,6 +229,7 @@ class EventForm extends React.Component<Props, State> {
                 style={{ flex: "1 1 auto" }}
                 autoOk
                 required
+                className="event-start"
               />
               <TimePicker
                 value={this.state.start}
@@ -303,7 +309,12 @@ class EventForm extends React.Component<Props, State> {
             <Button variant="text" onClick={this.props.cancel}>
               Avbryt
             </Button>
-            <Button variant="text" onClick={this.save} color="primary">
+            <Button
+              variant="text"
+              onClick={this.save}
+              color="primary"
+              className="event-new-submit"
+            >
               Lagre
             </Button>
           </DialogActions>

@@ -18,19 +18,19 @@ import { Event_viewer } from "./__generated__/Event_viewer.graphql";
 import { DialogActions, DialogContent, DialogTitle } from "@material-ui/core";
 
 type Props = {
-  organization: Event_organization,
-  relay: RelayProp,
+  organization: Event_organization;
+  relay: RelayProp;
   router: {
-    go: (number) => void,
-    push: any, // ({ pathname: string }) => void;
-  },
-  viewer: Event_viewer,
+    go: (number) => void;
+    push: any; // ({ pathname: string }) => void;
+  };
+  viewer: Event_viewer;
 };
 
 type State = {
-  editing: boolean,
-  deleting: boolean,
-  menuIsOpen: null | HTMLElement,
+  editing: boolean;
+  deleting: boolean;
+  menuIsOpen: null | HTMLElement;
 };
 
 class Event extends React.Component<Props, State> {
@@ -120,12 +120,12 @@ class Event extends React.Component<Props, State> {
       throw new Error("Event not defined");
     }
     return (
-      <Paper className="row">
+      <Paper className="row event">
         <div style={{ display: "flex", justifyContent: "space-between" }}>
           <h1>{event.title}</h1>
           {isMember ? (
             <div>
-              <IconButton onClick={this.onMenuOpen}>
+              <IconButton onClick={this.onMenuOpen} className="context-menu">
                 <MoreVertIcon />
               </IconButton>
               <Menu
@@ -136,7 +136,9 @@ class Event extends React.Component<Props, State> {
                 transformOrigin={{ vertical: "top", horizontal: "right" }}
               >
                 <MenuItem onClick={this.toggleEdit}>Rediger</MenuItem>
-                <MenuItem onClick={this.toggleDelete}>Slett</MenuItem>
+                <MenuItem onClick={this.toggleDelete} className="event-delete">
+                  Slett
+                </MenuItem>
               </Menu>
             </div>
           ) : null}
@@ -184,6 +186,7 @@ class Event extends React.Component<Props, State> {
                   variant="text"
                   color="primary"
                   onClick={this.deleteEvent}
+                  className="event-delete-confirm"
                 >
                   Slett
                 </Button>

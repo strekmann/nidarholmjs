@@ -17,10 +17,7 @@ function isSoon(date) {
   const mdate = moment(date);
   if (
     mdate >= moment().startOf("day") &&
-    mdate <
-      moment()
-        .add(1, "week")
-        .startOf("day")
+    mdate < moment().add(1, "week").startOf("day")
   ) {
     return true;
   }
@@ -29,21 +26,21 @@ function isSoon(date) {
 
 type Props = {
   event: {
-    id: string,
-    title: string,
-    location: string,
-    start: any,
-    end: any,
-    mdtext: string,
-    isEnded: boolean,
-    highlighted: boolean,
-    tags: string[],
-  },
-  theme: Theme,
+    id: string;
+    title: string;
+    location: string;
+    start: any;
+    end: any;
+    mdtext: string;
+    isEnded: boolean;
+    highlighted: boolean;
+    tags: string[];
+  };
+  theme: Theme;
 };
 
 type State = {
-  expanded: boolean,
+  expanded: boolean;
 };
 
 class EventItem extends React.Component<Props, State> {
