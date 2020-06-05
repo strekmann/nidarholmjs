@@ -89,7 +89,7 @@ function getConnectionFromSlice(inSlice, mapper, args, count) {
 export function connectionFromMongooseQuery(query, inArgs, mapper) {
   const args = inArgs || {};
 
-  return query.count().then((count) => {
+  return query.countDocuments().then((count) => {
     const pagination = getOffsetsFromArgs(args, count);
 
     if (pagination.limit === 0) {
