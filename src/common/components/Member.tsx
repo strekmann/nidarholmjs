@@ -1,3 +1,4 @@
+import MomentUtils from "@date-io/moment";
 import { Theme } from "@material-ui/core";
 import Button from "@material-ui/core/Button";
 import Checkbox from "@material-ui/core/Checkbox";
@@ -20,9 +21,9 @@ import TextField from "@material-ui/core/TextField";
 import Toolbar from "@material-ui/core/Toolbar";
 import Close from "@material-ui/icons/Close";
 import MoreVertIcon from "@material-ui/icons/MoreVert";
+import { DatePicker, MuiPickersUtilsProvider } from "@material-ui/pickers";
 import Link from "found/Link";
 import areIntlLocalesSupported from "intl-locales-supported";
-import DatePicker from "material-ui/DatePicker";
 import moment from "moment";
 import React from "react";
 import { createFragmentContainer, graphql, RelayProp } from "react-relay";
@@ -42,9 +43,9 @@ import { Member_organization } from "./__generated__/Member_organization.graphql
 import { Member_viewer } from "./__generated__/Member_viewer.graphql";
 
 export type UserOptionType = {
-  inputValue?: string,
-  id?: string,
-  name: string,
+  inputValue?: string;
+  id?: string;
+  name: string;
 };
 
 let DateTimeFormat;
@@ -53,33 +54,33 @@ if (areIntlLocalesSupported(["nb"])) {
 }
 
 type Props = {
-  organization: Member_organization,
-  relay: RelayProp,
-  theme: Theme,
-  viewer: Member_viewer,
+  organization: Member_organization;
+  relay: RelayProp;
+  theme: Theme;
+  viewer: Member_viewer;
 };
 
 type State = {
-  name: string,
-  username: string,
-  phone: string,
-  email: string,
-  instrument: string,
-  born?: string,
-  address: string,
-  postcode: string,
-  city: string,
-  country: string,
-  joined?: string,
-  nmfId: string,
-  membershipHistory: string,
-  inList: boolean,
-  onLeave: boolean,
-  noEmail: boolean,
-  addingRole: boolean,
-  editMember: boolean,
-  joinGroup: boolean,
-  menuIsOpen: null | HTMLElement,
+  name: string;
+  username: string;
+  phone: string;
+  email: string;
+  instrument: string;
+  born?: string;
+  address: string;
+  postcode: string;
+  city: string;
+  country: string;
+  joined?: string;
+  nmfId: string;
+  membershipHistory: string;
+  inList: boolean;
+  onLeave: boolean;
+  noEmail: boolean;
+  addingRole: boolean;
+  editMember: boolean;
+  joinGroup: boolean;
+  menuIsOpen: null | HTMLElement;
 };
 
 class Member extends React.Component<Props, State> {
@@ -334,164 +335,166 @@ class Member extends React.Component<Props, State> {
     }
     if (this.state.editMember) {
       return (
-        <Paper className="row">
-          <form onSubmit={this.saveMember}>
-            <div>
-              <TextField
-                id="name"
-                label="Navn"
-                onChange={this.onChangeName}
-                value={this.state.name}
-              />
-            </div>
-            <div>
-              <TextField
-                id="phone"
-                label="Telefon"
-                onChange={this.onChangePhone}
-                value={this.state.phone}
-              />
-            </div>
-            <div>
-              <TextField
-                id="email"
-                label="E-post"
-                onChange={this.onChangeEmail}
-                value={this.state.email}
-              />
-            </div>
-            <div>
-              <TextField
-                id="instrument"
-                label="Instrument"
-                onChange={this.onChangeInstrument}
-                value={this.state.instrument}
-              />
-            </div>
-            <div>
-              <DatePicker
-                id="born"
-                floatingLabelText="Fødselsdato"
-                onChange={this.onChangeBorn}
-                value={this.state.born}
-                mode="landscape"
-                locale="nb"
-                DateTimeFormat={DateTimeFormat}
-              />
-            </div>
-            <div>
-              <TextField
-                id="address"
-                label="Adresse"
-                onChange={this.onChangeAddress}
-                value={this.state.address}
-              />
-            </div>
-            <div>
-              <TextField
-                id="postcode"
-                label="Postnummer"
-                onChange={this.onChangePostcode}
-                value={this.state.postcode}
-              />
-            </div>
-            <div>
-              <TextField
-                id="city"
-                label="Sted"
-                onChange={this.onChangeCity}
-                value={this.state.city}
-              />
-            </div>
-            <div>
-              <TextField
-                id="country"
-                label="Land"
-                onChange={this.onChangeCountry}
-                value={this.state.country}
-              />
-            </div>
-            {isAdmin ? (
+        <MuiPickersUtilsProvider utils={MomentUtils}>
+          <Paper className="row">
+            <form onSubmit={this.saveMember}>
               <div>
-                <div>
-                  <TextField
-                    id="nmfId"
-                    label="NMF-nummer"
-                    value={this.state.nmfId}
-                  />
-                </div>
-                <div>
-                  <DatePicker
-                    id="joined"
-                    floatingLabelText="Startet i korpset"
-                    onChange={this.onChangeJoined}
-                    value={this.state.joined}
-                    mode="landscape"
-                    locale="nb"
-                    DateTimeFormat={DateTimeFormat}
-                  />
-                </div>
-                <div>
-                  <TextField
-                    id="membershipHistory"
-                    label="Medlemskapshistorikk"
-                    onChange={this.onChangeMembershipHistory}
-                    value={this.state.membershipHistory}
-                    multiline
-                    fullWidth
-                  />
-                </div>
-                <div>
-                  <FormControlLabel
-                    control={
-                      <Checkbox
-                        id="inList"
-                        name="inList"
-                        checked={this.state.inList}
-                        onChange={this.onChangeInList}
-                        color="primary"
-                      />
-                    }
-                    label="Synlig i medlemslista"
-                  ></FormControlLabel>
-                </div>
-                <div>
-                  <FormControlLabel
-                    control={
-                      <Checkbox
-                        id="onLeave"
-                        name="onLeave"
-                        checked={this.state.onLeave}
-                        onChange={this.onChangeOnLeave}
-                        color="primary"
-                      />
-                    }
-                    label="Har permisjon"
-                  ></FormControlLabel>
-                </div>
-                <div>
-                  <FormControlLabel
-                    control={
-                      <Checkbox
-                        id="noEmail"
-                        name="noEmail"
-                        checked={this.state.noEmail}
-                        onChange={this.onChangeNoEmail}
-                        color="primary"
-                      />
-                    }
-                    label="Ikke epost"
-                  ></FormControlLabel>
-                </div>
+                <TextField
+                  id="name"
+                  label="Navn"
+                  onChange={this.onChangeName}
+                  value={this.state.name}
+                />
               </div>
-            ) : null}
-            <div>
-              <Button variant="contained" type="submit" color="primary">
-                Lagre
-              </Button>
-            </div>
-          </form>
-        </Paper>
+              <div>
+                <TextField
+                  id="phone"
+                  label="Telefon"
+                  onChange={this.onChangePhone}
+                  value={this.state.phone}
+                />
+              </div>
+              <div>
+                <TextField
+                  id="email"
+                  label="E-post"
+                  onChange={this.onChangeEmail}
+                  value={this.state.email}
+                />
+              </div>
+              <div>
+                <TextField
+                  id="instrument"
+                  label="Instrument"
+                  onChange={this.onChangeInstrument}
+                  value={this.state.instrument}
+                />
+              </div>
+              <div>
+                <DatePicker
+                  id="born"
+                  floatingLabelText="Fødselsdato"
+                  onChange={this.onChangeBorn}
+                  value={this.state.born}
+                  mode="landscape"
+                  locale="nb"
+                  DateTimeFormat={DateTimeFormat}
+                />
+              </div>
+              <div>
+                <TextField
+                  id="address"
+                  label="Adresse"
+                  onChange={this.onChangeAddress}
+                  value={this.state.address}
+                />
+              </div>
+              <div>
+                <TextField
+                  id="postcode"
+                  label="Postnummer"
+                  onChange={this.onChangePostcode}
+                  value={this.state.postcode}
+                />
+              </div>
+              <div>
+                <TextField
+                  id="city"
+                  label="Sted"
+                  onChange={this.onChangeCity}
+                  value={this.state.city}
+                />
+              </div>
+              <div>
+                <TextField
+                  id="country"
+                  label="Land"
+                  onChange={this.onChangeCountry}
+                  value={this.state.country}
+                />
+              </div>
+              {isAdmin ? (
+                <div>
+                  <div>
+                    <TextField
+                      id="nmfId"
+                      label="NMF-nummer"
+                      value={this.state.nmfId}
+                    />
+                  </div>
+                  <div>
+                    <DatePicker
+                      id="joined"
+                      floatingLabelText="Startet i korpset"
+                      onChange={this.onChangeJoined}
+                      value={this.state.joined}
+                      mode="landscape"
+                      locale="nb"
+                      DateTimeFormat={DateTimeFormat}
+                    />
+                  </div>
+                  <div>
+                    <TextField
+                      id="membershipHistory"
+                      label="Medlemskapshistorikk"
+                      onChange={this.onChangeMembershipHistory}
+                      value={this.state.membershipHistory}
+                      multiline
+                      fullWidth
+                    />
+                  </div>
+                  <div>
+                    <FormControlLabel
+                      control={
+                        <Checkbox
+                          id="inList"
+                          name="inList"
+                          checked={this.state.inList}
+                          onChange={this.onChangeInList}
+                          color="primary"
+                        />
+                      }
+                      label="Synlig i medlemslista"
+                    ></FormControlLabel>
+                  </div>
+                  <div>
+                    <FormControlLabel
+                      control={
+                        <Checkbox
+                          id="onLeave"
+                          name="onLeave"
+                          checked={this.state.onLeave}
+                          onChange={this.onChangeOnLeave}
+                          color="primary"
+                        />
+                      }
+                      label="Har permisjon"
+                    ></FormControlLabel>
+                  </div>
+                  <div>
+                    <FormControlLabel
+                      control={
+                        <Checkbox
+                          id="noEmail"
+                          name="noEmail"
+                          checked={this.state.noEmail}
+                          onChange={this.onChangeNoEmail}
+                          color="primary"
+                        />
+                      }
+                      label="Ikke epost"
+                    ></FormControlLabel>
+                  </div>
+                </div>
+              ) : null}
+              <div>
+                <Button variant="contained" type="submit" color="primary">
+                  Lagre
+                </Button>
+              </div>
+            </form>
+          </Paper>
+        </MuiPickersUtilsProvider>
       );
     }
     const groupOptions: AutocompleteOptionType[] = groups.map((group) => {
