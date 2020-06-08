@@ -135,7 +135,9 @@ class Event extends React.Component<Props, State> {
                 anchorOrigin={{ vertical: "top", horizontal: "right" }}
                 transformOrigin={{ vertical: "top", horizontal: "right" }}
               >
-                <MenuItem onClick={this.toggleEdit}>Rediger</MenuItem>
+                <MenuItem onClick={this.toggleEdit} className="event-edit">
+                  Rediger
+                </MenuItem>
                 <MenuItem onClick={this.toggleDelete} className="event-delete">
                   Slett
                 </MenuItem>

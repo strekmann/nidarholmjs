@@ -27,7 +27,7 @@ describe("Open main", () => {
     cy.get(
       ".MuiPickersCalendar-transitionContainer > :nth-child(1) > :nth-child(3) > :nth-child(3)",
     ).click();
-    cy.get(".event-new-submit").click();
+    cy.get(".event-form-submit").click();
 
     cy.get(".main-menu-mobile").click();
     cy.get(".projects").click();
@@ -39,6 +39,11 @@ describe("Open main", () => {
     cy.get(".backdrop").click();
     cy.get(".event-list h2 > a").click();
     cy.get(".event .context-menu").click();
+
+    cy.get(".event-edit").click();
+    cy.get("input[name=description").type("Info");
+    cy.get(".event-form-submit").click();
+
     cy.get(".event-delete").click();
     cy.get(".event-delete-confirm").click();
 

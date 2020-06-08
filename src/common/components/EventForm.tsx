@@ -265,6 +265,7 @@ class EventForm extends React.Component<Props, State> {
                 multiline
                 fullWidth
                 onChange={this.onChangeDescription}
+                name="description"
               />
             </div>
             <div>
@@ -313,7 +314,7 @@ class EventForm extends React.Component<Props, State> {
               variant="text"
               onClick={this.save}
               color="primary"
-              className="event-new-submit"
+              className="event-form-submit"
             >
               Lagre
             </Button>
