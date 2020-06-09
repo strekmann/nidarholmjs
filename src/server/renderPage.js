@@ -27,6 +27,11 @@ export default function renderPage(element, fetcher, userAgent) {
         ${helmet.title.toString()}
         ${helmet.meta.toString()}
         ${link}
+        <style type="text/css">
+        .flex-menu-mobile {
+          display: none;
+        }
+        </style>
     </head>
     <body>
         <div id="app">${elementRendered}</div>
