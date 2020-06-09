@@ -17,7 +17,7 @@ import { ProjectForm_organization } from "./__generated__/ProjectForm_organizati
 import { ProjectForm_viewer } from "./__generated__/ProjectForm_viewer.graphql";
 
 type Props = {
-  open: boolean,
+  open: boolean;
   save: any /*(
     {
       id: string,
@@ -34,32 +34,32 @@ type Props = {
     {
       onSuccess: any; //() => void,
     },
-  ) => void,*/,
-  onClose: () => void,
-  viewer: ProjectForm_viewer,
-  organization: ProjectForm_organization,
-  id?: string,
-  title?: string,
-  tag?: string,
-  privateMdtext?: string,
-  publicMdtext?: string,
-  start?: moment.Moment | null,
-  end?: moment.Moment | null,
-  permissions?: PermissionObject,
-  conductors?: any[],
-  managers?: any[],
+  ) => void,*/;
+  onClose: () => void;
+  viewer: ProjectForm_viewer;
+  organization: ProjectForm_organization;
+  id?: string;
+  title?: string;
+  tag?: string;
+  privateMdtext?: string;
+  publicMdtext?: string;
+  start?: moment.Moment | null;
+  end?: moment.Moment | null;
+  permissions?: PermissionObject;
+  conductors?: any[];
+  managers?: any[];
 };
 
 type State = {
-  title: string,
-  tag: string,
-  privateMdtext: string,
-  publicMdtext: string,
-  start?: moment.Moment | null,
-  end?: moment.Moment | null,
-  permissions: PermissionArray,
-  conductors: any[],
-  managers: any[],
+  title: string;
+  tag: string;
+  privateMdtext: string;
+  publicMdtext: string;
+  start?: moment.Moment | null;
+  end?: moment.Moment | null;
+  permissions: PermissionArray;
+  conductors: any[];
+  managers: any[];
 };
 
 class ProjectForm extends React.Component<Props, State> {
@@ -270,6 +270,7 @@ class ProjectForm extends React.Component<Props, State> {
                   value={this.state.start || null}
                   clearable
                   autoOk
+                  format="ll"
                 />
               </div>
               <div>
@@ -281,6 +282,8 @@ class ProjectForm extends React.Component<Props, State> {
                   required
                   autoOk
                   className="project-end"
+                  format="ll"
+                  error={!this.state.end}
                 />
               </div>
               <div>
@@ -320,7 +323,6 @@ class ProjectForm extends React.Component<Props, State> {
               </Button>
               <Button
                 variant="contained"
-                onSubmit={this.saveProject}
                 type="submit"
                 color="primary"
                 className="project-new-submit"

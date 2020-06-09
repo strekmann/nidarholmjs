@@ -225,129 +225,132 @@ class EventForm extends React.Component<Props, State> {
           open={this.props.isOpen}
           onClose={this.props.cancel}
         >
-          <DialogTitle>
-            {this.props.id ? "Rediger aktivitet" : "Ny aktivitet"}
-          </DialogTitle>
-          <DialogContent>
-            <div>
-              <TextField
-                value={this.state.title}
-                label="Tittel"
-                onChange={this.onChangeTitle}
-                required
-                name="title"
-              />
-            </div>
-            <div>
-              <TextField
-                value={this.state.location}
-                label="Sted"
-                onChange={this.onChangeLocation}
-                name="location"
-              />
-            </div>
-            <div className="small-narrow" style={{ display: "flex" }}>
-              <DatePicker
-                value={this.state.start}
-                label="Start"
-                onChange={this.onChangeStartDate}
-                style={{ flex: "1 1 auto" }}
-                autoOk
-                required
-                className="event-start"
-                format="ll"
-              />
-              <KeyboardTimePicker
-                value={this.state.start}
-                label="Klokkeslett"
-                ampm={false}
-                onChange={this.onChangeStart}
-                style={{ flex: "1 1 auto" }}
-                minutesStep={5}
-              />
-            </div>
-            <div className="small-narrow" style={{ display: "flex" }}>
-              <DatePicker
-                value={this.state.end}
-                label="Slutt"
-                onChange={this.onChangeEndDate}
-                style={{ flex: "1 1 auto" }}
-                autoOk
-                clearable
-                className="event-end"
-                format="ll"
-              />
-              <KeyboardTimePicker
-                value={this.state.end}
-                label="Klokkeslett"
-                ampm={false}
-                onChange={this.onChangeEnd}
-                style={{ flex: "1 1 auto" }}
-                clearable
-                minutesStep={5}
-              />
-            </div>
-            <div>
-              <TextField
-                value={this.state.mdtext}
-                label="Beskrivelse"
-                multiline
-                fullWidth
-                onChange={this.onChangeDescription}
-                name="description"
-              />
-            </div>
-            <div>
-              <ProjectField
-                projects={this.state.projects}
-                organization={this.props.organization}
-                onChange={this.onChangeProjects}
-              />
-            </div>
-            <div>
-              <FormControlLabel
-                control={
-                  <Checkbox
-                    name="important"
-                    checked={this.state.highlighted}
-                    onChange={this.onChangeHighlighted}
-                    color="primary"
-                  />
-                }
-                label="Konsert eller noe annet publikum bør vite om"
-              ></FormControlLabel>
-            </div>
-            <div>
-              {this.state.tags
-                ? this.state.tags.map((tag, i) => {
-                    return this.renderChip(tag, i);
-                  })
-                : null}
-            </div>
-            <div>
-              <PermissionField
-                permissions={this.state.permissions}
-                onChange={this.onChangePermissions}
-                groups={this.props.viewer.groups}
-                users={[]}
-                fullWidth
-              />
-            </div>
-          </DialogContent>
-          <DialogActions>
-            <Button variant="text" onClick={this.props.cancel}>
-              Avbryt
-            </Button>
-            <Button
-              variant="text"
-              onClick={this.save}
-              color="primary"
-              className="event-form-submit"
-              disabled={!this.state.title || !this.state.start}
-            >
-              Lagre
-            </Button>
-          </DialogActions>
+          <form onSubmit={this.save}>
+            <DialogTitle>
+              {this.props.id ? "Rediger aktivitet" : "Ny aktivitet"}
+            </DialogTitle>
+            <DialogContent>
+              <div>
+                <TextField
+                  value={this.state.title}
+                  error={!this.state.title}
+                  label="Tittel"
+                  onChange={this.onChangeTitle}
+                  required
+                  name="title"
+                />
+              </div>
+              <div>
+                <TextField
+                  value={this.state.location}
+                  label="Sted"
+                  onChange={this.onChangeLocation}
+                  name="location"
+                />
+              </div>
+              <div className="small-narrow" style={{ display: "flex" }}>
+                <DatePicker
+                  value={this.state.start}
+                  label="Start"
+                  onChange={this.onChangeStartDate}
+                  style={{ flex: "1 1 auto" }}
+                  autoOk
+                  required
+                  className="event-start"
+                  format="ll"
+                  error={!this.state.start}
+                />
+                <KeyboardTimePicker
+                  value={this.state.start}
+                  label="Klokkeslett"
+                  ampm={false}
+                  onChange={this.onChangeStart}
+                  style={{ flex: "1 1 auto" }}
+                  minutesStep={5}
+                />
+              </div>
+              <div className="small-narrow" style={{ display: "flex" }}>
+                <DatePicker
+                  value={this.state.end}
+                  label="Slutt"
+                  onChange={this.onChangeEndDate}
+                  style={{ flex: "1 1 auto" }}
+                  autoOk
+                  clearable
+                  className="event-end"
+                  format="ll"
+                />
+                <KeyboardTimePicker
+                  value={this.state.end}
+                  label="Klokkeslett"
+                  ampm={false}
+                  onChange={this.onChangeEnd}
+                  style={{ flex: "1 1 auto" }}
+                  clearable
+                  minutesStep={5}
+                />
+              </div>
+              <div>
+                <TextField
+                  value={this.state.mdtext}
+                  label="Beskrivelse"
+                  multiline
+                  fullWidth
+                  onChange={this.onChangeDescription}
+                  name="description"
+                />
+              </div>
+              <div>
+                <ProjectField
+                  projects={this.state.projects}
+                  organization={this.props.organization}
+                  onChange={this.onChangeProjects}
+                />
+              </div>
+              <div>
+                <FormControlLabel
+                  control={
+                    <Checkbox
+                      name="important"
+                      checked={this.state.highlighted}
+                      onChange={this.onChangeHighlighted}
+                      color="primary"
+                    />
+                  }
+                  label="Konsert eller noe annet publikum bør vite om"
+                ></FormControlLabel>
+              </div>
+              <div>
+                {this.state.tags
+                  ? this.state.tags.map((tag, i) => {
+                      return this.renderChip(tag, i);
+                    })
+                  : null}
+              </div>
+              <div>
+                <PermissionField
+                  permissions={this.state.permissions}
+                  onChange={this.onChangePermissions}
+                  groups={this.props.viewer.groups}
+                  users={[]}
+                  fullWidth
+                />
+              </div>
+            </DialogContent>
+            <DialogActions>
+              <Button variant="contained" onClick={this.props.cancel}>
+                Avbryt
+              </Button>
+              <Button
+                variant="contained"
+                color="primary"
+                type="submit"
+                className="event-form-submit"
+              >
+                Lagre
+              </Button>
+            </DialogActions>
+          </form>
         </Dialog>
       </MuiPickersUtilsProvider>
     );
