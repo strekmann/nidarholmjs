@@ -158,7 +158,7 @@ class ProjectForm extends React.Component<Props, State> {
     this.props.onClose();
   };
 
-  saveProject = (event) => {
+  saveProject = (event: React.FormEvent<HTMLInputElement>) => {
     event.preventDefault();
     this.props.onClose();
     this.props.save(

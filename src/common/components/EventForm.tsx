@@ -184,7 +184,8 @@ class EventForm extends React.Component<Props, State> {
     this.setState({ highlighted: event.target.checked });
   };
 
-  save = () => {
+  save = (event: React.FormEvent<HTMLInputElement>) => {
+    event.preventDefault();
     const {
       id,
       title,
