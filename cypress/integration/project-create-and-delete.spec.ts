@@ -41,9 +41,17 @@ describe("Open main", () => {
     cy.get(".event .context-menu").click();
 
     cy.get(".event-edit").click();
-    cy.get("input[name=description").type("Info");
+    cy.get("input[name=location]").type("Location");
+    cy.get("input[name=important]").check();
+    cy.get("textarea[name=description]").type("Info");
+    cy.get(".event-end").click();
+    cy.get(":nth-child(3) > .MuiIconButton-label > .MuiSvgIcon-root").click();
+    cy.get(
+      ".MuiPickersCalendar-transitionContainer > :nth-child(1) > :nth-child(3) > :nth-child(4)",
+    ).click();
     cy.get(".event-form-submit").click();
 
+    cy.get(".event .context-menu").click();
     cy.get(".event-delete").click();
     cy.get(".event-delete-confirm").click();
 

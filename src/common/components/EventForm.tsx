@@ -12,8 +12,8 @@ import FormControlLabel from "@material-ui/core/FormControlLabel";
 import TextField from "@material-ui/core/TextField";
 import {
   DatePicker,
+  KeyboardTimePicker,
   MuiPickersUtilsProvider,
-  TimePicker,
 } from "@material-ui/pickers";
 import moment from "moment";
 import * as React from "react";
@@ -114,7 +114,19 @@ class EventForm extends React.Component<Props, State> {
 
   onChangeStartDate = (start: moment.Moment | null) => {
     if (!this.state.start) {
-      this.setState({ start });
+      this.setState({
+        start: start
+          ? moment(start).set({
+              year: start.year(),
+              month: start.month(),
+              date: start.date(),
+              hours: 0,
+              minutes: 0,
+              seconds: 0,
+              milliseconds: 0,
+            })
+          : null,
+      });
     } else {
       this.setState({
         start: start
@@ -130,7 +142,19 @@ class EventForm extends React.Component<Props, State> {
 
   onChangeEndDate = (end: moment.Moment | null) => {
     if (!this.state.end) {
-      this.setState({ end });
+      this.setState({
+        end: end
+          ? moment(end).set({
+              year: end.year(),
+              month: end.month(),
+              date: end.date(),
+              hours: 0,
+              minutes: 0,
+              seconds: 0,
+              milliseconds: 0,
+            })
+          : null,
+      });
     } else {
       this.setState({
         end: end
@@ -219,6 +243,7 @@ class EventForm extends React.Component<Props, State> {
                 value={this.state.location}
                 label="Sted"
                 onChange={this.onChangeLocation}
+                name="location"
               />
             </div>
             <div className="small-narrow" style={{ display: "flex" }}>
@@ -230,14 +255,15 @@ class EventForm extends React.Component<Props, State> {
                 autoOk
                 required
                 className="event-start"
+                format="ll"
               />
-              <TimePicker
+              <KeyboardTimePicker
                 value={this.state.start}
-                clearable
                 label="Klokkeslett"
                 ampm={false}
                 onChange={this.onChangeStart}
                 style={{ flex: "1 1 auto" }}
+                minutesStep={5}
               />
             </div>
             <div className="small-narrow" style={{ display: "flex" }}>
@@ -248,14 +274,17 @@ class EventForm extends React.Component<Props, State> {
                 style={{ flex: "1 1 auto" }}
                 autoOk
                 clearable
+                className="event-end"
+                format="ll"
               />
-              <TimePicker
+              <KeyboardTimePicker
                 value={this.state.end}
                 label="Klokkeslett"
                 ampm={false}
                 onChange={this.onChangeEnd}
                 style={{ flex: "1 1 auto" }}
                 clearable
+                minutesStep={5}
               />
             </div>
             <div>
@@ -279,8 +308,7 @@ class EventForm extends React.Component<Props, State> {
               <FormControlLabel
                 control={
                   <Checkbox
-                    id="member"
-                    name="member"
+                    name="important"
                     checked={this.state.highlighted}
                     onChange={this.onChangeHighlighted}
                     color="primary"
@@ -315,6 +343,7 @@ class EventForm extends React.Component<Props, State> {
               onClick={this.save}
               color="primary"
               className="event-form-submit"
+              disabled={!this.state.title || !this.state.start}
             >
               Lagre
             </Button>
