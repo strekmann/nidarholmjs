@@ -88,7 +88,8 @@ body {
 a {
   color: material-color("light-blue", "900");
   text-decoration: none;
-  &:hover {
+  &:hover,
+  &:focus {
     text-decoration: underline;
   }
 }
@@ -131,13 +132,9 @@ h3 {
   box-shadow: none;
   border: none;
 }
-.button:hover {
+.button:hover,
+.avatar-container:hover {
   text-decoration: none;
-}
-
-a:hover,
-a:focus {
-  text-decoration: underline;
 }
 
 dl {
@@ -271,6 +268,7 @@ section {
 }
 
 nav a {
+  margin-left: inherit; // reset head style
   color: white;
   &:link {
     color: white;

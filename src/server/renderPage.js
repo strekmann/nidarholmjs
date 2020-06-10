@@ -28,6 +28,10 @@ export default function renderPage(element, fetcher, userAgent) {
         ${helmet.meta.toString()}
         ${link}
         <style type="text/css">
+        nav a {
+          color: white;
+          margin-left: 20px;
+        }
         .flex-menu-mobile {
           display: none;
         }

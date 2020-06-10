@@ -115,21 +115,11 @@ class Navigation extends React.Component<Props, State> {
                 alignItems: "center",
               }}
             >
-              <Link to="/om" style={{ color: common.white }}>
-                Om oss
-              </Link>
-              <Link to="/projects" style={{ color: common.white }}>
-                Prosjekter
-              </Link>
-              <Link to="/members" style={{ color: common.white }}>
-                Medlemmer
-              </Link>
-              <Link to="/stott-oss" style={{ color: common.white }}>
-                Støtt oss
-              </Link>
-              <Link to="/contact" style={{ color: common.white }}>
-                Kontakt
-              </Link>
+              <Link to="/om">Om oss</Link>
+              <Link to="/projects">Prosjekter</Link>
+              <Link to="/members">Medlemmer</Link>
+              <Link to="/stott-oss">Støtt oss</Link>
+              <Link to="/contact">Kontakt</Link>
             </div>
             <div
               style={{
@@ -177,17 +167,20 @@ class Navigation extends React.Component<Props, State> {
             </div>
           </nav>
         </div>
-        <div className="flex-menu-mobile">
+        <nav className="flex-menu-mobile">
           <div style={{ flexGrow: 1 }}>{logo}</div>
           <div>
             {viewer ? (
-              <Link to={`/users/${viewer.id}`}>{this.renderAvatar()}</Link>
+              <Link to={`/users/${viewer.id}`} className="avatar-container">
+                {this.renderAvatar()}
+              </Link>
             ) : (
               <Link to="/login">
                 <IconButton
                   disableFocusRipple
                   style={{ minWidth: 44, marginLeft: 10 }}
                   className={classes.loginButton}
+                  color="inherit"
                 >
                   <LockOpen />
                 </IconButton>
@@ -280,7 +273,7 @@ class Navigation extends React.Component<Props, State> {
               </nav>
             </Popover>
           </div>
-        </div>
+        </nav>
       </div>
     );
   }
