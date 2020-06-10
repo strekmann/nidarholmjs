@@ -58,6 +58,7 @@ class Navigation extends React.Component<Props, State> {
           src={viewer.profilePicture.thumbnailPath || undefined}
           style={{ margin: "0 5px" }}
           alt={viewer.name}
+          imgProps={{ style: { maxHeight: 50 } }}
         />
       );
     }
