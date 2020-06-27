@@ -8,13 +8,14 @@ cache:
 #    - apt install build-essential
 
 stages:
-  - build
+  - build_code
+  - build_image
 
-build:
+build_code:
   image: node:14-alpine
-  stage: build
+  stage: build_code
   script:
-    - apk add --no-cache --virtual .build-dependencies make g++ gcc python
+    - apk add --no-cache make g++ gcc python
     - yarn install --frozen-lockfile --production
     - cp -r node_modules node_modules_production
     - yarn install --frozen-lockfile
@@ -24,4 +25,34 @@ build:
     name: "$CI_COMMIT_REF_SLUG"
     paths:
       - dist/
+  only:
+    - pushes
   interruptible: true
+
+build_image:
+  image: fedora
+  stage: build_image
+  needs:
+    - job: build_code
+      artifacts: true
+  script:
+    - dnf install buildah podman -y
+    - set -x
+    - export STORAGE_DRIVER=vfs
+    - img=$(buildah from node:14-alpine)
+    - buildah config --port 3000 "$img"
+    - buildah config --user node "$img"
+    - buildah config --workingdir /home/node "$img"
+    - buildah copy --chown=node:node "$img" ./dist dist
+    - buildah copy --chown=node:node "$img" ./config dist/config
+    - buildah config --workingdir /home/node/dist "$img"
+    - buildah config --entrypoint '["node", "server/index.js"]' "$img"
+    - buildah commit "$img" "test"
+    - buildah rm "$img"
+    - podman save localhost/test -o nidarholm.tar
+    - gzip nidarholm.tar
+  artifacts:
+    paths:
+      - nidarholm.tar.gz
+  only:
+    - pushes
