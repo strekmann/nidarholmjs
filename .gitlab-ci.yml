@@ -1,0 +1,24 @@
+image: node:14
+
+cache:
+  paths:
+    - node_modules/
+    - .yarn
+
+#default:
+#  before_script:
+#    - apt install build-essential
+
+stages:
+  - build
+
+build:
+  stage: build
+  script:
+    - yarn install --frozen-lockfile
+    - yarn build-project
+  artifacts:
+    name: "$CI_COMMIT_REF_SLUG"
+    paths:
+      - dist/
+  interruptible: true
