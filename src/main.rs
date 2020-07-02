@@ -1,15 +1,16 @@
 use log::{debug, info, warn};
 use mongodb::db::ThreadedDatabase;
 use mongodb::{doc, Client, ThreadedClient};
-use reqwest;
 use serde::{Deserialize, Serialize};
 use std::collections::{HashMap, HashSet};
 use std::env;
+use std::str::FromStr;
 
 #[macro_use]
 extern crate bson;
 extern crate log;
 
+/** Member struct, containing address, delivery mode, display name, etfc */
 #[derive(Clone, Debug, Deserialize)]
 struct Member {
   address: String,
@@ -24,6 +25,7 @@ struct Member {
   http_etag: String,
 }
 
+/** List of members, in `entries` */
 #[derive(Debug, Deserialize)]
 struct MemberList {
   start: usize,
@@ -33,21 +35,18 @@ struct MemberList {
   http_etag: String,
 }
 
+/** The relation between a list member and the list */
 #[derive(Clone, Debug, Serialize)]
 struct Subscription {
   list_id: String,
   subscriber: String,
-  role: String,
+  role: Role,
   pre_verified: bool,
   pre_confirmed: bool,
   pre_approved: bool,
 }
 
-#[derive(Clone, Debug, Serialize)]
-struct ModerationAction {
-  moderation_action: String,
-}
-
+/** Keeps the necessary services and variables */
 struct Api {
   client: reqwest::Client,
   base_url: String,
@@ -62,13 +61,67 @@ impl MemberList {
   }
 }
 
+pub enum ModerationAction {
+  Accept,
+  Deny,
+}
+
+impl ModerationAction {
+  pub fn as_str(&self) -> &'static str {
+    match self {
+      ModerationAction::Accept => "accept",
+      ModerationAction::Deny => "deny",
+    }
+  }
+}
+
+impl FromStr for ModerationAction {
+  type Err = ();
+  fn from_str(s: &str) -> Result<Self, Self::Err> {
+    match s {
+      "accept" => Ok(ModerationAction::Accept),
+      "deny" => Ok(ModerationAction::Deny),
+      _ => Err(()),
+    }
+  }
+}
+
+#[derive(Copy, Clone, Debug, Serialize, PartialEq)]
+pub enum Role {
+  NonMember,
+  Member,
+  Moderator,
+}
+
+impl Role {
+  pub fn as_str(&self) -> &'static str {
+    match self {
+      Role::NonMember => "nonmember",
+      Role::Member => "member",
+      Role::Moderator => "moderator",
+    }
+  }
+}
+
+impl FromStr for Role {
+  type Err = ();
+  fn from_str(s: &str) -> Result<Self, Self::Err> {
+    match s {
+      "nonmember" => Ok(Role::NonMember),
+      "member" => Ok(Role::Member),
+      "moderator" => Ok(Role::Moderator),
+      _ => Err(()),
+    }
+  }
+}
+
 impl Api {
-  fn get_members(&self, group_email: &str, role: &str) -> HashSet<String> {
+  fn get_members(&self, group_email: &str, role: Role) -> HashSet<String> {
     let url = format!(
       "{}/lists/{}/roster/{}",
       self.base_url,
       str::replace(group_email, "@", "."),
-      role,
+      role.as_str(),
     );
     let mut response = self
       .client
@@ -96,16 +149,16 @@ impl Api {
     member_set
   }
 
-  fn subscribe(&self, group_email: &str, group_member: &str, role: &str) {
+  fn subscribe(&self, group_email: &str, group_member: &str, role: Role) {
     let subscription = Subscription {
-      list_id: str::replace(group_email, "@", ".").to_string(),
+      list_id: str::replace(group_email, "@", "."),
       subscriber: group_member.to_string(),
-      role: role.to_string(),
+      role,
       pre_verified: true,
       pre_confirmed: true,
       pre_approved: true,
     };
-    info!("{} + {} as {}", group_email, group_member, role);
+    info!("{} + {} as {}", group_email, group_member, role.as_str());
     self
       .client
       .post(format!("{}/members", self.base_url).as_str())
@@ -122,7 +175,7 @@ impl Api {
       });
   }
 
-  fn unsubscribe(&self, group_email: &str, emails: Vec<String>, role: &str) {
+  fn unsubscribe(&self, group_email: &str, emails: Vec<String>, role: Role) {
     let mut email_tuples: Vec<(String, String)> = Vec::new();
     for email in &emails {
       email_tuples.push((String::from("emails"), email.to_owned()));
@@ -131,9 +184,14 @@ impl Api {
       "{}/lists/{}/roster/{}",
       self.base_url,
       str::replace(group_email, "@", "."),
-      role,
+      role.as_str(),
     );
-    info!("{} - {} as {}", group_email, emails.join(", "), role);
+    info!(
+      "{} - {} as {}",
+      group_email,
+      emails.join(", "),
+      role.as_str()
+    );
     self
       .client
       .delete(&delete_url)
@@ -149,34 +207,47 @@ impl Api {
         )
       });
   }
-  fn set_moderation_action(&self, action: &str, role: &str, group_email: &str, email: &str) {
-    let patch_url: String = format!("{}/lists/{}/{}/{}", self.base_url, group_email, role, email,);
-    let moderation_action = ModerationAction {
-      moderation_action: action.to_string(),
-    };
+  fn set_moderation_action(&self, action: &str, role: Role, group_email: &str, email: &str) {
+    let patch_url: String = format!(
+      "{}/lists/{}/{}/{}",
+      self.base_url,
+      group_email,
+      role.as_str(),
+      email,
+    );
+    let moderation_action = action
+      .parse::<ModerationAction>()
+      .expect("Unknown moderation action");
     self
       .client
       .patch(&patch_url)
       .basic_auth(self.user.to_owned(), self.password.to_owned())
-      .form(&moderation_action)
+      .form(&moderation_action.as_str())
       .send()
       .expect("Setting moderation action failed")
       .error_for_status()
       .unwrap_or_else(|_| {
         panic!(
           "Patching moderation_action {:#?} did not work for {} in {}",
-          moderation_action, email, group_email
+          moderation_action.as_str(),
+          email,
+          group_email
         )
       });
   }
-  fn update_members(&self, group_email: &str, members: HashSet<&str>, role: &str) {
-    debug!("Updating {}, {}", group_email, role);
+  fn update_members(&self, group_email: &str, members: HashSet<&str>, role: Role) {
+    debug!("Updating {}, {}", group_email, role.as_str());
     let mut member_set = self.get_members(group_email, role);
     for group_member in members {
       if !member_set.contains(group_member) {
         self.subscribe(group_email, group_member, role);
-        if role == "nonmember" {
-          self.set_moderation_action("accept", role, group_email, group_member);
+        if role == Role::NonMember {
+          self.set_moderation_action(
+            ModerationAction::Accept.as_str(),
+            role,
+            group_email,
+            group_member,
+          );
         }
       } else {
         member_set.remove(group_member);
@@ -184,7 +255,7 @@ impl Api {
     }
     if !member_set.is_empty() {
       let emails = member_set.into_iter().collect::<Vec<String>>();
-      if role != "nonmember" {
+      if role != Role::NonMember {
         self.unsubscribe(group_email, emails, role);
       }
     }
@@ -212,7 +283,7 @@ fn main() {
 
   let organization_query = doc! {"_id" => "nidarholm"};
   let organization = organizations
-    .find_one(Some(organization_query.clone()), None)
+    .find_one(Some(organization_query), None)
     .expect("Did not find organization");
 
   let groups = client.db(&database).collection("groups");
@@ -223,7 +294,7 @@ fn main() {
     .expect("No member_group field");
   let member_group_query = doc! {"_id" => member_group_id};
   let group = groups
-    .find_one(Some(member_group_query.clone()), None)
+    .find_one(Some(member_group_query), None)
     .expect("Could not find member group");
 
   let g = group.unwrap();
@@ -345,8 +416,8 @@ fn main() {
         emails.insert(user_email);
       }
     }
-    api.update_members(role_email, emails, "member");
-    api.update_members(role_email, moderator_emails.to_owned(), "moderator");
+    api.update_members(role_email, emails, Role::Member);
+    api.update_members(role_email, moderator_emails.to_owned(), Role::Moderator);
   }
 
   // Used for special group "gruppeledere"
@@ -390,17 +461,21 @@ fn main() {
       let group_leader_email = group.get_str("group_leader_email").unwrap_or_else(|_| "");
       if !group_leader_email.is_empty() {
         // Gruppe med gruppeledere
-        api.update_members(group_leader_email, group_leaders.to_owned(), "member");
-        api.update_members(group_email, group_members.to_owned(), "member");
-        api.update_members(group_leader_email, moderator_emails.to_owned(), "moderator");
-        api.update_members(group_email, moderator_emails.to_owned(), "moderator");
+        api.update_members(group_leader_email, group_leaders.to_owned(), Role::Member);
+        api.update_members(group_email, group_members.to_owned(), Role::Member);
+        api.update_members(
+          group_leader_email,
+          moderator_emails.to_owned(),
+          Role::Moderator,
+        );
+        api.update_members(group_email, moderator_emails.to_owned(), Role::Moderator);
         api.update_members(
           group_leader_email,
           all_members
             .difference(&group_leaders)
             .map(|s| &**s)
             .collect(),
-          "nonmember",
+          Role::NonMember,
         );
         api.update_members(
           group_email,
@@ -408,19 +483,19 @@ fn main() {
             .difference(&group_members)
             .map(|s| &**s)
             .collect(),
-          "nonmember",
+          Role::NonMember,
         );
       } else {
         // Gruppe uten gruppeledere
-        api.update_members(group_email, group_members.to_owned(), "member");
-        api.update_members(group_email, moderator_emails.to_owned(), "moderator");
+        api.update_members(group_email, group_members.to_owned(), Role::Member);
+        api.update_members(group_email, moderator_emails.to_owned(), Role::Moderator);
         api.update_members(
           group_email,
           all_members
             .difference(&group_members)
             .map(|s| &**s)
             .collect(),
-          "nonmember",
+          Role::NonMember,
         );
       }
     }
@@ -429,15 +504,19 @@ fn main() {
   api.update_members(
     "gruppeledere@nidarholm.no",
     all_group_leaders.to_owned(),
-    "member",
+    Role::Member,
   );
-  api.update_members("gruppeledere@nidarholm.no", moderator_emails, "moderator");
+  api.update_members(
+    "gruppeledere@nidarholm.no",
+    moderator_emails,
+    Role::Moderator,
+  );
   api.update_members(
     "gruppeledere@nidarholm.no",
     all_members
       .difference(&all_group_leaders)
       .map(|s| &**s)
       .collect(),
-    "nonmember",
+    Role::NonMember,
   );
 }
