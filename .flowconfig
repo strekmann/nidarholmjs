@@ -1,4 +1,0 @@
-[ignore]
-<PROJECT_ROOT>/ansible/.*
-.*/flow-type/.*
-<PROJECT_ROOT>/dist/.*

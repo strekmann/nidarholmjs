@@ -44,15 +44,34 @@ build_image:
     - buildah config --user node "$img"
     - buildah config --workingdir /home/node "$img"
     - buildah copy --chown=node:node "$img" ./dist dist
-    - buildah copy --chown=node:node "$img" ./config dist/config
+    - buildah copy --chown=node:node "$img" $CONFIG dist/config
     - buildah config --workingdir /home/node/dist "$img"
     - buildah config --entrypoint '["node", "server/index.js"]' "$img"
     - buildah commit "$img" "test"
     - buildah rm "$img"
-    - podman save localhost/test -o nidarholm.tar
-    - gzip nidarholm.tar
+    - podman save localhost/test -o nidarholm-$CI_COMMIT_SHORT_SHA.tar
+    - gzip nidarholm-$CI_COMMIT_SHORT_SHA.tar
   artifacts:
     paths:
       - nidarholm.tar.gz
   only:
     - pushes
+
+deploy_image:
+  image: debian
+  stage: deploy_image
+  needs:
+    - job: build_image
+      artifacts: true
+  script:
+    - "which ssh-agent || ( apt-get update -y && apt-get install openssh-client -y )"
+    - eval $(ssh-agent -s)
+    - echo "$SSH_PRIVATE_KEY" | tr -d '\r' | ssh-add -
+    - mkdir -p ~/.ssh
+    - chmod 700 ~/.ssh
+    - echo "$SSH_KNOWN_HOSTS" >> ~/.ssh/known_hosts
+    - chmod 644 ~/.ssh/known_hosts
+    - scp -P 2022 nidarholm-$CI_COMMIT_SHORT_SHA.tar.gz leigh.strekmann.no:~
+    - ssh -p 2022 leigh.strekmann.no gunzip nidarholm-$CI_COMMIT_SHORT_SHA.tar.gz
+    - ssh -p 2022 leigh.strekmann.no podman load -i nidarholm-$CI_COMMIT_SHORT_SHA.tar nidarholm
+    - ssh -p 2022 leigh.strekmann.no systemctl restart nidarholm

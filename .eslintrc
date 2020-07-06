@@ -1,40 +1,48 @@
 {
-    "parser": "babel-eslint",
-    "extends": [
-        "airbnb",
-        "plugin:flowtype/recommended",
-        "plugin:prettier/recommended",
-        "prettier",
-        "plugin:jest/recommended",
-        "plugin:cypress/recommended",
+  "parser": "babel-eslint",
+  "extends": [
+    "airbnb",
+    "plugin:prettier/recommended",
+    "prettier",
+    "plugin:jest/recommended",
+    "plugin:cypress/recommended"
+  ],
+  "plugins": ["import", "react", "jest", "cypress"],
+  "rules": {
+    "arrow-body-style": ["error", "always"],
+    "function-paren-newline": [1, "consistent"],
+    "import/no-extraneous-dependencies": [
+      "error",
+      { "devDependencies": ["**/*.test.js", "**/*.spec.js"] }
     ],
-    "plugins": [
-        "import",
-        "react",
-        "flowtype",
-        "jest",
-        "cypress",
+    "import/order": [1, { "newlines-between": "always" }],
+    "jsx-a11y/anchor-is-valid": [0],
+    "max-len": 1,
+    "no-param-reassign": [2, { "props": false }],
+    "no-shadow": [2, { "allow": ["err"] }],
+    "no-underscore-dangle": [
+      "error",
+      {
+        "allow": ["_id", "_type", "__INITIAL_STATE__", "_json", "_header", "__"]
+      }
     ],
-    "rules": {
-        "arrow-body-style": ["error", "always"],
-        "function-paren-newline": [ 1, "consistent" ],
-        "import/no-extraneous-dependencies": [ "error", { "devDependencies": ["**/*.test.js", "**/*.spec.js"] } ],
-        "import/order": [ 1, {"newlines-between": "always"} ],
-        "jsx-a11y/anchor-is-valid": [ 0 ],
-        "max-len": 1,
-        "no-param-reassign": [2, {"props": false}],
-        "no-shadow": [2, {"allow": ["err"]}],
-        "no-underscore-dangle": ["error", { "allow": ["_id", "_type", "__INITIAL_STATE__", "_json", "_header", "__"] }],
-        "no-unused-expressions": 1,
-        "no-unused-vars": [ 1, { "vars": "all", "args": "after-used", "argsIgnorePattern": "req|res|next" }],
-        "object-curly-newline": [ 1, { "consistent": true } ],
-        "prefer-const": 1,
-        "quotes": [2, "double"],
-        "react/jsx-filename-extension": [1, { "extensions": [".js", ".jsx"] }],
-        "react/prefer-stateless-function": 0,
-        "react/sort-comp": 1,
-        "react/forbid-prop-types": 1,
-        "react/require-default-props": 1,
-        "react/jsx-indent": 0,
-    },
+    "no-unused-expressions": 1,
+    "no-unused-vars": [
+      1,
+      {
+        "vars": "all",
+        "args": "after-used",
+        "argsIgnorePattern": "req|res|next"
+      }
+    ],
+    "object-curly-newline": [1, { "consistent": true }],
+    "prefer-const": 1,
+    "quotes": [2, "double"],
+    "react/jsx-filename-extension": [1, { "extensions": [".js", ".jsx"] }],
+    "react/prefer-stateless-function": 0,
+    "react/sort-comp": 1,
+    "react/forbid-prop-types": 1,
+    "react/require-default-props": 1,
+    "react/jsx-indent": 0
+  }
 }
