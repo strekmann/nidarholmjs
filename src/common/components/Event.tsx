@@ -8,14 +8,16 @@ import Paper from "@material-ui/core/Paper";
 import MoreVertIcon from "@material-ui/icons/MoreVert";
 import React from "react";
 import { createFragmentContainer, graphql, RelayProp } from "react-relay";
+import { DialogActions, DialogContent, DialogTitle } from "@material-ui/core";
+
 import DeleteEventMutation from "../mutations/DeleteEvent";
 import EditEventMutation from "../mutations/EditEvent";
+
 import Daterange from "./Daterange";
 import EventForm from "./EventForm";
 import Text from "./Text";
 import { Event_organization } from "./__generated__/Event_organization.graphql";
 import { Event_viewer } from "./__generated__/Event_viewer.graphql";
-import { DialogActions, DialogContent, DialogTitle } from "@material-ui/core";
 
 type Props = {
   organization: Event_organization;
@@ -43,19 +45,22 @@ class Event extends React.Component<Props, State> {
   onMenuOpen = (event: React.MouseEvent<HTMLButtonElement>) => {
     this.setState({ menuIsOpen: event.currentTarget });
   };
+
   onMenuClose = () => {
     this.setState({ menuIsOpen: null });
   };
 
   toggleEdit = () => {
+    const { editing } = this.state;
     this.setState({
-      editing: !this.state.editing,
+      editing: !editing,
       menuIsOpen: null,
     });
   };
 
   toggleDelete = () => {
-    this.setState({ deleting: !this.state.deleting, menuIsOpen: null });
+    const { deleting } = this.state;
+    this.setState({ deleting: !deleting, menuIsOpen: null });
   };
 
   closeEdit = () => {
@@ -89,7 +94,7 @@ class Event extends React.Component<Props, State> {
   };
 
   deleteEvent = () => {
-    const { organization, relay } = this.props;
+    const { organization, relay, router } = this.props;
     const { event } = organization;
     if (!event) {
       throw new Error("Event not defined");
@@ -101,15 +106,16 @@ class Event extends React.Component<Props, State> {
         id,
       },
       () => {
-        this.props.router.go(-1);
+        router.go(-1);
       },
     );
   };
 
   goTo = (project) => {
+    const { router } = this.props;
     const { year, tag } = project;
     if (year && tag) {
-      this.props.router.push({ pathname: `/${year}/${tag}` });
+      router.push({ pathname: `/${year}/${tag}` });
     }
   };
 
