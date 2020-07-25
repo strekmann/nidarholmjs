@@ -12,21 +12,22 @@ import { DialogActions, DialogContent, DialogTitle } from "@material-ui/core";
 
 import DeleteEventMutation from "../mutations/DeleteEvent";
 import EditEventMutation from "../mutations/EditEvent";
+import { Event as EventType, Project } from "../types";
 
 import Daterange from "./Daterange";
 import EventForm from "./EventForm";
 import Text from "./Text";
-import { Event_organization } from "./__generated__/Event_organization.graphql";
-import { Event_viewer } from "./__generated__/Event_viewer.graphql";
+import { Event_organization as EventOrganization } from "./__generated__/Event_organization.graphql";
+import { Event_viewer as EventViewer } from "./__generated__/Event_viewer.graphql";
 
 type Props = {
-  organization: Event_organization;
+  organization: EventOrganization;
   relay: RelayProp;
   router: {
-    go: (number) => void;
+    go: (_: number) => void;
     push: any; // ({ pathname: string }) => void;
   };
-  viewer: Event_viewer;
+  viewer: EventViewer;
 };
 
 type State = {
@@ -36,11 +37,14 @@ type State = {
 };
 
 class Event extends React.Component<Props, State> {
-  state = {
-    editing: false,
-    deleting: false,
-    menuIsOpen: null,
-  };
+  constructor(props: Props) {
+    super(props);
+    this.state = {
+      editing: false,
+      deleting: false,
+      menuIsOpen: null,
+    };
+  }
 
   onMenuOpen = (event: React.MouseEvent<HTMLButtonElement>) => {
     this.setState({ menuIsOpen: event.currentTarget });
@@ -73,7 +77,7 @@ class Event extends React.Component<Props, State> {
     this.setState({ deleting: false });
   };
 
-  saveEvent = (event) => {
+  saveEvent = (event: EventType) => {
     const { relay } = this.props;
     this.setState({ editing: false });
     EditEventMutation.commit(
@@ -111,7 +115,7 @@ class Event extends React.Component<Props, State> {
     );
   };
 
-  goTo = (project) => {
+  goTo = (project: Project) => {
     const { router } = this.props;
     const { year, tag } = project;
     if (year && tag) {
@@ -122,6 +126,7 @@ class Event extends React.Component<Props, State> {
   render() {
     const { organization, viewer } = this.props;
     const { event, isMember } = organization;
+    const { menuIsOpen, deleting, editing } = this.state;
     if (!event) {
       throw new Error("Event not defined");
     }
@@ -135,9 +140,9 @@ class Event extends React.Component<Props, State> {
                 <MoreVertIcon />
               </IconButton>
               <Menu
-                anchorEl={this.state.menuIsOpen}
+                anchorEl={menuIsOpen}
                 onClose={this.onMenuClose}
-                open={Boolean(this.state.menuIsOpen)}
+                open={Boolean(menuIsOpen)}
                 anchorOrigin={{ vertical: "top", horizontal: "right" }}
                 transformOrigin={{ vertical: "top", horizontal: "right" }}
               >
@@ -174,14 +179,14 @@ class Event extends React.Component<Props, State> {
           <div>
             <EventForm
               event={event}
-              organization={this.props.organization}
+              organization={organization}
               viewer={viewer}
-              isOpen={this.state.editing}
+              isOpen={editing}
               title="Rediger aktivitet"
               save={this.saveEvent}
               cancel={this.closeEdit}
             />
-            <Dialog open={this.state.deleting} onClose={this.closeDelete}>
+            <Dialog open={deleting} onClose={this.closeDelete}>
               <DialogTitle>Slett aktivitet</DialogTitle>
               <DialogContent>
                 <p>{event.title}</p>

@@ -4,7 +4,7 @@ import marked from "marked";
 import * as React from "react";
 
 type Props = {
-  text?: string;
+  text?: string | null;
 };
 
 export default class Text extends React.Component<Props> {
@@ -13,7 +13,8 @@ export default class Text extends React.Component<Props> {
   };
 
   render() {
-    const text = marked(this.props.text || "");
-    return <span dangerouslySetInnerHTML={{ __html: text }} />;
+    const { text } = this.props;
+    const html = marked(text || "");
+    return <span dangerouslySetInnerHTML={{ __html: html }} />;
   }
 }

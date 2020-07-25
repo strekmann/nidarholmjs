@@ -2,6 +2,9 @@
   "parser": "babel-eslint",
   "extends": [
     "airbnb",
+    "plugin:import/errors",
+    "plugin:import/warnings",
+    "plugin:import/typescript",
     "plugin:prettier/recommended",
     "prettier",
     "plugin:jest/recommended",
@@ -11,10 +14,21 @@
   "rules": {
     "arrow-body-style": ["error", "always"],
     "function-paren-newline": [1, "consistent"],
+    "import/extensions": [
+      "error",
+      "ignorePackages",
+      {
+        "js": "never",
+        "jsx": "never",
+        "ts": "never",
+        "tsx": "never"
+      }
+    ],
     "import/no-extraneous-dependencies": [
       "error",
       { "devDependencies": ["**/*.test.js", "**/*.spec.js"] }
     ],
+    "import/no-unresolved": 0,
     "import/order": [1, { "newlines-between": "always" }],
     "jsx-a11y/anchor-is-valid": [0],
     "max-len": 1,
@@ -38,9 +52,11 @@
     "object-curly-newline": [1, { "consistent": true }],
     "prefer-const": 1,
     "quotes": [2, "double"],
-    "react/jsx-filename-extension": [1, { "extensions": [".js", ".jsx"] }],
+    "react/jsx-filename-extension": [1, { "extensions": [".tsx"] }],
+    "react/jsx-one-expression-per-line": 0,
     "react/prefer-stateless-function": 0,
     "react/sort-comp": 1,
+    "react/static-property-placement": [1, "static public field"],
     "react/forbid-prop-types": 1,
     "react/require-default-props": 1,
     "react/jsx-indent": 0

@@ -18,8 +18,10 @@ import {
 import moment from "moment";
 import * as React from "react";
 import { createFragmentContainer, graphql } from "react-relay";
-import { PermissionArray, PermissionObject } from "../types";
+
+import { PermissionArray, PermissionObject, Event } from "../types";
 import { flattenPermissions } from "../utils";
+
 import PermissionField from "./PermissionField";
 import ProjectField from "./ProjectField";
 import { EventForm_organization } from "./__generated__/EventForm_organization.graphql";
@@ -32,24 +34,11 @@ interface ProjectOption {
 
 type Props = {
   title: string;
-  event: {
-    id: string;
-    title: string;
-    location: string;
-    start: moment.Moment;
-    end: moment.Moment;
-    mdtext: string;
-    highlighted: boolean;
-    permissions: PermissionObject;
-    projects: Array<{
-      id: string;
-      tag: string;
-    }>;
-  };
+  event: Event;
   viewer: EventForm_viewer;
   organization: EventForm_organization;
   isOpen: boolean;
-  save: ({}) => void;
+  save: (_: Event) => void;
   cancel: () => void;
   projectPermissions: PermissionObject;
   highlighted: boolean;
@@ -108,6 +97,7 @@ class EventForm extends React.Component<Props, State> {
   onChangeStart = (start: moment.Moment | null) => {
     this.setState({ start });
   };
+
   onChangeEnd = (end: moment.Moment | null) => {
     this.setState({ end });
   };
@@ -319,7 +309,7 @@ class EventForm extends React.Component<Props, State> {
                     />
                   }
                   label="Konsert eller noe annet publikum bør vite om"
-                ></FormControlLabel>
+                />
               </div>
               <div>
                 {this.state.tags
