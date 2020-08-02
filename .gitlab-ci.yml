@@ -31,13 +31,13 @@ build_code:
   interruptible: true
 
 build_image:
-  image: alpine:edge
+  image: ubuntu:groovy
   stage: build_image
   needs:
     - job: build_code
       artifacts: true
   script:
-    - time apk add --no-cache --repository http://dl-3.alpinelinux.org/alpine/edge/testing/ --allow-untrusted buildah podman moreutils
+    - time apt install -y buildah podman moreutils
     - set -x
     - export STORAGE_DRIVER=vfs
     - img=$(buildah from node:14-alpine)
