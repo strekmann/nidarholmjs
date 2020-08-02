@@ -47,13 +47,14 @@ build_image:
     - buildah copy --chown=node:node "$img" $CONFIG dist/config
     - buildah config --workingdir /home/node/dist "$img"
     - buildah config --entrypoint '["node", "server/index.js"]' "$img"
-    - buildah commit "$img" "test"
+    - buildah commit "$img" "nidarholm"
     - buildah rm "$img"
-    - podman save localhost/test -o nidarholm-$CI_COMMIT_SHORT_SHA.tar
-    - gzip nidarholm-$CI_COMMIT_SHORT_SHA.tar
-  artifacts:
-    paths:
-      - nidarholm.tar.gz
+    - podman push --creds $N_CREDS localhost/nidarholm docker://registry.gitlab.com/strekmann/nidarholmjs:latest
+  #  - podman save localhost/test -o nidarholm-$CI_COMMIT_SHORT_SHA.tar
+  #  - gzip nidarholm-$CI_COMMIT_SHORT_SHA.tar
+  #artifacts:
+  #  paths:
+  #    - nidarholm.tar.gz
   only:
     - pushes
 
@@ -71,7 +72,8 @@ deploy_image:
     - chmod 700 ~/.ssh
     - echo "$SSH_KNOWN_HOSTS" >> ~/.ssh/known_hosts
     - chmod 644 ~/.ssh/known_hosts
-    - scp -P 2022 nidarholm-$CI_COMMIT_SHORT_SHA.tar.gz leigh.strekmann.no:~
-    - ssh -p 2022 leigh.strekmann.no gunzip nidarholm-$CI_COMMIT_SHORT_SHA.tar.gz
-    - ssh -p 2022 leigh.strekmann.no podman load -i nidarholm-$CI_COMMIT_SHORT_SHA.tar nidarholm
-    - ssh -p 2022 leigh.strekmann.no systemctl restart nidarholm
+    #  - scp -P 2022 nidarholm-$CI_COMMIT_SHORT_SHA.tar.gz leigh.strekmann.no:~
+    #  - ssh -p 2022 leigh.strekmann.no gunzip nidarholm-$CI_COMMIT_SHORT_SHA.tar.gz
+    #  - ssh -p 2022 leigh.strekmann.no podman load -i nidarholm-$CI_COMMIT_SHORT_SHA.tar nidarholm
+    - ssh -p 2022 leigh.strekmann.no podman pull --creds $N_CREDS docker://registry.gitlab.com/strekmann/nidarholmjs:latest
+    - ssh -p 2022 leigh.strekmann.no systemctl restart nidarholm-web
