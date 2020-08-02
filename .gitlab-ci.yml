@@ -31,13 +31,13 @@ build_code:
   interruptible: true
 
 build_image:
-  image: fedora
+  image: alpine
   stage: build_image
   needs:
     - job: build_code
       artifacts: true
   script:
-    - time dnf install buildah podman moreutils -y
+    - time apk add --no-cache buildah podman moreutils
     - set -x
     - export STORAGE_DRIVER=vfs
     - img=$(buildah from node:14-alpine)
