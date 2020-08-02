@@ -16,8 +16,8 @@ build_code:
   image: node:14-alpine
   stage: build_code
   script:
-    - apk add --no-cache make g++ gcc python moreutils
-    - time yarn install --frozen-lockfile --production | ts
+    - time apk add --no-cache make g++ gcc python moreutils
+    - yarn install --frozen-lockfile --production | ts
     - cp -r node_modules node_modules_production | ts
     - yarn install --frozen-lockfilea | ts
     - yarn build-project | ts
@@ -31,13 +31,13 @@ build_code:
   interruptible: true
 
 build_image:
-  image: alpine
+  image: alpine:edge
   stage: build_image
   needs:
     - job: build_code
       artifacts: true
   script:
-    - time apk add --no-cache buildah podman moreutils
+    - time apk add --no-cache --repository http://dl-3.alpinelinux.org/alpine/edge/testing/ --allow-untrusted buildah podman moreutils
     - set -x
     - export STORAGE_DRIVER=vfs
     - img=$(buildah from node:14-alpine)
