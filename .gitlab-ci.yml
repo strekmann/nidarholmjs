@@ -10,6 +10,7 @@ cache:
 stages:
   - build_code
   - build_image
+  - deploy_image
 
 build_code:
   image: node:14-alpine
