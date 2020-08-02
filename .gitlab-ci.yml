@@ -31,13 +31,13 @@ build_code:
   interruptible: true
 
 build_image:
-  image: ubuntu:groovy
+  image: fedora
   stage: build_image
   needs:
     - job: build_code
       artifacts: true
   script:
-    - time apt install -y buildah podman moreutils
+    - time dnf install -y buildah podman moreutils
     - set -x
     - export STORAGE_DRIVER=vfs
     - img=$(buildah from node:14-alpine)
@@ -51,16 +51,16 @@ build_image:
     - buildah commit "$img" "nidarholm" | ts
     - buildah rm "$img"
     - podman push --creds $N_CREDS localhost/nidarholm docker://registry.gitlab.com/strekmann/nidarholmjs:latest | ts
-    - podman pod create --publish 3000:3000 --name nidarholm
-    - podman run --name nidarholm-mongo --pod nidarholm --rm --detach --volume /srv/nidarholm/mongo:/data/db mongo:4.2
-    - podman run --name nidarholm-web --pod nidarholm --rm --detach volume /srv/nidarholm/uploads:/home/node/dist/uploads localhost/nidarholm
-    - podman generate systemd --files --name nidarholm
+    #  - podman pod create --publish 3000:3000 --name nidarholm
+    #  - podman run --name nidarholm-mongo --rm --detach --volume /srv/nidarholm/mongo:/data/db mongo:4.2
+    - podman run --name nidarholm-web --rm --detach volume /srv/nidarholm/uploads:/home/node/dist/uploads --publish 3000:3000 localhost/nidarholm
+    - podman generate systemd --files --name nidarholm-web
   #  - podman save localhost/test -o nidarholm-$CI_COMMIT_SHORT_SHA.tar
   #  - gzip nidarholm-$CI_COMMIT_SHORT_SHA.tar
   artifacts:
     paths:
-      - nidarholm.service
-      - nidarholm-mongo.service
+      #  - nidarholm.service
+      #  - nidarholm-mongo.service
       - nidarholm-web.service
   only:
     - pushes
@@ -79,7 +79,7 @@ deploy_image:
     - chmod 700 ~/.ssh
     - echo "$SSH_KNOWN_HOSTS" >> ~/.ssh/known_hosts
     - chmod 644 ~/.ssh/known_hosts
-    - scp -P 2022 nidarholm.service nidarholm-mongo.service nidarholm-web.service leigh.strekmann.no:~
+    - scp -P 2022 nidarholm-web.service leigh.strekmann.no:~
     #  - scp -P 2022 nidarholm-$CI_COMMIT_SHORT_SHA.tar.gz leigh.strekmann.no:~
     #  - ssh -p 2022 leigh.strekmann.no gunzip nidarholm-$CI_COMMIT_SHORT_SHA.tar.gz
     #  - ssh -p 2022 leigh.strekmann.no podman load -i nidarholm-$CI_COMMIT_SHORT_SHA.tar nidarholm
