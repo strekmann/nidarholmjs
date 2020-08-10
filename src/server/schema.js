@@ -25,6 +25,7 @@ import moment from "moment";
 import uuid from "node-uuid";
 import mongoose from "mongoose";
 
+import sendReset from "./mutations/sendReset";
 import { connectionFromMongooseQuery, offsetToCursor } from "./connections";
 import Activity from "./models/Activity";
 import Event from "./models/Event";
@@ -40,7 +41,7 @@ import Role from "./models/Role";
 import User from "./models/User";
 import insertFile from "./lib/insertFile";
 import { buildPermissionObject } from "./lib/permissions";
-import { sendContactEmail, sendPasswordEmail } from "./emailTasks";
+import { sendContactEmail } from "./emailTasks";
 
 let userType;
 let groupType;
@@ -2942,18 +2943,7 @@ const mutationSendReset = mutationWithClientMutationId({
     },
   },
   mutateAndGetPayload: ({ email }, { organization }) => {
-    if (!email) {
-      return organization;
-    }
-    const pattern = new RegExp(email, "i");
-    return User.findOne({ email: { $regex: pattern } })
-      .exec()
-      .then((user) => {
-        if (user) {
-          sendPasswordEmail(organization, user);
-        }
-        return organization;
-      });
+    return sendReset(email, organization);
   },
 });
 

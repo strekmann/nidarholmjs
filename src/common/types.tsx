@@ -1,3 +1,5 @@
+export type Nullable<T> = T | null;
+
 export type Friend = {
   id: string;
   name?: string;
@@ -21,4 +23,12 @@ export type PermissionArray = Array<{
 
 export type Viewer = {
   groups?: Group[];
+};
+
+export type Organization = {
+  name?: string;
+};
+
+export type User = {
+  id?: string;
 };

@@ -5,12 +5,22 @@
     "plugin:prettier/recommended",
     "prettier",
     "plugin:jest/recommended",
-    "plugin:cypress/recommended"
+    "plugin:cypress/recommended",
   ],
   "plugins": ["import", "react", "jest", "cypress"],
   "rules": {
     "arrow-body-style": ["error", "always"],
     "function-paren-newline": [1, "consistent"],
+    "import/extensions": [
+      "error",
+      "ignorePackages",
+      {
+        "js": "never",
+        "jsx": "never",
+        "ts": "never",
+        "tsx": "never"
+      }
+    ],
     "import/no-extraneous-dependencies": [
       "error",
       { "devDependencies": ["**/*.test.js", "**/*.spec.js"] }
@@ -44,5 +54,17 @@
     "react/forbid-prop-types": 1,
     "react/require-default-props": 1,
     "react/jsx-indent": 0
+  },
+  "settings": {
+    "import/resolver": {
+      "node": {
+        "extensions": [
+          ".js",
+          ".jsx",
+          ".ts",
+          ".tsx"
+        ]
+      }
+    }
   }
 }
