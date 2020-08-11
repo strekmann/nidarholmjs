@@ -8,9 +8,8 @@ use std::str::FromStr;
 
 #[macro_use]
 extern crate bson;
-extern crate log;
 
-/** Member struct, containing address, delivery mode, display name, etfc */
+/** Member struct, containing address, delivery mode, display name, etc */
 #[derive(Clone, Debug, Deserialize)]
 struct Member {
   address: String,
@@ -40,10 +39,15 @@ struct MemberList {
 struct Subscription {
   list_id: String,
   subscriber: String,
-  role: Role,
+  role: String,
   pre_verified: bool,
   pre_confirmed: bool,
   pre_approved: bool,
+}
+
+#[derive(Clone, Debug, Serialize)]
+struct UpdateModeration {
+  moderation_action: String,
 }
 
 /** Keeps the necessary services and variables */
@@ -123,14 +127,16 @@ impl Api {
       str::replace(group_email, "@", "."),
       role.as_str(),
     );
+
     let mut response = self
       .client
       .get(url.as_str())
-      .basic_auth(self.user.to_owned(), self.password.to_owned())
+      .basic_auth(self.user.clone(), self.password.clone())
       .send()
-      .expect("Error when getting members")
+      .expect(&format!("Error when getting members for {} ({})", &group_email, &role.as_str()))
       .error_for_status()
-      .unwrap_or_else(|_| panic!("Error when getting members of {}", group_email));
+      .expect(&format!("Error when getting members of {}", group_email));
+
     let json: MemberList = response.json().unwrap_or_else(|err| {
       panic!(
         "{} did not get a valid json object {:#?}: {}",
@@ -139,6 +145,7 @@ impl Api {
         err
       )
     });
+
     let mut member_set: HashSet<String> = HashSet::new();
     for member in json.entries {
       match member.user {
@@ -153,24 +160,26 @@ impl Api {
     let subscription = Subscription {
       list_id: str::replace(group_email, "@", "."),
       subscriber: group_member.to_string(),
-      role,
+      role: role.as_str().to_string(),
       pre_verified: true,
       pre_confirmed: true,
       pre_approved: true,
     };
     info!("{} + {} as {}", group_email, group_member, role.as_str());
-    self
+    let response = self
       .client
       .post(format!("{}/members", self.base_url).as_str())
       .basic_auth(self.user.to_owned(), self.password.to_owned())
       .form(&subscription)
-      .send()
+      .send();
+
+    response
       .expect("Error in adding user")
       .error_for_status()
       .unwrap_or_else(|err| {
         panic!(
-          "Add did not work for {} to {}: {}",
-          subscription.subscriber, subscription.list_id, err
+          "Add did not work for {} to {}: {}, ({})",
+          subscription.subscriber, subscription.list_id, subscription.role.as_str(), err
         )
       });
   }
@@ -218,20 +227,24 @@ impl Api {
     let moderation_action = action
       .parse::<ModerationAction>()
       .expect("Unknown moderation action");
+    let update_moderation = UpdateModeration {
+        moderation_action: moderation_action.as_str().to_string(),
+    };
     self
       .client
       .patch(&patch_url)
       .basic_auth(self.user.to_owned(), self.password.to_owned())
-      .form(&moderation_action.as_str())
+      .form(&update_moderation)
       .send()
       .expect("Setting moderation action failed")
       .error_for_status()
       .unwrap_or_else(|_| {
         panic!(
-          "Patching moderation_action {:#?} did not work for {} in {}",
+          "Patching moderation_action {:#?} did not work for {} in {}, {}",
           moderation_action.as_str(),
           email,
-          group_email
+          group_email,
+          patch_url,
         )
       });
   }
@@ -399,7 +412,7 @@ fn main() {
     let role = role_map
       .get(role_id)
       .expect("Could not get role from role_map");
-    let role_email = role.get_str("email").expect("No email field in role");
+    let role_email = role.get_str("email").expect(&format!("No email field in role {}", role_id));
     if role_email == "" {
       continue;
     }
@@ -410,8 +423,7 @@ fn main() {
       let user = user_map
         .get(user_id)
         .unwrap_or_else(|| panic!("Could not get user from user map {}", user_id));
-      let user_email = user.get_str("email").expect("No email field in user");
-
+      let user_email = user.get_str("email").expect(&format!("No email for user {}", user_id));
       if role_email != "" && user_email != "" {
         emails.insert(user_email);
       }
