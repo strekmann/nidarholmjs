@@ -23,7 +23,6 @@ import Close from "@material-ui/icons/Close";
 import MoreVertIcon from "@material-ui/icons/MoreVert";
 import { DatePicker, MuiPickersUtilsProvider } from "@material-ui/pickers";
 import Link from "found/Link";
-import areIntlLocalesSupported from "intl-locales-supported";
 import moment from "moment";
 import React from "react";
 import { createFragmentContainer, graphql, RelayProp } from "react-relay";
@@ -47,11 +46,6 @@ export type UserOptionType = {
   id?: string;
   name: string;
 };
-
-let DateTimeFormat;
-if (areIntlLocalesSupported(["nb"])) {
-  ({ DateTimeFormat } = global.Intl);
-}
 
 type Props = {
   organization: Member_organization;
@@ -194,11 +188,11 @@ class Member extends React.Component<Props, State> {
   onChangeMembershipHistory = (event: React.ChangeEvent<HTMLInputElement>) => {
     this.setState({ membershipHistory: event.target.value });
   };
-  onChangeJoined = (event, joined) => {
-    this.setState({ joined });
+  onChangeJoined = (joined: moment.Moment | null) => {
+    this.setState({ joined: joined ? joined.startOf("date") : null });
   };
-  onChangeBorn = (event, born) => {
-    this.setState({ born });
+  onChangeBorn = (born: moment.Moment | null) => {
+    this.setState({ born: born ? born.startOf("date") : null });
   };
   onChangeInList = (event: React.ChangeEvent<HTMLInputElement>) => {
     this.setState({ inList: event.target.checked });
@@ -260,6 +254,7 @@ class Member extends React.Component<Props, State> {
   openEditMember = () => {
     this.setState({
       editMember: true,
+      menuIsOpen: null,
     });
   };
   addRole = (roleId: string) => {
@@ -373,12 +368,11 @@ class Member extends React.Component<Props, State> {
               <div>
                 <DatePicker
                   id="born"
-                  floatingLabelText="Fødselsdato"
+                  label="Fødselsdato"
                   onChange={this.onChangeBorn}
-                  value={this.state.born}
-                  mode="landscape"
-                  locale="nb"
-                  DateTimeFormat={DateTimeFormat}
+                  value={this.state.born || null}
+                  format="ll"
+                  autoOk
                 />
               </div>
               <div>
@@ -425,12 +419,10 @@ class Member extends React.Component<Props, State> {
                   <div>
                     <DatePicker
                       id="joined"
-                      floatingLabelText="Startet i korpset"
+                      label="Startet i korpset"
                       onChange={this.onChangeJoined}
-                      value={this.state.joined}
-                      mode="landscape"
-                      locale="nb"
-                      DateTimeFormat={DateTimeFormat}
+                      value={this.state.joined || null}
+                      format="ll"
                     />
                   </div>
                   <div>
@@ -589,7 +581,10 @@ class Member extends React.Component<Props, State> {
                 {isAdmin ? (
                   <MenuItem
                     onClick={() => {
-                      this.setState({ joinGroup: !this.state.joinGroup });
+                      this.setState({
+                        joinGroup: !this.state.joinGroup,
+                        menuIsOpen: null,
+                      });
                     }}
                   >
                     Legg til i gruppe
@@ -598,7 +593,10 @@ class Member extends React.Component<Props, State> {
                 {isAdmin ? (
                   <MenuItem
                     onClick={() => {
-                      this.setState({ addingRole: !this.state.addingRole });
+                      this.setState({
+                        addingRole: !this.state.addingRole,
+                        menuIsOpen: null,
+                      });
                     }}
                   >
                     Legg til verv/rolle
