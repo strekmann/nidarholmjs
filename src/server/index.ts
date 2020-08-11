@@ -411,7 +411,7 @@ app.post("/login/register", async (req, res, next) => {
   const email = req.body.email.trim();
   const name = req.body.name.trim();
   const { organization } = req;
-  const alreadyExistingUser = await sendPasswordToEmail(organization, email);
+  const alreadyExistingUser = await sendPasswordToEmail(email, organization);
   if (alreadyExistingUser) {
     return res.send("Vi fant e-postadressa di i systemet fra før. Du får snart en e-post med mulighet til å sette nytt passord.");
   }
