@@ -35,6 +35,7 @@ import Organization from "./models/Organization";
 import OrganizationEventPersonResponsibility from "./models/OrganizationEventPersonResponsibility";
 import OrganizationEventGroupResponsibility from "./models/OrganizationEventGroupResponsibility";
 import Page from "./models/Page";
+import PasswordCode from "./models/PasswordCode";
 import Piece from "./models/Piece";
 import Project from "./models/Project";
 import Role from "./models/Role";
@@ -322,6 +323,19 @@ userType = new GraphQLObjectType({
         type: new GraphQLList(groupType),
         resolve: (user) => {
           return Group.find({ "members.user": user._id }).exec();
+        },
+      },
+      passwordCode: {
+        type: GraphQLString,
+        args: {
+          code: { name: "code", type: GraphQLString },
+        },
+        resolve: (user, { code }, { viewer }) => {
+          return PasswordCode.findOne({ _id: code, user: viewer.id }).then(
+            (passwordCode) => {
+              return passwordCode.id;
+            },
+          );
         },
       },
     };
@@ -2896,7 +2910,7 @@ const mutationDeleteProject = mutationWithClientMutationId({
 const mutationSetPassword = mutationWithClientMutationId({
   name: "SetPassword",
   inputFields: {
-    oldPassword: { type: new GraphQLNonNull(GraphQLString) },
+    code: { type: new GraphQLNonNull(GraphQLString) },
     newPassword: { type: new GraphQLNonNull(GraphQLString) },
   },
   outputFields: {
@@ -2907,24 +2921,30 @@ const mutationSetPassword = mutationWithClientMutationId({
       },
     },
   },
-  mutateAndGetPayload: ({ oldPassword, newPassword }, { viewer }) => {
+  mutateAndGetPayload: ({ code, newPassword }, { viewer }) => {
     if (!viewer) {
       throw new Error("Nobody!");
     }
-    return User.findById(viewer.id)
-      .select("+algorithm +password +salt")
+    return PasswordCode.findById(code)
       .exec()
-      .then((user) => {
-        return user.authenticate(oldPassword).then((ok) => {
-          if (!ok) {
-            throw new Error("Galt gammelt passord");
-          }
-          const passwordHash = user.hashPassword(newPassword);
-          user.algorithm = passwordHash.algorithm;
-          user.salt = passwordHash.salt;
-          user.password = passwordHash.hashedPassword;
-          return user.save();
-        });
+      .then((passwordCode) => {
+        if (
+          !passwordCode ||
+          moment(passwordCode.created) < moment().subtract(1, "hours")
+        ) {
+          throw new Error("Invalid code");
+        }
+        return User.findById(passwordCode.user)
+          .select("+algorithm +password +salt")
+          .exec()
+          .then((user) => {
+            passwordCode.remove();
+            const passwordHash = user.hashPassword(newPassword);
+            user.algorithm = passwordHash.algorithm;
+            user.salt = passwordHash.salt;
+            user.password = passwordHash.hashedPassword;
+            return user.save();
+          });
       });
   },
 });

@@ -400,8 +400,7 @@ app.get("/login/reset/:code", (req, res, next) => {
             if (err) {
               throw err;
             }
-            // TODO: return res.redirect(`/user/${user.id}/reset`);
-            return res.redirect("/");
+            return res.redirect(`/users/${user.id}/reset/${req.params.code}`);
           });
         });
     });
@@ -413,7 +412,9 @@ app.post("/login/register", async (req, res, next) => {
   const { organization } = req;
   const alreadyExistingUser = await sendPasswordToEmail(email, organization);
   if (alreadyExistingUser) {
-    return res.send("Vi fant e-postadressa di i systemet fra før. Du får snart en e-post med mulighet til å sette nytt passord.");
+    return res.send(
+      "Vi fant e-postadressa di i systemet fra før. Du får snart en e-post med mulighet til å sette nytt passord.",
+    );
   }
   if (email && name && req.body.password) {
     const user = new User();
