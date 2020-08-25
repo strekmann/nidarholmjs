@@ -2,6 +2,25 @@ import mongoose from "mongoose";
 
 import schemaOptions from "./schemaOptions";
 
+export interface IGroup extends mongoose.Document {
+  _id: string;
+  name: string;
+  organization?: string;
+  members: [
+    {
+      user: string;
+      role?: {
+        title: string;
+        email?: string;
+      };
+      roles?: string[];
+    },
+  ];
+  group_email?: string;
+  group_leader_email?: string;
+  externally_hidden?: boolean;
+}
+
 const GroupSchema = new mongoose.Schema({
   _id: { type: String, required: true },
   name: { type: String, trim: true, required: true },
@@ -27,4 +46,4 @@ GroupSchema.set("toObject", schemaOptions);
 GroupSchema.virtual("_type").get(() => {
   return "Group";
 });
-export default mongoose.model("Group", GroupSchema);
+export default mongoose.model<IGroup>("Group", GroupSchema);

@@ -3,17 +3,29 @@
 import config from "config";
 import moment from "moment";
 import nodemailer from "nodemailer";
-
 import Event from "./models/Event";
-import OrganizationEventGroupResponsibility from "./models/OrganizationEventGroupResponsibility";
-import OrganizationEventPersonResponsibility from "./models/OrganizationEventPersonResponsibility";
 import Group from "./models/Group";
-import User from "./models/User";
+import { IOrganization } from "./models/Organization";
+import OrganizationEventGroupResponsibility from "./models/OrganizationEventGroupResponsibility";
+import OrganizationEventPersonResponsibility, {
+  IOrganizationEventPersonResponsibility,
+} from "./models/OrganizationEventPersonResponsibility";
 import PasswordCode from "./models/PasswordCode";
+import User, { IUser } from "./models/User";
 
-export function sendContactEmail({ name, email, text, organization }) {
-  if (config && config.auth && config.auth.smtp && config.auth.smtp.host) {
-    const transporter = nodemailer.createTransport(config.auth.smtp);
+export function sendContactEmail({
+  name,
+  email,
+  text,
+  organization,
+}: {
+  name: string;
+  email: string;
+  text: string;
+  organization: IOrganization;
+}) {
+  if (config.get("auth.smtp.host")) {
+    const transporter = nodemailer.createTransport(config.get("auth.smtp"));
     const data = {
       from: `${name} <${email}>`,
       to: organization.email,
@@ -40,15 +52,19 @@ export function sendContactEmail({ name, email, text, organization }) {
   }
 }
 
-export function sendPasswordEmail(organization, user) {
+export function sendPasswordEmail(organization: IOrganization, user: IUser) {
   const code = new PasswordCode();
   code.user = user._id;
   return code.save().then((newCode) => {
-    const message = `Hei ${user.name}\r\n\r\nDet kan se ut som du holder på å sette nytt passord. Hvis du ikke prøver på dette, ber vi deg se bort fra denne eposten. For å sette nytt passord, må du gå til lenka:\r\n${config.site.protocol}://${config.site.domain}/login/reset/${newCode._id}`;
-    if (config.auth && config.auth.smtp && config.auth.smtp.host) {
-      const transporter = nodemailer.createTransport(config.auth.smtp);
+    const message = `Hei ${
+      user.name
+    }\r\n\r\nDet kan se ut som du holder på å sette nytt passord. Hvis du ikke prøver på dette, ber vi deg se bort fra denne eposten. For å sette nytt passord, må du gå til lenka:\r\n${config.get(
+      "site.protocol",
+    )}://${config.get("site.domain")}/login/reset/${newCode._id}`;
+    if (config.get("auth.smtp.host")) {
+      const transporter = nodemailer.createTransport(config.get("auth.smtp"));
       const mailOptions = {
-        from: config.auth.smtp.noreplyAddress,
+        from: config.get("auth.smtp.noreplyAddress") as string,
         to: `${user.name} <${user.email}>`,
         subject: "Nytt passord",
         text: message,
@@ -74,7 +90,7 @@ export function sendReminderEmails() {
     responsibilities.forEach((responsibility) => {
       const eventMoment = moment()
         .add(responsibility.reminderDaysBefore, "days")
-        .hour(responsibility.reminderAtHour)
+        .hour(responsibility.reminderAtHour || 0)
         .startOf("hour");
       Event.find({
         "contributors.role": responsibility.id,
@@ -90,6 +106,9 @@ export function sendReminderEmails() {
                 return null;
               }
               return User.findOne({ _id: contributor.user }).then((user) => {
+                if (user == null || user.email == null) {
+                  return null;
+                }
                 const { name, email } = user;
                 return {
                   name,
@@ -101,19 +120,24 @@ export function sendReminderEmails() {
               return user;
             });
           Promise.all(users).then((resolvedUsers) => {
-            const recipients = resolvedUsers.map((user) => {
-              return {
-                name: user.name,
-                address: user.email,
-              };
-            });
-            if (
-              config &&
-              config.auth &&
-              config.auth.smtp &&
-              config.auth.smtp.host
-            ) {
-              const transporter = nodemailer.createTransport(config.auth.smtp);
+            const recipients = resolvedUsers
+              .filter((user) => {
+                return user != null;
+              })
+              .map((user) => {
+                const { name, email: address } = user as {
+                  name: string;
+                  email: string;
+                };
+                return {
+                  name,
+                  address,
+                };
+              });
+            if (config.get("auth.smtp.host")) {
+              const transporter = nodemailer.createTransport(
+                config.get("auth.smtp"),
+              );
               const data = {
                 from: `${senderName} <${senderEmail}>`,
                 to: recipients,
@@ -144,7 +168,7 @@ export function sendReminderEmails() {
     responsibilities.forEach((responsibility) => {
       const eventMoment = moment()
         .add(responsibility.reminderDaysBefore, "days")
-        .hour(responsibility.reminderAtHour)
+        .hour(responsibility.reminderAtHour || 0)
         .startOf("hour");
       Event.find({
         "contributorGroups.role": responsibility.id,
@@ -161,6 +185,9 @@ export function sendReminderEmails() {
               }
               return Group.findOne({ _id: contributorGroup.group }).then(
                 (group) => {
+                  if (group == null || group.group_email == null) {
+                    return null;
+                  }
                   return {
                     name: group.name,
                     email: group.group_email,
@@ -172,19 +199,24 @@ export function sendReminderEmails() {
               return group;
             });
           Promise.all(groups).then((resolvedGroups) => {
-            const recipients = resolvedGroups.map((group) => {
-              return {
-                name: group.name,
-                address: group.email,
-              };
-            });
-            if (
-              config &&
-              config.auth &&
-              config.auth.smtp &&
-              config.auth.smtp.host
-            ) {
-              const transporter = nodemailer.createTransport(config.auth.smtp);
+            const recipients = resolvedGroups
+              .filter((group) => {
+                return group != null;
+              })
+              .map((group) => {
+                const { name, email: address } = group as {
+                  name: string;
+                  email: string;
+                };
+                return {
+                  name,
+                  address,
+                };
+              });
+            if (config.get("auth.smtp.host")) {
+              const transporter = nodemailer.createTransport(
+                config.get("auth.smtp"),
+              );
               const data = {
                 from: `${senderName} <${senderEmail}>`,
                 to: recipients,

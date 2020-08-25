@@ -2,6 +2,37 @@ import mongoose from "mongoose";
 
 import schemaOptions from "./schemaOptions";
 
+export interface IEvent extends mongoose.Document {
+  _id: string;
+  title: string;
+  end: Date;
+  location: string;
+  permissions: {
+    groups: string[];
+    users: string[];
+    public: boolean;
+  };
+  tags: string[];
+  creator: string;
+  created: Date;
+  modified: Date;
+  music: unknown;
+  contributors: [
+    {
+      user: string;
+      role: string;
+    },
+  ];
+  contributorGroups: [
+    {
+      group: string;
+      role: string;
+    },
+  ];
+  mdtext: string;
+  highlighted?: boolean;
+}
+
 const EventSchema = new mongoose.Schema({
   title: { type: String, trim: true, required: true },
   start: { type: Date, required: true },
@@ -55,4 +86,4 @@ EventSchema.virtual("_type").get(() => {
 });
 EventSchema.set("toObject", schemaOptions);
 EventSchema.set("toJSON", schemaOptions);
-export default mongoose.model("Event", EventSchema);
+export default mongoose.model<IEvent>("Event", EventSchema);

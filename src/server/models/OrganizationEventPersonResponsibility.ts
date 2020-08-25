@@ -3,6 +3,17 @@ import uuid from "node-uuid";
 
 import schemaOptions from "./schemaOptions";
 
+export interface IOrganizationEventPersonResponsibility
+  extends mongoose.Document {
+  _id: string;
+  name: string;
+  last?: string;
+  reminderDaysBefore?: number;
+  reminderAtHour?: number;
+  reminderText: string;
+  organization: string;
+}
+
 const OrganizationEventPersonResponsibilitySchema = new mongoose.Schema({
   _id: {
     type: String,
@@ -22,7 +33,7 @@ OrganizationEventPersonResponsibilitySchema.set("toJSON", schemaOptions);
 OrganizationEventPersonResponsibilitySchema.virtual("_type").get(() => {
   return "OrganizationEventPersonResponsibility";
 });
-export default mongoose.model(
+export default mongoose.model<IOrganizationEventPersonResponsibility>(
   "OrganizationEventPersonResponsibility",
   OrganizationEventPersonResponsibilitySchema,
 );
