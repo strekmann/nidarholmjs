@@ -15,6 +15,7 @@ import axios from "axios";
 import React from "react";
 import Helmet from "react-helmet";
 import { createFragmentContainer, graphql, RelayProp } from "react-relay";
+
 import AddEventMutation from "../mutations/AddEvent";
 import AddPieceMutation from "../mutations/AddPiece";
 import AddProjectFileMutation from "../mutations/AddProjectFile";
@@ -24,6 +25,7 @@ import SaveProjectMutation from "../mutations/SaveProject";
 import DeleteProjectMutation from "../mutations/DeleteProject";
 import SetProjectPosterMutation from "../mutations/SetProjectPoster";
 import { flattenPermissions } from "../utils";
+
 import Daterange from "./Daterange";
 import EventForm from "./EventForm";
 import EventItem from "./EventItem";
@@ -70,6 +72,7 @@ export class Project extends React.Component<ProjectProps, State> {
   onMenuOpen = (event: React.MouseEvent<HTMLButtonElement>) => {
     this.setState({ menuIsOpen: event.currentTarget });
   };
+
   onMenuClose = () => {
     this.setState({ menuIsOpen: null });
   };
@@ -143,6 +146,7 @@ export class Project extends React.Component<ProjectProps, State> {
   openAddEvent = () => {
     this.setState({ addEvent: true, menuIsOpen: null });
   };
+
   closeAddEvent = () => {
     this.setState({ addEvent: false });
   };
@@ -158,6 +162,7 @@ export class Project extends React.Component<ProjectProps, State> {
   openAddFile = () => {
     this.setState({ addFile: true, menuIsOpen: null });
   };
+
   closeAddFile = () => {
     this.setState({ addFile: false });
   };
@@ -169,7 +174,7 @@ export class Project extends React.Component<ProjectProps, State> {
     AddPieceMutation.commit(
       relay.environment,
       {
-        pieceId: pieceId,
+        pieceId,
         projectId: project.id,
       },
       undefined,
@@ -222,7 +227,7 @@ export class Project extends React.Component<ProjectProps, State> {
     const { project } = organization;
     const { id } = project;
     DeleteProjectMutation.commit(relay.environment, { id }, () => {
-      this.props.router.push({ pathname: `/projects` });
+      this.props.router.push({ pathname: "/projects" });
     });
   };
 
@@ -259,9 +264,9 @@ export class Project extends React.Component<ProjectProps, State> {
     return (
       <Paper className="row project">
         <Helmet
-          title={project.title}
+          title={project.title || ""}
           meta={[
-            { property: "og:title", content: project.title },
+            { property: "og:title", content: project.title || "" },
             { property: "og:description", content: project.publicMdtext },
             {
               property: "og:image",
