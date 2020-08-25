@@ -9,6 +9,7 @@ const mongoOptions = {
 if (process.env.NODE_ENV === "test") {
   mongoose.connect("mongodb://localhost/test", mongoOptions);
 } else {
-  const mongoUrl: string = process.env.MONGO_URL || "localhost";
+  const mongoUrl: string =
+    process.env.MONGO_URL || "mongodb://localhost/nidarholm-dev";
   mongoose.connect(mongoUrl, mongoOptions);
 }
