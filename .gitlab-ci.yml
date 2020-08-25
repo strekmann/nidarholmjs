@@ -3,10 +3,6 @@ cache:
     - node_modules/
     - .yarn
 
-#default:
-#  before_script:
-#    - apt install build-essential
-
 stages:
   - build_code
   - build_image
@@ -16,12 +12,12 @@ build_code:
   image: node:14-alpine
   stage: build_code
   script:
-    - time apk add --no-cache make g++ gcc python moreutils
-    - yarn install --frozen-lockfile --production | ts
-    - cp -r node_modules node_modules_production | ts
-    - yarn install --frozen-lockfilea | ts
-    - yarn build-project | ts
-    - mv node_modules_production dist/node_modules | ts
+    - time apk add --no-cache make g++ gcc python
+    - yarn install --frozen-lockfile --production
+    - cp -r node_modules node_modules_production
+    - yarn install --frozen-lockfilea
+    - yarn build-project
+    - mv node_modules_production dist/node_modules
   artifacts:
     name: "$CI_COMMIT_REF_SLUG"
     paths:
@@ -37,29 +33,21 @@ build_image:
     - job: build_code
       artifacts: true
   script:
-    - time dnf install -y buildah podman moreutils
+    - time dnf install -y buildah podman
     - set -x
     - export STORAGE_DRIVER=vfs
     - img=$(buildah from node:14-alpine)
     - buildah config --port 3000 "$img"
     - buildah config --user node "$img"
-    - buildah config --workingdir /home/node "$img" | ts
-    - buildah copy --chown=node:node "$img" ./dist dist | ts
-    # - buildah copy --chown=node:node "$img" $CONFIG dist/config | ts
+    - buildah config --workingdir /home/node "$img"
+    - buildah copy --chown=node:node "$img" ./dist dist
+    - buildah copy --chown=node:node "$img" ./config dist/config
+    - buildah copy --chown=node:node "$img" $N_PRODUCTION_CONFIG_JS dist/config/production.js
     - buildah config --workingdir /home/node/dist "$img"
     - buildah config --entrypoint '["node", "server/index.js"]' "$img"
-    - buildah commit "$img" "nidarholm" | ts
+    - buildah commit "$img" "nidarholm"
     - buildah rm "$img"
-    - podman push --creds $N_WRITE_REGISTRY localhost/nidarholm docker://registry.gitlab.com/strekmann/nidarholmjs:latest | ts
-  #  - podman pod create --publish 3000:3000 --name nidarholm
-  #  - podman run --name nidarholm-mongo --pod nidarholm --rm --detach --volume /srv/nidarholm/mongo:/data/db mongo:4.2
-  #  - podman run --name nidarholm-web --pod nidarholm --rm --detach --volume /srv/nidarholm/uploads:/home/node/dist/uploads localhost/nidarholm
-  #  - podman generate systemd --files --name nidarholm
-  #artifacts:
-  #  paths:
-  #    - nidarholm.service
-  #    - nidarholm-mongo.service
-  #    - nidarholm-web.service
+    - podman push --creds $N_WRITE_REGISTRY localhost/nidarholm docker://registry.gitlab.com/strekmann/nidarholmjs:latest
   only:
     - pushes
 
@@ -68,7 +56,6 @@ deploy_image:
   stage: deploy_image
   needs:
     - job: build_image
-      # artifacts: true
   script:
     - "which ssh-agent || ( apt-get update -y && apt-get install openssh-client -y )"
     - eval $(ssh-agent -s)
@@ -77,10 +64,6 @@ deploy_image:
     - chmod 700 ~/.ssh
     - echo "$SSH_KNOWN_HOSTS" >> ~/.ssh/known_hosts
     - chmod 644 ~/.ssh/known_hosts
-    # - scp -P 2022 nidarholm.service nidarholm-mongo.service nidarholm-web.service leigh.strekmann.no:~
-    #  - scp -P 2022 nidarholm-$CI_COMMIT_SHORT_SHA.tar.gz leigh.strekmann.no:~
-    #  - ssh -p 2022 leigh.strekmann.no gunzip nidarholm-$CI_COMMIT_SHORT_SHA.tar.gz
-    #  - ssh -p 2022 leigh.strekmann.no podman load -i nidarholm-$CI_COMMIT_SHORT_SHA.tar nidarholm
     - ssh -p 2022 leigh.strekmann.no podman pull --creds $N_READ_REGISTRY docker://registry.gitlab.com/strekmann/nidarholmjs:latest
     - ssh -p 2022 leigh.strekmann.no systemctl restart nidarholm-web.service
   only:

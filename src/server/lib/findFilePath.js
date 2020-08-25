@@ -3,7 +3,7 @@ import path from "path";
 import config from "config";
 
 export default function findPath(configName) {
-  let configRoot = "files";
+  let configRoot = process.env.FILE_PATH || "files";
   if (config.paths && config.paths.files) {
     configRoot = config.paths.files;
   }

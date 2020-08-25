@@ -1,18 +1,16 @@
-const project_name = "nidarholm";
-
 const serializers = {
-  req: (req) => ({
-    method: req.method,
-    url: req.url,
-  }),
-  res: (res) => ({
-    statusCode: res.statusCode,
-  }),
+  req: (req) => {
+    return {
+      method: req.method,
+      url: req.url,
+    };
+  },
+  res: (res) => {
+    return {
+      statusCode: res.statusCode,
+    };
+  },
 };
-
-const mongodb_connection_string = process.env.MONGODB_CONNECTION
-  ? process.env.MONGODB_CONNECTION
-  : "mongodb://localhost/nidarholm-dev";
 
 module.exports = {
   auth: {
@@ -74,10 +72,6 @@ module.exports = {
   },
   html: {
     style: true,
-  },
-  mongodb: {
-    servers: [mongodb_connection_string],
-    replset: null,
   },
   news_tag: "nyheter",
   organization: "nidarholm",
