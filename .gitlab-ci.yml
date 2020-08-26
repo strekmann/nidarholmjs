@@ -12,10 +12,10 @@ build_code:
   image: node:14-alpine
   stage: build_code
   script:
-    - time apk add --no-cache make g++ gcc python
+    - time apk add --no-cache make g++ gcc python imagemagick
     - yarn install --frozen-lockfile --production
     - cp -r node_modules node_modules_production
-    - yarn install --frozen-lockfilea
+    - yarn install --frozen-lockfile
     - yarn build-project
     - mv node_modules_production dist/node_modules
   artifacts:
