@@ -41,7 +41,7 @@ export interface IUser extends mongoose.Document {
   no_email: boolean;
   hashPassword: (
     password: string,
-  ) => { hashedPassword: string, algorithm: string, salt: string };
+  ) => { hashedPassword: string; algorithm: string; salt: string };
 }
 
 const UserSchema = new mongoose.Schema({
@@ -114,7 +114,9 @@ const UserSchema = new mongoose.Schema({
   },
 });
 
-UserSchema.methods.authenticate = function authenticateUser(candidatePassword) {
+UserSchema.methods.authenticate = function authenticateUser(
+  candidatePassword: string,
+) {
   const user = this;
   return new Promise((resolve) => {
     if (!user.password) {
@@ -131,7 +133,9 @@ UserSchema.methods.authenticate = function authenticateUser(candidatePassword) {
   });
 };
 
-UserSchema.methods.hashPassword = function hashPassword(candidatePassword) {
+UserSchema.methods.hashPassword = function hashPassword(
+  candidatePassword: string,
+) {
   const algorithm = "sha256";
   const salt = crypto.randomBytes(128).toString("base64");
   const hashedPassword = crypto.createHash(algorithm);
@@ -149,4 +153,4 @@ UserSchema.set("toObject", schemaOptions);
 UserSchema.virtual("_type").get(() => {
   return "User";
 });
-export default mongoose.model < IUser > ("User", UserSchema);
+export default mongoose.model<IUser>("User", UserSchema);

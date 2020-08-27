@@ -1,4 +1,3 @@
-import config from "config";
 import mongoose from "mongoose";
 
 const mongoOptions = {
@@ -10,6 +9,7 @@ const mongoOptions = {
 if (process.env.NODE_ENV === "test") {
   mongoose.connect("mongodb://localhost/test", mongoOptions);
 } else {
-  const servers: string[] = config.get("mongodb.servers") || ["localhost"];
-  mongoose.connect(servers.join(","), mongoOptions);
+  const mongoUrl: string =
+    process.env.MONGO_URL || "mongodb://localhost/nidarholm-dev";
+  mongoose.connect(mongoUrl, mongoOptions);
 }

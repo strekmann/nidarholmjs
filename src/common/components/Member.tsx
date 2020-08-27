@@ -566,11 +566,6 @@ class Member extends React.Component<Props, State> {
               >
                 <MenuItem onClick={this.openEditMember}>Rediger</MenuItem>
                 {this.props.viewer.id === user.id ? (
-                  <MenuItem component={Link} to={`/users/${user.id}/reset`}>
-                    Bytt passord
-                  </MenuItem>
-                ) : null}
-                {this.props.viewer.id === user.id ? (
                   <MenuItem href="/login/facebook">
                     Logg på med Facebook
                   </MenuItem>

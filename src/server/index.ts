@@ -39,6 +39,7 @@ import {
   routeConfig,
 } from "../router";
 
+import sendPasswordToEmail from "./database/sendPasswordToEmail";
 import renderPage from "./renderPage";
 import passport from "./lib/passport";
 import { icalEvents } from "./icalRoutes";
@@ -399,16 +400,22 @@ app.get("/login/reset/:code", (req, res, next) => {
             if (err) {
               throw err;
             }
-            // TODO: return res.redirect(`/user/${user.id}/reset`);
-            return res.redirect("/");
+            return res.redirect(`/users/${user.id}/reset/${req.params.code}`);
           });
         });
     });
 });
 
-app.post("/login/register", (req, res, next) => {
+app.post("/login/register", async (req, res, next) => {
   const email = req.body.email.trim();
   const name = req.body.name.trim();
+  const { organization } = req;
+  const alreadyExistingUser = await sendPasswordToEmail(email, organization);
+  if (alreadyExistingUser) {
+    return res.send(
+      "Vi fant e-postadressa di i systemet fra før. Du får snart en e-post med mulighet til å sette nytt passord.",
+    );
+  }
   if (email && name && req.body.password) {
     const user = new User();
     user.email = email;

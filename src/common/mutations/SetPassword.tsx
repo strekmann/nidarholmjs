@@ -4,7 +4,7 @@ const mutation = graphql`
   mutation SetPasswordMutation($input: SetPasswordInput!) {
     setPassword(input: $input) {
       viewer {
-        ...MemberReset_viewer
+        id
       }
     }
   }

@@ -136,10 +136,10 @@ const routes = (
         `}
       />
       <Route
-        path="reset"
+        path="reset/:code"
         Component={MemberReset}
         query={graphql`
-          query router_MemberReset_Query {
+          query router_MemberReset_Query($code: String) {
             organization {
               ...MemberReset_organization
             }

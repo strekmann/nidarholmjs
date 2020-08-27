@@ -53,7 +53,7 @@ module.exports = {
     }),
     new webpack.ContextReplacementPlugin(
       /moment[\\\/]locale$/,
-      /^\.\/(en|nb|nn|zh-cn)$/,
+      /^\.\/(en|nb|nn)$/,
     ),
     new MiniCssExtractPlugin({
       // Options similar to the same options in webpackOptions.output
