@@ -4,6 +4,7 @@ const mongoOptions = {
   useNewUrlParser: true,
   useUnifiedTopology: true,
   useCreateIndex: true,
+  useFindAndModify: true,
 };
 
 if (process.env.NODE_ENV === "test") {
