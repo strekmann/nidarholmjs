@@ -1,10 +1,12 @@
-use log::{debug, info, warn};
+use bson::ordered::OrderedDocument;
+use log::{debug, info};
 use mongodb::db::ThreadedDatabase;
 use mongodb::{doc, Client, ThreadedClient};
 use serde::{Deserialize, Serialize};
 use std::collections::{HashMap, HashSet};
 use std::env;
 use std::str::FromStr;
+use std::sync::Arc;
 
 #[macro_use]
 extern crate bson;
@@ -48,6 +50,56 @@ struct Subscription {
 #[derive(Clone, Debug, Serialize)]
 struct UpdateModeration {
     moderation_action: String,
+}
+
+struct Database {
+    database: Arc<mongodb::db::DatabaseInner>,
+}
+
+impl Database {
+    pub fn new(host: &str, port: u16, database: &str) -> Database {
+        Database {
+            database: Client::connect(host, port)
+                .expect("Failed to connect to mongodb")
+                .db(&database),
+        }
+    }
+
+    pub fn get_document_by_key(
+        &self,
+        collection: &str,
+        key: &str,
+        value: &str,
+    ) -> bson::ordered::OrderedDocument {
+        let query = doc! {key => value};
+        self.database
+            .collection(collection)
+            .find_one(Some(query), None)
+            .unwrap_or_else(|_| panic!("Could not find {}={} in {}", key, value, collection))
+            .unwrap_or_else(|| panic!("Could not get {}={} in {}", key, value, collection))
+    }
+    pub fn get_organization(&self, name: &str) -> bson::ordered::OrderedDocument {
+        self.get_document_by_key("organizations", "_id", name)
+    }
+
+    pub fn get_group_by_id(&self, id: &str) -> OrderedDocument {
+        self.get_document_by_key("groups", "_id", id)
+    }
+
+    pub fn get_group_by_name(&self, name: &str) -> OrderedDocument {
+        self.get_document_by_key("groups", "name", name)
+    }
+
+    pub fn get_group_cursor(&self) -> mongodb::cursor::Cursor {
+        self.database
+            .collection("groups")
+            .find(None, None)
+            .expect("Could not find all groups")
+    }
+
+    pub fn get_user_by_id(&self, id: &str) -> OrderedDocument {
+        self.get_document_by_key("users", "_id", id)
+    }
 }
 
 /** Keeps the necessary services and variables */
@@ -120,6 +172,15 @@ impl FromStr for Role {
 }
 
 impl Api {
+    pub fn new(url: &str, user: &str, password: &str) -> Api {
+        Api {
+            client: reqwest::Client::new(),
+            base_url: url.to_owned(),
+            user: user.to_owned(),
+            password: Some(password.to_owned()),
+        }
+    }
+
     fn get_members(&self, group_email: &str, role: Role) -> HashSet<String> {
         let url = format!(
             "{}/lists/{}/roster/{}",
@@ -286,67 +347,48 @@ fn main() {
     env_logger::init();
     let database = env::var("DATABASE").expect("Database env var not present");
 
-    let api = Api {
-        client: reqwest::Client::new(),
-        base_url: "http://10.135.57.30:8001/3.0".to_owned(),
-        user: "restadmin".to_owned(),
-        password: Some("CKtB8n86O4SocRv2T23r0IL5oxndClOzcDGZovDx5sP3rJUC".to_owned()),
-    };
+    let client = Client::connect("localhost", 27017).expect("Failed to connect to mongodb");
+
+    let db = Database::new("localhost", 27017, &database);
+
+    let api = Api::new(
+        "http://10.135.57.30:8001/3.0",
+        "restadmin",
+        "CKtB8n86O4SocRv2T23r0IL5oxndClOzcDGZovDx5sP3rJUC",
+    );
 
     let mut user_map = HashMap::new();
     let mut role_map = HashMap::new();
     let mut role_users_map = HashMap::new();
 
-    let client = Client::connect("localhost", 27017).expect("Failed to connect to mongodb");
+    let organization = db.get_organization("nidarholm");
 
-    let organizations = client.db(&database).collection("organizations");
-
-    let organization_query = doc! {"_id" => "nidarholm"};
-    let organization = organizations
-        .find_one(Some(organization_query), None)
-        .expect("Did not find organization");
-
-    let groups = client.db(&database).collection("groups");
-    let org = organization.unwrap();
     let member_group_string = String::from("member_group");
-    let member_group_id = org
+    let member_group_id = organization
         .get_str(member_group_string.as_str())
         .expect("No member_group field");
-    let member_group_query = doc! {"_id" => member_group_id};
-    let group = groups
-        .find_one(Some(member_group_query), None)
-        .expect("Could not find member group");
 
-    let g = group.unwrap();
-    let members = g
+    let group = db.get_group_by_id(member_group_id);
+    let members = group
         .get_array(String::from("members").as_str())
         .expect("Could not get members");
 
     for m in members {
         let mm = m.as_document().expect("Could not get document from member");
         let user_id = mm.get_str("user").expect("Could not get user id");
-        let users = client.db(&database).collection("users");
-        let user_query = doc! {"_id" => user_id};
-        let user = users
-            .find_one(Some(user_query.clone()), None)
-            .expect("Could not find user");
-        match user {
-            Some(u) => {
-                let in_list = u.get_bool("in_list").unwrap_or(false);
-                let no_email = u.get_bool("no_email").unwrap_or(false);
-                let email = u.get_str("email").unwrap_or("Could not get email");
-                let user_groups = u.get_array("groups").expect("Could not get user_groups");
-                let is_member = user_groups.iter().fold(false, |value, group_bson| {
-                    let group_id = group_bson.as_str().expect("No group id"); //.get_str("_id").expect("No _id field in group");
-                    value || member_group_id == group_id
-                });
-                if in_list && !no_email && !email.is_empty() && is_member {
-                    user_map.insert(user_id, u);
-                }
-            }
-            None => {
-                warn!("User id not found {}: {}", user_id, mm);
-            }
+        let user = db.get_user_by_id(user_id);
+        let in_list = user.get_bool("in_list").unwrap_or(false);
+        let no_email = user.get_bool("no_email").unwrap_or(false);
+        let email = user.get_str("email").unwrap_or("Could not get email");
+        let user_groups = user.get_array("groups").expect("Could not get user_groups");
+        let is_member = user_groups.iter().fold(false, |value, group_bson| {
+            let group_id = group_bson.as_str().expect("No group id"); //.get_str("_id").expect("No _id field in group");
+            value || member_group_id == group_id
+        });
+        // TODO: Remove hardcoding here as well - needed as I'm on leave:write!
+        if email == "sigurdga@sigurdga.no" || in_list && !no_email && !email.is_empty() && is_member
+        {
+            user_map.insert(user_id, user);
         }
 
         let roles = client.db(&database).collection("roles");
@@ -382,11 +424,7 @@ fn main() {
         .collect();
 
     // Find moderators to use for all lists
-    let moderator_group_query = doc!("name" => "Listemoderatorer");
-    let moderator_group_bson = groups
-        .find_one(Some(moderator_group_query), None)
-        .expect("Could not query list moderator group");
-    let moderator_group = moderator_group_bson.unwrap();
+    let moderator_group = db.get_group_by_name("Listemoderatorer");
     let members_bson = moderator_group
         .get_array("members")
         .expect("Could not get members of moderator group");
@@ -446,8 +484,7 @@ fn main() {
     // Used for special group "gruppeledere"
     let mut all_group_leaders: HashSet<&str> = HashSet::new();
 
-    let all_groups = groups.find(None, None).expect("All groups query failed");
-    for group_bson in all_groups {
+    for group_bson in db.get_group_cursor() {
         let group = group_bson.unwrap();
         let group_email = group.get_str("group_email").unwrap_or("");
 
