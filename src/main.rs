@@ -133,13 +133,15 @@ impl Api {
             .get(url.as_str())
             .basic_auth(self.user.clone(), self.password.clone())
             .send()
-            .expect(&format!(
-                "Error when getting members for {} ({})",
-                &group_email,
-                &role.as_str()
-            ))
+            .unwrap_or_else(|_| {
+                panic!(
+                    "Error when getting members for {} ({})",
+                    &group_email,
+                    &role.as_str()
+                )
+            })
             .error_for_status()
-            .expect(&format!("Error when getting members of {}", group_email));
+            .unwrap_or_else(|_| panic!("Error when getting members of {}", group_email));
 
         let json: MemberList = response.json().unwrap_or_else(|err| {
             panic!(
@@ -419,7 +421,7 @@ fn main() {
             .expect("Could not get role from role_map");
         let role_email = role
             .get_str("email")
-            .expect(&format!("No email field in role {}", role_id));
+            .unwrap_or_else(|_| panic!("No email field in role {}", role_id));
         if role_email == "" {
             continue;
         }
@@ -432,7 +434,7 @@ fn main() {
                 .unwrap_or_else(|| panic!("Could not get user from user map {}", user_id));
             let user_email = user
                 .get_str("email")
-                .expect(&format!("No email for user {}", user_id));
+                .unwrap_or_else(|_| panic!("No email for user {}", user_id));
             if role_email != "" && user_email != "" {
                 emails.insert(user_email);
             }
