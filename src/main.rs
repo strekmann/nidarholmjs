@@ -291,6 +291,14 @@ fn main() {
         password: Some("CKtB8n86O4SocRv2T23r0IL5oxndClOzcDGZovDx5sP3rJUC".to_owned()),
     };
 
+    let additional_accepted_non_members: HashSet<&str> = vec![
+        "besetning@nidarholm.no",
+        "okonomi@nidarholm.no",
+        "info@nidarholm.no",
+        "leder@nidarholm.no",
+        "leder.turogfest@nidarholm.no",
+    ].into_iter().collect();
+
     let mut user_map = HashMap::new();
     let mut role_map = HashMap::new();
     let mut role_users_map = HashMap::new();
@@ -439,6 +447,7 @@ fn main() {
         }
         api.update_members(role_email, emails, Role::Member);
         api.update_members(role_email, moderator_emails.to_owned(), Role::Moderator);
+        api.update_members(role_email, additional_accepted_non_members.to_owned(), Role::NonMember);
     }
 
     // Used for special group "gruppeledere"
@@ -481,7 +490,20 @@ fn main() {
 
         if !group_email.is_empty() {
             let group_leader_email = group.get_str("group_leader_email").unwrap_or_else(|_| "");
-            if !group_leader_email.is_empty() {
+            if group_leader_email.is_empty() {
+                // Gruppe uten gruppeledere
+                api.update_members(group_email, group_members.to_owned(), Role::Member);
+                api.update_members(group_email, moderator_emails.to_owned(), Role::Moderator);
+                api.update_members(
+                    group_email,
+                    all_members
+                        .difference(&group_members)
+                        .map(|s| &**s)
+                        .collect(),
+                    Role::NonMember,
+                );
+                api.update_members(group_email, additional_accepted_non_members.to_owned(), Role::NonMember);
+            } else {
                 // Gruppe med gruppeledere
                 api.update_members(group_leader_email, group_leaders.to_owned(), Role::Member);
                 api.update_members(group_email, group_members.to_owned(), Role::Member);
@@ -507,38 +529,30 @@ fn main() {
                         .collect(),
                     Role::NonMember,
                 );
-            } else {
-                // Gruppe uten gruppeledere
-                api.update_members(group_email, group_members.to_owned(), Role::Member);
-                api.update_members(group_email, moderator_emails.to_owned(), Role::Moderator);
-                api.update_members(
-                    group_email,
-                    all_members
-                        .difference(&group_members)
-                        .map(|s| &**s)
-                        .collect(),
-                    Role::NonMember,
-                );
+                api.update_members(group_email, additional_accepted_non_members.to_owned(), Role::NonMember);
             }
         }
     }
 
+    let all_group_leaders_email = "gruppeledere@nidarholm.no";
+
     api.update_members(
-        "gruppeledere@nidarholm.no",
+        all_group_leaders_email,
         all_group_leaders.to_owned(),
         Role::Member,
     );
     api.update_members(
-        "gruppeledere@nidarholm.no",
+        all_group_leaders_email,
         moderator_emails,
         Role::Moderator,
     );
     api.update_members(
-        "gruppeledere@nidarholm.no",
+        all_group_leaders_email,
         all_members
             .difference(&all_group_leaders)
             .map(|s| &**s)
             .collect(),
         Role::NonMember,
     );
+    api.update_members(all_group_leaders_email, additional_accepted_non_members.to_owned(), Role::NonMember);
 }
