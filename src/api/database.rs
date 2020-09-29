@@ -55,4 +55,8 @@ impl Database {
     pub fn get_role_by_id(&self, id: &str) -> OrderedDocument {
         self.get_document_by_key("roles", "_id", id)
     }
+
+    pub fn get_role_by_name(&self, name: &str) -> OrderedDocument {
+        self.get_document_by_key("roles", "name", name)
+    }
 }

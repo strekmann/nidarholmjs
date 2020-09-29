@@ -28,7 +28,9 @@ fn main() {
         "info@nidarholm.no",
         "leder@nidarholm.no",
         "leder.turogfest@nidarholm.no",
-    ].into_iter().collect();
+    ]
+    .into_iter()
+    .collect();
 
     let mut user_map = HashMap::new();
     let mut role_map = HashMap::new();
@@ -148,11 +150,32 @@ fn main() {
         }
         api.update_members(role_email, emails, Role::Member);
         api.update_members(role_email, moderator_emails.to_owned(), Role::Moderator);
-        api.update_members(role_email, additional_accepted_non_members.to_owned(), Role::NonMember);
+        api.update_members(
+            role_email,
+            additional_accepted_non_members.to_owned(),
+            Role::NonMember,
+        );
     }
 
     // Used for special group "gruppeledere"
     let mut all_group_leaders: HashSet<&str> = HashSet::new();
+
+    let concert_master_role = db.get_role_by_name("Konsertmester");
+    let concert_masters = role_users_map
+        .get(
+            concert_master_role
+                .get_str("_id")
+                .expect("Unwrapping role user"),
+        )
+        .expect("Does not have any concert masters");
+    for user_id in concert_masters {
+        if let Some(u) = user_map.get(user_id) {
+            let user_email = u.get_str("email").unwrap_or("");
+            if !user_email.is_empty() {
+                all_group_leaders.insert(user_email);
+            }
+        }
+    }
 
     for group_bson in db.get_group_cursor() {
         let group = group_bson.unwrap();
@@ -202,7 +225,11 @@ fn main() {
                         .collect(),
                     Role::NonMember,
                 );
-                api.update_members(group_email, additional_accepted_non_members.to_owned(), Role::NonMember);
+                api.update_members(
+                    group_email,
+                    additional_accepted_non_members.to_owned(),
+                    Role::NonMember,
+                );
             } else {
                 // Gruppe med gruppeledere
                 api.update_members(group_leader_email, group_leaders.to_owned(), Role::Member);
@@ -229,7 +256,11 @@ fn main() {
                         .collect(),
                     Role::NonMember,
                 );
-                api.update_members(group_email, additional_accepted_non_members.to_owned(), Role::NonMember);
+                api.update_members(
+                    group_email,
+                    additional_accepted_non_members.to_owned(),
+                    Role::NonMember,
+                );
             }
         }
     }
@@ -241,11 +272,7 @@ fn main() {
         all_group_leaders.to_owned(),
         Role::Member,
     );
-    api.update_members(
-        all_group_leaders_email,
-        moderator_emails,
-        Role::Moderator,
-    );
+    api.update_members(all_group_leaders_email, moderator_emails, Role::Moderator);
     api.update_members(
         all_group_leaders_email,
         all_members
@@ -254,5 +281,9 @@ fn main() {
             .collect(),
         Role::NonMember,
     );
-    api.update_members(all_group_leaders_email, additional_accepted_non_members.to_owned(), Role::NonMember);
+    api.update_members(
+        all_group_leaders_email,
+        additional_accepted_non_members.to_owned(),
+        Role::NonMember,
+    );
 }
