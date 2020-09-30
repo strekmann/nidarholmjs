@@ -136,9 +136,9 @@ class Members extends React.Component<Props, State> {
   render() {
     const { organization } = this.props;
     const { instrumentGroups, isAdmin, isMember, users } = organization;
-    const userOptions: UserOptionType[] = users.map((user) => {
-        return { name: user.name, id: user.id };
-    });
+    const userOptions: UserOptionType[] = users?.map((user) => {
+        return { name: user?.name ?? "", id: user?.id ?? "" };
+    }) ?? [];
     return (
       <Paper className="row">
         <div style={{ display: "flex", justifyContent: "space-between" }}>

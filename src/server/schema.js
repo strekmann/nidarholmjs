@@ -1259,15 +1259,15 @@ organizationType = new GraphQLObjectType({
       },
     },
     users: {
-      type: new GraphQLList(userType),
+      type: new GraphQLNonNull(new GraphQLList(userType)),
       resolve: (_, args, { organization, viewer }) => {
-        let query;
-        if (member(organization, viewer)) {
-          query = User.find().select("name username");
+        if (isMember(organization, viewer)) {
+          console.log("ismember")
+          const query = User.find().select("name username");
+          return query.sort("-created").exec();
         } else {
-          query = User.find({ _id: { $exists: false } });
+          return [];
         }
-        return query.sort("-created").exec();
       },
     },
     project: {
