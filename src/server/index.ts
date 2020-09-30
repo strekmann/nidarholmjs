@@ -122,6 +122,12 @@ app.use(expressBunyan.errorLogger(bunyan_opts));
 
 app.use(passport.initialize());
 app.use(passport.session());
+
+app.use((req, res, next) => {
+  res.locals.user = req.user;
+  next();
+});
+
 const auth: any = config.get("auth");
 if (auth.remember_me) {
   app.use(passport.authenticate("remember-me"));
@@ -130,7 +136,7 @@ if (auth.jwt) {
   // Alternative authentication through authenticate bearer header and jwt.
   // Still allows anonymous requests, it just does not set req.user.
   app.use((req, res, next) => {
-    if (req.user) {
+    if (res.locals.user) {
       return next();
     }
     const token = ExtractJwt.fromAuthHeaderAsBearerToken()(req);
@@ -155,7 +161,7 @@ if (auth.jwt) {
           if (err) {
             log.error(err);
           } else if (user) {
-            req.user = user;
+            res.locals.user = user;
           }
           return next();
         });
@@ -174,7 +180,7 @@ app.use((req, res, next) => {
       .exec()
       .then((user) => {
         if (user) {
-          req.user = user;
+          res.locals.user = user;
         }
         next();
       });
@@ -186,7 +192,7 @@ app.use((req, res, next) => {
       .exec()
       .then((user: IUser | null) => {
         if (user) {
-          req.user = user;
+          res.locals.user = user;
           console.warn(`Running as ${user.name}`);
         }
         next();
@@ -198,7 +204,7 @@ app.use((req, res, next) => {
 
 // Fetch active organization from hostname, config override
 // or pick the default.
-app.use((req: any, res, next) => {
+app.use((req, res, next) => {
   let organizationId = req.hostname;
   if (config.has("override.site")) {
     organizationId = config.get("override.site");
@@ -215,18 +221,18 @@ app.use((req: any, res, next) => {
       if (err) {
         return next(err);
       }
-      req.organization = organization?.toObject();
-      if (req.user) {
-        req.user.isMember = req.user.groups.includes(
-          req.organization.member_group.id,
+      res.locals.organization = organization?.toObject();
+      if (res.locals.user) {
+        res.locals.user.isMember = res.locals.user.groups.includes(
+          res.locals.organization.member_group.id,
         );
-        req.user.isAdmin = req.user.groups.includes(
-          req.organization.administration_group.id,
+        res.locals.user.isAdmin = res.locals.user.groups.includes(
+          res.locals.organization.administration_group.id,
         );
-        req.user.isMusicAdmin = req.user.groups.includes(
-          req.organization.musicscoreadmin_group.id,
+        res.locals.user.isMusicAdmin = res.locals.user.groups.includes(
+          res.locals.organization.musicscoreadmin_group.id,
         );
-        req.organization.user = req.user.toObject();
+        res.locals.organization.user = res.locals.user.toObject();
       }
       return next();
     });
@@ -235,10 +241,10 @@ app.use((req: any, res, next) => {
 /* GraphQL */
 app.use(
   "/graphql",
-  graphqlHTTP((req: any) => {
+  graphqlHTTP((req: any, res: any) => {
     const contextValue = {
-      viewer: req.user,
-      organization: req.organization,
+      viewer: res.locals.user,
+      organization: res.locals.organization,
       file: req.file,
     };
     return {
@@ -409,7 +415,7 @@ app.get("/login/reset/:code", (req, res, next) => {
 app.post("/login/register", async (req, res, next) => {
   const email = req.body.email.trim();
   const name = req.body.name.trim();
-  const { organization } = req;
+  const { organization } = res.locals;
   const alreadyExistingUser = await sendPasswordToEmail(email, organization);
   if (alreadyExistingUser) {
     return res.send(
@@ -483,7 +489,7 @@ app.get(
 app.use(async (req, res, next) => {
   const token = jwt.sign(
     {
-      sub: req.user,
+      sub: res.locals.user,
       aud: config.get("site.domain"),
       iss: config.get("site.domain"),
     },
@@ -510,7 +516,6 @@ app.use(async (req, res, next) => {
         renderPage(
           (result as FarceElementResult).element,
           fetcher,
-          req.headers["user-agent"],
         ),
       );
   } catch (error) {

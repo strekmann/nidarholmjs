@@ -1,10 +1,12 @@
 import config from "config";
-import ReactDOMServer from "react-dom/server";
-import serialize from "serialize-javascript";
 import "cookie-parser";
+import { ReactComponentElement } from "react";
+import ReactDOMServer from "react-dom/server";
 import Helmet from "react-helmet";
+import serialize from "serialize-javascript";
+import { ServerFetcher } from "../fetcher";
 
-export default function renderPage(element, fetcher, userAgent) {
+export default function renderPage(element: ReactComponentElement<any>, fetcher: ServerFetcher) {
   const elementRendered = ReactDOMServer.renderToString(element);
   const helmet = Helmet.renderStatic();
 
@@ -13,7 +15,6 @@ export default function renderPage(element, fetcher, userAgent) {
     link = helmet.link.toString();
   }
 
-  global.navigator = { userAgent };
   return `
     <!doctype html>
     <html>

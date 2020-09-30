@@ -213,7 +213,7 @@ userType = new GraphQLObjectType({
   fields: () => {
     return {
       id: globalIdField("User"),
-      username: { type: new GraphQLNonNull(GraphQLString) },
+      username: { type: GraphQLString },
       name: { type: new GraphQLNonNull(GraphQLString) },
       email: { type: GraphQLString },
       isActive: {
@@ -1226,7 +1226,7 @@ organizationType = new GraphQLObjectType({
     isMember: {
       type: GraphQLBoolean,
       resolve: (_, args, { viewer }) => {
-        return viewer.isMember;
+        return viewer ? viewer.isMember : false;
       },
     },
     isAdmin: {

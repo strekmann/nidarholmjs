@@ -1,6 +1,9 @@
 use serde::Serialize;
 use std::str::FromStr;
 
+// The contents of this should be moved to `mailman.rs`, but I want a file
+// like this for the internal structs that will be defined later.
+
 #[derive(Copy, Clone, Debug, Serialize, PartialEq)]
 pub enum Role {
     NonMember,
