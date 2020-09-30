@@ -52,7 +52,6 @@ import "./lib/db";
 import saveFile from "./lib/saveFile";
 import findFilePath from "./lib/findFilePath";
 import persistentLogin from "./lib/persistentLoginMiddleware";
-import { groupEmailApiRoute, roleEmailApiRoute } from "./lib/emailApi";
 import { sendReminderEmails } from "./emailTasks";
 import schema from "./schema";
 
@@ -267,9 +266,6 @@ app.post("/upload", upload, (req, res, next) => {
       log.error(error);
     });
 });
-
-app.get("/organization/updated_email_lists.json/:groups", groupEmailApiRoute);
-app.get("/organization/role_aliases.json", roleEmailApiRoute);
 
 app.get("/files/l/:path/:filename", (req, res) => {
   const filepath = req.params.path;
