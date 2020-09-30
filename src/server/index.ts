@@ -204,14 +204,9 @@ app.use((req, res, next) => {
 // Fetch active organization from hostname, config override
 // or pick the default.
 app.use((req, res, next) => {
-  let organizationId = req.hostname;
-  if (config.has("override.site")) {
-    organizationId = config.get("override.site");
-  }
-  if (organizationId === "localhost") {
-    // TODO: Change this part for samklang.
-    organizationId = "nidarholm";
-  }
+  // TODO: Change this part for samklang.
+  const organizationId = "nidarholm";
+
   Organization.findById(organizationId)
     .populate("member_group")
     .populate("administration_group")
@@ -508,12 +503,7 @@ app.use(async (req, res, next) => {
 
     res
       .status((result as FarceElementResult).status)
-      .send(
-        renderPage(
-          (result as FarceElementResult).element,
-          fetcher,
-        ),
-      );
+      .send(renderPage((result as FarceElementResult).element, fetcher));
   } catch (error) {
     next(error);
   }
