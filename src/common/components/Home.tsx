@@ -193,17 +193,12 @@ class Home extends React.Component<Props, State> {
                 <div
                   style={{
                     flex: "2 1 66%",
+                    height: 300,
                     paddingLeft: theme.spacing(2),
                     paddingRight: theme.spacing(2),
                   }}
                 >
-                  <iframe
-                    title="Map"
-                    width="100%"
-                    height="300"
-                    frameBorder="0"
-                    src={organization.mapUrl}
-                  />
+                  <div id="map" style={{ height: "100%" }}></div>
                 </div>
                 <div
                   style={{
