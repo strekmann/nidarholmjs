@@ -255,10 +255,17 @@ export class Project extends React.Component<ProjectProps, State> {
     } = organization;
     const { addEvent, addFile, addPiece, showEnded, editProject } = this.state;
     let hasEndedActivities = false;
-    if (project && project.events.edges.length) {
+    if (project == null) {
+      return (
+        <Paper className="row project">
+          <h1>Not found</h1>
+        </Paper>
+      );
+    }
+    if (project && project.events?.edges?.length) {
       hasEndedActivities =
         project.events.edges.filter((edge) => {
-          return edge.node.isEnded;
+          return edge?.node?.isEnded;
         }).length > 0;
     }
     return (
@@ -267,7 +274,7 @@ export class Project extends React.Component<ProjectProps, State> {
           title={project.title || ""}
           meta={[
             { property: "og:title", content: project.title || "" },
-            { property: "og:description", content: project.publicMdtext },
+            { property: "og:description", content: project.publicMdtext || "" },
             {
               property: "og:image",
               content: project.poster

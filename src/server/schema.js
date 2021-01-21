@@ -865,7 +865,7 @@ projectType = new GraphQLObjectType({
     isCreator: {
       type: new GraphQLNonNull(GraphQLBoolean),
       resolve: (project, _, { viewer }) => {
-        return viewer && viewer.id === project.creator || false;
+        return (viewer && viewer.id === project.creator) || false;
       },
     },
     publicMdtext: {
@@ -1226,19 +1226,19 @@ organizationType = new GraphQLObjectType({
     isMember: {
       type: new GraphQLNonNull(GraphQLBoolean),
       resolve: (_, args, { viewer }) => {
-        return viewer &&  viewer.isMember || false;
+        return (viewer && viewer.isMember) || false;
       },
     },
     isAdmin: {
       type: new GraphQLNonNull(GraphQLBoolean),
       resolve: (_, args, { viewer }) => {
-        return viewer && viewer.isAdmin || false;
+        return (viewer && viewer.isAdmin) || false;
       },
     },
     isMusicAdmin: {
       type: new GraphQLNonNull(GraphQLBoolean),
       resolve: (_, args, { viewer }) => {
-        return viewer && viewer.isMusicAdmin || false;
+        return (viewer && viewer.isMusicAdmin) || false;
       },
     },
     instrumentGroups: {
@@ -1259,7 +1259,6 @@ organizationType = new GraphQLObjectType({
       type: new GraphQLNonNull(new GraphQLList(userType)),
       resolve: (_, args, { organization, viewer }) => {
         if (isMember(organization, viewer)) {
-          console.log("ismember")
           const query = User.find().select("name username");
           return query.sort("-created").exec();
         } else {
@@ -1273,8 +1272,29 @@ organizationType = new GraphQLObjectType({
         year: { name: "year", type: GraphQLString },
         tag: { name: "tag", type: GraphQLString },
       },
-      resolve: (_, args) => {
-        return Project.findOne({ tag: args.tag, year: args.year }).exec();
+      resolve: (_, args, { viewer, organization }) => {
+        let query = Project.findOne({ tag: args.tag, year: args.year });
+        if (!isMember(organization, viewer)) {
+          query = query
+            .where({ public_mdtext: { $ne: "" } })
+            .or([
+              {
+                "permissions.public": true,
+              },
+            ])
+            .select("-private_mdtext");
+        } else {
+          query = query.or([
+            {
+              "permissions.public": true,
+            },
+            {
+              "permissions.groups": { $in: viewer.groups },
+            },
+            { creator: viewer.id },
+          ]);
+        }
+        return query.exec();
       },
     },
     nextProject: {
@@ -1311,7 +1331,22 @@ organizationType = new GraphQLObjectType({
         if (!isMember(organization, viewer)) {
           query = query
             .where({ public_mdtext: { $ne: "" } })
+            .or([
+              {
+                "permissions.public": true,
+              },
+            ])
             .select("-private_mdtext");
+        } else {
+          query = query.or([
+            {
+              "permissions.public": true,
+            },
+            {
+              "permissions.groups": { $in: viewer.groups },
+            },
+            { creator: viewer.id },
+          ]);
         }
         return connectionFromMongooseQuery(query.sort({ end: 1 }), args);
       },
@@ -1319,15 +1354,33 @@ organizationType = new GraphQLObjectType({
     previousProjects: {
       type: projectConnection.connectionType,
       args: connectionArgs,
-      resolve: (_, { ...args }) => {
-        return connectionFromMongooseQuery(
-          Project.find({
-            end: {
-              $lt: moment().startOf("day").toDate(),
+      resolve: (_, { ...args }, { viewer, organization }) => {
+        let query = Project.find({
+          end: {
+            $lt: moment().startOf("day").toDate(),
+          },
+        });
+        if (!isMember(organization, viewer)) {
+          query = query
+            .where({ public_mdtext: { $ne: "" } })
+            .or([
+              {
+                "permissions.public": true,
+              },
+            ])
+            .select("-private_mdtext");
+        } else {
+          query = query.or([
+            {
+              "permissions.public": true,
             },
-          }).sort({ end: -1 }),
-          args,
-        );
+            {
+              "permissions.groups": { $in: viewer.groups },
+            },
+            { creator: viewer.id },
+          ]);
+        }
+        return connectionFromMongooseQuery(query.sort({ end: -1 }), args);
       },
     },
     projects: {

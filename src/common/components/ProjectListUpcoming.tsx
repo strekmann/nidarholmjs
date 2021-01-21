@@ -9,9 +9,9 @@ import { ProjectListUpcoming_organization } from "./__generated__/ProjectListUpc
 const PROJECTS_PER_PAGE = 5;
 
 type Props = {
-  title: string,
-  organization: ProjectListUpcoming_organization,
-  relay: RelayRefetchProp,
+  title: string;
+  organization: ProjectListUpcoming_organization;
+  relay: RelayRefetchProp;
 };
 
 class ProjectListUpcoming extends React.Component<Props> {
@@ -19,19 +19,22 @@ class ProjectListUpcoming extends React.Component<Props> {
     const { nextProjects } = this.props.organization;
     this.props.relay.refetch(() => {
       return {
-        showProjects: nextProjects.edges.length + PROJECTS_PER_PAGE,
+        showProjects: nextProjects?.edges?.length ?? 0 + PROJECTS_PER_PAGE,
       };
     });
   };
 
   render() {
     const { nextProjects } = this.props.organization;
+    if (nextProjects == null) {
+      return <div>Ingen prosjekter på planen</div>;
+    }
     return (
       <div>
         <h1>{this.props.title}</h1>
-        {nextProjects.edges.map((edge) => {
+        {nextProjects.edges?.map((edge) => {
           return (
-            <ProjectItem key={edge.node.id} project={edge.node} showText />
+            <ProjectItem key={edge?.node?.id} project={edge?.node} showText />
           );
         })}
         {nextProjects.pageInfo.hasNextPage ? (
@@ -49,7 +52,7 @@ export default createRefetchContainer(
   {
     organization: graphql`
       fragment ProjectListUpcoming_organization on Organization
-        @argumentDefinitions(showProjects: { type: "Int", defaultValue: 5 }) {
+      @argumentDefinitions(showProjects: { type: "Int", defaultValue: 5 }) {
         isMember
         nextProjects(first: $showProjects) {
           edges {

@@ -45,7 +45,7 @@ class Home extends React.Component<Props, State> {
   render() {
     const { organization, theme } = this.props;
     const { contactDialogOpen } = this.state;
-    const { nextProjects, nextEvents } = organization;
+    const { nextProjects, nextEvents, summaries } = organization;
     return (
       <div id="home">
         <div
@@ -82,20 +82,24 @@ class Home extends React.Component<Props, State> {
               className="item"
               style={{ display: "flex", flexDirection: "column" }}
             >
-              <h1>
-                {nextProjects.edges.length > 1
-                  ? "Neste prosjekter"
-                  : "Neste prosjekt"}
-              </h1>
-              {nextProjects.edges.map((edge) => {
-                return (
-                  <ProjectItem
-                    key={edge.node.id}
-                    project={edge.node}
-                    showText
-                  />
-                );
-              })}
+              {nextProjects && (
+                <>
+                  <h1>
+                    {nextProjects.edges?.length ?? 0 > 1
+                      ? "Neste prosjekter"
+                      : "Neste prosjekt"}
+                  </h1>
+                  {nextProjects.edges?.map((edge) => {
+                    return (
+                      <ProjectItem
+                        key={edge?.node?.id}
+                        project={edge?.node}
+                        showText
+                      />
+                    );
+                  })}
+                </>
+              )}
               <Link to="/projects">
                 <Button variant="text">Prosjektoversikt</Button>
               </Link>
@@ -105,15 +109,21 @@ class Home extends React.Component<Props, State> {
               className="item"
               style={{ display: "flex", flexDirection: "column" }}
             >
-              <h1>Neste aktiviteter</h1>
-              {nextEvents.edges.map((edge) => {
-                return <EventItem key={edge.node.id} event={edge.node} />;
-              })}
+              {nextEvents && (
+                <>
+                  <h1>Neste aktiviteter</h1>
+                  {nextEvents.edges?.map((edge) => {
+                    return (
+                      <EventItem key={edge?.node?.id} event={edge?.node} />
+                    );
+                  })}
+                </>
+              )}
               <Link to="/events">
                 <Button variant="text">Aktivitetskalender</Button>
               </Link>
             </div>
-            {organization.summaries.length > 0 ? (
+            {summaries && summaries.length > 0 ? (
               <Paper
                 id="information"
                 className="item"
@@ -123,15 +133,15 @@ class Home extends React.Component<Props, State> {
                 }}
               >
                 <h2>
-                  <Link to={`/${organization.summaries[0].slug}`}>
-                    {organization.summaries[0].title}
+                  <Link to={`/${summaries[0]?.slug}`}>
+                    {summaries[0]?.title}
                   </Link>
                 </h2>
-                <Text text={organization.summaries[0].summary} />
-                <Link to={`/${organization.summaries[0].slug}`}>Les mer</Link>
+                <Text text={summaries[0]?.summary} />
+                <Link to={`/${summaries[0]?.slug}`}>Les mer</Link>
               </Paper>
             ) : null}
-            {organization.summaries.length > 1 ? (
+            {summaries && summaries.length > 1 ? (
               <Paper
                 className="item"
                 style={{
@@ -140,15 +150,15 @@ class Home extends React.Component<Props, State> {
                 }}
               >
                 <h2>
-                  <Link to={`/${organization.summaries[1].slug}`}>
-                    {organization.summaries[1].title}
+                  <Link to={`/${summaries[1]?.slug}`}>
+                    {summaries[1]?.title}
                   </Link>
                 </h2>
-                <Text text={organization.summaries[1].summary} />
-                <Link to={`/${organization.summaries[1].slug}`}>Les mer</Link>
+                <Text text={summaries[1]?.summary} />
+                <Link to={`/${summaries[1]?.slug}`}>Les mer</Link>
               </Paper>
             ) : null}
-            {organization.summaries.length > 2 ? (
+            {summaries && summaries.length > 2 ? (
               <Paper
                 className="item"
                 style={{
@@ -157,12 +167,12 @@ class Home extends React.Component<Props, State> {
                 }}
               >
                 <h2>
-                  <Link to={`/${organization.summaries[2].slug}`}>
-                    {organization.summaries[2].title}
+                  <Link to={`/${summaries[2]?.slug}`}>
+                    {summaries[2]?.title}
                   </Link>
                 </h2>
-                <Text text={organization.summaries[2].summary} />
-                <Link to={`/${organization.summaries[2].slug}`}>Les mer</Link>
+                <Text text={summaries[2]?.summary} />
+                <Link to={`/${summaries[2]?.slug}`}>Les mer</Link>
               </Paper>
             ) : null}
             <Paper
@@ -211,7 +221,7 @@ class Home extends React.Component<Props, State> {
                   <a onClick={this.openEmailDialog} role="button">
                     <span
                       dangerouslySetInnerHTML={{
-                        __html: organization.encodedEmail,
+                        __html: organization.encodedEmail ?? "",
                       }}
                     />
                   </a>

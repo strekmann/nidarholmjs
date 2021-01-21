@@ -8,7 +8,6 @@ import { createFragmentContainer, graphql } from "react-relay";
 import Date from "./Date";
 import Daterange from "./Daterange";
 import List from "./List";
-import PermissionChips from "./PermissionChips";
 import PermissionVisibility from "./PermissionVisibility";
 import Text from "./Text";
 import { ProjectItem_project } from "./__generated__/ProjectItem_project.graphql";
@@ -30,9 +29,9 @@ const renderPublicEvents = (edges) => {
 };
 
 type Props = {
-  project: ProjectItem_project,
-  showText: boolean,
-  theme: Theme,
+  project: ProjectItem_project;
+  showText: boolean;
+  theme: Theme;
 };
 
 class ProjectItem extends React.Component<Props> {
@@ -56,7 +55,11 @@ class ProjectItem extends React.Component<Props> {
         <Paper style={{ marginBottom: theme.spacing(2) }}>
           {poster ? (
             <Link to={`/${year}/${tag}`}>
-              <img alt="" src={poster.normalPath} className="responsive" />
+              <img
+                alt=""
+                src={poster.normalPath || undefined}
+                className="responsive"
+              />
             </Link>
           ) : null}
           <div
