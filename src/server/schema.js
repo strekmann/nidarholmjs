@@ -732,7 +732,7 @@ const groupScoreType = new GraphQLObjectType({
                   });
 
                   const filteredScores = group.scores.filter((score) => {
-                    return viewer.isMusicAdmin || scores.has(score);
+                    return viewer && (viewer.isMusicAdmin || scores.has(score));
                   });
 
                   const query = File.find({ "permissions.groups": group.id })
@@ -865,7 +865,7 @@ projectType = new GraphQLObjectType({
     isCreator: {
       type: new GraphQLNonNull(GraphQLBoolean),
       resolve: (project, _, { viewer }) => {
-        return viewer.id === project.creator;
+        return viewer && viewer.id === project.creator || false;
       },
     },
     publicMdtext: {
@@ -1224,24 +1224,21 @@ organizationType = new GraphQLObjectType({
       },
     },
     isMember: {
-      type: GraphQLBoolean,
+      type: new GraphQLNonNull(GraphQLBoolean),
       resolve: (_, args, { viewer }) => {
-        return viewer ? viewer.isMember : false;
+        return viewer &&  viewer.isMember || false;
       },
     },
     isAdmin: {
-      type: GraphQLBoolean,
+      type: new GraphQLNonNull(GraphQLBoolean),
       resolve: (_, args, { viewer }) => {
-        if (!viewer) {
-          return false;
-        }
-        return viewer.isAdmin;
+        return viewer && viewer.isAdmin || false;
       },
     },
     isMusicAdmin: {
-      type: GraphQLBoolean,
+      type: new GraphQLNonNull(GraphQLBoolean),
       resolve: (_, args, { viewer }) => {
-        return viewer.isMusicAdmin;
+        return viewer && viewer.isMusicAdmin || false;
       },
     },
     instrumentGroups: {
