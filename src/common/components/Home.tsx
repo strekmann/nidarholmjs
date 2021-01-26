@@ -13,6 +13,7 @@ import Text from "./Text";
 import { Home_organization } from "./__generated__/Home_organization.graphql";
 import { withTheme, Theme } from "@material-ui/core";
 import { SendContactEmailInput } from "../mutations/__generated__/SendContactEmailMutation.graphql";
+import Map from "./Map";
 
 type Props = {
   organization: Home_organization;
@@ -208,7 +209,7 @@ class Home extends React.Component<Props, State> {
                     paddingRight: theme.spacing(2),
                   }}
                 >
-                  <div id="map" style={{ height: "100%" }}></div>
+                  <Map />
                 </div>
                 <div
                   style={{

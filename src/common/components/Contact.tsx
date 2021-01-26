@@ -10,27 +10,28 @@ import { createFragmentContainer, graphql, RelayProp } from "react-relay";
 import EditContactInfoMutation from "../mutations/EditContactInfo";
 import ContactRoles from "./ContactRoles";
 import ContactUser from "./ContactUser";
+import Map from "./Map";
 import { Contact_organization } from "./__generated__/Contact_organization.graphql";
 
 type Props = {
-  organization: Contact_organization,
-  relay: RelayProp,
+  organization: Contact_organization;
+  relay: RelayProp;
 };
 
 type State = {
-  menuIsOpen: null | HTMLElement,
-  editContacts: boolean,
-  editInfo: boolean,
-  visitorLocation: string,
-  visitorAddress: string,
-  city: string,
-  mailAddress: string,
-  postcode: string,
-  organizationNumber: string,
-  publicBankAccount: string,
-  contactText: string,
-  mapText: string,
-  mapUrl: string,
+  menuIsOpen: null | HTMLElement;
+  editContacts: boolean;
+  editInfo: boolean;
+  visitorLocation: string;
+  visitorAddress: string;
+  city: string;
+  mailAddress: string;
+  postcode: string;
+  organizationNumber: string;
+  publicBankAccount: string;
+  contactText: string;
+  mapText: string;
+  mapUrl: string;
 };
 
 class Contact extends React.Component<Props, State> {
@@ -234,14 +235,8 @@ class Contact extends React.Component<Props, State> {
         ) : null}
         <h2>Kart</h2>
         <p>{organization.mapText}</p>
-        <Paper>
-          <iframe
-            title="map"
-            width="100%"
-            height="400"
-            frameBorder="0"
-            src={this.state.mapUrl}
-          />
+        <Paper style={{ height: 400 }}>
+          <Map />
         </Paper>
       </Paper>
     );

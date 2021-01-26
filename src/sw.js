@@ -35,43 +35,58 @@ function fromCacheOrFetch(request) {
       if (response) {
         return response;
       }
-      return fetch(request, { credentials: "include" }).then((fetchResponse) => {
-        return fetchResponse;
-      }).catch((error) => {
-        console.error(`${request}: ${error}`);
-        throw error;
-      });
+      return fetch(request, { credentials: "include" })
+        .then((fetchResponse) => {
+          return fetchResponse;
+        })
+        .catch((error) => {
+          console.error(`${request}: ${error}`);
+          throw error;
+        });
     });
   });
 }
 
 // eslint-disable-next-line no-restricted-globals
 self.addEventListener("install", (event) => {
-  event.waitUntil(precache().then(() => {
-    console.debug("Cache ready");
-    self.skipWaiting();
-  }));
+  event.waitUntil(
+    precache().then(() => {
+      console.debug("Cache ready");
+      self.skipWaiting();
+    }),
+  );
 });
 
 // eslint-disable-next-line no-restricted-globals
 self.addEventListener("fetch", (event) => {
+  if (
+    !event.request.url.match(
+      /^https:\/\/(localhost:\d+|nidarholm.no|www.nidarholm.no)\//,
+    )
+  ) {
+    return event.respondWith(fetch(event.request));
+  }
   event.respondWith(fromCacheOrFetch(event.request));
 });
 
 // eslint-disable-next-line no-restricted-globals
 self.addEventListener("activate", (event) => {
   event.waitUntil(
-    caches.keys().then((keyList) => {
-      return Promise.all(
-        keyList.map((key) => {
-          if (key !== activeCacheName) {
-            return caches.delete(key).then(() => {
-              console.debug(`Cache ${key} deleted`);
-            });
-          }
-        }),
-      );
-    }).then(() => {
-      self.clients.claim();
-    }));
+    caches
+      .keys()
+      .then((keyList) => {
+        return Promise.all(
+          keyList.map((key) => {
+            if (key !== activeCacheName) {
+              return caches.delete(key).then(() => {
+                console.debug(`Cache ${key} deleted`);
+              });
+            }
+          }),
+        );
+      })
+      .then(() => {
+        self.clients.claim();
+      }),
+  );
 });
