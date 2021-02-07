@@ -2,6 +2,7 @@ cache:
   paths:
     - node_modules/
     - .yarn
+    - target/
 
 stages:
   - build_code
@@ -65,6 +66,6 @@ deploy_image:
     - echo "$SSH_KNOWN_HOSTS" >> ~/.ssh/known_hosts
     - chmod 644 ~/.ssh/known_hosts
     - ssh -p 2022 leigh.strekmann.no podman pull --creds $N_READ_REGISTRY docker://registry.gitlab.com/strekmann/nidarholmjs:latest
-    - ssh -p 2022 leigh.strekmann.no systemctl restart nidarholm-web.service
+    - ssh -p 2022 leigh.strekmann.no systemctl restart nidarholm-container.service
   only:
     - pushes
