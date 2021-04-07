@@ -9,6 +9,7 @@ const mutation = graphql`
         subtitle
         composers
         arrangers
+        archiveNumber
       }
     }
   }

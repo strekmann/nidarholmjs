@@ -19,20 +19,20 @@ import { Piece_organization } from "./__generated__/Piece_organization.graphql";
 import { Piece_viewer } from "./__generated__/Piece_viewer.graphql";
 
 type Props = {
-  organization: Piece_organization,
-  viewer: Piece_viewer,
-  relay: RelayProp,
+  organization: Piece_organization;
+  viewer: Piece_viewer;
+  relay: RelayProp;
   router: any /* {
     push: ({
       pathname?: string,
     }) => void,
-  }*/,
+  }*/;
 };
 
 type State = {
-  editPiece: boolean,
-  menuIsOpen: null | HTMLElement,
-  showAdmin: boolean,
+  editPiece: boolean;
+  menuIsOpen: null | HTMLElement;
+  showAdmin: boolean;
 };
 
 class Piece extends React.Component<Props, State> {
@@ -61,7 +61,7 @@ class Piece extends React.Component<Props, State> {
 
   savePiece = (piece) => {
     const { organization, relay } = this.props;
-    const { composers, arrangers, title, subtitle } = piece;
+    const { composers, arrangers, title, subtitle, archiveNumber } = piece;
     this.setState({ editPiece: false, menuIsOpen: null });
     UpdatePieceMutation.commit(
       relay.environment,
@@ -71,6 +71,7 @@ class Piece extends React.Component<Props, State> {
         arrangers: arrangers.split(","),
         title,
         subtitle,
+        archiveNumber,
       },
       undefined,
     );
@@ -111,7 +112,10 @@ class Piece extends React.Component<Props, State> {
               {isMusicAdmin ? (
                 <MenuItem
                   onClick={() => {
-                    this.setState({ editPiece: !this.state.editPiece });
+                    this.setState({
+                      editPiece: !this.state.editPiece,
+                      menuIsOpen: null,
+                    });
                   }}
                 >
                   Rediger info om stykke
@@ -197,6 +201,7 @@ export default createFragmentContainer(Piece, {
         subtitle
         composers
         arrangers
+        archiveNumber
         files {
           edges {
             node {

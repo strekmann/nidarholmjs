@@ -829,7 +829,12 @@ pieceType = new GraphQLObjectType({
       },
       unique_number: { type: GraphQLInt },
       record_number: { type: GraphQLInt },
-      archive_number: { type: GraphQLInt },
+      archiveNumber: {
+        type: GraphQLInt,
+        resolve: (piece) => {
+          return piece.archive_number;
+        },
+      },
       band_setup: { type: GraphQLString },
       short_genre: { type: GraphQLString },
       genre: { type: GraphQLString },
@@ -3188,6 +3193,7 @@ const mutationUpdatePiece = mutationWithClientMutationId({
     subtitle: { type: GraphQLString },
     composers: { type: new GraphQLList(GraphQLString) },
     arrangers: { type: new GraphQLList(GraphQLString) },
+    archiveNumber: { type: GraphQLInt },
   },
   outputFields: {
     piece: {
@@ -3198,7 +3204,7 @@ const mutationUpdatePiece = mutationWithClientMutationId({
     },
   },
   mutateAndGetPayload: (
-    { id, title, subtitle, composers, arrangers },
+    { id, title, subtitle, composers, arrangers, archiveNumber },
     { viewer },
   ) => {
     if (!viewer) {
@@ -3214,6 +3220,7 @@ const mutationUpdatePiece = mutationWithClientMutationId({
           composers,
           arrangers,
           creator: viewer.id,
+          archive_number: archiveNumber,
         },
       },
       { new: true },
