@@ -183,7 +183,11 @@ class Pieces extends React.Component<Props, State> {
                     Nytt stykke
                   </MenuItem>
                 ) : null}
-                <MenuItem href="/music/archive.xlsx">
+                <MenuItem
+                  onClick={this.onMenuClose}
+                  component={"a"}
+                  href="/music/archive.xlsx"
+                >
                   Last ned regneark
                 </MenuItem>
               </Menu>
