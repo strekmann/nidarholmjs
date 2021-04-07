@@ -23,23 +23,23 @@ import { Pieces_organization } from "./__generated__/Pieces_organization.graphql
 const itemsPerPage = 50;
 
 type Props = {
-  organization: Pieces_organization,
-  relay: RelayRefetchProp,
+  organization: Pieces_organization;
+  relay: RelayRefetchProp;
   router: {
-    push: any, //({ pathname?: string }) => void,
-  },
+    push: any; //({ pathname?: string }) => void,
+  };
   location: {
     query: {
-      term: string,
-    },
-  },
-  theme: Theme,
+      term: string;
+    };
+  };
+  theme: Theme;
 };
 
 type State = {
-  addPiece: boolean,
-  menuIsOpen: null | HTMLElement,
-  term: string,
+  addPiece: boolean;
+  menuIsOpen: null | HTMLElement;
+  term: string;
 };
 
 class Pieces extends React.Component<Props, State> {
@@ -128,7 +128,7 @@ class Pieces extends React.Component<Props, State> {
     const { pieces } = this.props.organization;
     this.props.relay.refetch((variables) => {
       variables.term = this.state.term;
-      variables.showItems = pieces?.edges?.length || 0 + itemsPerPage;
+      variables.showItems = (pieces?.edges?.length ?? 0) + itemsPerPage;
       return variables;
     });
   };
@@ -335,10 +335,10 @@ export default withTheme(
     {
       organization: graphql`
         fragment Pieces_organization on Organization
-          @argumentDefinitions(
-            showItems: { type: "Int", defaultValue: 20 }
-            term: { type: "String", defaultValue: "" }
-          ) {
+        @argumentDefinitions(
+          showItems: { type: "Int", defaultValue: 20 }
+          term: { type: "String", defaultValue: "" }
+        ) {
           id
           isMusicAdmin
           memberGroup {

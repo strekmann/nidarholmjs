@@ -1,8 +1,6 @@
-import { RelayRefetchProp } from "react-relay";
 import Button from "@material-ui/core/Button";
 import React from "react";
-import { createRefetchContainer, graphql } from "react-relay";
-
+import { createRefetchContainer, graphql, RelayRefetchProp } from "react-relay";
 import ProjectItem from "./ProjectItem";
 import { ProjectListUpcoming_organization } from "./__generated__/ProjectListUpcoming_organization.graphql";
 
@@ -19,7 +17,7 @@ class ProjectListUpcoming extends React.Component<Props> {
     const { nextProjects } = this.props.organization;
     this.props.relay.refetch(() => {
       return {
-        showProjects: nextProjects?.edges?.length ?? 0 + PROJECTS_PER_PAGE,
+        showProjects: (nextProjects?.edges?.length ?? 0) + PROJECTS_PER_PAGE,
       };
     });
   };

@@ -1,9 +1,6 @@
 /* global FormData */
 /* eslint "no-console": 0 */
 
-import { RelayRefetchProp } from "react-relay";
-import { createRefetchContainer, graphql } from "react-relay";
-import axios from "axios";
 import Button from "@material-ui/core/Button";
 import Dialog from "@material-ui/core/Dialog";
 import DialogActions from "@material-ui/core/DialogActions";
@@ -11,26 +8,26 @@ import DialogContent from "@material-ui/core/DialogContent";
 import DialogTitle from "@material-ui/core/DialogTitle";
 import Toolbar from "@material-ui/core/Toolbar";
 import Typography from "@material-ui/core/Typography";
+import axios from "axios";
 import * as React from "react";
-
+import { createRefetchContainer, graphql, RelayRefetchProp } from "react-relay";
 import AddFileMutation from "../mutations/AddFile";
 import SaveFilePermissionsMutation from "../mutations/SaveFilePermissions";
-
 import FileList from "./FileList";
 import FileUpload from "./FileUpload";
 import TagField from "./TagField";
 import { Files_organization } from "./__generated__/Files_organization.graphql";
 
 type Props = {
-  organization: Files_organization,
-  relay: RelayRefetchProp,
-  viewer: {},
+  organization: Files_organization;
+  relay: RelayRefetchProp;
+  viewer: {};
 };
 
 type State = {
-  addFile: boolean,
-  search: boolean,
-  tags: string[],
+  addFile: boolean;
+  search: boolean;
+  tags: string[];
 };
 
 class Files extends React.Component<Props, State> {
@@ -132,7 +129,7 @@ class Files extends React.Component<Props, State> {
   fetchMore = () => {
     const { files } = this.props.organization;
     this.props.relay.refetch((variables) => {
-      variables.showFiles = files.edges.length + 20;
+      variables.showFiles = (files?.edges?.length ?? 0) + 20;
       variables.searchTags = this.state.tags.sort().join("|").toLowerCase();
       variables.searchTerm = variables.searchTerm;
       return variables;
@@ -209,11 +206,11 @@ export default createRefetchContainer(
     `,
     organization: graphql`
       fragment Files_organization on Organization
-        @argumentDefinitions(
-          showFiles: { type: "Int", defaultValue: 20 }
-          searchTags: { type: "String", defaultValue: "" }
-          searchTerm: { type: "String", defaultValue: "" }
-        ) {
+      @argumentDefinitions(
+        showFiles: { type: "Int", defaultValue: 20 }
+        searchTags: { type: "String", defaultValue: "" }
+        searchTerm: { type: "String", defaultValue: "" }
+      ) {
         id
         isMember
         memberGroup {
