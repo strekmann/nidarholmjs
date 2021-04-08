@@ -835,13 +835,23 @@ pieceType = new GraphQLObjectType({
           return piece.archive_number;
         },
       },
-      band_setup: { type: GraphQLString },
+      bandSetup: {
+        type: GraphQLString,
+        resolve: (piece) => {
+          return piece.band_setup;
+        },
+      },
       short_genre: { type: GraphQLString },
       genre: { type: GraphQLString },
       published: { type: GraphQLString },
       acquired: { type: GraphQLString },
       concerts: { type: GraphQLString },
-      maintenance_status: { type: GraphQLString },
+      maintenanceStatus: {
+        type: GraphQLString,
+        resolve: (piece) => {
+          return piece.maintenance_status;
+        },
+      },
       nationality: { type: GraphQLString },
       difficulty: { type: GraphQLInt },
       publisher: { type: GraphQLString },
@@ -3194,6 +3204,12 @@ const mutationUpdatePiece = mutationWithClientMutationId({
     composers: { type: new GraphQLList(GraphQLString) },
     arrangers: { type: new GraphQLList(GraphQLString) },
     archiveNumber: { type: GraphQLInt },
+    maintenanceStatus: { type: GraphQLString },
+    published: { type: GraphQLString },
+    acquired: { type: GraphQLString },
+    publisher: { type: GraphQLString },
+    difficulty: { type: GraphQLInt },
+    bandSetup: { type: GraphQLString },
   },
   outputFields: {
     piece: {
@@ -3204,7 +3220,20 @@ const mutationUpdatePiece = mutationWithClientMutationId({
     },
   },
   mutateAndGetPayload: (
-    { id, title, subtitle, composers, arrangers, archiveNumber },
+    {
+      id,
+      title,
+      subtitle,
+      composers,
+      arrangers,
+      archiveNumber,
+      maintenanceStatus,
+      published,
+      acquired,
+      publisher,
+      difficulty,
+      bandSetup,
+    },
     { viewer },
   ) => {
     if (!viewer) {
@@ -3221,6 +3250,12 @@ const mutationUpdatePiece = mutationWithClientMutationId({
           arrangers,
           creator: viewer.id,
           archive_number: archiveNumber,
+          maintenance_status: maintenanceStatus,
+          published,
+          acquired,
+          publisher,
+          difficulty,
+          band_setup: bandSetup,
         },
       },
       { new: true },

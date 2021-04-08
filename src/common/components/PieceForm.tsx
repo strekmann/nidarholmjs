@@ -26,6 +26,12 @@ type Props = {
     composers: Array<string>;
     arrangers: Array<string>;
     archiveNumber?: string;
+    maintenanceStatus?: string;
+    published?: string;
+    acquired?: string;
+    publisher?: string;
+    difficulty?: string;
+    bandSetup?: string;
   };
   searching?: boolean;
   isOpen: boolean;
@@ -51,6 +57,12 @@ type State = {
   composers: string;
   arrangers: string;
   archiveNumber: string;
+  maintenanceStatus: string;
+  published: string;
+  acquired: string;
+  publisher: string;
+  difficulty: string;
+  bandSetup: string;
   searching: boolean;
 };
 
@@ -70,6 +82,12 @@ class PieceForm extends React.Component<Props, State> {
           ? piece.arrangers.join(", ")
           : "",
       archiveNumber: piece?.archiveNumber ?? "",
+      maintenanceStatus: piece?.maintenanceStatus ?? "",
+      published: piece?.published ?? "",
+      acquired: piece?.acquired ?? "",
+      publisher: piece?.publisher ?? "",
+      difficulty: piece?.difficulty ?? "",
+      bandSetup: piece?.bandSetup ?? "",
       searching: this.props.searching ? this.props.searching : false,
     };
   }
@@ -107,13 +125,31 @@ class PieceForm extends React.Component<Props, State> {
 
   savePiece = (event: React.FormEvent) => {
     event.preventDefault();
-    const { title, subtitle, composers, arrangers, archiveNumber } = this.state;
+    const {
+      title,
+      subtitle,
+      composers,
+      arrangers,
+      archiveNumber,
+      maintenanceStatus,
+      published,
+      acquired,
+      publisher,
+      difficulty,
+      bandSetup,
+    } = this.state;
     this.props.save({
       title,
       subtitle,
       composers,
       arrangers,
       archiveNumber: parseInt(archiveNumber, 10),
+      maintenanceStatus,
+      published,
+      acquired,
+      publisher,
+      difficulty: parseInt(difficulty, 10),
+      bandSetup,
     });
   };
 
@@ -197,6 +233,60 @@ class PieceForm extends React.Component<Props, State> {
                       this.setState({ archiveNumber: event.target.value });
                     }}
                     value={this.state.archiveNumber}
+                  />
+                </div>
+                <div>
+                  <TextField
+                    label="Vedlikeholdsstatus"
+                    onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
+                      this.setState({ maintenanceStatus: event.target.value });
+                    }}
+                    value={this.state.maintenanceStatus}
+                  />
+                </div>
+                <div>
+                  <TextField
+                    label="Publisert år"
+                    onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
+                      this.setState({ published: event.target.value });
+                    }}
+                    value={this.state.published}
+                  />
+                </div>
+                <div>
+                  <TextField
+                    label="Kjøpt"
+                    onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
+                      this.setState({ acquired: event.target.value });
+                    }}
+                    value={this.state.acquired}
+                  />
+                </div>
+                <div>
+                  <TextField
+                    label="Forlag"
+                    onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
+                      this.setState({ publisher: event.target.value });
+                    }}
+                    value={this.state.publisher}
+                  />
+                </div>
+                <div>
+                  <TextField
+                    label="Vanskelighetsgrad"
+                    onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
+                      this.setState({ difficulty: event.target.value });
+                    }}
+                    value={this.state.difficulty}
+                  />
+                </div>
+                <div>
+                  <TextField
+                    label="Besetning"
+                    onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
+                      this.setState({ bandSetup: event.target.value });
+                    }}
+                    value={this.state.bandSetup}
                   />
                 </div>
               </div>

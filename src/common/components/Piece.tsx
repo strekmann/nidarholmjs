@@ -8,6 +8,7 @@ import Paper from "@material-ui/core/Paper";
 import Switch from "@material-ui/core/Switch";
 import Toolbar from "@material-ui/core/Toolbar";
 import MoreVertIcon from "@material-ui/icons/MoreVert";
+import moment from "moment";
 import React from "react";
 import { createFragmentContainer, graphql, RelayProp } from "react-relay";
 import UpdatePieceMutation from "../mutations/UpdatePiece";
@@ -61,7 +62,19 @@ class Piece extends React.Component<Props, State> {
 
   savePiece = (piece) => {
     const { organization, relay } = this.props;
-    const { composers, arrangers, title, subtitle, archiveNumber } = piece;
+    const {
+      composers,
+      arrangers,
+      title,
+      subtitle,
+      archiveNumber,
+      maintenanceStatus,
+      published,
+      acquired,
+      publisher,
+      difficulty,
+      bandSetup,
+    } = piece;
     this.setState({ editPiece: false, menuIsOpen: null });
     UpdatePieceMutation.commit(
       relay.environment,
@@ -72,6 +85,12 @@ class Piece extends React.Component<Props, State> {
         title,
         subtitle,
         archiveNumber,
+        maintenanceStatus,
+        published,
+        acquired,
+        publisher,
+        difficulty,
+        bandSetup,
       },
       undefined,
     );
@@ -130,6 +149,13 @@ class Piece extends React.Component<Props, State> {
             <TextList items={piece.arrangers} />
           </small>
         </h2>
+        <p>
+          Arkivnummer: {piece.archiveNumber ?? "-"},{" "}
+          {piece.maintenanceStatus ?? "-"}. Anskaffet: {piece.acquired ?? "-"}.
+          Utgitt: {piece.publisher ?? "-"}, {piece.published ?? "-"} for{" "}
+          {piece.bandSetup ?? "-"} nivå {piece.difficulty ?? "-"}. Lagret{" "}
+          {piece.created ? moment(piece.created).format("LL") : "-"}
+        </p>
         <List>
           {piece.files.edges.map((edge) => {
             return (
@@ -202,6 +228,13 @@ export default createFragmentContainer(Piece, {
         composers
         arrangers
         archiveNumber
+        maintenanceStatus
+        published
+        acquired
+        publisher
+        difficulty
+        bandSetup
+        created
         files {
           edges {
             node {
