@@ -1,0 +1,19 @@
+cache:
+  key: ${CI_JOB_NAME}
+  paths:
+  - target/
+
+stages:
+- build
+
+build:
+  image: rust:stretch
+  stage: build
+  script:
+  - apt update
+  - apt install -y pkg-config
+  - cargo build --release
+  artifacts:
+    name: "$CI_COMMIT_REF_SLUG"
+    paths:
+    - target/release
