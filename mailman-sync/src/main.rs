@@ -130,7 +130,7 @@ fn main() {
             .expect("Could not get role from role_map");
         let role_email = role
             .get_str("email")
-            .unwrap_or_else(|_| panic!("No email field in role {}", role_id));
+            .unwrap_or("");
         if role_email == "" {
             continue;
         }
@@ -161,18 +161,21 @@ fn main() {
     let mut all_group_leaders: HashSet<&str> = HashSet::new();
 
     let concert_master_role = db.get_role_by_name("Konsertmester");
-    let concert_masters = role_users_map
+    match role_users_map
         .get(
             concert_master_role
                 .get_str("_id")
                 .expect("Unwrapping role user"),
-        )
-        .expect("Does not have any concert masters");
-    for user_id in concert_masters {
-        if let Some(u) = user_map.get(user_id) {
-            let user_email = u.get_str("email").unwrap_or("");
-            if !user_email.is_empty() {
-                all_group_leaders.insert(user_email);
+        ) {
+        None => {}
+        Some(concert_masters) => {
+            for user_id in concert_masters {
+                if let Some(u) = user_map.get(user_id) {
+                    let user_email = u.get_str("email").unwrap_or("");
+                    if !user_email.is_empty() {
+                        all_group_leaders.insert(user_email);
+                    }
+                }
             }
         }
     }

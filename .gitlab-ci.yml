@@ -1,17 +1,17 @@
 cache:
+  key: ${CI_JOB_NAME}
   paths:
     - node_modules/
     - .yarn
     - target/
 
 stages:
-  - build_code
-  - build_image
-  - deploy_image
+  - build
+  - deploy
 
 build_code:
   image: node:14-alpine
-  stage: build_code
+  stage: build
   script:
     - time apk add --no-cache make g++ gcc python imagemagick
     - yarn install --frozen-lockfile --production
@@ -24,12 +24,15 @@ build_code:
     paths:
       - dist/
   only:
-    - pushes
+    refs:
+      - pushes
+    changes:
+      - "src/**/*"
   interruptible: true
 
 build_image:
   image: fedora
-  stage: build_image
+  stage: build
   needs:
     - job: build_code
       artifacts: true
@@ -50,11 +53,31 @@ build_image:
     - buildah rm "$img"
     - podman push --creds $N_WRITE_REGISTRY localhost/nidarholm docker://registry.gitlab.com/strekmann/nidarholmjs:latest
   only:
-    - pushes
+    refs:
+      - pushes
+    changes:
+      - "src/**/*"
+
+build_mailman_sync:
+  image: rust:stretch
+  stage: build
+  script:
+    - apt update
+    - apt install -y pkg-config
+    - cargo build --release --locked
+  artifacts:
+    name: "$CI_COMMIT_REF_SLUG"
+    paths:
+      - target/release
+  only:
+    refs:
+      - pushes
+    changes:
+      - "mailman-sync/**/*"
 
 deploy_image:
   image: debian
-  stage: deploy_image
+  stage: deploy
   needs:
     - job: build_image
   script:
@@ -68,4 +91,7 @@ deploy_image:
     - ssh -p 2022 leigh.strekmann.no podman pull --creds $N_READ_REGISTRY docker://registry.gitlab.com/strekmann/nidarholmjs:latest
     - ssh -p 2022 leigh.strekmann.no systemctl restart nidarholm-container.service
   only:
-    - pushes
+    refs:
+      - pushes
+    changes:
+      - "src/**/*"

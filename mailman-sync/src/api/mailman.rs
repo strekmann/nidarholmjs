@@ -1,3 +1,5 @@
+// TODO: check if there is a decent mailman rust api soon
+
 use log::{debug, info};
 use serde::{Deserialize, Serialize};
 use std::collections::HashSet;

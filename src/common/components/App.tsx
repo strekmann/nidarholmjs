@@ -11,9 +11,9 @@ import { App_organization } from "./__generated__/App_organization.graphql";
 import { App_viewer } from "./__generated__/App_viewer.graphql";
 
 type Props = {
-  viewer: App_viewer,
-  organization: App_organization,
-  children: React.ReactNode,
+  viewer: App_viewer;
+  organization: App_organization;
+  children: React.ReactNode;
 };
 
 function App(props: Props) {
