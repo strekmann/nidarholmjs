@@ -1,6 +1,6 @@
 // TODO: check if there is a decent mailman rust api soon
 
-use log::{debug, info};
+use log::{debug, error, info};
 use serde::{Deserialize, Serialize};
 use std::collections::HashSet;
 use std::str::FromStr;
@@ -157,18 +157,17 @@ impl Api {
             .form(&subscription)
             .send();
 
-        response
-            .expect("Error in adding user")
-            .error_for_status()
-            .unwrap_or_else(|err| {
-                panic!(
-                    "Add did not work for {} to {}: {}, ({})",
-                    subscription.subscriber,
-                    subscription.list_id,
-                    subscription.role.as_str(),
-                    err
-                )
-            });
+        let res = response.expect("Error in adding user").error_for_status();
+
+        if let Err(err) = res {
+            error!(
+                "Add did not work for {} to {}: {}, ({})",
+                subscription.subscriber,
+                subscription.list_id,
+                subscription.role.as_str(),
+                err
+            );
+        }
     }
 
     fn unsubscribe(&self, group_email: &str, emails: Vec<String>, role: Role) {
