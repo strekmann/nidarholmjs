@@ -128,10 +128,8 @@ fn main() {
         let role = role_map
             .get(role_id)
             .expect("Could not get role from role_map");
-        let role_email = role
-            .get_str("email")
-            .unwrap_or("");
-        if role_email == "" {
+        let role_email = role.get_str("email").unwrap_or("");
+        if role_email.is_empty() {
             continue;
         }
 
@@ -144,7 +142,7 @@ fn main() {
             let user_email = user
                 .get_str("email")
                 .unwrap_or_else(|_| panic!("No email for user {}", user_id));
-            if role_email != "" && user_email != "" {
+            if !role_email.is_empty() && !user_email.is_empty() {
                 emails.insert(user_email);
             }
         }
@@ -161,12 +159,11 @@ fn main() {
     let mut all_group_leaders: HashSet<&str> = HashSet::new();
 
     let concert_master_role = db.get_role_by_name("Konsertmester");
-    match role_users_map
-        .get(
-            concert_master_role
-                .get_str("_id")
-                .expect("Unwrapping role user"),
-        ) {
+    match role_users_map.get(
+        concert_master_role
+            .get_str("_id")
+            .expect("Unwrapping role user"),
+    ) {
         None => {}
         Some(concert_masters) => {
             for user_id in concert_masters {
@@ -185,7 +182,7 @@ fn main() {
         let group_email = group.get_str("group_email").unwrap_or("");
 
         let empty: Vec<bson::Bson> = Vec::new();
-        let members = group.get_array("members").unwrap_or_else(|_| &empty);
+        let members = group.get_array("members").unwrap_or(&empty);
 
         let mut group_members: HashSet<&str> = HashSet::new();
         let mut group_leaders: HashSet<&str> = HashSet::new();
@@ -201,8 +198,7 @@ fn main() {
                 if !user_email.is_empty() {
                     group_members.insert(user_email);
 
-                    let group_leader_email =
-                        group.get_str("group_leader_email").unwrap_or_else(|_| "");
+                    let group_leader_email = group.get_str("group_leader_email").unwrap_or("");
                     if !group_leader_email.is_empty() {
                         let role_ids = member.get_array("roles").unwrap_or(&empty);
                         if !role_ids.is_empty() {
@@ -215,7 +211,7 @@ fn main() {
         }
 
         if !group_email.is_empty() {
-            let group_leader_email = group.get_str("group_leader_email").unwrap_or_else(|_| "");
+            let group_leader_email = group.get_str("group_leader_email").unwrap_or("");
             if group_leader_email.is_empty() {
                 // Gruppe uten gruppeledere
                 api.update_members(group_email, group_members.to_owned(), Role::Member);
@@ -226,11 +222,6 @@ fn main() {
                         .difference(&group_members)
                         .map(|s| &**s)
                         .collect(),
-                    Role::NonMember,
-                );
-                api.update_members(
-                    group_email,
-                    additional_accepted_non_members.to_owned(),
                     Role::NonMember,
                 );
             } else {
@@ -259,12 +250,12 @@ fn main() {
                         .collect(),
                     Role::NonMember,
                 );
-                api.update_members(
-                    group_email,
-                    additional_accepted_non_members.to_owned(),
-                    Role::NonMember,
-                );
             }
+            api.update_members(
+                group_email,
+                additional_accepted_non_members.to_owned(),
+                Role::NonMember,
+            );
         }
     }
 

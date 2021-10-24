@@ -12,7 +12,7 @@ impl Database {
         Database {
             database: Client::connect(host, port)
                 .expect("Failed to connect to mongodb")
-                .db(&database),
+                .db(database),
         }
     }
 
