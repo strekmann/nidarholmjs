@@ -142,8 +142,8 @@ impl Api {
 
     fn subscribe(&self, group_email: &str, group_member: &str, role: Role) {
         let subscription = Subscription {
-            list_id: str::replace(group_email, "@", "."),
-            subscriber: group_member.to_string(),
+            list_id: str::replace(group_email, "@", ".").to_lowercase(),
+            subscriber: group_member.to_string().to_lowercase(),
             role: role.as_str().to_string(),
             pre_verified: true,
             pre_confirmed: true,
