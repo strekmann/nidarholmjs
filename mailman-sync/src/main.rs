@@ -4,11 +4,7 @@ use std::env;
 mod api;
 
 use crate::api::database::Database;
-use crate::api::mailman::Api;
-use crate::api::nidarholm::Role;
-
-#[macro_use]
-extern crate bson;
+use crate::api::mailman::{Api, ListRole};
 
 fn main() {
     env_logger::init();
@@ -22,12 +18,12 @@ fn main() {
         "CKtB8n86O4SocRv2T23r0IL5oxndClOzcDGZovDx5sP3rJUC",
     );
 
-    let additional_accepted_non_members: HashSet<&str> = vec![
-        "besetning@nidarholm.no",
-        "okonomi@nidarholm.no",
-        "info@nidarholm.no",
-        "leder@nidarholm.no",
-        "leder.turogfest@nidarholm.no",
+    let additional_accepted_non_members: HashSet<String> = vec![
+        String::from("besetning@nidarholm.no"),
+        String::from("okonomi@nidarholm.no"),
+        String::from("info@nidarholm.no"),
+        String::from("leder@nidarholm.no"),
+        String::from("leder.turogfest@nidarholm.no"),
     ]
     .into_iter()
     .collect();
@@ -37,224 +33,152 @@ fn main() {
     let mut role_users_map = HashMap::new();
 
     let organization = db.get_organization("nidarholm");
-
-    let member_group_string = String::from("member_group");
-    let member_group_id = organization
-        .get_str(member_group_string.as_str())
-        .expect("No member_group field");
+    let member_group_id = &organization.member_group_id;
 
     let group = db.get_group_by_id(member_group_id);
-    let members = group
-        .get_array(String::from("members").as_str())
-        .expect("Could not get members");
 
-    for m in members {
-        let mm = m.as_document().expect("Could not get document from member");
-        let user_id = mm.get_str("user").expect("Could not get user id");
-        let user = db.get_user_by_id(user_id);
-        let in_list = user.get_bool("in_list").unwrap_or(false);
-        let no_email = user.get_bool("no_email").unwrap_or(false);
-        let email = user.get_str("email").unwrap_or("Could not get email");
-        let user_groups = user.get_array("groups").expect("Could not get user_groups");
-        let is_member = user_groups.iter().fold(false, |value, group_bson| {
-            let group_id = group_bson.as_str().expect("No group id"); //.get_str("_id").expect("No _id field in group");
-            value || member_group_id == group_id
-        });
-        // TODO: Remove hardcoding here as well - needed as I'm on leave:write!
-        if email == "sigurdga@sigurdga.no" || in_list && !no_email && !email.is_empty() && is_member
-        {
-            user_map.insert(user_id, user);
+    for member in group.members {
+        let user = db.get_user_by_id(&member.user_id);
+        let is_member = user.is_member(member_group_id);
+        let in_lists = user.in_lists(is_member);
+        if in_lists {
+            user_map.insert(member.user_id.clone(), user);
         }
 
-        if mm.contains_key("roles") {
-            let role_ids = mm.get_array("roles").expect("Could not get roles");
-            for role_bson in role_ids {
-                let role_id = role_bson.as_str().unwrap();
-                let role = db.get_role_by_id(role_id);
-                role_map.insert(role_id, role);
-                if !role_users_map.contains_key(role_id) {
-                    role_users_map.insert(role_id, Vec::new());
-                }
-                role_users_map
-                    .get_mut(&role_id)
-                    .expect("Key not found, while it was already checked to be there")
-                    .push(user_id);
+        for role_id in member.role_ids {
+            let role = db.get_role_by_id(&role_id);
+            role_map.insert(role_id.clone(), role.to_owned());
+            if !role_users_map.contains_key(&role_id) {
+                role_users_map.insert(role_id.clone(), Vec::new());
             }
+            role_users_map
+                .get_mut(&role_id)
+                .expect("Key not found, while it was already checked to be there")
+                .push(member.user_id.clone());
         }
     }
 
     // Set of all members
-    // TODO: Should be possible to get the email value twice where we get it
-    // from the memberlist above
-    let all_members: HashSet<&str> = user_map
-        .values()
-        .map(|v| {
-            v.get_str("email")
-                .unwrap_or("Could not get email the second time")
-        })
-        .collect();
+    let all_members: HashSet<String> = user_map.values().map(|user| user.email.clone()).collect();
 
     // Find moderators to use for all lists
     let moderator_group = db.get_group_by_name("Listemoderatorer");
-    let members_bson = moderator_group
-        .get_array("members")
-        .expect("Could not get members of moderator group");
 
-    let mut moderator_emails: HashSet<&str> = HashSet::new();
-    for mod_member in members_bson {
-        let moderator_doc = mod_member
-            .as_document()
-            .expect("Could not convert moderator from bson");
-
-        let user_id = moderator_doc
-            .get_str("user")
-            .expect("Could not get user from moderator document");
-        let moderator_user = user_map
-            .get(user_id)
-            .unwrap_or_else(|| panic!("Could not get moderator from user map {}", user_id));
-        let moderator_email = moderator_user
-            .get_str("email")
-            .expect("No email field in user object for moderator");
+    let mut moderator_emails: HashSet<String> = HashSet::new();
+    for mod_member in moderator_group.members {
+        let moderator_user = user_map.get(&mod_member.user_id).unwrap_or_else(|| {
+            panic!(
+                "Could not get moderator from user map {}",
+                mod_member.user_id
+            )
+        });
+        let moderator_email = &moderator_user.email;
         if !moderator_email.is_empty() {
-            moderator_emails.insert(moderator_email);
+            moderator_emails.insert(moderator_email.clone());
         }
     }
     // TODO: Do not override when things have stabilized
-    let mut moderator_emails: HashSet<&str> = HashSet::new();
-    moderator_emails.insert("sigurdga@sigurdga.no");
+    let mut moderator_emails: HashSet<String> = HashSet::new();
+    moderator_emails.insert(String::from("sigurdga@sigurdga.no"));
 
     // VERV-ADRESSER
     for (role_id, user_ids) in &role_users_map {
         let role = role_map
             .get(role_id)
             .expect("Could not get role from role_map");
-        let role_email = role.get_str("email").unwrap_or("");
+        let role_email = &role.email;
         if role_email.is_empty() {
             continue;
         }
 
-        let mut emails: HashSet<&str> = HashSet::new();
+        let mut emails: HashSet<String> = HashSet::new();
 
         for user_id in user_ids {
             let user = user_map
                 .get(user_id)
                 .unwrap_or_else(|| panic!("Could not get user from user map {}", user_id));
-            let user_email = user
-                .get_str("email")
-                .unwrap_or_else(|_| panic!("No email for user {}", user_id));
-            if !role_email.is_empty() && !user_email.is_empty() {
-                emails.insert(user_email);
+            if !role_email.is_empty() && !user.email.is_empty() {
+                emails.insert(user.email.to_owned());
             }
         }
-        api.update_members(role_email, emails, Role::Member);
-        api.update_members(role_email, moderator_emails.to_owned(), Role::Moderator);
+        api.update_members(role_email, emails, ListRole::Member);
+        api.update_members(role_email, moderator_emails.clone(), ListRole::Moderator);
         api.update_members(
             role_email,
-            additional_accepted_non_members.to_owned(),
-            Role::NonMember,
+            additional_accepted_non_members.clone(),
+            ListRole::NonMember,
         );
     }
 
     // Used for special group "gruppeledere"
-    let mut all_group_leaders: HashSet<&str> = HashSet::new();
+    let mut all_group_leaders: HashSet<String> = HashSet::new();
 
     let concert_master_role = db.get_role_by_name("Konsertmester");
-    match role_users_map.get(
-        concert_master_role
-            .get_str("_id")
-            .expect("Unwrapping role user"),
-    ) {
+    match role_users_map.get(&concert_master_role.id) {
         None => {}
         Some(concert_masters) => {
             for user_id in concert_masters {
-                if let Some(u) = user_map.get(user_id) {
-                    let user_email = u.get_str("email").unwrap_or("");
-                    if !user_email.is_empty() {
-                        all_group_leaders.insert(user_email);
+                if let Some(user) = user_map.get(user_id) {
+                    if !user.email.is_empty() {
+                        all_group_leaders.insert(user.email.to_owned());
                     }
                 }
             }
         }
     }
 
-    for group_bson in db.get_group_cursor() {
-        let group = group_bson.unwrap();
-        let group_email = group.get_str("group_email").unwrap_or("");
+    for group in db.get_all_groups() {
+        let mut group_members: HashSet<String> = HashSet::new();
+        let mut group_leaders: HashSet<String> = HashSet::new();
+        for member in group.members {
+            let user_id = member.user_id;
+            if let Some(user) = user_map.get(&user_id) {
+                if !user.email.is_empty() {
+                    group_members.insert(user.email.to_owned());
 
-        let empty: Vec<bson::Bson> = Vec::new();
-        let members = group.get_array("members").unwrap_or(&empty);
-
-        let mut group_members: HashSet<&str> = HashSet::new();
-        let mut group_leaders: HashSet<&str> = HashSet::new();
-        for _member in members {
-            let member = _member
-                .as_document()
-                .expect("Could not extract member document");
-            let user_id = member
-                .get_str("user")
-                .expect("Could not get user from member");
-            if let Some(u) = user_map.get(user_id) {
-                let user_email = u.get_str("email").unwrap_or("");
-                if !user_email.is_empty() {
-                    group_members.insert(user_email);
-
-                    let group_leader_email = group.get_str("group_leader_email").unwrap_or("");
+                    let group_leader_email = &group.group_leader_email;
                     if !group_leader_email.is_empty() {
-                        let role_ids = member.get_array("roles").unwrap_or(&empty);
+                        let role_ids = member.role_ids;
                         if !role_ids.is_empty() {
-                            group_leaders.insert(user_email);
-                            all_group_leaders.insert(user_email);
+                            group_leaders.insert(user.email.to_owned());
+                            all_group_leaders.insert(user.email.to_owned());
                         }
                     }
                 }
             }
         }
 
-        if !group_email.is_empty() {
-            let group_leader_email = group.get_str("group_leader_email").unwrap_or("");
+        if !group.email.is_empty() {
+            let group_leader_email = group.group_leader_email;
             if group_leader_email.is_empty() {
                 // Gruppe uten gruppeledere
-                api.update_members(group_email, group_members.to_owned(), Role::Member);
-                api.update_members(group_email, moderator_emails.to_owned(), Role::Moderator);
-                api.update_members(
-                    group_email,
-                    all_members
-                        .difference(&group_members)
-                        .map(|s| &**s)
-                        .collect(),
-                    Role::NonMember,
-                );
+                api.update_members(&group.email, group_members.clone(), ListRole::Member);
+                api.update_members(&group.email, moderator_emails.clone(), ListRole::Moderator);
             } else {
                 // Gruppe med gruppeledere
-                api.update_members(group_leader_email, group_leaders.to_owned(), Role::Member);
-                api.update_members(group_email, group_members.to_owned(), Role::Member);
+                api.update_members(&group_leader_email, group_leaders.clone(), ListRole::Member);
+                api.update_members(&group.email, group_members.clone(), ListRole::Member);
                 api.update_members(
-                    group_leader_email,
-                    moderator_emails.to_owned(),
-                    Role::Moderator,
+                    &group_leader_email,
+                    moderator_emails.clone(),
+                    ListRole::Moderator,
                 );
-                api.update_members(group_email, moderator_emails.to_owned(), Role::Moderator);
+                api.update_members(&group.email, moderator_emails.clone(), ListRole::Moderator);
                 api.update_members(
-                    group_leader_email,
-                    all_members
-                        .difference(&group_leaders)
-                        .map(|s| &**s)
-                        .collect(),
-                    Role::NonMember,
-                );
-                api.update_members(
-                    group_email,
-                    all_members
-                        .difference(&group_members)
-                        .map(|s| &**s)
-                        .collect(),
-                    Role::NonMember,
+                    &group_leader_email,
+                    all_members.difference(&group_leaders).cloned().collect(),
+                    ListRole::NonMember,
                 );
             }
             api.update_members(
-                group_email,
+                &group.email,
+                all_members.difference(&group_members).cloned().collect(),
+                ListRole::NonMember,
+            );
+            api.update_members(
+                &group.email,
                 additional_accepted_non_members.to_owned(),
-                Role::NonMember,
+                ListRole::NonMember,
             );
         }
     }
@@ -263,21 +187,25 @@ fn main() {
 
     api.update_members(
         all_group_leaders_email,
-        all_group_leaders.to_owned(),
-        Role::Member,
+        all_group_leaders.clone(),
+        ListRole::Member,
     );
-    api.update_members(all_group_leaders_email, moderator_emails, Role::Moderator);
+    api.update_members(
+        all_group_leaders_email,
+        moderator_emails,
+        ListRole::Moderator,
+    );
     api.update_members(
         all_group_leaders_email,
         all_members
             .difference(&all_group_leaders)
-            .map(|s| &**s)
+            .cloned()
             .collect(),
-        Role::NonMember,
+        ListRole::NonMember,
     );
     api.update_members(
         all_group_leaders_email,
-        additional_accepted_non_members.to_owned(),
-        Role::NonMember,
+        additional_accepted_non_members,
+        ListRole::NonMember,
     );
 }
