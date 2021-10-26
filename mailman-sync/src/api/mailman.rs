@@ -13,7 +13,7 @@ pub enum ListRole {
 }
 
 impl ListRole {
-    pub const fn as_str(&self) -> &'static str {
+    pub fn as_str(&self) -> &'static str {
         match self {
             Self::NonMember => "nonmember",
             Self::Member => "member",
@@ -88,7 +88,7 @@ pub enum ModerationAction {
 }
 
 impl ModerationAction {
-    pub const fn as_str(&self) -> &'static str {
+    pub fn as_str(&self) -> &'static str {
         match self {
             Self::Accept => "accept",
             Self::Deny => "deny",
