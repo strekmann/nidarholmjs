@@ -67,7 +67,7 @@ const UserSchema = new mongoose.Schema({
   is_active: { type: Boolean, default: true }, // just for blocking users
   is_admin: { type: Boolean, default: false },
   created: { type: Date, required: true, default: Date.now },
-  nmf_id: { type: String, select: false },
+  nmf_id: { type: String, select: true },
   facebook_id: {
     type: String,
     unique: true,

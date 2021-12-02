@@ -3,34 +3,32 @@
 /* eslint no-param-reassign: "off" */
 /* eslint camelcase: "off" */
 
-import fs from "fs";
-import http from "http";
-import path from "path";
-
-import config from "config";
-import "regenerator-runtime/runtime";
 import bodyParser from "body-parser";
+import bunyan from "bunyan";
+import config from "config";
+import connectMongo from "connect-mongo";
 import cookieParser from "cookie-parser";
-import session from "express-session";
 import errorHandler from "errorhandler";
 import express, { NextFunction, Request, Response } from "express";
-import httpProxy from "http-proxy";
-import mongoose from "mongoose";
-import bunyan from "bunyan";
 import expressBunyan from "express-bunyan-logger";
-import serveStatic from "serve-static";
-import connectMongo from "connect-mongo";
-import moment from "moment";
-import multer from "multer";
 import graphqlHTTP from "express-graphql";
+import session from "express-session";
 import {
-  getFarceResult,
-  FarceRedirectResult,
   FarceElementResult,
+  FarceRedirectResult,
+  getFarceResult,
 } from "found/server";
+import fs from "fs";
+import http from "http";
+import httpProxy from "http-proxy";
 import jwt from "jsonwebtoken";
+import moment from "moment";
+import mongoose from "mongoose";
+import multer from "multer";
 import { ExtractJwt } from "passport-jwt";
-
+import path from "path";
+import "regenerator-runtime/runtime";
+import serveStatic from "serve-static";
 import { ServerFetcher } from "../fetcher";
 import {
   createResolver,
@@ -38,21 +36,21 @@ import {
   render,
   routeConfig,
 } from "../router";
-
 import sendPasswordToEmail from "./database/sendPasswordToEmail";
-import renderPage from "./renderPage";
-import passport from "./lib/passport";
+import { sendReminderEmails } from "./emailTasks";
 import { icalEvents } from "./icalRoutes";
-import { downloadArchive } from "./musicRoutes";
+import "./lib/db";
+import findFilePath from "./lib/findFilePath";
+import passport from "./lib/passport";
+import persistentLogin from "./lib/persistentLoginMiddleware";
+import saveFile from "./lib/saveFile";
+import { downloadMembers } from "./memberRoutes";
 import File from "./models/File";
 import Organization from "./models/Organization";
 import PasswordCode from "./models/PasswordCode";
 import User, { IUser } from "./models/User";
-import "./lib/db";
-import saveFile from "./lib/saveFile";
-import findFilePath from "./lib/findFilePath";
-import persistentLogin from "./lib/persistentLoginMiddleware";
-import { sendReminderEmails } from "./emailTasks";
+import { downloadArchive } from "./musicRoutes";
+import renderPage from "./renderPage";
 import schema from "./schema";
 
 // import * as profileAPI from './server/api/profile';
@@ -341,7 +339,30 @@ app.get("/files/o/:path/:filename", (req, res) => {
 app.get("/events/public.ics", icalEvents);
 app.get("/events/export.ics", icalEvents);
 
-app.get("/music/archive.xlsx", downloadArchive);
+app.get(
+  "/music/archive.xlsx",
+  (req, res, next) => {
+    if (!res.locals.user.isMusicAdmin) {
+      console.error("Not music admin");
+      const error = new Error("Not music admin");
+      next(error);
+    }
+    next();
+  },
+  downloadArchive,
+);
+app.get(
+  "/members/list.xlsx",
+  (req, res, next) => {
+    if (!res.locals.user.isAdmin) {
+      console.error("Not admin");
+      const error = new Error("Not admin");
+      next(error);
+    }
+    next();
+  },
+  downloadMembers,
+);
 
 /* Socket.io routes */
 // socketRoutes(io);

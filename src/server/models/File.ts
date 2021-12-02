@@ -80,4 +80,4 @@ FileSchema.virtual("_type").get(() => {
 });
 FileSchema.set("toObject", schemaOptions);
 FileSchema.set("toJSON", schemaOptions);
-export default mongoose.model < IFile > ("File", FileSchema);
+export default mongoose.model<IFile>("File", FileSchema);

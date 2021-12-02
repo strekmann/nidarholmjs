@@ -9,9 +9,6 @@
     "type": "git",
     "url": "https://github.com/strekmann/nidarholmjs"
   },
-  "engines": {
-    "node": ">4.0.0"
-  },
   "scripts": {
     "env": "env",
     "build-project": "yarn build:schema && yarn relay && yarn build:server && yarn build:client && yarn build:copy",
@@ -29,6 +26,10 @@
     "vm": "vagrant up",
     "prettier": "prettier --write --ignore-path .gitignore \"src/**/*(js|ts|tsx)\""
   },
+  "browserslist": [
+    "defaults",
+    "not IE 11"
+  ],
   "prettier": {
     "trailingComma": "all"
   },
@@ -123,16 +124,16 @@
     "relay-runtime": "^9.0.0",
     "serialize-javascript": "^5.0.1",
     "serve-static": "^1.11.1",
-    "tempy": "^0.2.1",
+    "tempy": "^1.0.0",
     "uuid": "^8.1.0"
   },
   "devDependencies": {
     "@babel/cli": "^7.2.3",
-    "@babel/core": "^7.3.4",
+    "@babel/core": "^7.16.0",
     "@babel/plugin-proposal-class-properties": "^7.3.4",
     "@babel/plugin-proposal-decorators": "^7.3.0",
     "@babel/plugin-proposal-optional-chaining": "^7.9.0",
-    "@babel/preset-env": "^7.3.4",
+    "@babel/preset-env": "^7.16.4",
     "@babel/preset-react": "^7.0.0",
     "@types/bunyan": "^1.8.6",
     "@types/config": "^0.0.36",

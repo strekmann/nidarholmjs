@@ -68,7 +68,7 @@ const OrganizationSchema = new mongoose.Schema({
 
 OrganizationSchema.virtual("encoded_email").get(function email() {
   const lexer = new marked.InlineLexer([]);
-  return lexer.mangle(this.email);
+  return lexer.mangle(this.email || "");
 });
 OrganizationSchema.virtual("website").get(function website() {
   return this.social_media.website;
@@ -88,6 +88,7 @@ OrganizationSchema.virtual("_type").get(() => {
 OrganizationSchema.set("toObject", schemaOptions);
 OrganizationSchema.set("toJSON", schemaOptions);
 
-export default mongoose.model <
-  IOrganization >
-  ("Organization", OrganizationSchema);
+export default mongoose.model<IOrganization>(
+  "Organization",
+  OrganizationSchema,
+);
