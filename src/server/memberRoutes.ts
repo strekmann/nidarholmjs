@@ -12,43 +12,47 @@ export async function downloadMembers(req, res, next) {
     { header: "Navn", key: "name", width: 50 },
     { header: "Startet", key: "joined", width: 20 },
     { header: "Telefon", key: "phone", width: 20 },
+    { header: "E-post", key: "email", width: 50 },
     { header: "Adresse", key: "address", width: 50 },
     { header: "Postnummer", key: "postcode" },
     { header: "Sted", key: "city", width: 20 },
     { header: "Født", key: "born", width: 20 },
     { header: "NMF-nummer", key: "nmfId" },
-    { header: "Status", key: "membershipStatus" },
+    { header: "Permittert", key: "onLeave" },
   ];
 
-  const { member_group: memberGroup } = await Organization.findById(
+  const { member_group: memberGroupId } = await Organization.findById(
     "nidarholm",
   ).select("member_group");
-  const group = await Group.findById(memberGroup);
-  for (const { user } of group!.members) {
+  const group = await Group.findById(memberGroupId);
+  for (const { user: userId } of group!.members) {
     //group!.members.forEach(async ({ user }) => {
-    const user_ = await User.findById(user);
-    if (user_ && user_.membership_status && user_.membership_status < 5) {
+    const user = await User.findById(userId);
+    if (user && user.groups.includes(memberGroupId)) {
+      //if (user_ && user_.membership_status && user_.membership_status < 5) {
       const {
         name,
         joined,
         phone,
+        email,
         address,
         postcode,
         city,
         born,
         nmf_id: nmfId,
-        membership_status: membershipStatus,
-      } = user_;
+        on_leave: onLeave,
+      } = user;
       worksheet.addRow({
         name,
         joined,
         phone,
+        email,
         address,
         postcode,
         city,
         born,
         nmfId,
-        membershipStatus,
+        onLeave,
       });
     }
   }
