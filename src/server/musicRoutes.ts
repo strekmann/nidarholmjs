@@ -1,8 +1,5 @@
-/* eslint "import/prefer-default-export": 0 */
-
 import excel from "exceljs";
 import tempy from "tempy";
-
 import Piece from "./models/Piece";
 
 export function downloadArchive(req, res, next) {
@@ -52,9 +49,9 @@ export function downloadArchive(req, res, next) {
         "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet; charset=utf-8",
       );
       res.setHeader("Cache-Control", "max-age=7200, private, must-revalidate");
-      res.sendFile(tempFilePath, (err) => {
+      res.sendFile(tempFilePath, (err: Error) => {
         if (err) {
-          throw new Error(`Could not generate nidarholm.csv: ${err}`);
+          throw new Error(`Could not generate xslx: ${err}`);
         }
       });
       return res;

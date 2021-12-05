@@ -8,6 +8,7 @@ import Paper from "@material-ui/core/Paper";
 import Switch from "@material-ui/core/Switch";
 import Toolbar from "@material-ui/core/Toolbar";
 import MoreVertIcon from "@material-ui/icons/MoreVert";
+import moment from "moment";
 import React from "react";
 import { createFragmentContainer, graphql, RelayProp } from "react-relay";
 import UpdatePieceMutation from "../mutations/UpdatePiece";
@@ -19,20 +20,20 @@ import { Piece_organization } from "./__generated__/Piece_organization.graphql";
 import { Piece_viewer } from "./__generated__/Piece_viewer.graphql";
 
 type Props = {
-  organization: Piece_organization,
-  viewer: Piece_viewer,
-  relay: RelayProp,
+  organization: Piece_organization;
+  viewer: Piece_viewer;
+  relay: RelayProp;
   router: any /* {
     push: ({
       pathname?: string,
     }) => void,
-  }*/,
+  }*/;
 };
 
 type State = {
-  editPiece: boolean,
-  menuIsOpen: null | HTMLElement,
-  showAdmin: boolean,
+  editPiece: boolean;
+  menuIsOpen: null | HTMLElement;
+  showAdmin: boolean;
 };
 
 class Piece extends React.Component<Props, State> {
@@ -61,7 +62,19 @@ class Piece extends React.Component<Props, State> {
 
   savePiece = (piece) => {
     const { organization, relay } = this.props;
-    const { composers, arrangers, title, subtitle } = piece;
+    const {
+      composers,
+      arrangers,
+      title,
+      subtitle,
+      archiveNumber,
+      maintenanceStatus,
+      published,
+      acquired,
+      publisher,
+      difficulty,
+      bandSetup,
+    } = piece;
     this.setState({ editPiece: false, menuIsOpen: null });
     UpdatePieceMutation.commit(
       relay.environment,
@@ -71,6 +84,13 @@ class Piece extends React.Component<Props, State> {
         arrangers: arrangers.split(","),
         title,
         subtitle,
+        archiveNumber,
+        maintenanceStatus,
+        published,
+        acquired,
+        publisher,
+        difficulty,
+        bandSetup,
       },
       undefined,
     );
@@ -111,7 +131,10 @@ class Piece extends React.Component<Props, State> {
               {isMusicAdmin ? (
                 <MenuItem
                   onClick={() => {
-                    this.setState({ editPiece: !this.state.editPiece });
+                    this.setState({
+                      editPiece: !this.state.editPiece,
+                      menuIsOpen: null,
+                    });
                   }}
                 >
                   Rediger info om stykke
@@ -126,6 +149,13 @@ class Piece extends React.Component<Props, State> {
             <TextList items={piece.arrangers} />
           </small>
         </h2>
+        <p>
+          Arkivnummer: {piece.archiveNumber ?? "-"},{" "}
+          {piece.maintenanceStatus ?? "-"}. Anskaffet: {piece.acquired ?? "-"}.
+          Utgitt: {piece.publisher ?? "-"}, {piece.published ?? "-"} for{" "}
+          {piece.bandSetup ?? "-"} nivå {piece.difficulty ?? "-"}. Lagret{" "}
+          {piece.created ? moment(piece.created).format("LL") : "-"}
+        </p>
         <List>
           {piece.files.edges.map((edge) => {
             return (
@@ -197,6 +227,14 @@ export default createFragmentContainer(Piece, {
         subtitle
         composers
         arrangers
+        archiveNumber
+        maintenanceStatus
+        published
+        acquired
+        publisher
+        difficulty
+        bandSetup
+        created
         files {
           edges {
             node {

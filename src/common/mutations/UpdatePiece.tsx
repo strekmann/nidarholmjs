@@ -9,6 +9,13 @@ const mutation = graphql`
         subtitle
         composers
         arrangers
+        archiveNumber
+        maintenanceStatus
+        published
+        acquired
+        publisher
+        difficulty
+        bandSetup
       }
     }
   }

@@ -14,7 +14,7 @@ import Paper from "@material-ui/core/Paper";
 import Select from "@material-ui/core/Select";
 import TextField from "@material-ui/core/TextField";
 import MoreVertIcon from "@material-ui/icons/MoreVert";
-import Autocomplete from '@material-ui/lab/Autocomplete';
+import Autocomplete from "@material-ui/lab/Autocomplete";
 import Link from "found/Link";
 import matchSorter from "match-sorter";
 import React from "react";
@@ -25,20 +25,20 @@ import { UserOptionType } from "./Member";
 import { Members_organization } from "./__generated__/Members_organization.graphql";
 
 type Props = {
-  relay: RelayProp,
-  router: any,
-  organization: Members_organization,
+  relay: RelayProp;
+  router: any;
+  organization: Members_organization;
 };
 
 type State = {
-  menuIsOpen: null | HTMLElement,
-  addUser: boolean,
-  name: string,
-  email: string,
-  instrument: string,
-  groupId?: string,
-  member: boolean,
-  userOption: UserOptionType | null
+  menuIsOpen: null | HTMLElement;
+  addUser: boolean;
+  name: string;
+  email: string;
+  instrument: string;
+  groupId?: string;
+  member: boolean;
+  userOption: UserOptionType | null;
 };
 
 class Members extends React.Component<Props, State> {
@@ -81,11 +81,14 @@ class Members extends React.Component<Props, State> {
     this.setState({ member: event.target.checked });
   };
 
-  onChangeUserOption = (event: any, newValue: UserOptionType | string | null) => {
-    if (typeof newValue === 'string') {
+  onChangeUserOption = (
+    event: any,
+    newValue: UserOptionType | string | null,
+  ) => {
+    if (typeof newValue === "string") {
       // timeout to avoid instant validation of the dialog's form.
       setTimeout(() => {
-        this.setState({addUser: true, name: newValue});
+        this.setState({ addUser: true, name: newValue });
       });
       return;
     }
@@ -136,9 +139,10 @@ class Members extends React.Component<Props, State> {
   render() {
     const { organization } = this.props;
     const { instrumentGroups, isAdmin, isMember, users } = organization;
-    const userOptions: UserOptionType[] = users?.map((user) => {
+    const userOptions: UserOptionType[] =
+      users?.map((user) => {
         return { name: user?.name ?? "", id: user?.id ?? "" };
-    }) ?? [];
+      }) ?? [];
     return (
       <Paper className="row">
         <div style={{ display: "flex", justifyContent: "space-between" }}>
@@ -151,20 +155,22 @@ class Members extends React.Component<Props, State> {
                 value={this.state.userOption}
                 onChange={this.onChangeUserOption}
                 filterOptions={(options, params) => {
-                  const filtered = matchSorter(options, params.inputValue, {keys: ["name"]}) as UserOptionType[];
-        
-                  if (params.inputValue !== '') {
+                  const filtered = matchSorter(options, params.inputValue, {
+                    keys: ["name"],
+                  }) as UserOptionType[];
+
+                  if (params.inputValue !== "") {
                     filtered.push({
                       inputValue: params.inputValue,
                       name: `Legg til "${params.inputValue}"`,
                     });
                   }
-        
+
                   return filtered;
                 }}
                 options={userOptions}
                 getOptionLabel={(option) => {
-                  if (typeof option === 'string') {
+                  if (typeof option === "string") {
                     return option;
                   }
                   if (option.inputValue) {
@@ -175,9 +181,14 @@ class Members extends React.Component<Props, State> {
                 freeSolo
                 renderInput={(params) => {
                   return (
-                  <TextField {...params} label="Finn eller legg til" style={{ width: 200 }} />);
+                    <TextField
+                      {...params}
+                      label="Finn eller legg til"
+                      style={{ width: 200 }}
+                    />
+                  );
                 }}
-               />
+              />
               <IconButton onClick={this.onMenuOpen}>
                 <MoreVertIcon />
               </IconButton>
@@ -194,6 +205,15 @@ class Members extends React.Component<Props, State> {
                 <MenuItem component={Link} to="/members/roles">
                   Verv og roller
                 </MenuItem>
+                {isAdmin ? (
+                  <MenuItem
+                    onClick={this.onMenuClose}
+                    component={"a"}
+                    href="/members/list.xlsx"
+                  >
+                    Last ned regneark
+                  </MenuItem>
+                ) : null}
               </Menu>
             </div>
           ) : null}
@@ -237,7 +257,7 @@ class Members extends React.Component<Props, State> {
                     <InputLabel htmlFor="group">Instrumentgruppe</InputLabel>
                     <Select
                       native
-                      inputProps={{id: "group", name: "group"}}
+                      inputProps={{ id: "group", name: "group" }}
                       value={this.state.groupId}
                       onChange={this.onChangeGroup}
                     >
