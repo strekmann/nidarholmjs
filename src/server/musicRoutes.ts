@@ -13,6 +13,8 @@ export function downloadArchive(req, res, next) {
     { header: "Digitale stemmer", key: "scores", width: 10 },
     { header: "Utgiver", key: "publisher", width: 20 },
     { header: "Id", key: "_id", width: 10 },
+    { header: "Arkivnummer", key: "archive_number", width: 5 },
+    { header: "Vedlikeholdsstatus", key: "maintenance_status", width: 30 },
   ];
   const query = Piece.find().sort("title");
   query.exec((err, pieces) => {
@@ -25,6 +27,8 @@ export function downloadArchive(req, res, next) {
         arrangers,
         scores,
         publisher,
+        archive_number,
+        maintenance_status,
       } = p;
       worksheet.addRow({
         _id,
@@ -34,6 +38,8 @@ export function downloadArchive(req, res, next) {
         arrangers: arrangers.join(" + "),
         scores: scores.length,
         publisher,
+        archive_number,
+        maintenance_status,
       });
     });
 
