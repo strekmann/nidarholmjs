@@ -59,7 +59,13 @@ fn main() {
     }
 
     // Set of all members
-    let all_members: HashSet<String> = user_map.values().map(|user| user.email.clone()).collect();
+    let all_members: HashSet<String> = user_map
+        .iter()
+        .map(|(id, user)| {
+            println!("{} {}", id, user.email);
+            user.email.clone()
+        })
+        .collect();
 
     // Find moderators to use for all lists
     let moderator_group = db.get_group_by_name("Listemoderatorer");
