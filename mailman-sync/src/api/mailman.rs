@@ -1,9 +1,38 @@
-use log::{debug, info};
+// TODO: check if there is a decent mailman rust api soon
+
+use log::{debug, error, info};
 use serde::{Deserialize, Serialize};
 use std::collections::HashSet;
 use std::str::FromStr;
 
-use crate::api::nidarholm::Role;
+#[derive(Copy, Clone, Debug, Serialize, PartialEq)]
+pub enum ListRole {
+    NonMember,
+    Member,
+    Moderator,
+}
+
+impl ListRole {
+    pub fn as_str(&self) -> &'static str {
+        match self {
+            Self::NonMember => "nonmember",
+            Self::Member => "member",
+            Self::Moderator => "moderator",
+        }
+    }
+}
+
+impl FromStr for ListRole {
+    type Err = ();
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        match s {
+            "nonmember" => Ok(Self::NonMember),
+            "member" => Ok(Self::Member),
+            "moderator" => Ok(Self::Moderator),
+            _ => Err(()),
+        }
+    }
+}
 
 /** The relation between a list member and the list */
 #[derive(Clone, Debug, Serialize)]
@@ -42,7 +71,7 @@ pub struct MemberList {
 }
 
 impl MemberList {
-    fn empty_vector() -> Vec<Member> {
+    const fn empty_vector() -> Vec<Member> {
         let v: Vec<Member> = Vec::new();
         v
     }
@@ -61,8 +90,8 @@ pub enum ModerationAction {
 impl ModerationAction {
     pub fn as_str(&self) -> &'static str {
         match self {
-            ModerationAction::Accept => "accept",
-            ModerationAction::Deny => "deny",
+            Self::Accept => "accept",
+            Self::Deny => "deny",
         }
     }
 }
@@ -71,8 +100,8 @@ impl FromStr for ModerationAction {
     type Err = ();
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         match s {
-            "accept" => Ok(ModerationAction::Accept),
-            "deny" => Ok(ModerationAction::Deny),
+            "accept" => Ok(Self::Accept),
+            "deny" => Ok(Self::Deny),
             _ => Err(()),
         }
     }
@@ -87,8 +116,8 @@ pub struct Api {
 }
 
 impl Api {
-    pub fn new(url: &str, user: &str, password: &str) -> Api {
-        Api {
+    pub fn new(url: &str, user: &str, password: &str) -> Self {
+        Self {
             client: reqwest::Client::new(),
             base_url: url.to_owned(),
             user: user.to_owned(),
@@ -96,7 +125,7 @@ impl Api {
         }
     }
 
-    fn get_members(&self, group_email: &str, role: Role) -> HashSet<String> {
+    fn get_members(&self, group_email: &str, role: ListRole) -> HashSet<String> {
         let url = format!(
             "{}/lists/{}/roster/{}",
             self.base_url,
@@ -131,17 +160,17 @@ impl Api {
         let mut member_set: HashSet<String> = HashSet::new();
         for member in json.entries {
             match member.user {
-                Some(_) => member_set.insert(member.email.clone()),
+                Some(_) => member_set.insert(member.email.to_owned()),
                 None => false, // A nonmember on the list not registered by us (normal case for post etc)
             };
         }
         member_set
     }
 
-    fn subscribe(&self, group_email: &str, group_member: &str, role: Role) {
+    fn subscribe(&self, group_email: &str, group_member: &str, role: ListRole) {
         let subscription = Subscription {
-            list_id: str::replace(group_email, "@", "."),
-            subscriber: group_member.to_string(),
+            list_id: str::replace(group_email, "@", ".").to_lowercase(),
+            subscriber: group_member.to_string().to_lowercase(),
             role: role.as_str().to_string(),
             pre_verified: true,
             pre_confirmed: true,
@@ -155,21 +184,20 @@ impl Api {
             .form(&subscription)
             .send();
 
-        response
-            .expect("Error in adding user")
-            .error_for_status()
-            .unwrap_or_else(|err| {
-                panic!(
-                    "Add did not work for {} to {}: {}, ({})",
-                    subscription.subscriber,
-                    subscription.list_id,
-                    subscription.role.as_str(),
-                    err
-                )
-            });
+        let res = response.expect("Error in adding user").error_for_status();
+
+        if let Err(err) = res {
+            error!(
+                "Add did not work for {} to {}: {}, ({})",
+                subscription.subscriber,
+                subscription.list_id,
+                subscription.role.as_str(),
+                err
+            );
+        }
     }
 
-    fn unsubscribe(&self, group_email: &str, emails: Vec<String>, role: Role) {
+    fn unsubscribe(&self, group_email: &str, emails: Vec<String>, role: ListRole) {
         let mut email_tuples: Vec<(String, String)> = Vec::new();
         for email in &emails {
             email_tuples.push((String::from("emails"), email.to_owned()));
@@ -200,7 +228,7 @@ impl Api {
                 )
             });
     }
-    fn set_moderation_action(&self, action: &str, role: Role, group_email: &str, email: &str) {
+    fn set_moderation_action(&self, action: &str, role: ListRole, group_email: &str, email: &str) {
         let patch_url: String = format!(
             "{}/lists/{}/{}/{}",
             self.base_url,
@@ -231,27 +259,27 @@ impl Api {
                 )
             });
     }
-    pub fn update_members(&self, group_email: &str, members: HashSet<&str>, role: Role) {
+    pub fn update_members(&self, group_email: &str, members: HashSet<String>, role: ListRole) {
         debug!("Updating {}, {}", group_email, role.as_str());
         let mut member_set = self.get_members(group_email, role);
         for group_member in members {
-            if !member_set.contains(group_member) {
-                self.subscribe(group_email, group_member, role);
-                if role == Role::NonMember {
+            if !member_set.contains(&group_member) {
+                self.subscribe(group_email, &group_member, role);
+                if role == ListRole::NonMember {
                     self.set_moderation_action(
                         ModerationAction::Accept.as_str(),
                         role,
                         group_email,
-                        group_member,
+                        &group_member,
                     );
                 }
             } else {
-                member_set.remove(group_member);
+                member_set.remove(&group_member);
             }
         }
         if !member_set.is_empty() {
             let emails = member_set.into_iter().collect::<Vec<String>>();
-            if role != Role::NonMember {
+            if role != ListRole::NonMember {
                 self.unsubscribe(group_email, emails, role);
             }
         }
