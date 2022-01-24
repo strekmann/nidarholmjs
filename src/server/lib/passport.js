@@ -1,6 +1,5 @@
 /* eslint no-param-reassign: 0 */
 
-import config from "config";
 import passport from "passport";
 import LocalStrategy from "passport-local";
 import { Strategy as RememberMeStrategy } from "passport-remember-me";
@@ -8,6 +7,7 @@ import { OAuth2Strategy as GoogleStrategy } from "passport-google-oauth";
 import { Strategy as FacebookStrategy } from "passport-facebook";
 import { Strategy as TwitterStrategy } from "passport-twitter";
 
+import config from "../../config";
 import RememberMeToken from "../models/RememberMeToken";
 import User from "../models/User";
 
@@ -105,7 +105,7 @@ if (config.auth.facebook) {
         enablePoof: false,
         passReqToCallback: true,
       },
-      (req, accessToken, refreshToken, profile, done) => {
+      (req, _accessToken, _refreshToken, profile, done) => {
         if (req.user) {
           req.user.facebook_id = profile.id;
           req.user.save((err, user) => {
@@ -136,7 +136,7 @@ if (config.auth.google) {
         callbackURL: config.auth.google.callbackURL,
         passReqToCallback: true,
       },
-      (req, accessToken, refreshToken, profile, done) => {
+      (req, _accessToken, _refreshToken, profile, done) => {
         if (req.user) {
           req.user.google_id = profile.id;
           req.user.save((err, user) => {
@@ -167,7 +167,7 @@ if (config.auth.twitter) {
         callbackURL: config.auth.twitter.callbackURL,
         passReqToCallback: true,
       },
-      (req, token, tokenSecret, profile, done) => {
+      (req, _token, _tokenSecret, profile, done) => {
         if (req.user) {
           req.user.twitter_id = profile.id;
           req.user.save((err, user) => {

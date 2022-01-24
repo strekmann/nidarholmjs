@@ -1,6 +1,5 @@
 import path from "path";
-
-import config from "config";
+import config from "../../config";
 
 export default function findPath(configName) {
   const configRoot = process.env.FILE_PATH || "files";

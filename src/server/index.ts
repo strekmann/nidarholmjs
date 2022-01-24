@@ -3,32 +3,28 @@
 /* eslint no-param-reassign: "off" */
 /* eslint camelcase: "off" */
 
+import path from "path";
+import http from "http";
+import fs from "fs";
+
 import bodyParser from "body-parser";
-import bunyan from "bunyan";
-import config from "config";
 import connectMongo from "connect-mongo";
 import cookieParser from "cookie-parser";
 import errorHandler from "errorhandler";
 import express, { NextFunction, Request, Response } from "express";
-import expressBunyan from "express-bunyan-logger";
 import graphqlHTTP from "express-graphql";
 import session from "express-session";
-import {
-  FarceElementResult,
-  FarceRedirectResult,
-  getFarceResult,
-} from "found/server";
-import fs from "fs";
-import http from "http";
+import { getFarceResult } from "found/server";
 import httpProxy from "http-proxy";
 import jwt from "jsonwebtoken";
 import moment from "moment";
 import mongoose from "mongoose";
 import multer from "multer";
 import { ExtractJwt } from "passport-jwt";
-import path from "path";
 import "regenerator-runtime/runtime";
 import serveStatic from "serve-static";
+
+import config from "../config";
 import { ServerFetcher } from "../fetcher";
 import {
   createResolver,
@@ -36,6 +32,7 @@ import {
   render,
   routeConfig,
 } from "../router";
+
 import sendPasswordToEmail from "./database/sendPasswordToEmail";
 import { sendReminderEmails } from "./emailTasks";
 import { icalEvents } from "./icalRoutes";
@@ -59,63 +56,47 @@ moment.locale("nb");
 
 const app = express();
 const httpServer = http.createServer(app);
-const port = config.get("express.port") || 3000;
+const { port } = config.app;
 
 const upload = multer({ storage: multer.diskStorage({}) }).single("file");
 
-// const io = socketIO(httpServer, { path: '/s' });
+app.set("trust proxy", 1);
 
-if (config.get("express.trust_proxy")) {
-  app.set("trust proxy", 1);
-}
-
-app.use(cookieParser(config.get("express.session.secret")));
+app.use(cookieParser(config.session.secret));
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
-if (config.util.getEnv("NODE_ENV") === "test") {
+if (config.env === "test") {
   app.use(errorHandler());
   app.use(
     session({
       secret: "testing-secret",
-      resave: config.get("express.session.resave"),
-      saveUninitialized: config.get("express.session.saveUninitialized"),
+      resave: config.session.resave,
+      saveUninitialized: config.session.saveUninitialized,
+    }),
+  );
+} else {
+  const MongoStore = connectMongo(session);
+  const maxAge: number = config.session.cookie.maxage;
+  app.use(
+    session({
+      store: new MongoStore({
+        mongooseConnection: mongoose.connection,
+        ttl: maxAge / 1000,
+        touchAfter: maxAge / 10000,
+      }),
+      secret: config.session.secret,
+      name: config.session.name,
+      resave: config.session.resave,
+      saveUninitialized: config.session.saveUninitialized,
+      rolling: config.session.rolling,
+      cookie: {
+        maxAge: config.session.cookie.maxage,
+        secure: config.session.cookie.secure,
+      },
     }),
   );
 }
-
-const MongoStore = connectMongo(session);
-const maxAge: number = config.get("express.session.maxAge");
-app.use(
-  session({
-    store: new MongoStore({
-      mongooseConnection: mongoose.connection,
-      ttl: maxAge / 1000,
-      touchAfter: maxAge / 10000,
-    }),
-    secret: config.get("express.session.secret"),
-    name: config.get("express.session.name"),
-    resave: config.get("express.session.resave"),
-    saveUninitialized: config.get("express.session.saveUninitialized"),
-    rolling: config.get("express.session.rolling"),
-    cookie: {
-      maxAge: config.get("express.session.maxAge"),
-      secure: config.get("express.session.secure"),
-    },
-  }),
-);
-
-/* LOGGING */
-const log = bunyan.createLogger(config.get("bunyan"));
-const excludes: string[] = config.get("bunyan-express.excludes");
-const format: string = config.get("bunyan-express.format");
-const bunyan_opts = {
-  logger: log,
-  excludes,
-  format,
-};
-app.use(expressBunyan(bunyan_opts));
-app.use(expressBunyan.errorLogger(bunyan_opts));
 
 app.use(passport.initialize());
 app.use(passport.session());
@@ -125,7 +106,7 @@ app.use((req, res, next) => {
   next();
 });
 
-const auth: any = config.get("auth");
+const { auth } = config;
 if (auth.remember_me) {
   app.use(passport.authenticate("remember-me"));
 }
@@ -142,11 +123,12 @@ if (auth.jwt) {
     }
     return jwt.verify(
       token,
-      config.get("express.session.secret"),
+      config.session.secret,
       {},
       (error, decoded: any) => {
         if (error) {
-          log.error(error);
+          // eslint-disable-next-line no-console
+          console.error(error);
           return next();
         }
         if (!decoded.sub) {
@@ -156,7 +138,8 @@ if (auth.jwt) {
         // @ts-ignore
         return passport.deserializeUser(decoded.sub.id, (err, user: IUser) => {
           if (err) {
-            log.error(err);
+            // eslint-disable-next-line no-console
+            console.error(err);
           } else if (user) {
             res.locals.user = user;
           }
@@ -171,26 +154,15 @@ if (auth.jwt) {
 app.use(serveStatic(path.join(__dirname, "..", "static")));
 
 // We have a possibility to override user login during development
-app.use((req, res, next) => {
-  if (process.env.NODE_ENV !== "production" && config.has("override.user")) {
-    User.findOne({ email: config.get("override.user") })
+app.use((_req, res, next) => {
+  if (config.env !== "production" && config.override.user) {
+    User.findOne({ email: config.override.user })
       .exec()
       .then((user) => {
         if (user) {
-          res.locals.user = user;
-        }
-        next();
-      });
-  } else if (
-    process.env.NODE_ENV !== "production" &&
-    process.env.NIDARHOLM_USER_EMAIL
-  ) {
-    User.findOne({ email: process.env.NIDARHOLM_USER_EMAIL })
-      .exec()
-      .then((user: IUser | null) => {
-        if (user) {
-          res.locals.user = user;
+          // eslint-disable-next-line no-console
           console.warn(`Running as ${user.name}`);
+          res.locals.user = user;
         }
         next();
       });
@@ -201,7 +173,7 @@ app.use((req, res, next) => {
 
 // Fetch active organization from hostname, config override
 // or pick the default.
-app.use((req, res, next) => {
+app.use((_req, res, next) => {
   // TODO: Change this part for samklang.
   const organizationId = "nidarholm";
 
@@ -256,7 +228,8 @@ app.post("/upload", upload, (req, res, next) => {
       return res.json(_file);
     })
     .catch((error) => {
-      log.error(error);
+      // eslint-disable-next-line no-console
+      console.error(error);
     });
 });
 
@@ -343,6 +316,7 @@ app.get(
   "/music/archive.xlsx",
   (req, res, next) => {
     if (!res.locals.user.isMusicAdmin) {
+      // eslint-disable-next-line no-console
       console.error("Not music admin");
       const error = new Error("Not music admin");
       next(error);
@@ -355,6 +329,7 @@ app.get(
   "/members/list.xlsx",
   (req, res, next) => {
     if (!res.locals.user.isAdmin) {
+      // eslint-disable-next-line no-console
       console.error("Not admin");
       const error = new Error("Not admin");
       next(error);
@@ -383,7 +358,8 @@ if (
 app.get("/logout", (req, res, next) => {
   req.logout();
   req.session?.destroy((err: Error) => {
-    log.error(`Cannot destroy session: ${err}`);
+    // eslint-disable-next-line no-console
+    console.error(`Cannot destroy session: ${err}`);
   });
   res.clearCookie("remember_me");
   res.redirect("/");
@@ -393,7 +369,7 @@ app.post(
   "/login",
   passport.authenticate("local"),
   persistentLogin,
-  (req, res, next) => {
+  (_req, res, _next) => {
     res.redirect("/");
   },
 );
@@ -502,10 +478,10 @@ app.use(async (req, res, next) => {
   const token = jwt.sign(
     {
       sub: res.locals.user,
-      aud: config.get("site.domain"),
-      iss: config.get("site.domain"),
+      aud: config.app.domain,
+      iss: config.app.domain,
     },
-    config.get("express.session.secret"),
+    config.session.secret,
   );
   const fetcher = new ServerFetcher(`http://localhost:${port}/graphql`, token);
   try {
@@ -517,14 +493,12 @@ app.use(async (req, res, next) => {
       render,
     });
 
-    if ((result as FarceRedirectResult).redirect) {
-      res.redirect(302, (result as FarceRedirectResult).redirect.url);
+    if ("redirect" in result) {
+      res.redirect(302, result.redirect.url);
       return;
     }
 
-    res
-      .status((result as FarceElementResult).status)
-      .send(renderPage((result as FarceElementResult).element, fetcher));
+    res.status(result.status).send(renderPage(result.element, fetcher));
   } catch (error) {
     next(error);
   }
@@ -541,7 +515,8 @@ app.use(
         message = "Invalid token";
         break;
       default:
-        log.error(err, "unhandeled error");
+        // eslint-disable-next-line no-console
+        console.error(err, "unhandeled error");
     }
 
     res.format({
@@ -572,17 +547,20 @@ app.use((req, res, next) => {
 });
 
 process.on("uncaughtException", (err) => {
-  log.fatal(err);
+  // eslint-disable-next-line no-console
+  console.error(err);
   process.exit(1);
 });
 
 setInterval(() => {
-  log.info("Email reminder running", moment().format());
+  // eslint-disable-next-line no-console
+  console.info("Email reminder running", moment().format());
   sendReminderEmails();
 }, 60 * 60 * 1000);
 
 httpServer.listen(port, () => {
-  log.info("port %s, env=%s", port, config.util.getEnv("NODE_ENV"));
+  // eslint-disable-next-line no-console
+  console.info("port %s, env=%s", port, config.env);
 });
 
 export default app;
@@ -590,6 +568,7 @@ export default app;
 class HttpException extends Error {
   status: number;
   message: string;
+
   constructor(status: number, message: string) {
     super(message);
     this.status = status;

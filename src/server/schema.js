@@ -1,4 +1,3 @@
-import config from "config";
 import {
   GraphQLBoolean,
   GraphQLID,
@@ -22,7 +21,7 @@ import {
 } from "graphql-relay";
 import marked from "marked";
 import moment from "moment";
-import uuid from "node-uuid";
+import uuid from "uuid";
 import mongoose from "mongoose";
 
 import sendReset from "./mutations/sendReset";
@@ -43,6 +42,7 @@ import User from "./models/User";
 import insertFile from "./lib/insertFile";
 import { buildPermissionObject } from "./lib/permissions";
 import { sendContactEmail } from "./emailTasks";
+import config from "../config";
 
 let userType;
 let groupType;
@@ -289,7 +289,7 @@ userType = new GraphQLObjectType({
       },
       membershipHistory: {
         type: GraphQLString,
-        resolve: (user, args, { organization, viewer }) => {
+        resolve: (user, _args, { organization, viewer }) => {
           if (isAdmin(organization, viewer)) {
             return User.findById(user._id)
               .select("+membership_history")
@@ -365,7 +365,7 @@ const memberType = new GraphQLObjectType({
       organizationRoles: {
         // Roles are always added at organization level
         type: new GraphQLList(roleType),
-        resolve: (_member, args, { organization }) => {
+        resolve: (_member, _args, { organization }) => {
           const organizationMember = organization.member_group.members.find(
             (m) => {
               if (typeof m.user === "object") {
@@ -437,7 +437,7 @@ groupType = new GraphQLObjectType({
     },
     members: {
       type: new GraphQLList(memberType),
-      resolve: (group, args, { organization }) => {
+      resolve: (group, _args, { organization }) => {
         const members = organization.member_group.members.map(
           (organizationMember) => {
             if (typeof organizationMember.user === "object") {
@@ -478,7 +478,7 @@ roleType = new GraphQLObjectType({
       email: { type: GraphQLString },
       users: {
         type: new GraphQLList(userType),
-        resolve: (role, args, { viewer, organization }) => {
+        resolve: (role, _args, { viewer, organization }) => {
           if (!admin(organization, viewer)) {
             return null;
           }
@@ -749,7 +749,7 @@ const groupScoreType = new GraphQLObjectType({
       },
       organization: {
         type: organizationType,
-        resolve: (group, args, { organization }) => {
+        resolve: (_group, _args, { organization }) => {
           return organization;
         },
       },
@@ -805,7 +805,7 @@ pieceType = new GraphQLObjectType({
       },
       groupscores: {
         type: new GraphQLList(groupScoreType),
-        resolve: (piece, args, { organization, viewer }) => {
+        resolve: (piece, _args, { organization, viewer }) => {
           if (!viewer.isMember) {
             // throw new Error('Not a member.');
             return null;
@@ -891,7 +891,7 @@ projectType = new GraphQLObjectType({
     },
     privateMdtext: {
       type: GraphQLString,
-      resolve: (project, args, { viewer, organization }) => {
+      resolve: (project, _args, { viewer, organization }) => {
         if (isMember(organization, viewer)) {
           return project.private_mdtext;
         }
@@ -1240,25 +1240,25 @@ organizationType = new GraphQLObjectType({
     },
     isMember: {
       type: new GraphQLNonNull(GraphQLBoolean),
-      resolve: (_, args, { viewer }) => {
+      resolve: (_, _args, { viewer }) => {
         return (viewer && viewer.isMember) || false;
       },
     },
     isAdmin: {
       type: new GraphQLNonNull(GraphQLBoolean),
-      resolve: (_, args, { viewer }) => {
+      resolve: (_, _args, { viewer }) => {
         return (viewer && viewer.isAdmin) || false;
       },
     },
     isMusicAdmin: {
       type: new GraphQLNonNull(GraphQLBoolean),
-      resolve: (_, args, { viewer }) => {
+      resolve: (_, _args, { viewer }) => {
         return (viewer && viewer.isMusicAdmin) || false;
       },
     },
     instrumentGroups: {
       type: new GraphQLList(groupType),
-      resolve: (_, args, { organization }) => {
+      resolve: (_, _args, { organization }) => {
         return Organization.findById(organization.id)
           .populate({
             path: "instrument_groups",
@@ -1272,7 +1272,7 @@ organizationType = new GraphQLObjectType({
     },
     users: {
       type: new GraphQLNonNull(new GraphQLList(userType)),
-      resolve: (_, args, { organization, viewer }) => {
+      resolve: (_, _args, { organization, viewer }) => {
         if (isMember(organization, viewer)) {
           const query = User.find().select("name username");
           return query.sort("-created").exec();
@@ -1314,7 +1314,7 @@ organizationType = new GraphQLObjectType({
     },
     nextProject: {
       type: projectType,
-      resolve: (_, args, { viewer, organization }) => {
+      resolve: (_, _args, { viewer, organization }) => {
         let query = Project.findOne({
           end: {
             $gte: moment().startOf("day").toDate(),
@@ -1430,7 +1430,7 @@ organizationType = new GraphQLObjectType({
     },
     projectTags: {
       type: new GraphQLList(projectType),
-      resolve: (_, args, { viewer, organization }) => {
+      resolve: (_, _args, { viewer, organization }) => {
         if (!member(organization, viewer)) {
           return null;
         }
@@ -1454,7 +1454,7 @@ organizationType = new GraphQLObjectType({
     events: {
       type: eventConnection.connectionType,
       args: connectionArgs,
-      resolve: (parent, { ...args }, { viewer }) => {
+      resolve: (_parent, { ...args }, { viewer }) => {
         const query = Event.find({
           start: {
             $gte: moment().startOf("day").toDate(),
@@ -1469,7 +1469,7 @@ organizationType = new GraphQLObjectType({
     nextEvents: {
       type: eventConnection.connectionType,
       args: connectionArgs,
-      resolve: (parent, { ...args }, { viewer }) => {
+      resolve: (_parent, { ...args }, { viewer }) => {
         const query = Event.find({
           start: {
             $gte: moment().startOf("day").toDate(),
@@ -1648,7 +1648,7 @@ organizationType = new GraphQLObjectType({
     },
     groups: {
       type: new GraphQLList(groupType),
-      resolve: (_, args, { organization, viewer }) => {
+      resolve: (_, _args, { organization, viewer }) => {
         if (!admin(organization, viewer)) {
           return [];
         }
@@ -1673,7 +1673,7 @@ organizationType = new GraphQLObjectType({
     },
     organizationEventPersonResponsibilities: {
       type: new GraphQLList(organizationEventPersonResponsibilityType),
-      resolve: (_, args, { organization, viewer }) => {
+      resolve: (_, _args, { organization, viewer }) => {
         if (!isMember(organization, viewer)) {
           throw new Error("Noboby");
         }
@@ -1684,7 +1684,7 @@ organizationType = new GraphQLObjectType({
     },
     organizationEventGroupResponsibilities: {
       type: new GraphQLList(organizationEventGroupResponsibilityType),
-      resolve: (_, args, { organization, viewer }) => {
+      resolve: (_, _args, { organization, viewer }) => {
         if (!isMember(organization, viewer)) {
           throw new Error("Noboby");
         }
@@ -1925,7 +1925,7 @@ const mutationAddPage = mutationWithClientMutationId({
   outputFields: {
     organization: {
       type: organizationType,
-      resolve: (payload, args, { organization }) => {
+      resolve: (_payload, _args, { organization }) => {
         return organization;
       },
     },
@@ -1973,7 +1973,7 @@ const mutationAddUser = mutationWithClientMutationId({
   outputFields: {
     organization: {
       type: organizationType,
-      resolve: (payload, args, { organization }) => {
+      resolve: (_payload, _args, { organization }) => {
         return organization;
       },
     },
@@ -2651,7 +2651,7 @@ const mutationAddFile = mutationWithClientMutationId({
   outputFields: {
     organization: {
       type: organizationType,
-      resolve: (payload, args, { organization }) => {
+      resolve: (_payload, _args, { organization }) => {
         return organization;
       },
     },
@@ -2818,7 +2818,7 @@ const mutationAddProject = mutationWithClientMutationId({
   outputFields: {
     organization: {
       type: organizationType,
-      resolve: (payload, args, { organization }) => {
+      resolve: (_payload, _args, { organization }) => {
         return organization;
       },
     },
@@ -2935,7 +2935,7 @@ const mutationDeleteProject = mutationWithClientMutationId({
   outputFields: {
     organization: {
       type: organizationType,
-      resolve: (_, args, { organization }) => {
+      resolve: (_, _args, { organization }) => {
         return organization;
       },
     },
@@ -2981,7 +2981,7 @@ const mutationSetPassword = mutationWithClientMutationId({
   outputFields: {
     viewer: {
       type: userType,
-      resolve: (payload, args, { viewer }) => {
+      resolve: (_payload, _args, { viewer }) => {
         return User.findById(viewer.id);
       },
     },
@@ -3022,7 +3022,7 @@ const mutationSendReset = mutationWithClientMutationId({
   outputFields: {
     organization: {
       type: organizationType,
-      resolve: (payload, args, { organization }) => {
+      resolve: (_payload, _args, { organization }) => {
         return Organization.findById(organization.id);
       },
     },
@@ -3164,7 +3164,7 @@ const mutationCreatePiece = mutationWithClientMutationId({
   outputFields: {
     organization: {
       type: organizationType,
-      resolve: (payload, args, { organization }) => {
+      resolve: (_payload, _args, { organization }) => {
         return organization;
       },
     },
@@ -3272,7 +3272,7 @@ const mutationCreateRole = mutationWithClientMutationId({
   outputFields: {
     organization: {
       type: organizationType,
-      resolve: (_, args, { organization }) => {
+      resolve: (_, _args, { organization }) => {
         return organization;
       },
     },
@@ -3306,7 +3306,7 @@ const mutationDeleteRole = mutationWithClientMutationId({
   outputFields: {
     organization: {
       type: organizationType,
-      resolve: (_, args, { organization }) => {
+      resolve: (_, _args, { organization }) => {
         return organization;
       },
     },

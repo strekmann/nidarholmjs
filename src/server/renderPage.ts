@@ -1,19 +1,20 @@
-import config from "config";
 import "cookie-parser";
 import { ReactComponentElement } from "react";
 import ReactDOMServer from "react-dom/server";
 import Helmet from "react-helmet";
 import serialize from "serialize-javascript";
+
+import config from "../config";
 import { ServerFetcher } from "../fetcher";
 
-export default function renderPage(element: ReactComponentElement<any>, fetcher: ServerFetcher) {
+export default function renderPage(
+  element: ReactComponentElement<any>,
+  fetcher: ServerFetcher,
+) {
   const elementRendered = ReactDOMServer.renderToString(element);
   const helmet = Helmet.renderStatic();
 
-  let link = "";
-  if (config.get("html.style")) {
-    link = helmet.link.toString();
-  }
+  const link = config.html.style ? helmet.link.toString() : "";
 
   return `
     <!doctype html>

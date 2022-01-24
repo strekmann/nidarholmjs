@@ -1,6 +1,5 @@
 /* eslint "no-console": 0 */
 
-import config from "config";
 import moment from "moment";
 import nodemailer from "nodemailer";
 import Event from "./models/Event";
@@ -12,6 +11,7 @@ import OrganizationEventPersonResponsibility, {
 } from "./models/OrganizationEventPersonResponsibility";
 import PasswordCode from "./models/PasswordCode";
 import User, { IUser } from "./models/User";
+import config from "../config";
 
 export function sendContactEmail({
   name,
@@ -24,8 +24,8 @@ export function sendContactEmail({
   text: string;
   organization: IOrganization;
 }) {
-  if (config.get("auth.smtp.host")) {
-    const transporter = nodemailer.createTransport(config.get("auth.smtp"));
+  if (config.auth.smtp) {
+    const transporter = nodemailer.createTransport(config.auth.smtp);
     const data = {
       from: `${name} <${email}>`,
       to: organization.email,
@@ -56,15 +56,11 @@ export function sendPasswordEmail(organization: IOrganization, user: IUser) {
   const code = new PasswordCode();
   code.user = user._id;
   return code.save().then((newCode) => {
-    const message = `Hei ${
-      user.name
-    }\r\n\r\nDet kan se ut som du holder på å sette nytt passord. Hvis du ikke prøver på dette, ber vi deg se bort fra denne eposten. For å sette nytt passord, må du gå til lenka:\r\n${config.get(
-      "site.protocol",
-    )}://${config.get("site.domain")}/login/reset/${newCode._id}`;
-    if (config.get("auth.smtp.host")) {
-      const transporter = nodemailer.createTransport(config.get("auth.smtp"));
+    const message = `Hei ${user.name}\r\n\r\nDet kan se ut som du holder på å sette nytt passord. Hvis du ikke prøver på dette, ber vi deg se bort fra denne eposten. For å sette nytt passord, må du gå til lenka:\r\n${config.app.uri}/login/reset/${newCode._id}`;
+    if (config.auth.smtp && config.auth.noreplyAddress) {
+      const transporter = nodemailer.createTransport(config.auth.smtp);
       const mailOptions = {
-        from: config.get("auth.smtp.noreplyAddress") as string,
+        from: config.auth.noreplyAddress,
         to: `${user.name} <${user.email}>`,
         subject: "Nytt passord",
         text: message,
@@ -121,23 +117,16 @@ export function sendReminderEmails() {
             });
           Promise.all(users).then((resolvedUsers) => {
             const recipients = resolvedUsers
-              .filter((user) => {
-                return user != null;
-              })
+              .filter(objectHasNameAndEmail)
               .map((user) => {
-                const { name, email: address } = user as {
-                  name: string;
-                  email: string;
-                };
+                const { name, email: address } = user;
                 return {
                   name,
                   address,
                 };
               });
-            if (config.get("auth.smtp.host")) {
-              const transporter = nodemailer.createTransport(
-                config.get("auth.smtp"),
-              );
+            if (config.auth.smtp) {
+              const transporter = nodemailer.createTransport(config.auth.smtp);
               const data = {
                 from: `${senderName} <${senderEmail}>`,
                 to: recipients,
@@ -200,23 +189,16 @@ export function sendReminderEmails() {
             });
           Promise.all(groups).then((resolvedGroups) => {
             const recipients = resolvedGroups
-              .filter((group) => {
-                return group != null;
-              })
+              .filter(objectHasNameAndEmail)
               .map((group) => {
-                const { name, email: address } = group as {
-                  name: string;
-                  email: string;
-                };
+                const { name, email: address } = group;
                 return {
                   name,
                   address,
                 };
               });
-            if (config.get("auth.smtp.host")) {
-              const transporter = nodemailer.createTransport(
-                config.get("auth.smtp"),
-              );
+            if (config.auth.smtp) {
+              const transporter = nodemailer.createTransport(config.auth.smtp);
               const data = {
                 from: `${senderName} <${senderEmail}>`,
                 to: recipients,
@@ -240,4 +222,31 @@ export function sendReminderEmails() {
       });
     });
   });
+}
+
+interface ObjectWithName {
+  name: string;
+}
+
+interface ObjectWithEmail {
+  email: string;
+}
+
+type ObjectWithNameAndEmail = ObjectWithName & ObjectWithEmail;
+
+function objectHasName(obj: unknown): obj is ObjectWithName {
+  return typeof obj === "object" && obj != null && "name" in obj;
+}
+
+function objectHasEmail(obj: unknown): obj is ObjectWithEmail {
+  return typeof obj === "object" && obj != null && "email" in obj;
+}
+
+function objectHasNameAndEmail(obj: unknown): obj is ObjectWithNameAndEmail {
+  return (
+    objectHasName(obj) &&
+    objectHasEmail(obj) &&
+    obj.name != null &&
+    obj.email != null
+  );
 }
