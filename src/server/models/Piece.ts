@@ -1,5 +1,5 @@
 import mongoose from "mongoose";
-import uuid from "node-uuid";
+import uuid from "uuid";
 import { IFile } from "./File";
 import schemaOptions from "./schemaOptions";
 import { IUser } from "./User";
