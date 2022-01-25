@@ -11,9 +11,8 @@
   },
   "scripts": {
     "env": "env",
-    "build-project": "yarn build:schema && yarn relay && yarn build:server && yarn build:client && yarn build:copy",
-    "build:client": "webpack --mode production --progress --colors --config webpack.prod.config.js",
-    "build:copy": "cp -r config dist/ && cp package.json dist/",
+    "build-project": "yarn build:schema && yarn relay && yarn build:server && yarn build:client",
+    "build:client": "webpack --mode production --no-info --config webpack.production.config.js",
     "build:server": "babel --extensions=.tsx,.ts,.js src -d dist",
     "build:schema": "babel-node --extensions=.ts,.js ./scripts/build-schema.ts",
     "cypress": "cypress open",
@@ -22,7 +21,7 @@
     "dev": "babel-node ./node_modules/.bin/webpack-dev-server --mode development --progress --port 3001 --hot",
     "lint": "eslint --ignore-pattern \"src/server/lib/middleware.js\" --ignore-pattern \"src/server/lib/util.js\" --ignore-pattern \"src/server/routes/*\" \"cypress/**/*ts\" \"src/**/*.js\"",
     "nodemon": "nodemon --exec babel-node src/dev.ts",
-    "relay": "relay-compiler --src ./src --schema ./src/server/schema.graphql --language typescript",
+    "relay": "relay-compiler",
     "vm": "vagrant up",
     "prettier": "prettier --write --ignore-path .gitignore \"src/**/*(js|ts|tsx)\""
   },
@@ -52,6 +51,11 @@
       "target/"
     ],
     "ext": "tsx,ts,js"
+  },
+  "relay": {
+    "src": "./src",
+    "schema": "./src/server/schema.graphql",
+    "language": "typescript"
   },
   "dependencies": {
     "@babel/node": "^7.2.2",
@@ -119,8 +123,7 @@
     "react-motion": "^0.4.4",
     "react-relay": "^9.0.0",
     "regenerator-runtime": "^0.11.0",
-    "relay-compiler": "^9.0.0",
-    "relay-runtime": "^9.0.0",
+    "relay-runtime": "^13.0.0",
     "serialize-javascript": "^5.0.1",
     "serve-static": "^1.11.1",
     "tempy": "^1.0.0",
@@ -154,7 +157,8 @@
     "@types/react-dropzone": "^5.1.0",
     "@types/react-helmet": "^5.0.15",
     "@types/react-map-gl": "^5.2.9",
-    "@types/react-relay": "^7.0.3",
+    "@types/react-relay": "^13.0.0",
+    "@types/relay-runtime": "^13.0.0",
     "@types/serialize-javascript": "^4.0.0",
     "@types/serviceworker-webpack-plugin": "^1.0.1",
     "@types/uuid": "^8.0.0",
@@ -182,7 +186,8 @@
     "nodemon": "^2.0.3",
     "postcss-loader": "^3.0.0",
     "prettier": "^2.0.5",
-    "relay-compiler-language-typescript": "^12.0.0",
+    "relay-compiler": "^13.0.0",
+    "relay-compiler-language-typescript": "^15.0.0",
     "sass-loader": "^7.1.0",
     "sass-material-colors": "^0.0.5",
     "serviceworker-webpack-plugin": "^1.0.1",

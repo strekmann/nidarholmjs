@@ -209,7 +209,7 @@ export default createRefetchContainer(
       @argumentDefinitions(
         showFiles: { type: "Int", defaultValue: 20 }
         searchTags: { type: "String", defaultValue: "" }
-        searchTerm: { type: "String", defaultValue: "" }
+        #searchTerm: { type: "String", defaultValue: "" }
       ) {
         id
         isMember

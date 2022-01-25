@@ -101,10 +101,10 @@ class ContactUser extends React.Component<Props, State> {
 
 export default createFragmentContainer(ContactUser, {
   user: graphql`
-    fragment ContactUser_user on User
-      @argumentDefinitions(
-        showDetails: { type: "Boolean", defaultValue: false }
-      ) {
+    fragment ContactUser_user on User # @argumentDefinitions(
+    # showDetails: { type: "Boolean", defaultValue: false }
+    #)
+    {
       id
       name
       profilePicture {

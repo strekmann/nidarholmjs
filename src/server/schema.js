@@ -21,7 +21,7 @@ import {
 } from "graphql-relay";
 import marked from "marked";
 import moment from "moment";
-import uuid from "uuid";
+import { v4 as uuidv4 } from "uuid";
 import mongoose from "mongoose";
 
 import sendReset from "./mutations/sendReset";
@@ -1949,7 +1949,7 @@ const mutationAddPage = mutationWithClientMutationId({
     const userId = viewer.id;
     const permissionObj = buildPermissionObject(permissions);
     const page = new Page();
-    page._id = uuid.v4();
+    page._id = uuidv4();
     page.slug = slug;
     page.mdtext = mdtext;
     page.title = title;
@@ -1995,7 +1995,7 @@ const mutationAddUser = mutationWithClientMutationId({
       .populate("member_group")
       .exec()
       .then((_organization) => {
-        const userId = uuid.v4();
+        const userId = uuidv4();
         const user = new User({
           _id: userId,
           username: userId,

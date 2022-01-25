@@ -1,5 +1,5 @@
 import mongoose from "mongoose";
-import uuid from "uuid";
+import { v4 as uuidv4 } from "uuid";
 
 import schemaOptions from "./schemaOptions";
 
@@ -14,7 +14,7 @@ import schemaOptions from "./schemaOptions";
  */
 
 const RoleSchema = new mongoose.Schema({
-  _id: { type: String, required: true, default: uuid.v4 },
+  _id: { type: String, required: true, default: uuidv4 },
   name: { type: String, required: true },
   email: { type: String },
   organization: { type: String, ref: "Organization" },

@@ -37,19 +37,19 @@ export default {
 
   auth: {
     facebook: {
-      clientId: getenv("FACEBOOK_CLIENT_ID"),
-      clientSecret: getenv("FACEBOOK_CLIENT_SECRET"),
-      callbackURL: getenv("FACEBOOK_CALLBACK_URL"),
+      clientId: getenv("FACEBOOK_CLIENT_ID", ""),
+      clientSecret: getenv("FACEBOOK_CLIENT_SECRET", ""),
+      callbackURL: getenv("FACEBOOK_CALLBACK_URL", ""),
     },
     google: {
-      clientId: getenv("GOOGLE_CLIENT_ID"),
-      clientSecret: getenv("GOOGLE_CLIENT_SECRET"),
-      callbackURL: getenv("GOOGLE_CALLBACK_URL"),
+      clientId: getenv("GOOGLE_CLIENT_ID", ""),
+      clientSecret: getenv("GOOGLE_CLIENT_SECRET", ""),
+      callbackURL: getenv("GOOGLE_CALLBACK_URL", ""),
     },
     twitter: {
-      clientId: getenv("TWITTER_CLIENT_ID"),
-      clientSecret: getenv("TWITTER_CLIENT_SECRET"),
-      callbackURL: getenv("TWITTER_CALLBACK_URL"),
+      clientId: getenv("TWITTER_CLIENT_ID", ""),
+      clientSecret: getenv("TWITTER_CLIENT_SECRET", ""),
+      callbackURL: getenv("TWITTER_CALLBACK_URL", ""),
     },
     remember_me: true,
     jwt: true,

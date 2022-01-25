@@ -1,4 +1,4 @@
-import uuid from "uuid";
+import { v4 as uuidv4 } from "uuid";
 
 import RememberMeToken from "../models/RememberMeToken";
 
@@ -7,7 +7,7 @@ export default function persistentLoginMiddleware(req, res, next) {
     return next();
   }
   const token = new RememberMeToken();
-  token._id = uuid.v4();
+  token._id = uuidv4();
   token.user = req.user._id;
   return token.save((err) => {
     if (err) {

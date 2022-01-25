@@ -1,5 +1,5 @@
 import mongoose from "mongoose";
-import uuid from "uuid";
+import { v4 as uuidv4 } from "uuid";
 import { IFile } from "./File";
 import schemaOptions from "./schemaOptions";
 import { IUser } from "./User";
@@ -34,7 +34,7 @@ export interface IPiece extends mongoose.Document {
 }
 
 const PieceSchema = new mongoose.Schema({
-  _id: { type: String, required: true, default: uuid.v4 },
+  _id: { type: String, required: true, default: uuidv4 },
   title: { type: String, trim: true, required: true },
   subtitle: { type: String, trim: true },
   description: { type: String, trim: true },

@@ -1,5 +1,5 @@
 import mongoose from "mongoose";
-import uuid from "uuid";
+import { v4 as uuidv4 } from "uuid";
 
 import schemaOptions from "./schemaOptions";
 
@@ -18,7 +18,7 @@ const OrganizationEventGroupResponsibilitySchema = new mongoose.Schema({
   _id: {
     type: String,
     required: true,
-    default: uuid.v4,
+    default: uuidv4,
   },
   name: { type: String, trim: true, required: true },
   last: { type: String, ref: "Group" },

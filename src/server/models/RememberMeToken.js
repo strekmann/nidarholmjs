@@ -1,11 +1,11 @@
 import mongoose from "mongoose";
-import uuid from "uuid";
+import { v4 as uuidv4 } from "uuid";
 
 const RememberMeTokenSchema = new mongoose.Schema({
   _id: {
     type: String,
     required: true,
-    default: uuid.v4,
+    default: uuidv4,
   },
   user: { type: String, required: true },
   created: { type: Date, required: true, default: Date.now },
