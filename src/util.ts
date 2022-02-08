@@ -1,4 +1,4 @@
-// eslint-disable-next-line import/prefer-default-export
+import path from "path";
 export function getenv(variableName: string, defaultValue?: string): string {
   const value = process.env[variableName] || defaultValue;
 
@@ -6,4 +6,8 @@ export function getenv(variableName: string, defaultValue?: string): string {
     throw new Error(`${variableName} not found in environment`);
   }
   return value;
+}
+
+export function findDirectory(category: string, hash: string) {
+  return path.join(category, hash.substring(0, 2), hash.substring(2, 4));
 }

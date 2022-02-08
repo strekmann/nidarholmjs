@@ -1,28 +1,21 @@
 import fs from "fs";
-import path from "path";
-
 import mmmagic, { Magic } from "mmmagic";
-
+import path from "path";
+import { findDirectory } from "../../util";
 import File from "../models/File";
 import Piece from "../models/Piece";
 
-import findFilePath from "./findFilePath";
-
 export default function insertFile(
-  filename,
-  hex,
-  permissions,
-  tags,
-  user,
-  organization,
+  filename: string,
+  hex: string,
+  permissions: string[],
+  tags: string[],
+  user: string,
+  organization: string,
   piece = null,
 ) {
   return new Promise((resolve, reject) => {
-    const directory = path.join(
-      findFilePath("originals"),
-      hex.substr(0, 2),
-      hex.substr(2, 2),
-    );
+    const directory = findDirectory("originals", hex);
     const filePath = path.join(directory, hex);
 
     const magic = new Magic(mmmagic.MAGIC_MIME_TYPE);
