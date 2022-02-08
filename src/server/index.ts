@@ -23,6 +23,7 @@ import multer from "multer";
 import { ExtractJwt } from "passport-jwt";
 import "regenerator-runtime/runtime";
 import serveStatic from "serve-static";
+import { createProxyMiddleware } from "http-proxy-middleware";
 
 import config from "../config";
 import { ServerFetcher } from "../fetcher";
@@ -37,7 +38,6 @@ import sendPasswordToEmail from "./database/sendPasswordToEmail";
 import { sendReminderEmails } from "./emailTasks";
 import { icalEvents } from "./icalRoutes";
 import "./lib/db";
-import findFilePath from "./lib/findFilePath";
 import passport from "./lib/passport";
 import persistentLogin from "./lib/persistentLoginMiddleware";
 import saveFile from "./lib/saveFile";
@@ -221,92 +221,58 @@ app.use(
   }),
 );
 
+const proxyPathMatcher = new RegExp("^/files/(o|l|n|th)/([^/]+)");
+
+function toCategory(abbrev: string): string {
+  switch (abbrev) {
+    case "th":
+      return "thumbnails";
+    case "n":
+      return "normal";
+    case "l":
+      return "large";
+    default:
+      return "originals";
+  }
+}
+
+const fileProxy = createProxyMiddleware(
+  ["/files/th", "/files/n", "/files/l", "/files/o"],
+  {
+    target: config.spaces.baseUrl,
+    changeOrigin: true,
+    pathRewrite: (path) => {
+      const match = path.match(proxyPathMatcher);
+      if (match) {
+        const category = toCategory(match[1]);
+        const fileHash = match[2];
+        const hash01 = fileHash.substring(0, 2);
+        const hash23 = fileHash.substring(2, 4);
+        return (
+          "/" +
+          ["nidarholm", "files", category, hash01, hash23, fileHash].join("/")
+        );
+      }
+      throw new Error("File did not match expected path");
+    },
+  },
+);
+
+app.use("/files", fileProxy);
+
 app.post("/upload", upload, (req, res, next) => {
   // TODO: Add check on org membership
-  return saveFile(req.file.path)
-    .then((_file) => {
-      return res.json(_file);
-    })
-    .catch((error) => {
-      // eslint-disable-next-line no-console
-      console.error(error);
-    });
-});
-
-app.get("/files/l/:path/:filename", (req, res) => {
-  const filepath = req.params.path;
-  const fullpath = path.join(
-    findFilePath("large"),
-    filepath.substr(0, 2),
-    filepath.substr(2, 2),
-    filepath,
-  );
-
-  fs.exists(fullpath, (exists) => {
-    if (exists) {
-      res.sendFile(fullpath);
-    } else {
-      res.sendStatus(404);
-    }
-  });
-});
-
-app.get("/files/n/:path/:filename", (req, res) => {
-  const filepath = req.params.path;
-  const fullpath = path.join(
-    findFilePath("normal"),
-    filepath.substr(0, 2),
-    filepath.substr(2, 2),
-    filepath,
-  );
-
-  fs.exists(fullpath, (exists) => {
-    if (exists) {
-      res.sendFile(fullpath);
-    } else {
-      res.sendStatus(404);
-    }
-  });
-});
-
-app.get("/files/th/:path/:filename", (req, res) => {
-  const filepath = req.params.path;
-  const fullpath = path.join(
-    findFilePath("thumbnails"),
-    filepath.substr(0, 2),
-    filepath.substr(2, 2),
-    filepath,
-  );
-
-  fs.exists(fullpath, (exists) => {
-    if (exists) {
-      res.sendFile(fullpath);
-    } else {
-      res.sendStatus(404);
-    }
-  });
-});
-
-app.get("/files/o/:path/:filename", (req, res) => {
-  const filepath = req.params.path;
-  const fullpath = path.join(
-    findFilePath("originals"),
-    filepath.substr(0, 2),
-    filepath.substr(2, 2),
-    filepath,
-  );
-
-  fs.exists(fullpath, (exists) => {
-    if (exists) {
-      File.findOne({ hash: filepath }).then((file) => {
-        res.sendFile(fullpath, {
-          headers: { "Content-Type": file?.mimetype },
-        });
+  if (req.user) {
+    return saveFile(req.file.path)
+      .then((_file) => {
+        return res.json(_file);
+      })
+      .catch((error) => {
+        // eslint-disable-next-line no-console
+        console.error(error);
       });
-    } else {
-      res.sendStatus(404);
-    }
-  });
+  }
+  return false;
 });
 
 app.get("/events/public.ics", icalEvents);

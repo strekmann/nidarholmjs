@@ -1,5 +1,6 @@
 /* eslint "no-console": 0 */
 
+import aws from "aws-sdk";
 import crypto from "crypto";
 import { exec } from "child_process";
 import fs from "fs";
@@ -8,8 +9,31 @@ import path from "path";
 import async from "async";
 import mkdirp from "mkdirp";
 import mmmagic, { Magic } from "mmmagic";
+import config from "../../config";
 
-import findFilePath from "./findFilePath";
+const s3 = new aws.S3({
+  accessKeyId: config.spaces.keyId,
+  secretAccessKey: config.spaces.secretKey,
+  endpoint: config.spaces.endpoint,
+});
+
+function findDirectory(category, hash) {
+  return path.join(category, hex.substr(0, 2), hex.substr(2, 2));
+}
+
+function createS3Uploader(localPath, fileContent) {
+  const remotePath = path.join(config.spaces.pathPrefix, localPath);
+
+  const upload = s3.upload({
+    Bucket: config.spaces.bucketName,
+    Key: remotePath,
+    ACL: "public-read",
+    Body: fileContent,
+    ContentType: mimetype,
+  });
+
+  return upload;
+}
 
 function resize(hex, filepath) {
   return new Promise((resolve, reject) => {
@@ -17,11 +41,7 @@ function resize(hex, filepath) {
       {
         large(callback) {
           // generate "large" sized image: max 1024 x max 640
-          const directory = path.join(
-            findFilePath("large"),
-            hex.substr(0, 2),
-            hex.substr(2, 2),
-          );
+          const directory = findDirectory("large", hex);
           mkdirp(directory, (err) => {
             if (err) {
               callback(err);
@@ -33,7 +53,11 @@ function resize(hex, filepath) {
                   console.error(err, stderr);
                   callback(err);
                 } else {
-                  callback();
+                  const fileContent = fs.readFileSync(largePath);
+                  const upload = createS3Uploader(largePath, fileContent);
+                  return upload.send(() => {
+                    return callback();
+                  });
                 }
               });
             }
@@ -41,11 +65,7 @@ function resize(hex, filepath) {
         },
         normal(callback) {
           // generate "normal" sized image: widthin 600x600
-          const directory = path.join(
-            findFilePath("normal"),
-            hex.substr(0, 2),
-            hex.substr(2, 2),
-          );
+          const directory = findDirectory("normal", hex);
           mkdirp(directory, (err) => {
             if (err) {
               callback(err);
@@ -57,7 +77,11 @@ function resize(hex, filepath) {
                   console.error(err, stderr);
                   callback(err);
                 } else {
-                  callback();
+                  const fileContent = fs.readFileSync(normalPath);
+                  const upload = createS3Uploader(normalPath, fileContent);
+                  return upload.send(() => {
+                    return callback();
+                  });
                 }
               });
             }
@@ -65,11 +89,7 @@ function resize(hex, filepath) {
         },
         thumbnail(callback) {
           // generate thumbnail
-          const directory = path.join(
-            findFilePath("thumbnails"),
-            hex.substr(0, 2),
-            hex.substr(2, 2),
-          );
+          const directory = findDirectory("thumbnails", hex);
           mkdirp(directory, (err) => {
             if (err) {
               callback(err);
@@ -81,7 +101,11 @@ function resize(hex, filepath) {
                   console.error(err, stderr);
                   callback(err);
                 } else {
-                  callback();
+                  const fileContent = fs.readFileSync(thumbnailPath);
+                  const upload = createS3Uploader(thumbnailPath, fileContent);
+                  return upload.send(() => {
+                    return callback();
+                  });
                 }
               });
             }
@@ -118,11 +142,7 @@ export default function saveFile(tmpPath) {
         });
         stream.on("end", () => {
           const hex = hash.digest("hex");
-          const directory = path.join(
-            findFilePath("originals"),
-            hex.substr(0, 2),
-            hex.substr(2, 2),
-          );
+          const directory = findDirectory("originals", hex);
           const filePath = path.join(directory, hex);
 
           fs.exists(filePath, (exists) => {
@@ -134,15 +154,14 @@ export default function saveFile(tmpPath) {
                 reject(err);
               }
 
-              // move file (or copy + unlink)
-              // fs.rename does not work from tmp to other partition
-              const is = fs.createReadStream(tmpPath);
-              const os = fs.createWriteStream(filePath);
+              const fileContent = fs.readFileSync(tmpPath);
+              const upload = createS3Uploader(filePath, fileContent);
 
-              is.pipe(os);
-              is.on("end", () => {
-                // remove tmp file
-                fs.unlinkSync(tmpPath);
+              return upload.send((err, results) => {
+                if (err) {
+                  return reject(err);
+                }
+
                 if (mimetype.match(/^image\/(png|jpeg|gif)/)) {
                   resize(hex, filePath).then(() => {
                     resolve({ hex, mimetype, size: stats.size });

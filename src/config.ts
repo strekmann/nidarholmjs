@@ -64,4 +64,13 @@ export default {
   html: {
     style: true,
   },
+
+  spaces: {
+    baseUrl: "https://eethu.fra1.digitaloceanspaces.com",
+    bucketName: "eethu",
+    pathPrefix: "nidarholm/files",
+    keyId: getenv("AWS_ACCESS_KEY_ID", ""),
+    secretKey: getenv("AWS_SECRET_ACCESS_KEY", ""),
+    endpoint: "fra1.digitaloceanspaces.com",
+  },
 };
