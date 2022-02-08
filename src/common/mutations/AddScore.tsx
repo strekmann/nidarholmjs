@@ -30,13 +30,19 @@ const mutation = graphql`
   }
 `;
 
-function commit(environment, file, onCompleted) {
+function commit(
+  environment,
+  { filename, hex, mimetype, size, piece, groupscore },
+  onCompleted,
+) {
   const variables = {
     input: {
-      filename: file.filename,
-      hex: file.hex,
-      pieceId: file.piece.id,
-      groupId: file.groupscore.id,
+      filename,
+      hex,
+      mimetype,
+      size,
+      pieceId: piece.id,
+      groupId: groupscore.id,
     },
   };
 

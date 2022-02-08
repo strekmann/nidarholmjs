@@ -137,7 +137,7 @@ function resize(
   });
 }
 
-export default function saveFile(tmpPath: string) {
+export default function saveFile(tmpPath: string): Promise<FileMetadata> {
   const magic = new Magic(mmmagic.MAGIC_MIME_TYPE);
   return new Promise((resolve, reject) => {
     return fs.stat(tmpPath, (err, stats) => {
@@ -179,7 +179,7 @@ export default function saveFile(tmpPath: string) {
                 }
 
                 if (mimetype.match(/^image\/(png|jpeg|gif)/)) {
-                  resize(hex, filePath, mimetype).then(() => {
+                  resize(hex, tmpPath, mimetype).then(() => {
                     resolve({ hex, mimetype, size: stats.size });
                   });
                 } else {
@@ -192,4 +192,10 @@ export default function saveFile(tmpPath: string) {
       });
     });
   });
+}
+
+interface FileMetadata {
+  hex: string;
+  mimetype: string;
+  size: number;
 }

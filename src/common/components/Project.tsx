@@ -85,11 +85,14 @@ export class Project extends React.Component<ProjectProps, State> {
       data.append("file", file);
 
       axios.post("/upload", data).then((response) => {
+        const { hex, mimetype, size } = response.data;
         tags.push(organization.project.tag);
         AddProjectFileMutation.commit(
           relay.environment,
           {
-            hex: response.data.hex,
+            hex,
+            mimetype,
+            size,
             permissions: permissions.map((permission) => {
               return permission.id;
             }),

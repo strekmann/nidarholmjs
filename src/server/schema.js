@@ -2640,6 +2640,8 @@ const mutationAddFile = mutationWithClientMutationId({
     hex: {
       type: new GraphQLNonNull(GraphQLString),
     },
+    mimetype: { type: new GraphQLNonNull(GraphQLString) },
+    size: { type: new GraphQLNonNull(GraphQLInt) },
     permissions: {
       type: new GraphQLList(GraphQLString),
     },
@@ -2674,7 +2676,7 @@ const mutationAddFile = mutationWithClientMutationId({
     },
   },
   mutateAndGetPayload: (
-    { filename, hex, permissions, tags, projectTag },
+    { filename, hex, mimetype, size, permissions, tags, projectTag },
     { viewer, organization },
   ) => {
     const permissionObj = buildPermissionObject(permissions);
@@ -2683,8 +2685,11 @@ const mutationAddFile = mutationWithClientMutationId({
       hex,
       permissionObj,
       tags,
-      viewer,
-      organization,
+      viewer.id,
+      organization.id,
+      null,
+      size,
+      mimetype,
     ).then((file) => {
       return Activity.findOne({
         content_type: "upload",
@@ -2744,6 +2749,12 @@ const mutationAddScore = mutationWithClientMutationId({
     hex: {
       type: new GraphQLNonNull(GraphQLString),
     },
+    mimetype: {
+      type: new GraphQLNonNull(GraphQLString),
+    },
+    size: {
+      type: new GraphQLNonNull(GraphQLInt),
+    },
     groupId: {
       type: new GraphQLNonNull(GraphQLString),
     },
@@ -2759,7 +2770,10 @@ const mutationAddScore = mutationWithClientMutationId({
       },
     },
   },
-  mutateAndGetPayload: ({ filename, hex, groupId, pieceId }, { viewer }) => {
+  mutateAndGetPayload: (
+    { filename, hex, mimetype, size, groupId, pieceId },
+    { viewer, organization },
+  ) => {
     const pieceDbId = fromGlobalId(pieceId).id;
     const groupDbId = fromGlobalId(groupId).id;
     const permissionObj = { public: false, groups: [groupDbId], users: [] };
@@ -2768,9 +2782,11 @@ const mutationAddScore = mutationWithClientMutationId({
       hex,
       permissionObj,
       [],
-      config.files.raw_prefix,
-      viewer,
+      viewer.id,
+      organization.id,
       pieceDbId,
+      size,
+      mimetype,
     ).then(() => {
       if (!viewer) {
         throw new Error("Nobody!");

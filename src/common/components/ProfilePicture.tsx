@@ -10,16 +10,16 @@ import { createFragmentContainer, graphql, RelayProp } from "react-relay";
 import SetProfilePictureMutation from "../mutations/SetProfilePicture";
 
 type Props = {
-  isViewer: boolean,
-  isAdmin: boolean,
-  relay: RelayProp,
+  isViewer: boolean;
+  isAdmin: boolean;
+  relay: RelayProp;
   user: {
-    id: string,
-    name: string,
+    id: string;
+    name: string;
     profilePicture: {
-      normalPath: string,
-    },
-  },
+      normalPath: string;
+    };
+  };
 };
 
 class ProfilePicture extends React.Component<Props> {
@@ -30,12 +30,13 @@ class ProfilePicture extends React.Component<Props> {
       data.append("file", file);
 
       axios.post("/upload", data).then((response) => {
+        const { hex, mimetype, size } = response.data;
         SetProfilePictureMutation.commit(
           relay.environment,
           {
-            hash: response.data.hex,
-            mimetype: response.data.mimetype,
-            size: response.data.size,
+            hash: hex,
+            mimetype,
+            size,
             userId: user.id,
           },
           undefined,

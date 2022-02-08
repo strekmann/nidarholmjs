@@ -50,14 +50,17 @@ class Files extends React.Component<Props, State> {
       axios
         .post("/upload", data)
         .then((response) => {
+          const { hex, mimetype, size } = response.data;
           AddFileMutation.commit(
             relay.environment,
             {
               filename: file.name,
-              hex: response.data.hex,
+              hex,
               permissions: permissions.map((permission) => {
                 return permission.id;
               }),
+              mimetype,
+              size,
               projectTag: null,
               tags,
             },

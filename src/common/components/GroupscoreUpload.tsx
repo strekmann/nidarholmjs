@@ -12,21 +12,21 @@ import RemoveScoreMutation from "../mutations/RemoveScore";
 import ScoreItem from "./ScoreItem";
 
 type Props = {
-  name: string,
+  name: string;
   groupscore: {
-    name: string,
+    name: string;
     files: {
       edges: Array<{
         node: {
-          id: string,
-        },
-      }>,
-    },
-  },
+          id: string;
+        };
+      }>;
+    };
+  };
   piece: {
-    id: string,
-  },
-  relay: RelayProp,
+    id: string;
+  };
+  relay: RelayProp;
 };
 
 class GroupscoreUpload extends React.Component<Props> {
@@ -41,10 +41,13 @@ class GroupscoreUpload extends React.Component<Props> {
       data.append("file", file);
 
       axios.post("/upload", data).then((response) => {
+        const { hex, mimetype, size } = response.data;
         AddScoreMutation.commit(
           relay.environment,
           {
-            hex: response.data.hex,
+            hex,
+            mimetype,
+            size,
             filename: file.name,
             groupscore,
             piece: this.props.piece,
