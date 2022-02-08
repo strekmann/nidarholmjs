@@ -1548,7 +1548,9 @@ organizationType = new GraphQLObjectType({
         const tags = args.tags.split("|");
         let query = File.find().sort("-created");
         if (args.tags.length) {
-          query = query.where({ tags: { $all: tags } });
+          query = query
+            .where({ tags: { $all: tags } })
+            .where({ tags: { $ne: "fester" } });
         }
         return connectionFromMongooseQuery(authenticate(query, viewer), args);
       },

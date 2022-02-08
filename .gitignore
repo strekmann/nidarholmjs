@@ -5,7 +5,7 @@
 /tmp
 /backup
 /uploaded_files
-/files
+/files*
 /setup/dump
 /dump
 /data
