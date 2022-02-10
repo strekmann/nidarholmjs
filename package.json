@@ -102,7 +102,7 @@
     "moment": "^2.22.0",
     "mongoose": "^5.9.7",
     "multer": "^1.1.0",
-    "node-sass": "^4.5.0",
+    "node-sass": "^7.0.0",
     "node-uuid": "^1.4.7",
     "nodemailer": "^1.11.0",
     "passport": "^0.4.1",
