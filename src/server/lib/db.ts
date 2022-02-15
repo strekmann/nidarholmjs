@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import config from "../../config";
 
 const mongoOptions = {
   useNewUrlParser: true,
@@ -10,7 +11,5 @@ const mongoOptions = {
 if (process.env.NODE_ENV === "test") {
   mongoose.connect("mongodb://localhost/test", mongoOptions);
 } else {
-  const mongoUrl: string =
-    process.env.MONGO_URL || "mongodb://localhost/nidarholm-dev";
-  mongoose.connect(mongoUrl, mongoOptions);
+  mongoose.connect(config.mongo.url, mongoOptions);
 }

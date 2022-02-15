@@ -1,4 +1,5 @@
 import { config as dotenvConfig } from "dotenv";
+import SMTPConnection from "nodemailer/lib/smtp-connection";
 
 import { getenv } from "./util";
 
@@ -16,11 +17,7 @@ export default {
   },
 
   mongo: {
-    host: getenv("NIDARHOLM_MONGO_HOST", "localhost"),
-    port: parseInt(getenv("NIDARHOLM_MONGO_PORT", "27017"), 10),
-    user: getenv("NIDARHOLM_MONGO_USER", "nidarholm"),
-    password: getenv("NIDARHOLM_MONGO_PASSWORD", "nidarholm"),
-    database: getenv("NIDARHOLM_MONGO_DATABASE", "nidarholm"),
+    url: getenv("MONGO_URL", "mongodb://localhost/nidarholm"),
   },
 
   session: {
@@ -53,8 +50,11 @@ export default {
     },
     remember_me: true,
     jwt: true,
-    smtp: undefined,
-    noreplyAddress: undefined,
+    smtp: getSmtpConfig(),
+    noreplyAddress: getenv(
+      "DEFAULT_FROM_EMAIL",
+      "Nidarholm <no-reply@nidarholm.no",
+    ),
   },
 
   override: {
@@ -74,3 +74,18 @@ export default {
     endpoint: "fra1.digitaloceanspaces.com",
   },
 };
+
+function getSmtpConfig(): SMTPConnection.Options | undefined {
+  const host = process.env.SMTP_HOST;
+  const portString = process.env.SMTP_PORT;
+  const user = process.env.SMTP_AUTH_USER;
+  const password = process.env.SMTP_AUTH_PASSWORD;
+
+  if (host && portString && user && password) {
+    return {
+      host,
+      port: parseInt(portString, 10),
+      auth: { user, pass: password },
+    };
+  }
+}

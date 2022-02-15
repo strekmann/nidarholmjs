@@ -1117,7 +1117,7 @@ organizationType = new GraphQLObjectType({
     baseurl: {
       type: GraphQLString,
       resolve: () => {
-        return `${config.site.protocol}://${config.site.domain}`;
+        return config.app.uri;
       },
     },
     contactText: {
