@@ -1,8 +1,10 @@
-# syntax=docker/dockerfile:experimental
+FROM rust:bullseye AS build
+WORKDIR /app
+COPY ./src /app/src
+COPY ./Cargo.toml /app/Cargo.toml
 
-FROM rust:stretch
+RUN cargo build --release --locked
 
-COPY ./src /src
-COPY ./Cargo.toml /Cargo.toml
-
-RUN cargo build --release
+FROM gcr.io/distroless/cc
+COPY --from=build /app/target/release/nidarholm-mailman-sync /
+CMD ["./nidarholm-mailman-sync"]

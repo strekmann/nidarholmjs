@@ -3,20 +3,19 @@ use std::env;
 
 mod api;
 
-use crate::api::database::Database;
+use crate::api::database::Data;
 use crate::api::mailman::{Api, ListRole};
 
-fn main() {
+#[tokio::main]
+async fn main() {
     env_logger::init();
-    let database = env::var("DATABASE").expect("Database env var not present");
+    let database_url = env::var("DATABASE_URL").expect("should be set");
+    let mailman_url = env::var("MAILMAN_URL").expect("should be set");
+    let mailman_username = env::var("MAILMAN_USERNAME").expect("username missing");
+    let mailman_password = env::var("MAILMAN_PASSWORD").expect("password missing");
 
-    let db = Database::new("localhost", 27017, &database);
-
-    let api = Api::new(
-        "http://10.135.57.30:8001/3.0",
-        "restadmin",
-        "CKtB8n86O4SocRv2T23r0IL5oxndClOzcDGZovDx5sP3rJUC",
-    );
+    let db = Data::new(&database_url).await;
+    let api = Api::new(&mailman_url, &mailman_username, &mailman_password);
 
     let additional_accepted_non_members: HashSet<String> = vec![
         String::from("besetning@nidarholm.no"),
@@ -32,13 +31,13 @@ fn main() {
     let mut role_map = HashMap::new();
     let mut role_users_map = HashMap::new();
 
-    let organization = db.get_organization("nidarholm");
+    let organization = db.get_organization("nidarholm").await;
     let member_group_id = &organization.member_group_id;
 
-    let group = db.get_group_by_id(member_group_id);
+    let group = db.get_group_by_id(member_group_id).await;
 
     for member in group.members {
-        let user = db.get_user_by_id(&member.user_id);
+        let user = db.get_user_by_id(&member.user_id).await;
         let is_member = user.is_member(member_group_id);
         let in_lists = user.in_lists(is_member);
         if in_lists {
@@ -46,7 +45,7 @@ fn main() {
         }
 
         for role_id in member.role_ids {
-            let role = db.get_role_by_id(&role_id);
+            let role = db.get_role_by_id(&role_id).await;
             role_map.insert(role_id.clone(), role.to_owned());
             if !role_users_map.contains_key(&role_id) {
                 role_users_map.insert(role_id.clone(), Vec::new());
@@ -68,7 +67,7 @@ fn main() {
         .collect();
 
     // Find moderators to use for all lists
-    let moderator_group = db.get_group_by_name("Listemoderatorer");
+    let moderator_group = db.get_group_by_name("Listemoderatorer").await;
 
     let mut moderator_emails: HashSet<String> = HashSet::new();
     for mod_member in moderator_group.members {
@@ -107,19 +106,22 @@ fn main() {
                 emails.insert(user.email.to_owned());
             }
         }
-        api.update_members(role_email, emails, ListRole::Member);
-        api.update_members(role_email, moderator_emails.clone(), ListRole::Moderator);
+        api.update_members(role_email, emails, ListRole::Member)
+            .await;
+        api.update_members(role_email, moderator_emails.clone(), ListRole::Moderator)
+            .await;
         api.update_members(
             role_email,
             additional_accepted_non_members.clone(),
             ListRole::NonMember,
-        );
+        )
+        .await;
     }
 
     // Used for special group "gruppeledere"
     let mut all_group_leaders: HashSet<String> = HashSet::new();
 
-    let concert_master_role = db.get_role_by_name("Konsertmester");
+    let concert_master_role = db.get_role_by_name("Konsertmester").await;
     match role_users_map.get(&concert_master_role.id) {
         None => {}
         Some(concert_masters) => {
@@ -133,7 +135,7 @@ fn main() {
         }
     }
 
-    for group in db.get_all_groups() {
+    for group in db.get_all_groups().await {
         let mut group_members: HashSet<String> = HashSet::new();
         let mut group_leaders: HashSet<String> = HashSet::new();
         for member in group.members {
@@ -158,34 +160,43 @@ fn main() {
             let group_leader_email = group.group_leader_email;
             if group_leader_email.is_empty() {
                 // Gruppe uten gruppeledere
-                api.update_members(&group.email, group_members.clone(), ListRole::Member);
-                api.update_members(&group.email, moderator_emails.clone(), ListRole::Moderator);
+                api.update_members(&group.email, group_members.clone(), ListRole::Member)
+                    .await;
+                api.update_members(&group.email, moderator_emails.clone(), ListRole::Moderator)
+                    .await;
             } else {
                 // Gruppe med gruppeledere
-                api.update_members(&group_leader_email, group_leaders.clone(), ListRole::Member);
-                api.update_members(&group.email, group_members.clone(), ListRole::Member);
+                api.update_members(&group_leader_email, group_leaders.clone(), ListRole::Member)
+                    .await;
+                api.update_members(&group.email, group_members.clone(), ListRole::Member)
+                    .await;
                 api.update_members(
                     &group_leader_email,
                     moderator_emails.clone(),
                     ListRole::Moderator,
-                );
-                api.update_members(&group.email, moderator_emails.clone(), ListRole::Moderator);
+                )
+                .await;
+                api.update_members(&group.email, moderator_emails.clone(), ListRole::Moderator)
+                    .await;
                 api.update_members(
                     &group_leader_email,
                     all_members.difference(&group_leaders).cloned().collect(),
                     ListRole::NonMember,
-                );
+                )
+                .await;
             }
             api.update_members(
                 &group.email,
                 all_members.difference(&group_members).cloned().collect(),
                 ListRole::NonMember,
-            );
+            )
+            .await;
             api.update_members(
                 &group.email,
                 additional_accepted_non_members.to_owned(),
                 ListRole::NonMember,
-            );
+            )
+            .await;
         }
     }
 
@@ -195,12 +206,14 @@ fn main() {
         all_group_leaders_email,
         all_group_leaders.clone(),
         ListRole::Member,
-    );
+    )
+    .await;
     api.update_members(
         all_group_leaders_email,
         moderator_emails,
         ListRole::Moderator,
-    );
+    )
+    .await;
     api.update_members(
         all_group_leaders_email,
         all_members
@@ -208,10 +221,12 @@ fn main() {
             .cloned()
             .collect(),
         ListRole::NonMember,
-    );
+    )
+    .await;
     api.update_members(
         all_group_leaders_email,
         additional_accepted_non_members,
         ListRole::NonMember,
-    );
+    )
+    .await;
 }

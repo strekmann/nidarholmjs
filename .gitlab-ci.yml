@@ -1,8 +1,10 @@
 variables:
   DOCKER_DRIVER: "overlay2"
   DOCKER_BUILDKIT: 1
-  IMAGE: "${CI_REGISTRY_IMAGE}/nidarholm-web:${CI_COMMIT_SHORT_SHA}"
-  LATEST_IMAGE: "${CI_REGISTRY_IMAGE}/nidarholm-web:latest"
+  WEB_IMAGE: "${CI_REGISTRY_IMAGE}/nidarholm-web:${CI_COMMIT_SHORT_SHA}"
+  WEB_LATEST_IMAGE: "${CI_REGISTRY_IMAGE}/nidarholm-web:latest"
+  SYNC_IMAGE: "${CI_REGISTRY_IMAGE}/nidarholm-sync:${CI_COMMIT_SHORT_SHA}"
+  SYNC_LATEST_IMAGE: "${CI_REGISTRY_IMAGE}/nidarholm-sync:latest"
 
 
 stages:
@@ -11,16 +13,37 @@ stages:
 services:
   - "docker:dind"
 
-container:
+nidarholm-web:
   stage: "build"
   image: "docker"
   before_script:
     - "docker login ${CI_REGISTRY} -u gitlab-ci-registry -p ${REGISTRY_WRITE_TOKEN}"
   script:
-    - "docker build --cache-from ${LATEST_IMAGE} --tag ${IMAGE} --tag ${LATEST_IMAGE} --build-arg BUILDKIT_INLINE_CACHE=1 ."
+    - "docker build --cache-from ${WEB_LATEST_IMAGE} --tag ${WEB_IMAGE} --tag ${WEB_LATEST_IMAGE} --build-arg BUILDKIT_INLINE_CACHE=1 ."
   after_script:
-    - "docker push ${IMAGE}"
-    - "docker push ${LATEST_IMAGE}"
+    - "docker push ${WEB_IMAGE}"
+    - "docker push ${WEB_LATEST_IMAGE}"
+  only:
+    refs:
+      - pushes
+    changes:
+      - "src/**"
+
+nidarholm-mail-sync:
+  stage: "build"
+  image: "docker"
+  before_script:
+    - "docker login ${CI_REGISTRY} -u gitlab-ci-registry -p ${REGISTRY_WRITE_TOKEN}"
+  script:
+    - "docker build --cache-from ${SYNC_LATEST_IMAGE} --tag ${SYNC_IMAGE} --tag ${SYNC_LATEST_IMAGE} --build-arg BUILDKIT_INLINE_CACHE=1 ./mailman-sync"
+  after_script:
+    - "docker push ${SYNC_IMAGE}"
+    - "docker push ${SYNC_LATEST_IMAGE}"
+  only:
+    refs:
+      - pushes
+    changes:
+      - "mailman-sync/**"
 
 build_mailman_sync:
   image: rust:stretch
@@ -37,4 +60,4 @@ build_mailman_sync:
     refs:
       - pushes
     changes:
-      - "mailman-sync/**/*"
+      - "mailman-sync/**"

@@ -1,16 +1,18 @@
+use serde::{Deserialize, Serialize};
+
 #[derive(Clone)]
 pub struct Organization {
     pub member_group_id: String,
 }
 
-#[derive(Clone)]
+#[derive(Clone, Serialize, Deserialize)]
 pub struct Group {
     pub email: String,
     pub group_leader_email: String,
     pub members: Vec<Member>,
 }
 
-#[derive(Clone)]
+#[derive(Clone, Serialize, Deserialize)]
 pub struct Member {
     pub user_id: String,
     pub role_ids: Vec<String>,

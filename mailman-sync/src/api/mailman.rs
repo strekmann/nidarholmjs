@@ -1,5 +1,6 @@
 // TODO: check if there is a decent mailman rust api soon
 
+use futures::TryFutureExt;
 use log::{debug, error, info};
 use serde::{Deserialize, Serialize};
 use std::collections::HashSet;
@@ -125,7 +126,7 @@ impl Api {
         }
     }
 
-    fn get_members(&self, group_email: &str, role: ListRole) -> HashSet<String> {
+    async fn get_members(&self, group_email: &str, role: ListRole) -> HashSet<String> {
         let url = format!(
             "{}/lists/{}/roster/{}",
             self.base_url,
@@ -133,7 +134,7 @@ impl Api {
             role.as_str(),
         );
 
-        let mut response = self
+        let response = self
             .client
             .get(url.as_str())
             .basic_auth(self.user.clone(), self.password.clone())
@@ -145,17 +146,14 @@ impl Api {
                     &role.as_str()
                 )
             })
+            .await
             .error_for_status()
             .unwrap_or_else(|_| panic!("Error when getting members of {}", group_email));
 
-        let json: MemberList = response.json().unwrap_or_else(|err| {
-            panic!(
-                "{} did not get a valid json object {:#?}: {}",
-                url,
-                response.text(),
-                err
-            )
-        });
+        let json = response
+            .json::<MemberList>()
+            .await
+            .unwrap_or_else(|err| panic!("{} did not get a valid json object: {}", url, err));
 
         let mut member_set: HashSet<String> = HashSet::new();
         for member in json.entries {
@@ -167,7 +165,7 @@ impl Api {
         member_set
     }
 
-    fn subscribe(&self, group_email: &str, group_member: &str, role: ListRole) {
+    async fn subscribe(&self, group_email: &str, group_member: &str, role: ListRole) {
         let subscription = Subscription {
             list_id: str::replace(group_email, "@", ".").to_lowercase(),
             subscriber: group_member.to_string().to_lowercase(),
@@ -184,7 +182,10 @@ impl Api {
             .form(&subscription)
             .send();
 
-        let res = response.expect("Error in adding user").error_for_status();
+        let res = response
+            .await
+            .expect("Error in adding user")
+            .error_for_status();
 
         if let Err(err) = res {
             error!(
@@ -197,7 +198,7 @@ impl Api {
         }
     }
 
-    fn unsubscribe(&self, group_email: &str, emails: Vec<String>, role: ListRole) {
+    async fn unsubscribe(&self, group_email: &str, emails: Vec<String>, role: ListRole) {
         let mut email_tuples: Vec<(String, String)> = Vec::new();
         for email in &emails {
             email_tuples.push((String::from("emails"), email.to_owned()));
@@ -219,6 +220,7 @@ impl Api {
             .basic_auth(self.user.to_owned(), self.password.to_owned())
             .form(&email_tuples)
             .send()
+            .await
             .expect("Delete query failed")
             .error_for_status()
             .unwrap_or_else(|_| {
@@ -228,7 +230,13 @@ impl Api {
                 )
             });
     }
-    fn set_moderation_action(&self, action: &str, role: ListRole, group_email: &str, email: &str) {
+    async fn set_moderation_action(
+        &self,
+        action: &str,
+        role: ListRole,
+        group_email: &str,
+        email: &str,
+    ) {
         let patch_url: String = format!(
             "{}/lists/{}/{}/{}",
             self.base_url,
@@ -247,6 +255,7 @@ impl Api {
             .basic_auth(self.user.to_owned(), self.password.to_owned())
             .form(&update_moderation)
             .send()
+            .await
             .expect("Setting moderation action failed")
             .error_for_status()
             .unwrap_or_else(|_| {
@@ -259,19 +268,25 @@ impl Api {
                 )
             });
     }
-    pub fn update_members(&self, group_email: &str, members: HashSet<String>, role: ListRole) {
+    pub async fn update_members(
+        &self,
+        group_email: &str,
+        members: HashSet<String>,
+        role: ListRole,
+    ) {
         debug!("Updating {}, {}", group_email, role.as_str());
-        let mut member_set = self.get_members(group_email, role);
+        let mut member_set = self.get_members(group_email, role).await;
         for group_member in members {
             if !member_set.contains(&group_member) {
-                self.subscribe(group_email, &group_member, role);
+                self.subscribe(group_email, &group_member, role).await;
                 if role == ListRole::NonMember {
                     self.set_moderation_action(
                         ModerationAction::Accept.as_str(),
                         role,
                         group_email,
                         &group_member,
-                    );
+                    )
+                    .await;
                 }
             } else {
                 member_set.remove(&group_member);
@@ -280,7 +295,7 @@ impl Api {
         if !member_set.is_empty() {
             let emails = member_set.into_iter().collect::<Vec<String>>();
             if role != ListRole::NonMember {
-                self.unsubscribe(group_email, emails, role);
+                self.unsubscribe(group_email, emails, role).await;
             }
         }
     }

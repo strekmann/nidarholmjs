@@ -1,36 +1,33 @@
 use crate::api::nidarholm::{Group, Member, Organization, Role, User};
-use mongodb::db::ThreadedDatabase;
-use mongodb::{bson, doc, Bson, Client, ThreadedClient};
-use std::sync::Arc;
+use futures::stream::StreamExt;
+use mongodb::{bson::doc, bson::Bson, bson::Document, options::ClientOptions, Client, Database};
+use std::iter::Iterator;
 
-pub struct Database {
-    database: Arc<mongodb::db::DatabaseInner>,
+pub struct Data {
+    database: Database,
 }
 
-impl Database {
-    pub fn new(host: &str, port: u16, database: &str) -> Self {
-        Self {
-            database: Client::connect(host, port)
-                .expect("Failed to connect to mongodb")
-                .db(database),
-        }
+impl Data {
+    pub async fn new(url: &str) -> Self {
+        let options = ClientOptions::parse(&url).await.expect("should be set");
+        let client = Client::with_options(options).expect("could not connect");
+        let database = client
+            .default_database()
+            .expect("database should be part of the connection url");
+        Self { database }
     }
 
-    pub fn get_document_by_key(
-        &self,
-        collection: &str,
-        key: &str,
-        value: &str,
-    ) -> bson::ordered::OrderedDocument {
-        let query = doc! {key => value};
+    pub async fn get_document_by_key(&self, collection: &str, key: &str, value: &str) -> Document {
+        let query = doc! {key: value};
         self.database
             .collection(collection)
             .find_one(Some(query), None)
+            .await
             .unwrap_or_else(|_| panic!("Could not find {}={} in {}", key, value, collection))
             .unwrap_or_else(|| panic!("Could not get {}={} in {}", key, value, collection))
     }
-    pub fn get_organization(&self, name: &str) -> Organization {
-        let organization_bson = self.get_document_by_key("organizations", "_id", name);
+    pub async fn get_organization(&self, name: &str) -> Organization {
+        let organization_bson = self.get_document_by_key("organizations", "_id", name).await;
         let member_group_id = organization_bson
             .get_str("member_group")
             .expect("No member group");
@@ -39,8 +36,8 @@ impl Database {
         }
     }
 
-    pub fn get_group_by_id(&self, id: &str) -> Group {
-        let group_bson = self.get_document_by_key("groups", "_id", id);
+    pub async fn get_group_by_id(&self, id: &str) -> Group {
+        let group_bson = self.get_document_by_key("groups", "_id", id).await;
         let email = group_bson.get_str("group_email").unwrap_or("").to_owned();
         let group_leader_email = group_bson
             .get_str("group_leader_email")
@@ -58,8 +55,8 @@ impl Database {
         }
     }
 
-    pub fn get_group_by_name(&self, name: &str) -> Group {
-        let group_bson = self.get_document_by_key("groups", "name", name);
+    pub async fn get_group_by_name(&self, name: &str) -> Group {
+        let group_bson = self.get_document_by_key("groups", "name", name).await;
         let email = group_bson.get_str("group_email").unwrap_or("").to_owned();
         let group_leader_email = group_bson
             .get_str("group_leader_email")
@@ -77,11 +74,12 @@ impl Database {
         }
     }
 
-    pub fn get_all_groups(&self) -> Vec<Group> {
+    pub async fn get_all_groups(&self) -> Vec<Group> {
         let group_bsons = self
             .database
-            .collection("groups")
+            .collection::<Document>("groups")
             .find(None, None)
+            .await
             .expect("Could not find all groups");
 
         let groups = group_bsons.map(|group_bson_result| {
@@ -106,11 +104,11 @@ impl Database {
                 }
             }
         });
-        groups.collect()
+        groups.collect().await
     }
 
-    pub fn get_user_by_id(&self, id: &str) -> User {
-        let user_bson = self.get_document_by_key("users", "_id", id);
+    pub async fn get_user_by_id(&self, id: &str) -> User {
+        let user_bson = self.get_document_by_key("users", "_id", id).await;
 
         let in_list = user_bson.get_bool("in_list").unwrap_or(false);
         let no_email = user_bson.get_bool("no_email").unwrap_or(false);
@@ -135,8 +133,8 @@ impl Database {
     }
 
     // TODO: store id
-    pub fn get_role_by_id(&self, id: &str) -> Role {
-        let role_bson = self.get_document_by_key("roles", "_id", id);
+    pub async fn get_role_by_id(&self, id: &str) -> Role {
+        let role_bson = self.get_document_by_key("roles", "_id", id).await;
         let email = role_bson.get_str("email").unwrap_or("").to_owned();
         Role {
             id: id.to_owned(),
@@ -145,8 +143,8 @@ impl Database {
     }
 
     // TODO: store id
-    pub fn get_role_by_name(&self, name: &str) -> Role {
-        let role_bson = self.get_document_by_key("roles", "name", name);
+    pub async fn get_role_by_name(&self, name: &str) -> Role {
+        let role_bson = self.get_document_by_key("roles", "name", name).await;
         let email = role_bson.get_str("email").unwrap_or("").to_owned();
         let id = role_bson.get_str("_id").unwrap().to_owned();
         Role { id, email }
