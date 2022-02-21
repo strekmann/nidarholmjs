@@ -3,8 +3,8 @@ variables:
   DOCKER_BUILDKIT: 1
   WEB_IMAGE: "${CI_REGISTRY_IMAGE}/nidarholm-web:${CI_COMMIT_SHORT_SHA}"
   WEB_LATEST_IMAGE: "${CI_REGISTRY_IMAGE}/nidarholm-web:latest"
-  SYNC_IMAGE: "${CI_REGISTRY_IMAGE}/nidarholm-sync:${CI_COMMIT_SHORT_SHA}"
-  SYNC_LATEST_IMAGE: "${CI_REGISTRY_IMAGE}/nidarholm-sync:latest"
+  SYNC_IMAGE: "${CI_REGISTRY_IMAGE}/nidarholm-mailman-sync:${CI_COMMIT_SHORT_SHA}"
+  SYNC_LATEST_IMAGE: "${CI_REGISTRY_IMAGE}/nidarholm-mailman-sync:latest"
 
 
 stages:
@@ -29,7 +29,7 @@ nidarholm-web:
     changes:
       - "src/**"
 
-nidarholm-mail-sync:
+nidarholm-mailman-sync:
   stage: "build"
   image: "docker"
   before_script:

@@ -14,5 +14,5 @@ COPY . .
 RUN cargo build --release --bin nidarholm-mailman-sync
 
 FROM gcr.io/distroless/cc
-COPY --from=builder /app/target/release/nidarholm-mailman-sync /usr/local/bin
+COPY --from=builder /app/target/release/nidarholm-mailman-sync /usr/local/bin/nidarholm-mailman-sync
 ENTRYPOINT ["/usr/local/bin/nidarholm-mailman-sync"]
