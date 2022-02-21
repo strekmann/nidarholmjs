@@ -60,10 +60,7 @@ async fn main() {
     // Set of all members
     let all_members: HashSet<String> = user_map
         .iter()
-        .map(|(id, user)| {
-            println!("{} {}", id, user.email);
-            user.email.clone()
-        })
+        .map(|(id, user)| user.email.clone())
         .collect();
 
     // Find moderators to use for all lists
