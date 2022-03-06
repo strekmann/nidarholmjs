@@ -27,7 +27,7 @@ nidarholm-web:
     refs:
       - pushes
     changes:
-      - "src/**"
+      - "src/**/*"
 
 nidarholm-mailman-sync:
   stage: "build"

@@ -1,11 +1,6 @@
 #!/usr/bin/env node
 
-/* eslint no-param-reassign: "off" */
-/* eslint camelcase: "off" */
-
 import path from "path";
-import http from "http";
-import fs from "fs";
 
 import bodyParser from "body-parser";
 import connectMongo from "connect-mongo";
@@ -24,6 +19,7 @@ import { ExtractJwt } from "passport-jwt";
 import "regenerator-runtime/runtime";
 import serveStatic from "serve-static";
 import { createProxyMiddleware } from "http-proxy-middleware";
+import { createLightship } from "lightship";
 
 import config from "../config";
 import { ServerFetcher } from "../fetcher";
@@ -42,7 +38,6 @@ import passport from "./lib/passport";
 import persistentLogin from "./lib/persistentLoginMiddleware";
 import saveFile from "./lib/saveFile";
 import { downloadMembers } from "./memberRoutes";
-import File from "./models/File";
 import Organization from "./models/Organization";
 import PasswordCode from "./models/PasswordCode";
 import User, { IUser } from "./models/User";
@@ -55,7 +50,6 @@ import schema from "./schema";
 moment.locale("nb");
 
 const app = express();
-const httpServer = http.createServer(app);
 const { port } = config.app;
 
 const upload = multer({ storage: multer.diskStorage({}) }).single("file");
@@ -524,9 +518,20 @@ setInterval(() => {
   sendReminderEmails();
 }, 60 * 60 * 1000);
 
-httpServer.listen(port, () => {
-  // eslint-disable-next-line no-console
-  console.info("port %s, env=%s", port, config.env);
+const lightship = await createLightship();
+
+const server = app
+  .listen(port, () => {
+    // eslint-disable-next-line no-console
+    console.info("port %s, env=%s", port, config.env);
+    lightship.signalReady();
+  })
+  .on("error", () => {
+    lightship.shutdown();
+  });
+
+lightship.registerShutdownHandler(() => {
+  server.close();
 });
 
 export default app;
