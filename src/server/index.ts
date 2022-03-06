@@ -45,8 +45,6 @@ import { downloadArchive } from "./musicRoutes";
 import renderPage from "./renderPage";
 import schema from "./schema";
 
-// import * as profileAPI from './server/api/profile';
-
 moment.locale("nb");
 
 const app = express();
