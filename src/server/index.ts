@@ -516,7 +516,7 @@ setInterval(() => {
   sendReminderEmails();
 }, 60 * 60 * 1000);
 
-const lightship = await createLightship();
+const lightship = createLightship();
 
 const server = app
   .listen(port, () => {
