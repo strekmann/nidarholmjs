@@ -70,6 +70,19 @@ class Home extends React.Component<Props, State> {
           >
             {organization.name}
           </h1>
+          <img
+            src="/img/spons/Reitan_RGB_Blue.png"
+            alt="Hovedsponsor: Reitan"
+            style={{
+              width: "20%",
+              maxWidth: 252,
+              minWidth: 126,
+              position: "absolute",
+              right: 15,
+              bottom: 10,
+              backgroundColor: "#f5f5f5",
+            }}
+          />
         </div>
         <div
           style={{
@@ -232,6 +245,15 @@ class Home extends React.Component<Props, State> {
               </div>
             </Paper>
           </div>
+          <img
+            src="/img/spons/Reitan_RGB_Blue.png"
+            alt="Hovedsponsor: Reitan"
+            style={{
+              width: "50%",
+              margin: "0 auto",
+              display: "block",
+            }}
+          />
         </div>
       </div>
     );
