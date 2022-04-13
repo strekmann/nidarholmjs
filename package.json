@@ -64,7 +64,7 @@
     "@material-ui/icons": "^4.9.1",
     "@material-ui/lab": "^4.0.0-alpha.49",
     "@material-ui/pickers": "^3.2.10",
-    "async": "^2.1.4",
+    "async": "^3.2.2",
     "async-replace": "^1.0.0",
     "autoprefixer": "^7.1.1",
     "axios": "^0.18.1",
