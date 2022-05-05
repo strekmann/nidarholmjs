@@ -1,5 +1,3 @@
-#!/usr/bin/env node
-
 import path from "path";
 
 import bodyParser from "body-parser";
@@ -33,7 +31,7 @@ import {
 import sendPasswordToEmail from "./database/sendPasswordToEmail";
 import { sendReminderEmails } from "./emailTasks";
 import { icalEvents } from "./icalRoutes";
-import "./lib/db";
+import { connect } from "./lib/db";
 import passport from "./lib/passport";
 import persistentLogin from "./lib/persistentLoginMiddleware";
 import saveFile from "./lib/saveFile";
@@ -47,6 +45,7 @@ import schema from "./schema";
 
 moment.locale("nb");
 
+connect();
 const app = express();
 const { port } = config.app;
 
