@@ -351,8 +351,8 @@ export class Project extends React.Component<ProjectProps, State> {
                 ) : null}
                 <MenuItem onClick={this.openAddFile}>Last opp filer</MenuItem>
                 {!project?.events.edges.length &&
-                !project?.files.edges.length &&
-                (project.isCreator || isAdmin) ? (
+                  !project?.files.edges.length &&
+                  (project.isCreator || isAdmin) ? (
                   <MenuItem
                     onClick={this.removeProject}
                     className="project-delete"
@@ -378,12 +378,41 @@ export class Project extends React.Component<ProjectProps, State> {
               paddingLeft: theme.spacing(2),
               paddingRight: theme.spacing(2),
               width: "100%",
+              position: "relative",
             }}
           >
             <PermissionChips
               permissions={flattenPermissions(project.permissions)}
               memberGroupId={memberGroup.id}
             />
+            <div
+              style={{
+                position: "absolute",
+                width: 300,
+                paddingLeft: theme.spacing(2),
+                paddingRight: theme.spacing(2),
+                right: 0,
+              }}
+            >
+              {project.poster ? (
+                <img
+                  alt="Konsertplakat"
+                  src={project.poster.largePath}
+                  className="responsive"
+                />
+              ) : null}
+              {project.events.edges.length ? (
+                <div id="eventList" className="event-list">
+                  {project.events.edges
+                    .filter((edge) => {
+                      return showEnded || !edge.node.isEnded;
+                    })
+                    .map((edge) => {
+                      return <EventItem key={edge.node.id} event={edge.node} />;
+                    })}
+                </div>
+              ) : null}
+            </div>
             {project.publicMdtext ? (
               <div>
                 <h2>Informasjon</h2>
@@ -421,32 +450,6 @@ export class Project extends React.Component<ProjectProps, State> {
                 viewer={viewer}
                 organization={organization}
               />
-            ) : null}
-          </div>
-          <div
-            style={{
-              width: 300,
-              paddingLeft: theme.spacing(2),
-              paddingRight: theme.spacing(2),
-            }}
-          >
-            {project.poster ? (
-              <img
-                alt="Konsertplakat"
-                src={project.poster.largePath}
-                className="responsive"
-              />
-            ) : null}
-            {project.events.edges.length ? (
-              <div id="eventList" className="event-list">
-                {project.events.edges
-                  .filter((edge) => {
-                    return showEnded || !edge.node.isEnded;
-                  })
-                  .map((edge) => {
-                    return <EventItem key={edge.node.id} event={edge.node} />;
-                  })}
-              </div>
             ) : null}
           </div>
         </div>

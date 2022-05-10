@@ -13,6 +13,7 @@ import DialogTitle from "@material-ui/core/DialogTitle";
 import IconButton from "@material-ui/core/IconButton";
 import Menu from "@material-ui/core/Menu";
 import MenuItem from "@material-ui/core/MenuItem";
+import Typography from "@material-ui/core/Typography";
 import withStyles, { WithStyles } from "@material-ui/core/styles/withStyles";
 import MoreVertIcon from "@material-ui/icons/MoreVert";
 import Download from "@material-ui/icons/PlayForWork";
@@ -31,11 +32,11 @@ interface Props extends WithStyles<typeof styles> {
   isImage: boolean;
   memberGroupId: string;
   onSavePermissions: any; //(string, PermissionArray, string[], () => void) => {},
-  onSetProjectPoster: (string) => {};
+  onSetProjectPoster?: (input: string) => {};
   organization: FileItem_organization;
   permissions: PermissionObject;
   path: string;
-  searchTag: (string) => {};
+  searchTag: (input: string) => {};
   tags: string[];
   thumbnailPath: string;
   viewer: any; //FileItem_viewer;
@@ -76,6 +77,7 @@ class FileItem extends React.Component<Props, State> {
 
   setProjectPoster = () => {
     this.props.onSetProjectPoster(this.props.id);
+    this.setState({ menuIsOpen: null });
   };
 
   savePermissions = (event) => {
@@ -105,7 +107,7 @@ class FileItem extends React.Component<Props, State> {
     });
   };
 
-  searchTag = (tag) => {
+  searchTag = (tag: string) => {
     this.props.searchTag(tag);
   };
 
@@ -115,11 +117,13 @@ class FileItem extends React.Component<Props, State> {
       <Card className={classes.root} key={this.props.id}>
         <CardHeader
           action={
-            <IconButton onClick={this.onMenuOpen}>
+            <IconButton onClick={this.onMenuOpen} className={classes.headerAction}>
               <MoreVertIcon />
             </IconButton>
           }
-          title={this.props.filename}
+          className={classes.content}
+          style={{ maxWidth: "100%" }}
+          title={<Typography className={classes.title}>{this.props.filename}</Typography>}
         />
         {this.props.isImage ? (
           <CardMedia
@@ -221,6 +225,12 @@ const styles = () => {
       maxHeight: 168,
     },
     downloadIcon: { height: 168, width: "100%", color: grey[500] },
+    title: {
+      width: 250,
+    },
+    headerAction: {
+      marginLeft: -10,
+    }
   };
 };
 
