@@ -51,7 +51,7 @@ class Home extends React.Component<Props, State> {
       <div id="home">
         <div
           style={{
-            backgroundImage: "url(/img/musikkforeningen-nidarholm.jpg)",
+            backgroundImage: "url(/img/nidarholm-kimen.jpg)",
             backgroundPosition: "25% 10%",
             backgroundSize: "cover",
             height: "30vw",
