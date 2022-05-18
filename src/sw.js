@@ -1,6 +1,6 @@
 /* globals self, caches, fetch */
 
-const activeCacheName = "v14";
+const activeCacheName = "v15";
 
 /**
  * Cache static elements
@@ -11,10 +11,7 @@ function precache() {
       "/manifest.json",
       "/robots.txt",
       "/favicon.ico",
-      "/img/logo.blue.transparent.192.png",
-      "/img/logo.blue.white.192.png",
-      "/img/logo.wh.svg",
-      "/img/musikkforeningen-nidarholm.jpg",
+      "/img/nidarholm-kimen.jpg",
       "/fonts/Roboto-Italic.ttf",
       "/fonts/Montserrat-Regular.ttf",
       "/fonts/Roboto-Regular.ttf",

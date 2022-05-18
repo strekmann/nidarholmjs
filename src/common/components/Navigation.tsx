@@ -16,6 +16,7 @@ import * as React from "react";
 import { createFragmentContainer, graphql } from "react-relay";
 import { Navigation_organization } from "./__generated__/Navigation_organization.graphql";
 import { Navigation_viewer } from "./__generated__/Navigation_viewer.graphql";
+import { Logo } from "./Logo";
 
 type Props = {
   classes: any;
@@ -78,19 +79,13 @@ class Navigation extends React.Component<Props, State> {
         to="/"
         onClick={this.handleClose}
         style={{
-          padding: "19px 10px 20px 9px",
+          padding: "10px 10px 0 10px",
+          display: "block",
+          width: 213,
+          marginBottom: -5,
         }}
       >
-        <img
-          src="/img/logo.wh.svg"
-          alt="Forsida"
-          style={{
-            height: 75,
-            width: 196,
-            paddingTop: 4,
-            marginBottom: -18,
-          }}
-        />
+        <Logo fill="white" />
       </Link>
     );
     return (
@@ -118,7 +113,6 @@ class Navigation extends React.Component<Props, State> {
             >
               <Link to="/om">Om oss</Link>
               <Link to="/projects">Prosjekter</Link>
-              <Link to="/members">Medlemmer</Link>
               <Link to="/stott-oss">Støtt oss</Link>
               <Link to="/contact">Kontakt</Link>
             </div>
@@ -146,7 +140,9 @@ class Navigation extends React.Component<Props, State> {
                   }}
                 >
                   {this.renderAvatar()}
-                  <span>{viewer.name}</span>
+                  <span style={{ textTransform: "initial" }}>
+                    {viewer.name}
+                  </span>
                 </Link>
               ) : (
                 <Link
@@ -221,11 +217,6 @@ class Navigation extends React.Component<Props, State> {
                   <MenuItem className="projects">
                     <Link to="/projects" onClick={this.handleClose}>
                       Prosjekter
-                    </Link>
-                  </MenuItem>
-                  <MenuItem>
-                    <Link to="/members" onClick={this.handleClose}>
-                      Medlemmer
                     </Link>
                   </MenuItem>
                   <MenuItem>
