@@ -351,8 +351,8 @@ export class Project extends React.Component<ProjectProps, State> {
                 ) : null}
                 <MenuItem onClick={this.openAddFile}>Last opp filer</MenuItem>
                 {!project?.events.edges.length &&
-                  !project?.files.edges.length &&
-                  (project.isCreator || isAdmin) ? (
+                !project?.files.edges.length &&
+                (project.isCreator || isAdmin) ? (
                   <MenuItem
                     onClick={this.removeProject}
                     className="project-delete"
@@ -377,21 +377,29 @@ export class Project extends React.Component<ProjectProps, State> {
             style={{
               paddingLeft: theme.spacing(2),
               paddingRight: theme.spacing(2),
-              width: "100%",
-              position: "relative",
             }}
           >
             <PermissionChips
               permissions={flattenPermissions(project.permissions)}
               memberGroupId={memberGroup.id}
             />
+          </div>
+          <div
+            style={{
+              paddingLeft: theme.spacing(2),
+              paddingRight: theme.spacing(2),
+              width: "100%",
+              position: "relative",
+            }}
+          >
             <div
               style={{
-                position: "absolute",
+                position: "relative",
                 width: 300,
                 paddingLeft: theme.spacing(2),
                 paddingRight: theme.spacing(2),
-                right: 0,
+                paddingTop: theme.spacing(2),
+                float: "right",
               }}
             >
               {project.poster ? (
