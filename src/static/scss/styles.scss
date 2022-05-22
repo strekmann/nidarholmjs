@@ -63,7 +63,7 @@
 
 $sans-font: "Roboto", sans-serif;
 $serif-font: "Montserrat", serif;
-$rem-base: 14px;
+$rem-base: 16px;
 $line-height: 150%;
 
 html {
@@ -237,7 +237,7 @@ section {
 
 .flex-menu {
   a {
-    padding: 0.75rem 1rem 1rem;
+    padding: 10px 1rem 1rem;
     text-transform: uppercase;
     font-weight: bold;
   }
