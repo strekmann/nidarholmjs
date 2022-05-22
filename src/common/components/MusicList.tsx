@@ -1,26 +1,28 @@
 import List from "@material-ui/core/List";
+import withStyles, { WithStyles } from "@material-ui/core/styles/withStyles";
 import React from "react";
 
 import MusicItem from "./MusicItem";
 
-type Props = {
+interface Props extends WithStyles<typeof styles> {
   music: Array<{
-    id: string,
+    id: string;
     piece: {
-      id: string,
-      title: string,
-      composers: Array<string>,
-    },
-  }>,
-  isMember: boolean,
-  isMusicAdmin: boolean,
-  remove: any, //({ id: string }) => void;
-};
+      id: string;
+      title: string;
+      composers: Array<string>;
+    };
+  }>;
+  isMember: boolean;
+  isMusicAdmin: boolean;
+  remove: any; //({ id: string }) => void;
+}
 
-export default class MusicList extends React.Component<Props> {
+class MusicList extends React.Component<Props> {
   render() {
+    const { classes } = this.props;
     return (
-      <List>
+      <List className={classes.root}>
         {this.props.music.map((music) => {
           return (
             <MusicItem
@@ -36,3 +38,13 @@ export default class MusicList extends React.Component<Props> {
     );
   }
 }
+
+const styles = () => {
+  return {
+    root: {
+      display: "inline-block",
+    },
+  };
+};
+
+export default withStyles(styles)(MusicList);
