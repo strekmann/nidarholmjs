@@ -1,17 +1,20 @@
+import { withTheme, Theme } from "@material-ui/core";
 import React from "react";
 import { createFragmentContainer, graphql, RelayProp } from "react-relay";
 import SendContactEmailMutation from "../mutations/SendContactEmail";
-import ContactForm from "./ContactForm";
+import { FacebookIcon } from "./FacebookIcon";
+import { InstagramIcon } from "./InstagramIcon";
 import { Footer_organization } from "./__generated__/Footer_organization.graphql";
 import { SendContactEmailInput } from "../mutations/__generated__/SendContactEmailMutation.graphql";
 
 type Props = {
-  organization: Footer_organization,
-  relay: RelayProp,
+  organization: Footer_organization;
+  relay: RelayProp;
+  theme: Theme;
 };
 
 type State = {
-  contactDialogOpen: boolean,
+  contactDialogOpen: boolean;
 };
 
 class Footer extends React.Component<Props, State> {
@@ -33,47 +36,7 @@ class Footer extends React.Component<Props, State> {
   };
 
   render() {
-    const { organization } = this.props;
-
-    const links: JSX.Element[] = [
-      <a
-        key="form"
-        onClick={this.openEmailDialog}
-        style={{ cursor: "pointer" }}
-      >
-        Kontaktskjema
-      </a>,
-    ];
-    if (organization.facebook) {
-      links.push(<span key="facebook-span"> · </span>);
-      links.push(
-        <a
-          key="facebook"
-          href={`https://facebook.com/${organization.facebook}`}
-        >
-          Facebook
-        </a>,
-      );
-    }
-    if (organization.instagram) {
-      links.push(<span key="instagram-span"> · </span>);
-      links.push(
-        <a
-          key="instagram"
-          href={`https://www.instagram.com/${organization.instagram}/`}
-        >
-          Instagram
-        </a>,
-      );
-    }
-    if (organization.twitter) {
-      links.push(<span key="twitter-span"> · </span>);
-      links.push(
-        <a key="twitter" href={`https://twitter.com/${organization.twitter}`}>
-          Twitter
-        </a>,
-      );
-    }
+    const { organization, theme } = this.props;
 
     return (
       <footer>
@@ -86,13 +49,32 @@ class Footer extends React.Component<Props, State> {
             marginBottom: 80,
           }}
         >
-          <ContactForm
-            open={this.state.contactDialogOpen}
-            close={this.closeEmailDialog}
-            save={this.sendEmail}
-            organization={organization}
-          />
-          {links}
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "space-around",
+              width: 150,
+              margin: "0 auto",
+            }}
+          >
+            {organization.facebook && (
+              <a
+                href={`https://facebook.com/${organization.facebook}`}
+                style={{ display: "block", width: 50 }}
+              >
+                <FacebookIcon fill={theme.palette.primary.dark} />
+              </a>
+            )}
+            {organization.instagram && (
+              <a
+                href={`https://www.instagram.com/${organization.instagram}/`}
+                style={{ display: "block", width: 50 }}
+              >
+                <InstagramIcon fill={theme.palette.primary.dark} />
+              </a>
+            )}
+          </div>
           <div
             className="header"
             style={{
@@ -113,13 +95,15 @@ class Footer extends React.Component<Props, State> {
   }
 }
 
-export default createFragmentContainer(Footer, {
-  organization: graphql`
-    fragment Footer_organization on Organization {
-      facebook
-      instagram
-      twitter
-      ...ContactForm_organization
-    }
-  `,
-});
+export default withTheme(
+  createFragmentContainer(Footer, {
+    organization: graphql`
+      fragment Footer_organization on Organization {
+        facebook
+        instagram
+        twitter
+        ...ContactForm_organization
+      }
+    `,
+  }),
+);
