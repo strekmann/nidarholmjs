@@ -125,7 +125,6 @@ class Navigation extends React.Component<Props, State> {
                 alignItems: "center",
               }}
             >
-              {isMember ? <Link to="/files">Filer</Link> : null}
               {isMember ? <Link to="/pages">Sider</Link> : null}
               {isMember ? <Link to="/events">Aktiviteter</Link> : null}
               {isMember ? <Link to="/music">Notearkiv</Link> : null}
@@ -232,13 +231,6 @@ class Navigation extends React.Component<Props, State> {
                 </div>
                 {isMember ? (
                   <div>
-                    {isMember ? (
-                      <MenuItem>
-                        <Link to="/files" onClick={this.handleClose}>
-                          Filer
-                        </Link>
-                      </MenuItem>
-                    ) : null}
                     {isMember ? (
                       <MenuItem>
                         <Link to="/pages" onClick={this.handleClose}>
