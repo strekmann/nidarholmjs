@@ -5,14 +5,11 @@ import Paper from "@material-ui/core/Paper";
 import Link from "found/Link";
 import React from "react";
 import { createFragmentContainer, graphql, RelayProp } from "react-relay";
-import SendContactEmailMutation from "../mutations/SendContactEmail";
-import ContactForm from "./ContactForm";
 import EventItem from "./EventItem";
 import ProjectItem from "./ProjectItem";
 import Text from "./Text";
 import { Home_organization } from "./__generated__/Home_organization.graphql";
 import { withTheme, Theme } from "@material-ui/core";
-import { SendContactEmailInput } from "../mutations/__generated__/SendContactEmailMutation.graphql";
 import Map from "./Map";
 
 type Props = {
@@ -21,31 +18,13 @@ type Props = {
   theme: Theme;
 };
 
-type State = {
-  contactDialogOpen: boolean;
-};
+type State = {};
 
 class Home extends React.Component<Props, State> {
-  state = {
-    contactDialogOpen: false,
-  };
-
-  sendEmail = (form: SendContactEmailInput) => {
-    const { organization, relay } = this.props;
-    SendContactEmailMutation.commit(relay.environment, form);
-  };
-
-  openEmailDialog = () => {
-    this.setState({ contactDialogOpen: true });
-  };
-
-  closeEmailDialog = () => {
-    this.setState({ contactDialogOpen: false });
-  };
+  state = {};
 
   render() {
     const { organization, theme } = this.props;
-    const { contactDialogOpen } = this.state;
     const { nextProjects, nextEvents, summaries } = organization;
     return (
       <div id="home">
@@ -103,25 +82,6 @@ class Home extends React.Component<Props, State> {
               )}
               <Link to="/projects">
                 <Button variant="text">Prosjektoversikt</Button>
-              </Link>
-            </div>
-            <div
-              id="next-events"
-              className="item"
-              style={{ display: "flex", flexDirection: "column" }}
-            >
-              {nextEvents && (
-                <>
-                  <h1>Neste aktiviteter</h1>
-                  {nextEvents.edges?.map((edge) => {
-                    return (
-                      <EventItem key={edge?.node?.id} event={edge?.node} />
-                    );
-                  })}
-                </>
-              )}
-              <Link to="/events">
-                <Button variant="text">Aktivitetskalender</Button>
               </Link>
             </div>
             {summaries && summaries.length > 0 ? (
@@ -184,12 +144,6 @@ class Home extends React.Component<Props, State> {
                 paddingRight: theme.spacing(2),
               }}
             >
-              <ContactForm
-                open={contactDialogOpen}
-                close={this.closeEmailDialog}
-                save={this.sendEmail}
-                organization={organization}
-              />
               <h2 style={{ display: "inline-block" }}>
                 <Link to="/contact">Kontakt</Link>
               </h2>

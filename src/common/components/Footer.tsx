@@ -102,7 +102,6 @@ export default withTheme(
         facebook
         instagram
         twitter
-        ...ContactForm_organization
       }
     `,
   }),

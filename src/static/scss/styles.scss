@@ -202,11 +202,7 @@ section {
       grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr;
       #next-projects {
         grid-column-start: 1;
-        grid-column-end: span 3;
-      }
-      #next-events {
-        grid-column-start: span 3;
-        grid-column-end: -1;
+        grid-column-end: span 6;
       }
       #information,
       #contact {
@@ -225,11 +221,7 @@ section {
     .grid {
       #next-projects {
         grid-column-start: 1;
-        grid-column-end: span 4;
-      }
-      #next-events {
-        grid-column-start: span 2;
-        grid-column-end: -1;
+        grid-column-end: span 6;
       }
     }
   }
