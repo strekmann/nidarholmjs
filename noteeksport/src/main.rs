@@ -1,4 +1,4 @@
-use anyhow::Result;
+use anyhow::{bail, Result};
 use dotenv;
 use futures::stream::StreamExt;
 use mongodb::Database;
@@ -7,9 +7,9 @@ use s3::bucket::Bucket;
 use s3::creds::Credentials;
 use s3::Region;
 use serde::{Deserialize, Serialize};
-use std::env;
+use sha2::{Digest, Sha256};
 use std::{collections::HashMap, io::prelude::*};
-use zip::write::FileOptions;
+use std::{env, io};
 
 fn expect_env_var(var: &str) -> String {
     dotenv::dotenv().ok();
@@ -38,9 +38,22 @@ async fn setup_mongo_database() -> Result<Database> {
     Ok(client.database("nidarholm"))
 }
 
+async fn verify_file(hash: &String, path: &String) -> Result<()> {
+    let mut file = std::fs::File::open(path)?;
+    let mut sha256 = Sha256::new();
+    io::copy(&mut file, &mut sha256)?;
+    let result = sha256.finalize();
+    let hex = base16ct::lower::encode_string(&result);
+    if hash.clone() == hex {
+        Ok(())
+    } else {
+        bail!("Did not match")
+    }
+}
+
 #[tokio::main]
 async fn main() -> Result<()> {
-    let output_zip_path = expect_env_var("OUTPUT_ZIP_PATH");
+    let output_dir = expect_env_var("OUTPUT_DIR");
 
     let bucket = setup_s3_bucket()?;
 
@@ -64,101 +77,103 @@ async fn main() -> Result<()> {
         };
     }
 
-    let mut alle_notesett: Vec<Notesett> = vec![];
-    let mut cursor = match pieces.find(doc! {}, None).await {
+    let mut piece_list = vec![];
+    let mut piece_cursor = match pieces.find(doc! {}, None).await {
         Ok(cursor) => cursor,
         Err(e) => panic!("Could not get cursor: {e}"),
     };
 
-    let zip_file = std::fs::File::create(output_zip_path)?;
-    let mut zip = zip::ZipWriter::new(zip_file);
-    let zip_options = FileOptions::default();
-
-    while let Some(piece) = cursor.next().await {
-        let piece = match piece {
-            Ok(piece) => Some(piece),
+    while let Some(piece) = piece_cursor.next().await {
+        match piece {
+            Ok(piece) => piece_list.push(piece),
             Err(e) => {
-                println!("{e}");
-                None
+                println!("Piece error {e}");
             }
         };
-        if let Some(piece) = piece {
-            let title = match piece.subtitle.clone() {
-                Some(subtitle) => match subtitle.as_str() {
-                    "" => piece.title.clone(),
-                    subtitle => format!(
-                        "{title} ({subtitle})",
-                        title = piece.title,
-                        subtitle = subtitle
-                    ),
-                },
-                None => piece.title.clone(),
-            };
-            let composers = piece.composers.join(", ");
-            let arrangers = piece.arrangers.join(", ");
-            let archive_number = format!(
-                "ArkivNr: {archive_number:04}",
-                archive_number = piece.archive_number
-            );
-            let formatted_archive_number = format!(
-                "ArkivNr{archive_number:04}",
-                archive_number = piece.archive_number
-            );
-            let notesett = Notesett {
-                id: piece.archive_number,
-                title: title.clone(),
-                composers: composers.clone(),
-                arrangers: arrangers.clone(),
-                archive_number: archive_number.clone(),
-                number_of_files: piece.scores.len(),
-            };
-            if piece.scores.len() > 0 {
-                let directory = format!("{id} - {title}", id = formatted_archive_number);
-                //std::fs::create_dir_all(&directory)?;
-                zip.add_directory(&directory, zip_options)?;
+    }
 
-                let metadata=format!(
+    let mut alle_notesett: Vec<Notesett> = vec![];
+
+    std::fs::create_dir_all(&output_dir)?;
+
+    for piece in piece_list {
+        let title = match piece.subtitle.clone() {
+            Some(subtitle) => match subtitle.as_str() {
+                "" => piece.title.clone(),
+                subtitle => format!(
+                    "{title} ({subtitle})",
+                    title = piece.title,
+                    subtitle = subtitle
+                ),
+            },
+            None => piece.title.clone(),
+        };
+        let composers = piece.composers.join(", ");
+        let arrangers = piece.arrangers.join(", ");
+        let archive_number = format!(
+            "ArkivNr: {archive_number:04}",
+            archive_number = piece.archive_number
+        );
+        let formatted_archive_number = format!(
+            "ArkivNr{archive_number:04}",
+            archive_number = piece.archive_number
+        );
+        let notesett = Notesett {
+            id: piece.archive_number,
+            title: title.clone(),
+            composers: composers.clone(),
+            arrangers: arrangers.clone(),
+            archive_number: archive_number.clone(),
+            number_of_files: piece.scores.len(),
+        };
+        if piece.scores.len() > 0 {
+            let directory = format!("{output_dir}/{id} - {title}", id = formatted_archive_number);
+            std::fs::create_dir_all(&directory)?;
+
+            let metadata=format!(
                     "Tittel = {title}\r\nKomponist = {composers}\r\nArrangør = {arrangers}\r\nPlassering = {archive_number}\r\n",
                 );
-                let metadata_path = format!("{directory}/metadata.txt");
-                //std::fs::write(&metadata_path, metadata)?;
-                zip.start_file(&metadata_path, zip_options)?;
-                zip.write_all(metadata.as_bytes())?;
+            let metadata_path = format!("{directory}/metadata.txt");
+            std::fs::write(&metadata_path, metadata)?;
 
-                for score in piece.scores {
-                    let file = file_map.get(&score);
-                    if let Some(file) = file {
-                        let url = format!(
-                            "/nidarholm/files/originals/{}/{}/{}",
-                            &file.hash[0..2],
-                            &file.hash[2..4],
-                            file.hash
-                        );
+            for score in piece.scores {
+                let file = file_map.get(&score);
+                if let Some(file) = file {
+                    let local_path = format!("{directory}/{filename}", filename = file.filename);
+                    let s3_url = format!(
+                        "/nidarholm/files/originals/{}/{}/{}",
+                        &file.hash[0..2],
+                        &file.hash[2..4],
+                        file.hash
+                    );
 
-                        let data = bucket.get_object(&url).await?;
+                    println!("{local_path}");
+                    match verify_file(&file.hash, &local_path).await {
+                        Ok(_) => println!("OK"),
+                        Err(_) => {
+                            println!("Refetch");
+                            let data = bucket.get_object(&s3_url).await?;
 
-                        let path = format!("{directory}/{filename}", filename = file.filename);
-                        dbg!(&path);
-                        //let mut file = std::fs::File::create(&path)?;
-                        zip.start_file(&path, zip_options)?;
-                        zip.write_all(data.bytes())?;
+                            let mut file = std::fs::File::create(&local_path)?;
+                            file.write_all(data.bytes())?;
+                        }
                     }
                 }
-            };
-            alle_notesett.push(notesett);
-        }
+            }
+        };
+        alle_notesett.push(notesett);
     }
 
     alle_notesett.sort_by(|a, b| a.id.cmp(&b.id));
 
     {
-        let metadata_path = format!("metadata.csv");
-        zip.start_file(metadata_path, zip_options)?;
+        let path = format!("{output_dir}/metadata.csv");
+        let mut file = std::fs::File::create(&path)?;
         let mut csv_writer = csv::WriterBuilder::new()
             .delimiter(b';')
             .terminator(csv::Terminator::CRLF)
             .quote_style(csv::QuoteStyle::NonNumeric)
-            .from_writer(&mut zip);
+            .from_writer(&mut file);
         csv_writer.write_record(&[
             "ArkivNr",
             "Tittel",
@@ -181,8 +196,6 @@ async fn main() -> Result<()> {
         csv_writer.flush()?;
         //zip.write_all(csv_writer)?;
     }
-
-    zip.finish()?;
 
     Ok(())
 }
