@@ -8,8 +8,11 @@ use s3::creds::Credentials;
 use s3::Region;
 use serde::{Deserialize, Serialize};
 use sha2::{Digest, Sha256};
-use std::{collections::HashMap, io::prelude::*};
-use std::{env, io};
+use std::collections::HashMap;
+use std::io::{Read, Write};
+use std::path::Path;
+use std::{env, fs, io};
+use zip::write::FileOptions;
 
 fn expect_env_var(var: &str) -> String {
     dotenv::dotenv().ok();
@@ -38,7 +41,7 @@ async fn setup_mongo_database() -> Result<Database> {
     Ok(client.database("nidarholm"))
 }
 
-async fn verify_file(hash: &String, path: &String) -> Result<()> {
+async fn verify_file(hash: &String, path: &Path) -> Result<()> {
     let mut file = std::fs::File::open(path)?;
     let mut sha256 = Sha256::new();
     io::copy(&mut file, &mut sha256)?;
@@ -53,9 +56,11 @@ async fn verify_file(hash: &String, path: &String) -> Result<()> {
 
 #[tokio::main]
 async fn main() -> Result<()> {
-    let output_dir = expect_env_var("OUTPUT_DIR");
+    let output_zip = expect_env_var("OUTPUT_ZIP");
+    //let output_dir = expect_env_var("OUTPUT_DIR");
+    let note_dir = expect_env_var("NOTE_DIR");
 
-    let bucket = setup_s3_bucket()?;
+    //let bucket = setup_s3_bucket()?;
 
     let database = setup_mongo_database().await?;
     let pieces = database.collection::<Piece>("pieces");
@@ -77,6 +82,10 @@ async fn main() -> Result<()> {
         };
     }
 
+    let zip_file = std::fs::File::create(output_zip)?;
+    let mut zip = zip::ZipWriter::new(zip_file);
+    let zip_options = FileOptions::default().compression_method(zip::CompressionMethod::Stored);
+
     let mut piece_list = vec![];
     let mut piece_cursor = match pieces.find(doc! {}, None).await {
         Ok(cursor) => cursor,
@@ -94,7 +103,7 @@ async fn main() -> Result<()> {
 
     let mut alle_notesett: Vec<Notesett> = vec![];
 
-    std::fs::create_dir_all(&output_dir)?;
+    //std::fs::create_dir_all(&output_dir)?;
 
     for piece in piece_list {
         let title = match piece.subtitle.clone() {
@@ -127,37 +136,41 @@ async fn main() -> Result<()> {
             number_of_files: piece.scores.len(),
         };
         if piece.scores.len() > 0 {
-            let directory = format!("{output_dir}/{id} - {title}", id = formatted_archive_number);
-            std::fs::create_dir_all(&directory)?;
+            let directory = format!("{id} - {title}", id = formatted_archive_number);
+            //std::fs::create_dir_all(&directory)?;
+            zip.add_directory(&directory, zip_options)?;
 
             let metadata=format!(
                     "Tittel = {title}\r\nKomponist = {composers}\r\nArrangør = {arrangers}\r\nPlassering = {archive_number}\r\n",
                 );
             let metadata_path = format!("{directory}/metadata.txt");
-            std::fs::write(&metadata_path, metadata)?;
+            //std::fs::write(&metadata_path, metadata)?;
+            zip.start_file(&metadata_path, zip_options)?;
+            zip.write_all(metadata.as_bytes())?;
 
             for score in piece.scores {
                 let file = file_map.get(&score);
                 if let Some(file) = file {
-                    let local_path = format!("{directory}/{filename}", filename = file.filename);
-                    let s3_url = format!(
-                        "/nidarholm/files/originals/{}/{}/{}",
+                    let path = format!("{directory}/{filename}", filename = file.filename);
+                    let local_path = Path::new(&path);
+                    let note_url = format!(
+                        "{note_dir}/originals/{}/{}/{}",
                         &file.hash[0..2],
                         &file.hash[2..4],
                         file.hash
                     );
 
-                    println!("{local_path}");
-                    match verify_file(&file.hash, &local_path).await {
-                        Ok(_) => println!("OK"),
-                        Err(_) => {
-                            println!("Refetch");
-                            let data = bucket.get_object(&s3_url).await?;
+                    dbg!(local_path, &note_url);
+                    //let data = bucket.get_object(&s3_url).await?;
 
-                            let mut file = std::fs::File::create(&local_path)?;
-                            file.write_all(data.bytes())?;
-                        }
-                    }
+                    //let mut file = std::fs::File::create(&local_path)?;
+                    //file.write_all(data.bytes())?;
+                    //fs::copy(&note_url, local_path)?;
+                    let mut buffer = Vec::new();
+                    let mut f = fs::File::open(note_url)?;
+                    f.read_to_end(&mut buffer)?;
+                    zip.start_file(&path, zip_options)?;
+                    zip.write_all(&*buffer)?;
                 }
             }
         };
@@ -167,13 +180,14 @@ async fn main() -> Result<()> {
     alle_notesett.sort_by(|a, b| a.id.cmp(&b.id));
 
     {
-        let path = format!("{output_dir}/metadata.csv");
-        let mut file = std::fs::File::create(&path)?;
+        let path = format!("metadata.csv");
+        //let mut file = std::fs::File::create(&path)?;
+        zip.start_file(path, zip_options)?;
         let mut csv_writer = csv::WriterBuilder::new()
             .delimiter(b';')
             .terminator(csv::Terminator::CRLF)
             .quote_style(csv::QuoteStyle::NonNumeric)
-            .from_writer(&mut file);
+            .from_writer(&mut zip);
         csv_writer.write_record(&[
             "ArkivNr",
             "Tittel",
@@ -196,6 +210,7 @@ async fn main() -> Result<()> {
         csv_writer.flush()?;
         //zip.write_all(csv_writer)?;
     }
+    zip.finish()?;
 
     Ok(())
 }
