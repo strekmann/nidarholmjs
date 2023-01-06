@@ -17,7 +17,7 @@ mongodb={version = "2.3", features=["bson-chrono-0_4", "bson-serde_with", "opens
 rust-s3 = "0.32.3"
 serde = {version = "1.0", features=["derive"]}
 serde_with = "1"
-tokio ={version="1.8", features=["full"]}
+tokio ={version="1.23", features=["full"]}
 sha2 = "0.10"
 base16ct = {version="0.1", features=["alloc"]}
 zip = "0.6.2"
